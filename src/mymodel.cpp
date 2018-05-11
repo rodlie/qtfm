@@ -220,7 +220,7 @@ QString myModel::filePath(const QModelIndex &index)
 
     if(item) return item->absoluteFilePath();
 
-    return false;
+    return QString();
 }
 
 //---------------------------------------------------------------------------------------
