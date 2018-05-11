@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/back.png</file>
+        <file>images/bookmark.png</file>
+        <file>images/clear.png</file>
+        <file>images/copy.png</file>
+        <file>images/cut.png</file>
+        <file>images/delete.png</file>
+        <file>images/details.png</file>
+        <file>images/document-new.png</file>
+        <file>images/document-open.png</file>
+        <file>images/exit.png</file>
+        <file>images/folder-new.png</file>
+        <file>images/hidden.png</file>
+        <file>images/home.png</file>
+        <file>images/icons.png</file>
+        <file>images/key_bindings.png</file>
+        <file>images/lock.png</file>
+        <file>images/paste.png</file>
+        <file>images/qtfm.png</file>
+        <file>images/refresh.png</file>
+        <file>images/sep.png</file>
+        <file>images/terminal.png</file>
+        <file>images/up.png</file>
+        <file>images/window-close.png</file>
+        <file>images/zoom-in.png</file>
+        <file>images/zoom-out.png</file>
+        <file>images/preferences.png</file>
+        <file>images/properties.png</file>
+        <file>images/background.png</file>
+    </qresource>
+</RCC>
