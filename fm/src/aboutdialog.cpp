@@ -10,7 +10,7 @@
  */
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
 
-  QString authors = "<strong>5. 2018 - present</strong><br/> Ole-André Rodlie ("
+  QString authors = "<strong>5. 2018 -</strong><br/> Ole-André Rodlie ("
                     "<a href=\"mailto:ole.andre.rodlie@gmail.com\">"
                     "ole.andre.rodlie@gmail.com</a>)<br/><br/>"
                     "<strong>8. 2012 - 5. 2013</strong><br/> Michal Rost ("
@@ -25,11 +25,24 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
 
   this->setMinimumWidth(400);
   this->setMinimumHeight(350);
+  this->setWindowTitle(tr("About %1").arg(APP_NAME));
 
   QVBoxLayout* layout = new QVBoxLayout(this);
   QTabWidget* tabWidget = new QTabWidget(this);
   QLabel* info = new QLabel(this);
-  info->setText(QString("<strong>%1</strong><br/>version: %2").arg(APP_NAME).arg(APP_VERSION));
+  info->setText(QString("<h1>%1</h1><p>version: %2<br/><a href=\"https://github.com/rodlie/qtfm\">github.com/rodlie/qtfm</a></p>").arg(APP_NAME).arg(APP_VERSION));
+
+  QLabel *icon = new QLabel(this);
+  icon->setPixmap(QIcon::fromTheme("folder").pixmap(QSize(64, 64)));
+
+  QWidget *header = new QWidget(this);
+  header->setContentsMargins(0,0,0,0);
+  QHBoxLayout *headerLayout = new QHBoxLayout(header);
+  headerLayout->setMargin(0);
+  headerLayout->setSpacing(0);
+  headerLayout->addWidget(info);
+  headerLayout->addStretch();
+  headerLayout->addWidget(icon);
 
   QWidget* authorsTab = new QWidget(tabWidget);
   tabWidget->addTab(authorsTab, tr("Authors"));
@@ -54,7 +67,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
   btnLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding));
   btnLayout->addWidget(btnClose);
 
-  layout->addWidget(info);
+  layout->addWidget(header);
   layout->addWidget(tabWidget);
   layout->addLayout(btnLayout);
 

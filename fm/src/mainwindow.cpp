@@ -212,6 +212,7 @@ MainWindow::MainWindow()
     createMenus();
 
     setWindowIcon(QIcon::fromTheme("folder"));
+    setWindowTitle(APP_NAME);
 
     // Create custom action manager
     customActManager = new CustomActionsManager(settings, actionList, this);
@@ -509,7 +510,8 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
     if(!name.exists()) return;
 
     curIndex = name;
-    setWindowTitle(curIndex.fileName());
+    if (curIndex.fileName().isEmpty()) { setWindowTitle(curIndex.absolutePath()); }
+    else { setWindowTitle(curIndex.fileName()); }
 
     if(tree->hasFocus() && QApplication::mouseButtons() == Qt::MidButton)
     {
@@ -1394,6 +1396,10 @@ void MainWindow::openInApp() {
   }
 }
 
+//---------------------------------------------------------------------------
+/**
+ * @brief media support
+ */
 void MainWindow::populateMedia()
 {
     QMapIterator<QString, Device*> device(disks->devices);

@@ -86,7 +86,7 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
         iconButton->setIcon(QIcon::fromTheme("folder"));
       }
 
-      iconButton->setIconSize(QSize(24,24));
+      iconButton->setIconSize(QSize(64,64));
       iconButton->setAutoRaise(1);
       connect(iconButton, SIGNAL(clicked()), this, SLOT(changeIcon()));
       layoutPath->addWidget(iconButton,0,0);
@@ -108,7 +108,7 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
         theIcon = fileIcons->value(file.suffix());
       }
 
-      iconLabel->setPixmap(theIcon.pixmap(24,24));
+      iconLabel->setPixmap(theIcon.pixmap(64,64));
       layoutPath->addWidget(iconLabel,0,0);
       layoutPath->addWidget(new QLabel(tr("Filetype:")),3,0);
       containsInfo->setText(modelList->getMimeUtils()->getMimeType(pathName));

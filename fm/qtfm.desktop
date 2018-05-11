@@ -1,12 +1,11 @@
 [Desktop Entry]
-Name=File Manager
-GenericName=File Manager
-Comment=File Manager
+Name=QtFM
+GenericName=Qt File Manager
+Comment=Qt File Manager
 Type=Application
-Icon=lumina-files
-Exec=lumina-files
+Icon=folder
+Exec=qtfm
 Terminal=false
 MimeType=application/x-directory;inode/directory
 Categories=Utility;FileManager
-OnlyShowIn=Lumina;
 StartupNotify=false

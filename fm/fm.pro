@@ -1,19 +1,17 @@
 QT+= core gui network dbus
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = lumina-files
-TARGET_NAME = "Lumina Files"
-VERSION = 5.9.1
+TARGET = qtfm
+TARGET_NAME = "QtFM"
+VERSION = 6.0.0
 TEMPLATE = app
+
 DEPENDPATH += . src
 INCLUDEPATH += . src
-#OBJECTS_DIR = build
-#MOC_DIR = build
 
-RESOURCES += lumina-files.qrc
-LIBS += -lmagic
+#OBJECTS_DIR = .obj
+#MOC_DIR = .moc
 
-# Input
 HEADERS += src/mainwindow.h \
     src/mymodel.h \
     src/bookmarkmodel.h \
@@ -52,6 +50,17 @@ SOURCES += src/main.cpp \
     src/actiondefs.cpp \
     src/actiontriggers.cpp
 
+OTHER_FILES += $${TARGET}.desktop
+RESOURCES += $${TARGET}.qrc
+
+DEFINES += APP=\"\\\"$${TARGET}\\\"\"
+DEFINES += APP_NAME=\"\\\"$${TARGET_NAME}\\\"\"
+DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\"
+
+exists(../qtfm.pri) {
+    include(../qtfm.pri)
+}
+
 isEmpty(PREFIX) {
     PREFIX = /usr/local
 }
@@ -62,43 +71,18 @@ isEmpty(DOCDIR) {
 target.path = $${PREFIX}/bin
 desktop.files += $${TARGET}.desktop
 desktop.path += $${PREFIX}/share/applications
-icon.files += $${TARGET}.png
-icon.path += $${PREFIX}/share/icons/hicolor/128x128
-
 docs.path += $${DOCDIR}/$${TARGET}-$${VERSION}
-docs.files += COPYING
+docs.files += ../COPYING
+INSTALLS += target desktop docs
 
-DEFINES += APP=\"\\\"$${TARGET}\\\"\"
-DEFINES += APP_NAME=\"\\\"$${TARGET_NAME}\\\"\"
-DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\"
-
-
-#trans.path += /usr/share/qtfm
-#trans.files += translations/qtfm_da.qm \
-#	       translations/qtfm_de.qm \
-#	       translations/qtfm_es.qm \
-#	       translations/qtfm_fr.qm \
-#           translations/qtfm_it.qm \
-#	       translations/qtfm_pl.qm \
-#           translations/qtfm_ru.qm \
-#           translations/qtfm_sr.qm \
-#           translations/qtfm_sv.qm \
-#           translations/qtfm_zh.qm \
-#           translations/qtfm_zh_TW.qm
-
-INSTALLS += target desktop icon docs
-#trans
-
-#OTHER_FILES += \
-#    TODO.txt
-
-QT_CONFIG -= no-pkg-config
-CONFIG += link_pkgconfig
-PKGCONFIG += Disks
-
-
-OTHER_FILES += lumina-files.desktop
-
-
-
+exists(../lib) {
+    message("Using embedded libdisks")
+    INCLUDEPATH += ../lib
+    LIBS += -L../lib -lDisks
+} else {
+    message("Using external libdisks")
+    CONFIG += link_pkgconfig
+    PKGCONFIG += Disks
+}
+LIBS += -lmagic
 

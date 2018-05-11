@@ -1,0 +1,6 @@
+
+29.4.2013
+* Finish movement of mime-related code from FileUtils to MimeUtils
+* Implement clearDeadDefaults() method in MimeUtils
+* Some *.desktop file has more groups(sections) and each group can contain
+  exec command, but only first is read, this must be fixed
