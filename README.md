@@ -1,4 +1,4 @@
 # QtFM
 ![alt text](qtfm.png)
 
-This is a continuation of qtfm.org.
+Simple and lightweight file manager using Qt 4/5.
