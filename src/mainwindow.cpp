@@ -816,7 +816,7 @@ void MainWindow::pasteClipboard() {
   else newPath = pathEdit->itemText(0);
 
   // Check list of files that are to be cut
-  QFile tempFile(QDir::tempPath() + "/qtfm.temp");
+  QFile tempFile(QDir::tempPath() + "/" + APP + ".temp");
   if (tempFile.exists()) {
     tempFile.open(QIODevice::ReadOnly);
     QDataStream out(&tempFile);
@@ -1021,7 +1021,7 @@ void MainWindow::progressFinished(int ret,QStringList newFiles)
         if(currentView == 2) detailTree->scrollTo(modelView->mapFromSource(modelList->index(newFiles.first())),QAbstractItemView::EnsureVisible);
         else list->scrollTo(modelView->mapFromSource(modelList->index(newFiles.first())),QAbstractItemView::EnsureVisible);
 
-        if(QFile(QDir::tempPath() + "/qtfm.temp").exists()) QApplication::clipboard()->clear();
+        if(QFile(QDir::tempPath() + QString("/%1.temp").arg(APP)).exists()) QApplication::clipboard()->clear();
 
         clearCutItems();
     }
@@ -1500,7 +1500,7 @@ void MainWindow::newConnection()
 //---------------------------------------------------------------------------------
 void MainWindow::startDaemon()
 {
-    if(!daemon.listen("qtfm")) isDaemon = 0;
+    if(!daemon.listen(APP)) isDaemon = 0;
 }
 
 //---------------------------------------------------------------------------------

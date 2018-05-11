@@ -267,13 +267,13 @@ void MainWindow::createActions() {
   actionList->append(runAct);
 
   exitAct = new QAction(tr("Quit"), this);
-  exitAct->setStatusTip(tr("Quit qtFM and stop the daemon"));
+  exitAct->setStatusTip(tr("Quit %1 and stop the daemon").arg(APP_NAME));
   connect(exitAct, SIGNAL(triggered()), this, SLOT(exitAction()));
   exitAct->setIcon(actionIcons->at(20));
   actionList->append(exitAct);
 
   closeAct = new QAction(tr("Close"), this);
-  closeAct->setStatusTip(tr("Close qtFM"));
+  closeAct->setStatusTip(tr("Close %1").arg(APP_NAME));
   connect(closeAct, SIGNAL(triggered()), this, SLOT(close()));
   closeAct->setIcon(actionIcons->at(25));
   actionList->append(closeAct);

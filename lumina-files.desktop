@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=File Manager
+GenericName=File Manager
+Comment=File Manager
+Type=Application
+Icon=lumina-files
+Exec=lumina-files
+Terminal=false
+MimeType=application/x-directory;inode/directory
+Categories=Utility;FileManager
+OnlyShowIn=Lumina;
+StartupNotify=false

@@ -166,7 +166,7 @@ void CustomActionsManager::execAction(const QString &cmd, const QString &path) {
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
   if (exec.at(0) == '|') {
     exec.remove(0, 1);
-    env.insert("QTFM", "1");
+    env.insert(APP, "1");
     p->setProcessEnvironment(env);
   }
   p->start(exec, temp);
@@ -191,7 +191,7 @@ void CustomActionsManager::onActionError(QProcess::ProcessError error) {
 void CustomActionsManager::onActionFinished(int ret) {
 
   QProcess* process = qobject_cast<QProcess*>(sender());
-  if (process->processEnvironment().contains("QTFM")) {
+  if (process->processEnvironment().contains(APP)) {
     QString output = process->readAllStandardError();
     if (!output.isEmpty()) {
       QMessageBox::warning(NULL, tr("Error - Custom action"), output);

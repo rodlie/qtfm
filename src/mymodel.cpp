@@ -46,14 +46,14 @@ myModel::myModel(bool realMime, MimeUtils *mimeUtils) {
   icons->setMaxCost(500);
 
   // Loads cached mime icons
-  QFile fileIcons(QDir::homePath() + "/.config/qtfm/file.cache");
+  QFile fileIcons(QDir::homePath() + QString("/.config/%1/file.cache").arg(APP));
   fileIcons.open(QIODevice::ReadOnly);
   QDataStream out(&fileIcons);
   out >> *mimeIcons;
   fileIcons.close();
 
   // Loads folder cache
-  fileIcons.setFileName(QDir::homePath() + "/.config/qtfm/folder.cache");
+  fileIcons.setFileName(QDir::homePath() + QString("/.config/%1/folder.cache").arg(APP));
   fileIcons.open(QIODevice::ReadOnly);
   out.setDevice(&fileIcons);
   out >> *folderIcons;
@@ -101,8 +101,8 @@ myModel::~myModel() {
 void myModel::clearIconCache() {
   folderIcons->clear();
   mimeIcons->clear();
-  QFile(QDir::homePath() + "/.config/qtfm/folder.cache").remove();
-  QFile(QDir::homePath() + "/.config/qtfm/file.cache").remove();
+  QFile(QDir::homePath() + QString("/.config/%1/folder.cache").arg(APP)).remove();
+  QFile(QDir::homePath() + QString("/.config/%1/file.cache").arg(APP)).remove();
 }
 //---------------------------------------------------------------------------
 
@@ -550,13 +550,13 @@ QMimeData * myModel::mimeData(const QModelIndexList & indexes) const
 //---------------------------------------------------------------------------------
 void myModel::cacheInfo()
 {
-    QFile fileIcons(QDir::homePath() + "/.config/qtfm/file.cache");
+    QFile fileIcons(QDir::homePath() + QString("/.config/%1/file.cache").arg(APP));
     fileIcons.open(QIODevice::WriteOnly);
     QDataStream out(&fileIcons);
     out << *mimeIcons;
     fileIcons.close();
 
-    fileIcons.setFileName(QDir::homePath() + "/.config/qtfm/folder.cache");
+    fileIcons.setFileName(QDir::homePath() + QString("/.config/%1/folder.cache").arg(APP));
     fileIcons.open(QIODevice::WriteOnly);
     out.setDevice(&fileIcons);
     out << *folderIcons;
@@ -564,7 +564,7 @@ void myModel::cacheInfo()
 
     if(thumbs->count() > thumbCount)
     {
-        fileIcons.setFileName(QDir::homePath() + "/.config/qtfm/thumbs.cache");
+        fileIcons.setFileName(QDir::homePath() + QString("/.config/%1/thumbs.cache").arg(APP));
         if(fileIcons.size() > 10000000) fileIcons.remove();
         else
         {
@@ -650,7 +650,7 @@ void myModel::loadThumbs(QModelIndexList indexes) {
   // Loads thumbnails from cache
   if (files.count()) {
     if (thumbs->count() == 0) {
-      QFile fileIcons(QDir::homePath() + "/.config/qtfm/thumbs.cache");
+      QFile fileIcons(QDir::homePath() + QString("/.config/%1/thumbs.cache").arg(APP));
       fileIcons.open(QIODevice::ReadOnly);
       QDataStream out(&fileIcons);
       out >> *thumbs;
@@ -1071,7 +1071,7 @@ void myModel::addCutItems(QStringList files)
 void myModel::clearCutItems()
 {
     cutItems.clear();
-    QFile(QDir::tempPath() + "/qtfm.temp").remove();
+    QFile(QDir::tempPath() + QString("/%1.temp").arg(APP)).remove();
 }
 
 

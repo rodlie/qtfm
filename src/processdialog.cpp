@@ -17,7 +17,7 @@ ProcessDialog::ProcessDialog(QProcess* proc, const QString &procName,
 
   // Size
   this->setMinimumSize(420, 320);
-  this->setWindowTitle("qtFM: " + procName);
+  this->setWindowTitle(procName);
 
   // Text
   QString text = tr("<b>Please wait custom action '%1' is in progress...</b>");

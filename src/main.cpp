@@ -36,12 +36,12 @@ int main(int argc, char *argv[]) {
   // Connect to daemon if available, otherwise create new instance
   if (app.arguments().count() == 1) {
     QLocalServer server;
-    if (!server.listen("qtfm")) {
+    if (!server.listen(APP)) {
       QLocalSocket client;
-      client.connectToServer("qtfm");
+      client.connectToServer(APP);
       client.waitForConnected(1000);
       if (client.state() != QLocalSocket::ConnectedState) {
-        QFile::remove(QDir::tempPath() + "/qtfm");
+        QFile::remove(QDir::tempPath() + QString("/%1").arg(APP));
       } else {
         client.close();
         return 0;
@@ -51,20 +51,20 @@ int main(int argc, char *argv[]) {
   }
 
   // Initialize resources
-  Q_INIT_RESOURCE(resources);
+ // Q_INIT_RESOURCE(resources);
 
   // Set application info
-  app.setOrganizationName("qtfm");
-  app.setApplicationName("qtfm");
+  app.setOrganizationName(APP);
+  app.setApplicationName(APP);
 
   // Translate application
-  QTranslator qtTranslator;
+  /*QTranslator qtTranslator;
   qtTranslator.load("qt_" + QLocale::system().name(),
                     QLibraryInfo::location(QLibraryInfo::TranslationsPath));
   app.installTranslator(&qtTranslator);
   QTranslator qtfmTranslator;
   qtfmTranslator.load("/usr/share/qtfm/qtfm_" + QLocale::system().name());
-  app.installTranslator(&qtfmTranslator);
+  app.installTranslator(&qtfmTranslator);*/
 
   // Create main window and execute application
   MainWindow mainWin;

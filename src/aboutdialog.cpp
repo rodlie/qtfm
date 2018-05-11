@@ -10,7 +10,10 @@
  */
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
 
-  QString authors = "<strong>8. 2012 - 5. 2013</strong><br/> Michal Rost ("
+  QString authors = "<strong>5. 2018 - present</strong><br/> Ole-André Rodlie ("
+                    "<a href=\"mailto:ole.andre.rodlie@gmail.com\">"
+                    "ole.andre.rodlie@gmail.com</a>)<br/><br/>"
+                    "<strong>8. 2012 - 5. 2013</strong><br/> Michal Rost ("
                     "<a href=\"mailto:rost.michal@gmail.com\">"
                     "rost.michal@gmail.com</a>)<br/><br/>"
                     "<strong>5. 2010 - 8. 2012</strong><br/> Wittfella ("
@@ -26,7 +29,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
   QVBoxLayout* layout = new QVBoxLayout(this);
   QTabWidget* tabWidget = new QTabWidget(this);
   QLabel* info = new QLabel(this);
-  info->setText("<strong>QtFM</strong><br/>version: 5.9");
+  info->setText(QString("<strong>%1</strong><br/>version: %2").arg(APP_NAME).arg(APP_VERSION));
 
   QWidget* authorsTab = new QWidget(tabWidget);
   tabWidget->addTab(authorsTab, tr("Authors"));
