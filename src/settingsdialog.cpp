@@ -115,10 +115,10 @@ QWidget *SettingsDialog::createGeneralSettings() {
   layoutConfirm->addRow(tr("Ask before file is deleted: "), checkDelete);
 
   // Terminal emulator
-  QGroupBox* grpTerm = new QGroupBox(tr("Terminal emulator"), widget);
+  /*QGroupBox* grpTerm = new QGroupBox(tr("Terminal emulator"), widget);
   QFormLayout* layoutTerm = new QFormLayout(grpTerm);
   editTerm = new QLineEdit(grpTerm);
-  layoutTerm->addRow(tr("Command: "), editTerm);
+  layoutTerm->addRow(tr("Command: "), editTerm);*/
 
   // Default mime apps
   QGroupBox* grpDMime = new QGroupBox(tr("Default mime applications"), widget);
@@ -131,7 +131,7 @@ QWidget *SettingsDialog::createGeneralSettings() {
   // Layout of widget
   layoutWidget->addWidget(grpAppear);
   layoutWidget->addWidget(grpConfirm);
-  layoutWidget->addWidget(grpTerm);
+  //layoutWidget->addWidget(grpTerm);
   layoutWidget->addWidget(grpDMime);
   layoutWidget->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Fixed,
                                               QSizePolicy::MinimumExpanding));
@@ -501,7 +501,7 @@ void SettingsDialog::readSettings() {
   checkTabs->setChecked(settingsPtr->value("tabsOnTop", false).toBool());
   checkHidden->setChecked(settingsPtr->value("hiddenMode", true).toBool());
   checkDelete->setChecked(settingsPtr->value("confirmDelete", true).toBool());
-  editTerm->setText(settingsPtr->value("term").toString());
+  //editTerm->setText(settingsPtr->value("term").toString());
 
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
@@ -547,17 +547,17 @@ void SettingsDialog::readSettings() {
 
   // Add default actions
   if (keys.count() == 0) {
-    QStringList def1, def2, def3;
+    QStringList def1/*, def2*/, def3;
     def1 << "gz,bz2" << tr("Extract here") << "package-x-generic" << "tar xf %f";
-    def2 << "folder" << tr("Term here") << "terminal" << "urxvt -cd %F";
+    //def2 << "folder" << tr("Term here") << "terminal" << "urxvt -cd %F";
     def3 << "*" << tr("Compress") << "filesave" << "tar czf %n.tar.gz %f";
     QTreeWidgetItem *item1 = new QTreeWidgetItem(actionsWidget, def1, 0);
-    QTreeWidgetItem *item2 = new QTreeWidgetItem(actionsWidget, def2, 0);
+    //QTreeWidgetItem *item2 = new QTreeWidgetItem(actionsWidget, def2, 0);
     QTreeWidgetItem *item3 = new QTreeWidgetItem(actionsWidget, def3, 0);
     item1->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable
                     | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
-    item2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable
-                    | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
+    //item2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable
+    //                | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
     item3->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable
                     | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
   }
@@ -725,7 +725,7 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("tabsOnTop", checkTabs->isChecked());
   settingsPtr->setValue("hiddenMode", checkHidden->isChecked());
   settingsPtr->setValue("confirmDelete", checkDelete->isChecked());
-  settingsPtr->setValue("term", editTerm->text());
+  //settingsPtr->setValue("term", editTerm->text());
   settingsPtr->setValue("forceTheme", cmbIconTheme->currentText());
   settingsPtr->setValue("defMimeAppsFile", cmbDefaultMimeApps->currentText());
 

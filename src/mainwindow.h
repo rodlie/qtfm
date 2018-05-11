@@ -90,7 +90,7 @@ public slots:
     void newDir();
     void newFile();
     void pathEditChanged(QString);
-    void terminalRun();
+    //void terminalRun();
     void executeFile(QModelIndex, bool);
     void runFile();
     void openFile();
@@ -221,8 +221,8 @@ private:
     QList<QAction*> bookmarkActionList;
     CustomActionsManager* customActManager;
 
-    QToolBar *editToolBar;
-    QToolBar *viewToolBar;
+    //QToolBar *editToolBar;
+    //QToolBar *viewToolBar;
     QToolBar *navToolBar;
     QToolBar *addressToolBar;
     QToolBar *menuToolBar;
@@ -259,7 +259,7 @@ private:
     QAction *pasteAct;
     QAction *settingsAct;
     QAction *renameAct;
-    QAction *terminalAct;
+    //QAction *terminalAct;
     QAction *openAct;
     QAction *runAct;
     QAction *thumbsAct;

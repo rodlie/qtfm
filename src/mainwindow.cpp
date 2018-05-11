@@ -68,15 +68,16 @@ MainWindow::MainWindow()
     settings = new QSettings();
 
     QString temp = settings->value("forceTheme").toString();
-    if(temp.isNull())
+    if(temp.isEmpty())
     {
         //get theme from system (works for gnome/kde)
         temp = QIcon::themeName();
+        qDebug() << "using system icon theme" << temp;
 
         //Qt doesn't detect the theme very well for non-DE systems,
         //so try reading the '~/.gtkrc-2.0' or '~/.config/gtk-3.0/settings.ini'
 
-        if(temp == "hicolor")
+        /*if(temp == "hicolor")
         {
             //check for gtk-2.0 settings
             if(QFile::exists(QDir::homePath() + "/" + ".gtkrc-2.0"))
@@ -100,7 +101,7 @@ MainWindow::MainWindow()
 
                 settings->setValue("forceTheme",temp);
             }
-        }
+        }*/
     }
 
     QIcon::setThemeName(temp);
@@ -208,7 +209,7 @@ MainWindow::MainWindow()
     createToolBars();
     createMenus();
 
-    setWindowIcon(QIcon(":/images/qtfm.png"));
+    setWindowIcon(QIcon::fromTheme("folder"));
 
     // Create custom action manager
     customActManager = new CustomActionsManager(settings, actionList, this);
@@ -456,7 +457,7 @@ void MainWindow::loadSettings() {
   modelView->sort(currentSortColumn, currentSortOrder);
 
   // Load terminal command
-  term = settings->value("term").toString();
+  //term = settings->value("term").toString();
 
   // Load information whether tabs can be shown on top
   tabsOnTopAct->setChecked(settings->value("tabsOnTop", 0).toBool());
@@ -506,7 +507,7 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
     if(!name.exists()) return;
 
     curIndex = name;
-    setWindowTitle(curIndex.fileName() + " - QtFM 5.9");
+    setWindowTitle(curIndex.fileName());
 
     if(tree->hasFocus() && QApplication::mouseButtons() == Qt::MidButton)
     {

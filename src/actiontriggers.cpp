@@ -115,7 +115,7 @@ void MainWindow::goHomeDir() {
 /**
  * @brief Starts terminal
  */
-void MainWindow::terminalRun() {
+/*void MainWindow::terminalRun() {
 
   // If terminal was not specified, asks user for terminal command
   if (term.isEmpty()) {
@@ -131,7 +131,7 @@ void MainWindow::terminalRun() {
   QString name = args.at(0);
   args.removeAt(0);
   QProcess::startDetached(name, args, pathEdit->itemText(0));
-}
+}*/
 //---------------------------------------------------------------------------
 
 /**
@@ -651,8 +651,8 @@ void MainWindow::toggleLockLayout() {
     dockBookmarks->setTitleBarWidget(newTitle);
 
     menuToolBar->setMovable(0);
-    editToolBar->setMovable(0);
-    viewToolBar->setMovable(0);
+    //editToolBar->setMovable(0);
+    //viewToolBar->setMovable(0);
     navToolBar->setMovable(0);
     addressToolBar->setMovable(0);
     lockLayoutAct->setText(tr("Unlock layout"));
@@ -661,8 +661,8 @@ void MainWindow::toggleLockLayout() {
     dockBookmarks->setTitleBarWidget(0);
 
     menuToolBar->setMovable(1);
-    editToolBar->setMovable(1);
-    viewToolBar->setMovable(1);
+    //editToolBar->setMovable(1);
+    //viewToolBar->setMovable(1);
     navToolBar->setMovable(1);
     addressToolBar->setMovable(1);
 

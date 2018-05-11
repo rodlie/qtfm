@@ -31,11 +31,11 @@ void MainWindow::createActionIcons() {
 
   actionIcons = new QList<QIcon>;
 
-  QFile icons(QDir::homePath() + "/.config/qtfm/icon.cache");
+  /*QFile icons(QDir::homePath() + "/.config/qtfm/icon.cache");
   icons.open(QIODevice::ReadOnly);
   QDataStream out(&icons);
   out >> *actionIcons;
-  icons.close();
+  icons.close();*/
 
   if (actionIcons->count() < 27) {
     actionIcons->append(QIcon::fromTheme("folder-new",QIcon(":/images/folder-new.png")));
@@ -66,10 +66,10 @@ void MainWindow::createActionIcons() {
     actionIcons->append(QIcon::fromTheme("window-close",QIcon(":/images/window-close.png")));
     actionIcons->append(QIcon::fromTheme("tab-new",QIcon(":/images/folder-new.png")));          //26
 
-    icons.open(QIODevice::WriteOnly);
+    /*icons.open(QIODevice::WriteOnly);
     QDataStream out(&icons);
     out << *actionIcons;
-    icons.close();
+    icons.close();*/
   }
 }
 //---------------------------------------------------------------------------
@@ -244,11 +244,11 @@ void MainWindow::createActions() {
   connect(renameAct, SIGNAL(triggered()),this, SLOT(renameFile()));
   actionList->append(renameAct);
 
-  terminalAct = new QAction(tr("Terminal"), this);
+  /*terminalAct = new QAction(tr("Terminal"), this);
   terminalAct->setStatusTip(tr("Open virtual terminal"));
   connect(terminalAct, SIGNAL(triggered()), this, SLOT(terminalRun()));
   terminalAct->setIcon(actionIcons->at(17));
-  actionList->append(terminalAct);
+  actionList->append(terminalAct);*/
 
   openAct = new QAction(tr("Open"), this);
   openAct->setStatusTip(tr("Open the file"));
@@ -367,7 +367,7 @@ void MainWindow::readShortcuts() {
     shortcuts.insert(homeAct->text(),"f3");
     shortcuts.insert(hiddenAct->text(),"ctrl+h");
     shortcuts.insert(deleteAct->text(),"del");
-    shortcuts.insert(terminalAct->text(),"f4");
+    //shortcuts.insert(terminalAct->text(),"f4");
     shortcuts.insert(exitAct->text(),"ctrl+q");
     shortcuts.insert(renameAct->text(),"f2");
     shortcuts.insert(refreshAct->text(),"f5");
@@ -470,14 +470,10 @@ void MainWindow::createMenus() {
   viewMenu->addAction(zoomInAct);
   viewMenu->addAction(zoomOutAct);
   viewMenu->addSeparator();
+  viewMenu->addAction(upAct);
+  viewMenu->addAction(backAct);
+  viewMenu->addAction(homeAct);
   viewMenu->addAction(refreshAct);
-
-  // Go menu
-  // ----------------------------------------------------------------------
-  QMenu *goMenu = new QMenu(tr("Go"));
-  goMenu->addAction(upAct);
-  goMenu->addAction(backAct);
-  goMenu->addAction(homeAct);
 
   // Help menu
   // ----------------------------------------------------------------------
@@ -490,7 +486,6 @@ void MainWindow::createMenus() {
   menuBar->addMenu(fileMenu);
   menuBar->addMenu(editMenu);
   menuBar->addMenu(viewMenu);
-  menuBar->addMenu(goMenu);
   menuBar->addMenu(helpMenu);
   menuToolBar->addWidget(menuBar);
 }
@@ -501,30 +496,17 @@ void MainWindow::createToolBars() {
   menuToolBar->setObjectName("Menu");
   addToolBarBreak();
 
-  editToolBar = addToolBar(tr("Edit"));
-  editToolBar->setObjectName("Edit");
-  editToolBar->addAction(cutAct);
-  editToolBar->addAction(copyAct);
-  editToolBar->addAction(pasteAct);
-  editToolBar->addAction(deleteAct);
-
-  viewToolBar = addToolBar(tr("View"));
-  viewToolBar->setObjectName("View");
-  viewToolBar->addAction(iconAct);
-  viewToolBar->addAction(detailAct);
-  viewToolBar->addAction(hiddenAct);
-
   navToolBar = addToolBar(tr("Navigate"));
   navToolBar->setObjectName("Navigate");
   navToolBar->addAction(backAct);
   navToolBar->addAction(upAct);
   navToolBar->addAction(homeAct);
+  navToolBar->addAction(refreshAct);
 
   addressToolBar = addToolBar(tr("Address"));
   addressToolBar->setObjectName("Address");
-  addressToolBar->addWidget(new QLabel());	    //empty label just for spacing
   addressToolBar->addWidget(pathEdit);
-  addressToolBar->addAction(terminalAct);
+  //addressToolBar->addAction(terminalAct);
 }
 //---------------------------------------------------------------------------
 
