@@ -1,0 +1,351 @@
+5.9 25-May 2013
+- fixed mime type handling
+- fixed problem with opening qpdfview
+- fixed application speed up, saving of properties much faster
+- fixed missing button in about dialog
+
+5.8 5-May 2013
+- added support for Qt5 (application can be compiled with both Qt4 or Qt5)
+- added *.desktop file based application selector
+- added support for changing icon theme from settings
+- added process dialog for custom actions. If custom action is executed, then dialog with action output popups. When action is finished, dialog is closed. This feature can be turned on/off in settings
+- added mime type based default application configuration into the settings dialog
+- added default mime app configuration file selection to settings (mimeapps.list/defaults.list)
+- added default mime apps autogeneration from *.desktop files
+- added about box
+- modified icon view more mime types are recognized now
+- modified more compact settings dialog
+
+5.7 21-December 2012
+- added settings manager, almost all settings are now centralized in one dialog
+- modified edit menu
+- modified custom action management centralized to CustomActionManager
+- fixed bug loading of file icons, versioned files like 'xy.so.1.0.0' are now displayed propertly
+- fixed bug in bookmarks: newly created bookmarks were not appeared in list of shortcuts until application was restarted or custom actions dialog was opened
+- fixed bug in shortcuts: sometimes shortcut editor show duplicated bookmarks
+
+5.6 17-October 2012
+- added GUI for drag & drop: qtfm asks user about what he want to do (copy, move or create link)
+- added sorting (name, size and date in ascending or descending order)
+- added FileUtils in order to provide file management routines that can be reused 
+- added main menu section "Go"  
+- modified drag & drop; when holding ctrl/shift files are copied/moved 
+- modified strings "/" was also replaced with QDir::separator() 
+
+5.5	15-June-2012
+- modified file xdg associations to use mimeapps.list.
+- modified tab right-click to activate selected tab.
+- modified thumbs, uniform size/aspect
+- modified 'Refresh' to update mimetype if changed.
+- modified xdg configuration to ensure '~/.local/share/applications/defaults.list' exists.
+- fixed bug not allowing a cut/move on same device with limited space.
+- fixed bug not using custom action override on double-click.
+- fixed bug with moving across filesystems.
+- fixed bug with multiple custom actions of same type not appearing.
+
+5.4	7-March-2012
+- added 'tabsOnTop' option.
+- added new detection for automounts.
+- added ability to set shortcuts for bookmarks.
+- added option to use mimetype instead of suffix in detail mode and custom actions.
+- modified filetype for file specific custom actions, now treated like a wildcard.
+- modified thumbs to show in all views.
+- modified text colours to follow system theme.
+- modified status/hover info updating.
+- fixed bug in filesystem model not updating in some cases.
+- fixed bug not showing hidden items in '/' root.
+- fixed bug trying to open a tab on a file.
+- fixed bug opening folder from command line (Qt4.8).
+
+5.3	14-December-2011
+- added new address bar navigation and drop-down auto-completion.
+- added 'New tab' to tree context menu.
+- added 'Close' context menu to tabs.
+- added Chinese translation (zh).
+- fixed 'single-click' navigation mode.
+- fixed sorting for size & date columns in detail view.
+- fixed bug in available space detection when pasting to removable drives.
+
+5.2	28-November-2011
+- complete rewrite of FS model, no longer using QFileSystemModel.
+- fixed many small issues that were associated with QFileSystemModel.
+- added translations de/it/ru/sr. Now stored in /usr/share/qtfm.
+- modified properties so you can change permissions for multiple files/folders at once.
+
+5.1	15-October-2011
+- added 'per tab' view selection.
+- added 'per tab' history-back functionality.
+- added check for free space before copy/move. 
+- added input variables to custom actions.
+- added 'forceTheme' fallback to settings.
+- modified thumb loading, loads in realtime, more responsive.
+- modified theme detection and icon cache, including gtk-3.0 support.
+- fixed issue with auto bookmarks for mount points with a space in the name.
+
+5.0	16-June-2011
+- added tabs
+- modified $Parent custom action type to include everything below this folder, files and folders.
+- modified address bar to not reset text while editing.
+- modified keyboard search delay.
+- fixed difference in folder sorting between tree and list views.
+- fixed issue with icon size in 'Edit filetype' dropdown.
+- fixed issue with startup path sent from firefox.
+- fixed issue with custom submenus not appearing on tree folders.
+
+4.9	8-April-2011
+- added daemon mode.
+- added custom action grouping in submenus. See README.
+- added ability to show/suppress stdout and stderr notifications for custom actions.
+- added zoom in/out to change icon size for each view independently.
+- added current folder to window title.
+- added 'Focus address' action to shortcuts for keyboard navigation.
+- added 'Enter folder' action to shortcuts for keyboard navigation.
+
+4.8	9-March-2011
+- added customizable folder icons. Set any folder to a custom icon through the properties dialog.
+- modified progress dialog to shorten very long path names.
+- modified progress dialog to show minutes and seconds time remaining.
+- fixed issue with file specific custom actions not showing immediately after pasting.
+
+4.7	5-March-2011
+- added 'Open' text option to custom actions to override default xdg handling.
+- added properties option to all files.
+- added new properties dialog including permission editing.
+- modified hover and selection status bar information.
+- fixed bug not allowing two custom actions with the same text.
+- fixed bug in zoom +/- default shortcuts.
+
+4.6	21-February-2011
+- added zooming for icon view.
+- added new folder properties dialog.
+- added transfer rate and remaining time info to progress dialog. [thanks karabaja4]
+- modified thumb cache, now emptied automatically on theme change.
+- fixed bug in folder properties sometimes not showing correct selection from tree. [thanks karabaja4]
+
+4.5	5-February-2011
+- added bookmark separators
+- added filepaths to selection buffer on copy operations.
+- modified bookmarks selection/deselection.
+- fixed font colour issue in dark themes, now uses theme settings.
+- fixed bug when trying to delete broken symlinks.
+- fixed bug with xdg-mime failing on files with spaces.
+
+4.4	29-January-2011
+- added gui icon chooser for bookmarks and custom actions.
+- modified 'File open' to handle mutliple selections.
+- modified 'Edit filetype' to handle differences in Gnome/KDE settings.
+- fixed issues with icon and theme integration in KDE environment.
+- fixed 'div 0' bug in progress bar calculation.
+
+4.3	13-January-2011
+- added two new '$folder' types to custom actions.  Allows custom actions on specific folders. See README.
+- added option to enable confirmation on all delete operations. 
+- modified 'merge/replace' dialog for folders, more intuitive.
+
+4.2	10-January-2011
+- added 'merge' conformation for copy/paste on existing folders.
+- modified custom actions dialog to highlight/scroll to newly added item.
+- modified folder properties, now threaded operation.
+- fixed bug when deleting nested hidden folders.
+
+4.1	4-January-2011
+- modified folder copy/paste, will now merge contents with existing folder.
+- modified copy/paste/replace dialog, will now ask for conformation for each existing file.
+- fixed bug with 'back' command after deleting a folder.
+
+4.0	25-December-2010
+- modified custom actions, will now report output and error notifications back to qtFM.
+- fixed file size updating after custom actions
+
+3.9	24-December-2010
+- modified address bar auto-completion, more like tab completion in terminal.
+- modified progress dialog for single file operations, now actual bytes not busy mode.
+- fixed issue with refresh not updating sort order.
+- fixed issue with updating size after cut/copy operations.
+- fixed issue with dates in detail view.
+
+3.8	20-December-2010
+- modified thumb cache, reduced load time.
+- modified 'back' to scroll to last item if in parent folder.
+- fixed issue with bookmarks/address bar when accessing hidden folders.
+- fixed bug with custom actions after cancelling changes.
+
+3.7	13-December-2010
+- added customizable key-bindings.
+
+3.6	10-December-2010
+- added full drag/drop functionality to bookmarks list.
+- modified drag/drop, now threaded operation.
+- fixed issue with progress estimation for large files, now 64bit.
+
+3.5	7-December-2010
+- fixed drag/drop and cut/paste replace yes/no behavior, more consistent.
+- fixed cut colour notification for tree.
+- fixed visible reordering when switching folder in detail view.
+- fixed copy progress dialog busy mode for single large operation.
+- fixed copy progress dialog, will only show for lengthy operations.
+- fixed paste available notification when starting a new instance.
+- fixed bug with cut/copy folders across different filesystems.
+
+3.4	5-December-2010
+- added option to replace existing files on cut/copy/paste.
+- added colour effect to items to indicate a cut in progress.
+- modified cut action to work across multiple instances.
+- modified startup, should be faster with no reordering of items.
+
+3.3	2-December-2010
+- added 'backspace' shortcut.
+- added a F5 'Refresh' shortcut to update file list after certain operations.
+- modified Icon/List/Detail switching behaviour.
+- modified copy progress estimation, now based on size, more accurate.
+- fixed bug in copy progress dialog which would sometimes continue progress after canceling.
+- fixed bug with Drag/Drop not working if target aready exists.
+
+3.2	30-November-2010
+- terminal icon now taken from current theme.
+- modified auto bookmarks and detection of mounted drives.
+- fixed bug where deleting a symlink would also delete target.
+- fixed crash when right-clicking on empty bookmarks window.
+
+3.1	21-September-2010
+- added 'group' to detail view.
+- added 'F3 home', 'F4 Terminal'  shorcuts.
+- added 'svg,gif' thumbnail support.
+- modified delete, more efficient when trying to remove files with no permission.
+
+3.0	2-September-2010
+- added persistent thumbnail cache.
+- added 'Wrapping' option to bookmarks context menu.
+- modified minimumHeight restriction for bookmarks.
+- fixed bug in rename when bookmark selected.
+
+2.9	31-August-2010
+- added 'hover' information to status area.
+- modified status bar information for selected items.
+- modified naming scheme when pasting existing files.
+
+2.8	28-August-2010
+- modified bookmarks dock, does not resize with window if it doesn't have too.
+- modified copy progress dialog, does not show for very short operations.
+- fixed bug when trying to paste if a file is currently selected. 
+
+2.7	27-August-2010
+- added Ctrl-Q quit shortcut.
+- added 'shift' selection to singleClick navigation mode.
+- fixed singleClick=2 navigation in detail view.
+- fixed paste bug when trying to paste in folder without write permssions.
+
+2.6	19-August-2010
+- modified startup, faster loading of tree and detail data.
+- modified cut/copy menu items, no longer toggles indication.
+- fixed text alignment of size column in detail view.
+
+2.5	16-August-2010
+- added 'Type' column back in detail view.
+- modified copy progress dialog, better display when copying multiple folders.
+- modifed naming convention when pasting hidden files.
+- fixed new file/folder icons.
+- fixed bug with Drag/Drop after swapping between list/icon modes.
+- fixed bug in copy/paste and delete if all items selected with 'Ctrl-a'.
+
+2.4	9-August-2010
+- added owner/permissions to detail view.
+- modified single-click navigation -> no action on Ctrl-click.
+
+2.3	7-August-2010
+- added single-click navigation options.
+- added file information to status bar, removed tooltips.
+- modified autobookmarks and mounting/unmounting detection in /media.
+- modified thumb alignment to account for different aspect ratio pics.
+- modified toolbars, seperate navigation and address bars.
+
+2.2	2-August-2010
+- added dynamic updating of autobookmarks for removable drives in /media.
+- added 'YesToAll' button when deleting multiple folders.
+- added tooltips for truncated items.
+- modified tree to always scroll to starting folder.
+- modified bookmark activation, no longer triggered by context menu.
+- modified context menus.
+- fixed bugs with copy/paste, particluarly in Detail view.
+
+2.1	26-July-2010
+- added keyboard activation of bookmarks.
+- added new '%F' variable for custom actions to return files/folders with full path.
+- modified copy/paste naming for existing files to preserve suffix.
+- modified 'folder' custom actions, now appear in tree, bookmarks, list and whitespace context menus.
+- removed 'Terminal' action from tree and whitespace menu, implement with custom action.
+- fixed bug with custom actions not working properly with files containing spaces in the name.
+- fixed bug with copy/paste between different instances.
+
+2.0	18-July-2010
+- added 'folder' filetype for directory specific custom actions.
+- added layout context menu to status area.
+- fixed behaviour when switching to icon view from detail view.
+- fixed bug with custom actions not working from detail view.
+- fixed icon scaling problem with some themes.
+
+1.9	18-July-2010
+- added a copy file progress dialog.
+- added a 'view' context menu to the toolbars. Needed if you hide the menu for instance.
+- added a 'layout lock' mode which removes the dock titles and toolbar handles.
+- changed the menu to a toolbar, can be moved, hidden etc.
+
+1.8	15-July-2010
+- added basic folder properties dialog.
+- added custom bookmark icons.
+- added ability to manually reorder bookmark list.
+- added ability to edit bookmark names.
+- added option to show/hide toolbars.
+- modified Tree and Bookmarks view, now independent floating/movable/dockable panels.
+- many smaller tweaks, changed a few default icons etc.
+
+1.7	8-July-2010
+- added 'Show thumbnails' option.
+- modified thumb loading, should be faster.
+- modified custom actions to allow multiple filetypes per action. eg "jpg,jpeg,png"
+
+1.6	7-July-2010
+- added 'custom actions' system for user defined actions and menu items.
+- added thumbnails of jpg/png etc in icon view.
+- added 'icon view' mode.
+- added cache for theme and mime icons, faster loading.
+- fixed bug causing freeze/crash if copy/paste failed.
+
+1.5	1-July-2010
+- added 'ctrl-h' shortcut for hidden mode.
+- hidden mode now remembered.
+- modified terminal run function to accept command line parameters.
+- modified copy/paste, now executed in different thread to prevent gui from feezing up on large copies.
+- fixed freeze bug when trying to add a new file/folder to a read only folder.
+
+1.4	24-June-2010
+- double-click defaults to 'Open'.  Right-click 'Run' to explicitly run an executable.
+- added option to 'Run' or 'Open' executable files. Used for opening scripts etc in text mode to edit.
+- added 'Rename' to menu.
+- modified 'cut/paste' behaviour to move instead of copy->delete.
+- fixed bug when deleting in detailed mode.
+
+1.3	3-June-2010
+- added text colours indicating executable, symlink etc.
+- added size indication to statusbar when selecting files.
+- detail view header now remembers column widths.
+- changed DragDrop action to 'move'.
+- fixed bug in Qt DragDrop system not working on folders.
+- fixed bug in Qt 'QFileSystemModel::remove' function when trying to delete hidden files.
+- fixed issue when trying to delete symbolic links.
+- fixed issue if non-existant path is entered into the path editbox.
+
+1.2	1-Jun-2010
+- added mime filetype icons from current theme.
+- added fix to detect current icon theme for non-DE systems
+- added ability to change the mime default application for filetypes.
+- added user setting for default terminal.
+- added auto bookmarks for current mounts in /mnt and /media.
+- lots of small fixes, like copy/paste behaviour on existing files, keyboard navigation etc.
+
+1.1	24-May-2010
+- fixed opening external files that contain spaces in the name. (also xdg-open bug)
+- added option to set starting directory with command line argument.
+
+1.0	23-May-2010
+- initial release.
