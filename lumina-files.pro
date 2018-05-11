@@ -92,11 +92,9 @@ INSTALLS += target desktop icon docs
 #OTHER_FILES += \
 #    TODO.txt
 
-
-# tmp for libdisks
-INCLUDEPATH += /usr/local/include/libdisks
-LIBS += -L/usr/local/lib -lDisks
-
+QT_CONFIG -= no-pkg-config
+CONFIG += link_pkgconfig
+PKGCONFIG += Disks
 
 
 OTHER_FILES += lumina-files.desktop
