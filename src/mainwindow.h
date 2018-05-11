@@ -165,6 +165,7 @@ private slots:
     int mediaBookmarkExists(QString path);
     void handleMediaAdded(QString path);
     void handleMediaRemoved(QString path);
+    void handleMediaChanged(QString path, bool present);
 private:
     void createActions();
     void createActionIcons();

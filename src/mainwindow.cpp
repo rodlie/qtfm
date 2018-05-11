@@ -50,6 +50,7 @@ MainWindow::MainWindow()
     connect(disks, SIGNAL(mountpointChanged(QString,QString)), this, SLOT(handleMediaMountpointChanged(QString,QString)));
     connect(disks, SIGNAL(foundNewDevice(QString)), this, SLOT(handleMediaAdded(QString)));
     connect(disks, SIGNAL(removedDevice(QString)), this, SLOT(handleMediaRemoved(QString)));
+    connect(disks, SIGNAL(mediaChanged(QString,bool)), this, SLOT(handleMediaChanged(QString,bool)));
 
     isDaemon = 0;
     startPath = QDir::currentPath();
@@ -1442,6 +1443,17 @@ void MainWindow::handleMediaRemoved(QString path)
 {
     int bookmark = mediaBookmarkExists(path);
     if (bookmark>-1) { modelBookmarks->removeRow(bookmark); }
+}
+
+void MainWindow::handleMediaChanged(QString path, bool present)
+{
+    qDebug() << "changed" << path << present;
+    if (path.isEmpty()) { return; }
+    if (disks->devices[path]->isOptical && !present && mediaBookmarkExists(path)>-1) {
+        handleMediaRemoved(path);
+    } else if (disks->devices[path]->isOptical && present && mediaBookmarkExists(path)==-1) {
+        handleMediaAdded(path);
+    }
 }
 //---------------------------------------------------------------------------
 
