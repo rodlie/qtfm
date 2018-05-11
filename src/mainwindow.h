@@ -162,6 +162,9 @@ private slots:
     // libdisks
     void populateMedia();
     void handleMediaMountpointChanged(QString path, QString mountpoint);
+    int mediaBookmarkExists(QString path);
+    void handleMediaAdded(QString path);
+    void handleMediaRemoved(QString path);
 private:
     void createActions();
     void createActionIcons();

@@ -46,9 +46,10 @@ MainWindow::MainWindow()
 {
     // libdisks
     disks = new Disks();
-    connect(disks, SIGNAL(foundNewDevice(QString)), this, SLOT(populateMedia()));
     connect(disks, SIGNAL(updatedDevices()), this, SLOT(populateMedia()));
     connect(disks, SIGNAL(mountpointChanged(QString,QString)), this, SLOT(handleMediaMountpointChanged(QString,QString)));
+    connect(disks, SIGNAL(foundNewDevice(QString)), this, SLOT(handleMediaAdded(QString)));
+    connect(disks, SIGNAL(removedDevice(QString)), this, SLOT(handleMediaRemoved(QString)));
 
     isDaemon = 0;
     startPath = QDir::currentPath();
@@ -1394,29 +1395,53 @@ void MainWindow::openInApp() {
 
 void MainWindow::populateMedia()
 {
-    qDebug() << "populate media";
-    for (int i = 0; i < modelBookmarks->rowCount(); i++) {
-        if (modelBookmarks->item(i)->data(MEDIA_MODEL).toBool()) { modelBookmarks->removeRow(i); }
-    }
     QMapIterator<QString, Device*> device(disks->devices);
     while (device.hasNext()) {
         device.next();
-        if ((device.value()->isOptical && !device.value()->hasMedia) || (!device.value()->isOptical && !device.value()->isRemovable) || (!device.value()->isOptical && !device.value()->hasPartition)) {
-            continue;
-        }
-        modelBookmarks->addBookmark(device.value()->name, device.value()->mountpoint, "", device.value()->isOptical?"drive-optical":"drive-removable-media", device.value()->path, true);
+        if (mediaBookmarkExists(device.value()->path)>-1) { continue; }
+        if ((device.value()->isOptical && !device.value()->hasMedia)
+                || (!device.value()->isOptical && !device.value()->isRemovable)
+                || (!device.value()->isOptical && !device.value()->hasPartition)) { continue; }
+        modelBookmarks->addBookmark(QString("%1 (%2)").arg(device.value()->name).arg(device.value()->dev),
+                                    device.value()->mountpoint,
+                                    "",
+                                    device.value()->isOptical?"drive-optical":"drive-removable-media",
+                                    device.value()->path,
+                                    true);
     }
 }
 
 void MainWindow::handleMediaMountpointChanged(QString path, QString mountpoint)
 {
-    qDebug() << "handle mountpoint changed" << path << mountpoint;
+    Q_UNUSED(mountpoint)
     if (path.isEmpty()) { return; }
     for (int i = 0; i < modelBookmarks->rowCount(); i++) {
         if (modelBookmarks->item(i)->data(MEDIA_MODEL).toBool() && modelBookmarks->item(i)->data(MEDIA_PATH).toString() == path) {
             modelBookmarks->item(i)->setData(disks->devices[path]->mountpoint, 32);
         }
     }
+}
+
+int MainWindow::mediaBookmarkExists(QString path)
+{
+    if (path.isEmpty()) { return -1; }
+    for (int i = 0; i < modelBookmarks->rowCount(); ++i) {
+        if (modelBookmarks->item(i)->data(MEDIA_MODEL).toBool()
+                && modelBookmarks->item(i)->data(MEDIA_PATH).toString() == path) { return i; }
+    }
+    return -1;
+}
+
+void MainWindow::handleMediaAdded(QString path)
+{
+    Q_UNUSED(path)
+    populateMedia();
+}
+
+void MainWindow::handleMediaRemoved(QString path)
+{
+    int bookmark = mediaBookmarkExists(path);
+    if (bookmark>-1) { modelBookmarks->removeRow(bookmark); }
 }
 //---------------------------------------------------------------------------
 
