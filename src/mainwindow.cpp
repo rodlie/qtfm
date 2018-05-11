@@ -44,6 +44,12 @@
 
 MainWindow::MainWindow()
 {
+    // libdisks
+    disks = new Disks();
+    connect(disks, SIGNAL(foundNewDevice(QString)), this, SLOT(populateMedia()));
+    connect(disks, SIGNAL(updatedDevices()), this, SLOT(populateMedia()));
+    connect(disks, SIGNAL(mountpointChanged(QString,QString)), this, SLOT(handleMediaMountpointChanged(QString,QString)));
+
     isDaemon = 0;
     startPath = QDir::currentPath();
     QStringList args = QApplication::arguments();
@@ -399,6 +405,9 @@ void MainWindow::loadSettings() {
     modelBookmarks->addBookmark(temp[0], temp[1], temp[2], temp.last());
   }
   settings->endGroup();
+
+  // media disks
+  populateMedia();
 
   // Set bookmarks
   autoBookmarkMounts();
@@ -1070,6 +1079,7 @@ void MainWindow::writeSettings() {
   settings->remove("bookmarks");
   settings->beginGroup("bookmarks");
   for (int i = 0; i < modelBookmarks->rowCount(); i++) {
+    if (modelBookmarks->item(i)->data(MEDIA_MODEL).toBool()) { continue; } // ignore media devices
     QStringList temp;
     temp << modelBookmarks->item(i)->text()
          << modelBookmarks->item(i)->data(32).toString()
@@ -1108,6 +1118,8 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
   // Continue with poups for folders and files
   QList<QAction*> actions;
   popup = new QMenu(this);
+
+  bool isMedia = false;
 
   if (focusWidget() == list || focusWidget() == detailTree) {
 
@@ -1252,8 +1264,13 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       listSelectionModel->clearSelection();
       if (bookmarksList->indexAt(bookmarksList->mapFromGlobal(event->globalPos())).isValid()) {
         curIndex = bookmarksList->currentIndex().data(32).toString();
-        popup->addAction(delBookmarkAct);
-        popup->addAction(editBookmarkAct);	//icon
+        isMedia = bookmarksList->currentIndex().data(MEDIA_MODEL).toBool();
+        if (!isMedia) {
+            popup->addAction(delBookmarkAct);
+            popup->addAction(editBookmarkAct);	//icon
+        } else {
+            // TODO: add unmount/eject action
+        }
       } else {
         bookmarksList->clearSelection();
         popup->addAction(addSeparatorAct);	//seperator
@@ -1286,7 +1303,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       foreach (QAction*action, actions) popup->addAction(action);
       popup->addSeparator();
     }
-    popup->addAction(folderPropertiesAct);
+    if (!isMedia) { popup->addAction(folderPropertiesAct); }
   }
 
   popup->exec(event->globalPos());
@@ -1372,6 +1389,33 @@ void MainWindow::openInApp() {
   if (action) {
     mimeUtils->openInApp(action->data().toString(), curIndex, this);
   }
+}
+
+void MainWindow::populateMedia()
+{
+    qDebug() << "populate media";
+    for (int i = 0; i < modelBookmarks->rowCount(); i++) {
+        if (modelBookmarks->item(i)->data(MEDIA_MODEL).toBool()) { modelBookmarks->removeRow(i); }
+    }
+    QMapIterator<QString, Device*> device(disks->devices);
+    while (device.hasNext()) {
+        device.next();
+        if ((device.value()->isOptical && !device.value()->hasMedia) || (!device.value()->isOptical && !device.value()->isRemovable) || (!device.value()->isOptical && !device.value()->hasPartition)) {
+            continue;
+        }
+        modelBookmarks->addBookmark(device.value()->name, device.value()->mountpoint, "", device.value()->isOptical?"drive-optical":"drive-removable-media", device.value()->path, true);
+    }
+}
+
+void MainWindow::handleMediaMountpointChanged(QString path, QString mountpoint)
+{
+    qDebug() << "handle mountpoint changed" << path << mountpoint;
+    if (path.isEmpty()) { return; }
+    for (int i = 0; i < modelBookmarks->rowCount(); i++) {
+        if (modelBookmarks->item(i)->data(MEDIA_MODEL).toBool() && modelBookmarks->item(i)->data(MEDIA_PATH).toString() == path) {
+            modelBookmarks->item(i)->setData(disks->devices[path]->mountpoint, 32);
+        }
+    }
 }
 //---------------------------------------------------------------------------
 

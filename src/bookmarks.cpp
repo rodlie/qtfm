@@ -42,15 +42,16 @@ void MainWindow::addSeparatorAction()
 }
 
 //---------------------------------------------------------------------------
-bookmarkmodel::bookmarkmodel(QHash<QString,QIcon> * icons)
+bookmarkmodel::bookmarkmodel(QHash<QString, QIcon> *icons)
 {
     folderIcons = icons;
 }
 
 //---------------------------------------------------------------------------
-void bookmarkmodel::addBookmark(QString name, QString path, QString isAuto, QString icon)
+void bookmarkmodel::addBookmark(QString name, QString path, QString isAuto, QString icon, QString mediaPath, bool isMedia)
 {
-    if(path.isEmpty())	    //add seperator
+    qDebug() << "add bookmark" << name << path << isAuto << icon << mediaPath << isMedia;
+    if(path.isEmpty() && !isMedia)	    //add seperator
     {
         QStandardItem *item = new QStandardItem(QIcon::fromTheme(icon),"");
         item->setData(QBrush(QPixmap(":/images/sep.png")),Qt::BackgroundRole);
@@ -72,6 +73,8 @@ void bookmarkmodel::addBookmark(QString name, QString path, QString isAuto, QStr
     item->setData(path,32);
     item->setData(icon,33);
     item->setData(isAuto,34);
+    item->setData(isMedia, MEDIA_MODEL);
+    if (isMedia) { item->setData(mediaPath, MEDIA_PATH); }
     this->appendRow(item);
 }
 
@@ -172,6 +175,11 @@ void MainWindow::toggleWrapBookmarks()
 //---------------------------------------------------------------------------
 void MainWindow::bookmarkPressed(QModelIndex current)
 {
+    if (current.data(MEDIA_MODEL).toBool() && !current.data(MEDIA_PATH).toString().isEmpty()) {
+        if (current.data(32).toString().isEmpty()) {
+            disks->devices[current.data(MEDIA_PATH).toString()]->mount();
+        }
+    }
     if(QApplication::mouseButtons() == Qt::MidButton)
         tabs->setCurrentIndex(addTab(current.data(32).toString()));
 }
@@ -180,6 +188,12 @@ void MainWindow::bookmarkPressed(QModelIndex current)
 void MainWindow::bookmarkClicked(QModelIndex item)
 {
     if(item.data(32).toString() == pathEdit->currentText()) return;
+
+    if (item.data(MEDIA_MODEL).toBool() && !item.data(MEDIA_PATH).toString().isEmpty()) {
+        if (item.data(32).toString().isEmpty()) {
+            disks->devices[item.data(MEDIA_PATH).toString()]->mount();
+        }
+    }
 
     QString info(item.data(32).toString());
     if(info.isEmpty()) return;                                  //separator

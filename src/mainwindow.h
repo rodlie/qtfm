@@ -46,6 +46,10 @@
 #include "mimeutils.h"
 #include "customactionsmanager.h"
 
+// libdisks
+#include <disks.h>
+#include <device.h>
+
 QT_BEGIN_NAMESPACE
 class QAction;
 class QMenu;
@@ -155,6 +159,9 @@ private slots:
     void readShortcuts();
     void selectApp();
     void openInApp();
+    // libdisks
+    void populateMedia();
+    void handleMediaMountpointChanged(QString path, QString mountpoint);
 private:
     void createActions();
     void createActionIcons();
@@ -271,6 +278,9 @@ private:
     QAction *closeTabAct;
     QAction *tabsOnTopAct;
     QAction *aboutAct;
+
+    // libdisks
+    Disks *disks;
 };
 
 //---------------------------------------------------------------------------------

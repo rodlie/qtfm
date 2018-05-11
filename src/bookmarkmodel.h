@@ -22,6 +22,9 @@
 #ifndef BOOKMARKMODEL_H
 #define BOOKMARKMODEL_H
 
+#define MEDIA_MODEL Qt::UserRole+1
+#define MEDIA_PATH Qt::UserRole+2
+
 #include <QtGui>
 
 //---------------------------------------------------------------------------------
@@ -33,7 +36,7 @@ public:
     bookmarkmodel(QHash<QString,QIcon> *);
     QStringList mimeTypes () const;
     bool dropMimeData(const QMimeData * data,Qt::DropAction action,int row,int column,const QModelIndex & parent);
-    void addBookmark(QString name, QString path, QString isAuto, QString icon);
+    void addBookmark(QString name, QString path, QString isAuto, QString icon, QString mediaPath = QString(), bool isMedia = false);
 
 signals:
     void bookmarkPaste(const QMimeData * data, QString newPath, QStringList cutList);

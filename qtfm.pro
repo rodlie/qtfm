@@ -78,10 +78,14 @@ trans.files += translations/qtfm_da.qm \
 
 INSTALLS += target desktop icon docs trans
 
-OTHER_FILES += \
-    TODO.txt
+#OTHER_FILES += \
+#    TODO.txt
 
 
+# tmp for libdisks
+INCLUDEPATH += /usr/local/include/libdisks
+LIBS += -L/usr/local/lib -lDisks
+QT += dbus
 
 
 
