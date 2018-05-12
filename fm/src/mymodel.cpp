@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <QApplication>
+#include <QMessageBox>
 
 /**
  * @brief Creates file system model
@@ -361,6 +362,11 @@ bool myModel::setRootPath(const QString& path)
     currentRootPath = path;
 
     myModelItem *item = rootItem->matchPath(path.split(SEPARATOR));
+
+    if (item == NULL) {
+        QMessageBox::warning(NULL, tr("No such directory"), tr("Directory requested does not exists."));
+        return false;
+    }
 
     if(item->watched == 0) addWatcher(item);
 
