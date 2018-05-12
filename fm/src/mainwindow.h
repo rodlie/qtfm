@@ -148,6 +148,7 @@ public slots:
 
     void addressChanged(int,int);
     void loadSettings();
+    void firstRunBookmarks(bool isFirstRun);
 
     void showAboutBox();
 

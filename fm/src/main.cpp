@@ -54,8 +54,11 @@ int main(int argc, char *argv[]) {
  // Q_INIT_RESOURCE(resources);
 
   // Set application info
-  app.setOrganizationName(APP);
-  app.setApplicationName(APP);
+  QString appName = APP;
+  appName.append("6"); // don't use config from QtFM 5 or lower
+  app.setOrganizationName(appName);
+  app.setApplicationName(appName);
+  app.setOrganizationDomain("org.dracolinux");
 
   // Translate application
   /*QTranslator qtTranslator;

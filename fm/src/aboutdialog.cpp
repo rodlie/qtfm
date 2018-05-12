@@ -30,7 +30,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
   QVBoxLayout* layout = new QVBoxLayout(this);
   QTabWidget* tabWidget = new QTabWidget(this);
   QLabel* info = new QLabel(this);
-  info->setText(QString("<h1>%1</h1><p>version: %2<br/><a href=\"https://github.com/rodlie/qtfm\">github.com/rodlie/qtfm</a></p>").arg(APP_NAME).arg(APP_VERSION));
+  info->setText(QString("<h1>%1</h1><p>version: %2<br/><a href=\"http://qtfm.dracolinux.org\">qtfm.dracolinux.org</a></p>").arg(APP_NAME).arg(APP_VERSION));
 
   QLabel *icon = new QLabel(this);
   icon->setPixmap(QIcon::fromTheme("folder").pixmap(QSize(64, 64)));

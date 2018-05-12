@@ -79,7 +79,7 @@ MainWindow::MainWindow()
         //Qt doesn't detect the theme very well for non-DE systems,
         //so try reading the '~/.gtkrc-2.0' or '~/.config/gtk-3.0/settings.ini'
 
-        /*if(temp == "hicolor")
+        if(temp == "hicolor")
         {
             //check for gtk-2.0 settings
             if(QFile::exists(QDir::homePath() + "/" + ".gtkrc-2.0"))
@@ -103,7 +103,7 @@ MainWindow::MainWindow()
 
                 settings->setValue("forceTheme",temp);
             }
-        }*/
+        }
     }
 
     QIcon::setThemeName(temp);
@@ -388,9 +388,17 @@ void MainWindow::lateStart() {
  */
 void MainWindow::loadSettings() {
 
+  // first run?
+    bool isFirstRun = false;
+    if (!settings->value("firstRun").isValid()) {
+        isFirstRun = true;
+        settings->setValue("firstRun", false);
+    }
+
   // Restore window state
+  if (!settings->value("windowState").isValid()) { dockTree->hide(); } // don't show dock tree as default
   restoreState(settings->value("windowState").toByteArray(), 1);
-  resize(settings->value("size", QSize(600, 400)).toSize());
+  resize(settings->value("size", QSize(640, 400)).toSize());
 
   // Load info whether use real mime types
   modelList->setRealMimeTypes(settings->value("realMimeTypes", true).toBool());
@@ -410,11 +418,10 @@ void MainWindow::loadSettings() {
   }
   settings->endGroup();
 
-  // media disks
-  populateMedia();
-
   // Set bookmarks
-  autoBookmarkMounts();
+  //autoBookmarkMounts();
+  firstRunBookmarks(isFirstRun);
+  populateMedia();
   bookmarksList->setModel(modelBookmarks);
   bookmarksList->setResizeMode(QListView::Adjust);
   bookmarksList->setFlow(QListView::TopToBottom);
@@ -425,7 +432,7 @@ void MainWindow::loadSettings() {
   bookmarksList->setWrapping(wrapBookmarksAct->isChecked());
 
   // Lock information whether layout is locked or not
-  lockLayoutAct->setChecked(settings->value("lockLayout", 0).toBool());
+  lockLayoutAct->setChecked(settings->value("lockLayout", 1).toBool());
   toggleLockLayout();
 
   // Load zoom settings
@@ -441,7 +448,7 @@ void MainWindow::loadSettings() {
 
   // Load view mode
   detailAct->setChecked(settings->value("viewMode", 0).toBool());
-  iconAct->setChecked(settings->value("iconMode", 0).toBool());
+  iconAct->setChecked(settings->value("iconMode", 1).toBool());
   toggleDetails();
 
   // Restore header of detail tree
@@ -465,6 +472,21 @@ void MainWindow::loadSettings() {
   // Load information whether tabs can be shown on top
   tabsOnTopAct->setChecked(settings->value("tabsOnTop", 0).toBool());
   tabsOnTop();
+}
+
+void MainWindow::firstRunBookmarks(bool isFirstRun)
+{
+    if (!isFirstRun) { return; }
+    modelBookmarks->addBookmark(tr("Computer"), "/", "", "computer");
+    modelBookmarks->addBookmark(tr("Home"), QDir::homePath(), "", "user-home");
+    modelBookmarks->addBookmark(tr("Desktop"), QString("%1/Desktop").arg(QDir::homePath()), "", "user-desktop");
+    //modelBookmarks->addBookmark(tr("Documents"), QString("%1/Documents").arg(QDir::homePath()), "", "text-x-generic");
+    //modelBookmarks->addBookmark(tr("Downloads"), QString("%1/Dowloads").arg(QDir::homePath()), "", "applications-internet");
+    //modelBookmarks->addBookmark(tr("Pictures"), QString("%1/Pictures").arg(QDir::homePath()), "", "image-x-generic");
+    //modelBookmarks->addBookmark(tr("Videos"), QString("%1/Videos").arg(QDir::homePath()), "", "video-x-generic");
+    //modelBookmarks->addBookmark(tr("Music"), QString("%1/Music").arg(QDir::homePath()), "", "audio-x-generic");
+    modelBookmarks->addBookmark(tr("Trash"), QString("%1/.local/share/Trash").arg(QDir::homePath()), "", "user-trash");
+    modelBookmarks->addBookmark("", "", "", "");
 }
 //---------------------------------------------------------------------------
 
