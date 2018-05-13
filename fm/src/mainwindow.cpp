@@ -470,6 +470,10 @@ void MainWindow::loadSettings() {
   // Load information whether tabs can be shown on top
   tabsOnTopAct->setChecked(settings->value("tabsOnTop", 0).toBool());
   tabsOnTop();
+
+  // fix style issues
+  menuToolBar->setObjectName("menuToolBar");
+  setStyleSheet("QToolBar#menuToolBar { padding: 0; }");
 }
 
 void MainWindow::firstRunBookmarks(bool isFirstRun)

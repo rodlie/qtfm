@@ -35,6 +35,7 @@
 #include <QSortFilterProxyModel>
 #include <QComboBox>
 #include <QSignalMapper>
+#include <QToolBar>
 
 #include "mymodel.h"
 #include "bookmarkmodel.h"
