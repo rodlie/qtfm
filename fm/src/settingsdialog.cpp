@@ -10,7 +10,6 @@
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QAction>
-#include <QStringList>
 
 /**
  * @brief Creates settings dialog
@@ -318,7 +317,7 @@ QWidget* SettingsDialog::createMimeSettings() {
   apps.sort();
 
   // Prepare source of icons
-  QDir appIcons1(QString("%1/config/share/pixmaps").arg(QDir::homePath()),"", 0, QDir::Files | QDir::NoDotAndDotDot);
+  QDir appIcons1(QString("%1/.config/share/pixmaps").arg(QDir::homePath()),"", 0, QDir::Files | QDir::NoDotAndDotDot);
   QDir appIcons2(QString("%1/../share/pixmaps").arg(qApp->applicationFilePath()),"", 0, QDir::Files | QDir::NoDotAndDotDot);
   QDir appIcons3("/usr/share/pixmaps","", 0, QDir::Files | QDir::NoDotAndDotDot);
   QDir appIcons4("/usr/local/share/pixmaps","", 0, QDir::Files | QDir::NoDotAndDotDot);
