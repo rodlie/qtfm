@@ -63,7 +63,7 @@ protected:
   QCheckBox* checkTabs;
   QCheckBox* checkDelete;
   //QLineEdit* editTerm;
-  QComboBox* cmbIconTheme;
+  //QComboBox* cmbIconTheme;
   QComboBox* cmbDefaultMimeApps;
 
   QTreeWidget *actionsWidget;

@@ -153,7 +153,28 @@ QString FileUtils::getRealSuffix(const QString &name) {
  * @return icon
  */
 QIcon FileUtils::searchMimeIcon(QString mime, const QIcon &defaultIcon) {
+    qDebug() << "search mime icon" << mime << QIcon::themeName();
   QIcon icon = QIcon::fromTheme(mime.replace("/", "-"));
+  if (icon.isNull()) {
+      if (mime.startsWith("image")) {
+          icon = QIcon::fromTheme("image-x-generic");
+      } else if(mime.startsWith("audio")) {
+          icon = QIcon::fromTheme("audio-x-generic");
+      } else if (mime.contains("-tar") ||
+                 mime.contains("compressed") ||
+                 mime.contains("xz") ||
+                 mime.contains("zip")) {
+          icon = QIcon::fromTheme("package-x-generic");
+      } else if (mime.startsWith("text")) {
+          if (mime.contains("python") || mime.contains("perl") || mime.contains("script")) {
+              icon = QIcon::fromTheme("text-x-script");
+          } else {
+              icon = QIcon::fromTheme("text-x-generic");
+          }
+      } else {
+          icon = QIcon::fromTheme("text-x-generic");
+      }
+  }
   return icon.isNull() ? defaultIcon : icon;
 }
 //---------------------------------------------------------------------------

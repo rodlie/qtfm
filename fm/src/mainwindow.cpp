@@ -69,44 +69,29 @@ MainWindow::MainWindow()
 
     settings = new QSettings();
 
-    QString temp = settings->value("forceTheme").toString();
-    if(temp.isEmpty())
-    {
-        //get theme from system (works for gnome/kde)
-        temp = QIcon::themeName();
-        qDebug() << "using system icon theme" << temp;
-
-        //Qt doesn't detect the theme very well for non-DE systems,
-        //so try reading the '~/.gtkrc-2.0' or '~/.config/gtk-3.0/settings.ini'
-
-        if(temp == "hicolor")
-        {
-            //check for gtk-2.0 settings
-            if(QFile::exists(QDir::homePath() + "/" + ".gtkrc-2.0"))
-            {
-                QSettings gtkFile(QDir::homePath() + "/.gtkrc-2.0",QSettings::IniFormat,this);
-                temp = gtkFile.value("gtk-icon-theme-name").toString().remove("\"");
-            }
-            else
-            {
-                //try gtk-3.0
-                QSettings gtkFile(QDir::homePath() + "/.config/gtk-3.0/settings.ini",QSettings::IniFormat,this);
-                temp = gtkFile.value("gtk-fallback-icon-theme").toString().remove("\"");
-            }
-
-            //fallback
-            if(temp.isNull())
-            {
-                if(QFile::exists("/usr/share/icons/gnome")) temp = "gnome";
-                else if(QFile::exists("/usr/share/icons/oxygen")) temp = "oxygen";
-                else temp = "hicolor";
-
-                settings->setValue("forceTheme",temp);
-            }
+    QString temp = QIcon::themeName(); //settings->value("forceTheme").toString();
+    if(temp.isEmpty() || temp == "hicolor") {
+        //check for gtk-2.0 settings
+        if(QFile::exists(QDir::homePath() + "/" + ".gtkrc-2.0")) {
+            QSettings gtkFile(QDir::homePath() + "/.gtkrc-2.0",QSettings::IniFormat,this);
+            temp = gtkFile.value("gtk-icon-theme-name").toString().remove("\"");
+        }
+        else { //try gtk-3.0
+            QSettings gtkFile(QDir::homePath() + "/.config/gtk-3.0/settings.ini",QSettings::IniFormat,this);
+            temp = gtkFile.value("gtk-fallback-icon-theme").toString().remove("\"");
+        }
+        //fallback
+        if(temp.isNull()) {
+            if (QFile::exists("/usr/share/icons/Tango")) { temp = "Tango"; }
+            else if (QFile::exists("/usr/share/icons/gnome")) { temp = "gnome"; }
+            else if (QFile::exists("/usr/share/icons/oxygen")) { temp = "oxygen"; }
+            else { temp = "hicolor"; }
+            settings->setValue("forceTheme",temp);
         }
     }
 
     QIcon::setThemeName(temp);
+    qDebug() << "using icon theme" << QIcon::themeName();
 
     // Create mime utils
     mimeUtils = new MimeUtils(this);

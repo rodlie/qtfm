@@ -31,7 +31,7 @@ void MainWindow::createActionIcons() {
 
   actionIcons = new QList<QIcon>;
 
-  /*QFile icons(QDir::homePath() + "/.config/qtfm/icon.cache");
+  /*QFile icons(QDir::homePath() + QString("/.config/%16/icon.cache").arg(APP));
   icons.open(QIODevice::ReadOnly);
   QDataStream out(&icons);
   out >> *actionIcons;
