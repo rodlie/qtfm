@@ -4,3 +4,4 @@ exists(lib) {
     SUBDIRS += lib
 }
 SUBDIRS += fm
+OTHER_FILES += README.md

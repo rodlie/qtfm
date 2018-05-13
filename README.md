@@ -1,5 +1,5 @@
 # QtFM
-![alt text](qtfm.png)
+![screenshot](qtfm.png)
 
 Simple and lightweight file manager using Qt 4/5.
 
@@ -7,7 +7,6 @@ QtFM, originally created by [Wittfella](http://www.qtfm.org/) in 2010, and furth
 
 ## Links
 
- * [Source](https://github.com/rodlie/qtfm)
  * [Releases](https://github.com/rodlie/qtfm/releases)
  * [Milestones](https://github.com/rodlie/qtfm/milestones)
  * [Issues](https://github.com/rodlie/qtfm/issues)
