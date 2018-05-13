@@ -396,12 +396,15 @@ void MainWindow::loadSettings() {
         settings->setValue("firstRun", false);
     }
 
+  // fix style
+  setStyleSheet("QToolBar { padding: 0; } QFrame { border: none;}");
+  addressToolBar->setContentsMargins(0,0,5,0);
+
   // Restore window state
   if (!settings->value("windowState").isValid()) { dockTree->hide(); } // don't show dock tree as default
   restoreState(settings->value("windowState").toByteArray(), 1);
   restoreGeometry(settings->value("windowGeo").toByteArray());
-  bool wasMax = settings->value("windowMax").toBool();
-  if (wasMax) { showMaximized(); }
+  if (settings->value("windowMax").toBool()) { showMaximized(); }
 
   // Load info whether use real mime types
   modelList->setRealMimeTypes(settings->value("realMimeTypes", true).toBool());
@@ -470,10 +473,6 @@ void MainWindow::loadSettings() {
   // Load information whether tabs can be shown on top
   tabsOnTopAct->setChecked(settings->value("tabsOnTop", 0).toBool());
   tabsOnTop();
-
-  // fix style issues
-  menuToolBar->setObjectName("menuToolBar");
-  setStyleSheet("QToolBar#menuToolBar { padding: 0; }");
 }
 
 void MainWindow::firstRunBookmarks(bool isFirstRun)
