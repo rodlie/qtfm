@@ -183,6 +183,7 @@ QTreeWidgetItem* ApplicationDialog::findCategory(const DesktopFile &app) {
  */
 void ApplicationDialog::updateCommand(QTreeWidgetItem *current,
                                       QTreeWidgetItem *previous) {
+    Q_UNUSED(previous)
   edtCommand->setText(applications.key(current));
 }
 //---------------------------------------------------------------------------

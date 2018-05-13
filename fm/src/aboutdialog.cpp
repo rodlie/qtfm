@@ -10,6 +10,7 @@
  */
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
 
+    setAttribute(Qt::WA_DeleteOnClose);
   QString authors = "<strong>5. 2018 -</strong><br/> Ole-André Rodlie ("
                     "<a href=\"mailto:ole.andre.rodlie@gmail.com\">"
                     "ole.andre.rodlie@gmail.com</a>)<br/><br/>"
@@ -19,9 +20,9 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
                     "<strong>5. 2010 - 8. 2012</strong><br/> Wittfella ("
                     "<a href=\"mailto:wittfella@qtfm.org\">"
                     "wittfella@qtfm.org</a>)";
-  QString thanks = "Eugene Pivnev - TI_Eugene ("
-                   "<a href=\"mailto:ti.eugene@gmail.com\">ti.eugene@gmail.com"
-                   "</a>)";
+  //QString thanks = "Eugene Pivnev - TI_Eugene ("
+  //                 "<a href=\"mailto:ti.eugene@gmail.com\">ti.eugene@gmail.com"
+  //                 "</a>)";
 
   this->setMinimumWidth(400);
   this->setMinimumHeight(350);
@@ -53,14 +54,14 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
   authorsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding), 0, 0);
   authorsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding), 0, 2);
 
-  QWidget* thanksTab = new QWidget(tabWidget);
+  /*QWidget* thanksTab = new QWidget(tabWidget);
   tabWidget->addTab(thanksTab, tr("Thanks"));
   QGridLayout* thanksLayout = new QGridLayout(thanksTab);
   QLabel* lblThanks = new QLabel(thanks, thanksTab);
   lblThanks->setAlignment(Qt::AlignHCenter);
   thanksLayout->addWidget(lblThanks, 0, 1);
   thanksLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding), 0, 0);
-  thanksLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding), 0, 2);
+  thanksLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding), 0, 2);*/
 
   QHBoxLayout* btnLayout = new QHBoxLayout();
   QPushButton* btnClose = new QPushButton(tr("Close"), this);

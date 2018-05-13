@@ -935,6 +935,8 @@ QVariant myModel::findMimeIcon(myModelItem *item) const {
 
 bool myModel::setData(const QModelIndex & index, const QVariant & value, int role)
 {
+    Q_UNUSED(role)
+
     //can only set the filename
     myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
 
@@ -1046,6 +1048,8 @@ bool myModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
 
 QVariant myModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+    Q_UNUSED(orientation)
+
     if(role == Qt::DisplayRole)
 	switch(section)
 	{

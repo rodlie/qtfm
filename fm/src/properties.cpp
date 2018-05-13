@@ -77,6 +77,7 @@ bool Properties::load(const QString &fileName, const QString &group) {
     }
   }
   file.close();
+  return true;
 }
 //---------------------------------------------------------------------------
 

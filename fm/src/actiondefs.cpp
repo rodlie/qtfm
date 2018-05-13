@@ -607,6 +607,8 @@ void MainWindow::focusAction()
 
 void MainWindow::addressChanged(int old, int now)
 {
+    Q_UNUSED(old)
+
     if(!pathEdit->hasFocus()) return;
     QString temp = pathEdit->currentText();
 

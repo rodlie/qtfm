@@ -48,7 +48,7 @@ bookmarkmodel::bookmarkmodel(QHash<QString, QIcon> *icons)
 }
 
 //---------------------------------------------------------------------------
-void bookmarkmodel::addBookmark(QString name, QString path, QString isAuto, QString icon, QString mediaPath, bool isMedia)
+void bookmarkmodel::addBookmark(QString name, QString path, QString isAuto, QString icon, QString mediaPath, bool isMedia, bool changed)
 {
     qDebug() << "add bookmark" << name << path << isAuto << icon << mediaPath << isMedia;
     if(path.isEmpty() && !isMedia)	    //add seperator
@@ -76,6 +76,7 @@ void bookmarkmodel::addBookmark(QString name, QString path, QString isAuto, QStr
     item->setData(isMedia, MEDIA_MODEL);
     if (isMedia) { item->setData(mediaPath, MEDIA_PATH); }
     this->appendRow(item);
+    if (changed) { emit bookmarksChanged(); }
 }
 
 //---------------------------------------------------------------------------
@@ -85,7 +86,7 @@ void MainWindow::mountWatcherTriggered()
 }
 
 //---------------------------------------------------------------------------
-void MainWindow::autoBookmarkMounts()
+/*void MainWindow::autoBookmarkMounts()
 {
     QList<QStandardItem *> theBookmarks = modelBookmarks->findItems("*",Qt::MatchWildcard);
 
@@ -131,7 +132,7 @@ void MainWindow::autoBookmarkMounts()
         if(autoBookmarks.contains(item->data(32).toString()))
             if(!mounts.contains(item->data(32).toString()))
                 modelBookmarks->removeRow(item->row());
-}
+}*/
 
 //---------------------------------------------------------------------------
 void MainWindow::delBookmark()
@@ -149,7 +150,7 @@ void MainWindow::delBookmark()
         modelBookmarks->removeRow(list.first().row());
         list = bookmarksList->selectionModel()->selectedIndexes();
     }
-
+    handleBookmarksChanged();
 }
 
 //---------------------------------------------------------------------------------
@@ -161,6 +162,7 @@ void MainWindow::editBookmark()
         QStandardItem * item = modelBookmarks->itemFromIndex(bookmarksList->currentIndex());
         item->setData(themeIcons->result,33);
         item->setIcon(QIcon::fromTheme(themeIcons->result));
+        handleBookmarksChanged();
     }
     delete themeIcons;
 }

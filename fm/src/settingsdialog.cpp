@@ -546,21 +546,21 @@ void SettingsDialog::readSettings() {
   settingsPtr->endGroup();
 
   // Add default actions
-  if (keys.count() == 0) {
-    QStringList def1/*, def2*/, def3;
+  /*if (keys.count() == 0) {
+    QStringList def1, def2, def3;
     def1 << "gz,bz2" << tr("Extract here") << "package-x-generic" << "tar xf %f";
-    //def2 << "folder" << tr("Term here") << "terminal" << "urxvt -cd %F";
+    def2 << "folder" << tr("Term here") << "terminal" << "urxvt -cd %F";
     def3 << "*" << tr("Compress") << "filesave" << "tar czf %n.tar.gz %f";
     QTreeWidgetItem *item1 = new QTreeWidgetItem(actionsWidget, def1, 0);
-    //QTreeWidgetItem *item2 = new QTreeWidgetItem(actionsWidget, def2, 0);
+    QTreeWidgetItem *item2 = new QTreeWidgetItem(actionsWidget, def2, 0);
     QTreeWidgetItem *item3 = new QTreeWidgetItem(actionsWidget, def3, 0);
     item1->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable
                     | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
-    //item2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable
-    //                | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
+    item2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable
+                    | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
     item3->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable
                     | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
-  }
+  }*/
 
   // Loads icons for actions
   for (int x = 0; x < actionsWidget->topLevelItemCount(); x++) {
@@ -673,7 +673,7 @@ void SettingsDialog::loadMimes(int section) {
     }
 
     // Skip all 'x-content' and 'message' nodes
-    if (mime.startsWith("x-content") || mime.startsWith('message')) {
+    if (mime.startsWith("x-content") || mime.startsWith("message")) {
       continue;
     }
 
@@ -719,6 +719,7 @@ void SettingsDialog::loadMimes(int section) {
  */
 bool SettingsDialog::saveSettings() {
 
+    qDebug() << "save settings dialog";
   // General settings
   // ------------------------------------------------------------------------
   settingsPtr->setValue("showThumbs", checkThumbs->isChecked());
@@ -832,6 +833,7 @@ void SettingsDialog::getIcon(QTreeWidgetItem* item, int column) {
  * @param column
  */
 void SettingsDialog::onActionChanged(QTreeWidgetItem *item, int column) {
+    Q_UNUSED(item)
   if (column == 1 || column == 2) {
     readShortcuts();
   }

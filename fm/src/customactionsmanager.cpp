@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QMenu>
 #include <QTimer>
+#include <QDebug>
 
 /**
  * @brief Creates custom action manager
@@ -56,6 +57,7 @@ void CustomActionsManager::freeActions() {
  */
 void CustomActionsManager::readActions() {
 
+    qDebug() << "read actions";
   // Read keys
   settingsPtr->beginGroup("customActions");
   QStringList keys = settingsPtr->childKeys();
@@ -71,6 +73,7 @@ void CustomActionsManager::readActions() {
     // temp.at(2) - Icon
     // temp.at(3) - Command
     QStringList temp(settingsPtr->value(keys.at(i)).toStringList());
+    qDebug() << "loaded custom action" << temp;
 
     // Create new action and read it
     QAction *act = new QAction(QIcon::fromTheme(temp.at(2)), temp.at(1), this);
@@ -140,17 +143,19 @@ QList<QAction*>* CustomActionsManager::getActionList() const {
  */
 void CustomActionsManager::execAction(const QString &cmd, const QString &path) {
 
+    qDebug() << "custom action" << cmd << path;
   // Retrieve executable name from splitted command, the rest is arguments
   QStringList temp = cmd.split(" ");
   QString exec = temp.at(0);
   temp.removeAt(0);
 
   // Fix rest of command
-  temp.replaceInStrings("\\","\ ");
+  temp.replaceInStrings("\\"," ");
 
   // Create new custom process
   QProcess *p = new QProcess();
   p->setWorkingDirectory(path);
+  //p->setProcessChannelMode(QProcess::MergedChannels);
 
   // Create process dialog
   if (settingsPtr->value("showActionOutput", true).toBool()) {
@@ -178,6 +183,7 @@ void CustomActionsManager::execAction(const QString &cmd, const QString &path) {
  * @param error
  */
 void CustomActionsManager::onActionError(QProcess::ProcessError error) {
+    Q_UNUSED(error)
   QProcess* process = qobject_cast<QProcess*>(sender());
   QMessageBox::warning(NULL, "Error", process->errorString());
   onActionFinished(0);
@@ -189,6 +195,7 @@ void CustomActionsManager::onActionError(QProcess::ProcessError error) {
  * @param ret
  */
 void CustomActionsManager::onActionFinished(int ret) {
+    Q_UNUSED(ret)
 
   QProcess* process = qobject_cast<QProcess*>(sender());
   if (process->processEnvironment().contains(APP)) {
@@ -206,4 +213,5 @@ void CustomActionsManager::onActionFinished(int ret) {
   QTimer::singleShot(100, this, SIGNAL(actionFinished()));
   process->deleteLater();
 }
+
 //---------------------------------------------------------------------------

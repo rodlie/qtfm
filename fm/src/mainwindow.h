@@ -110,7 +110,7 @@ public slots:
     void toggleWrapBookmarks();
     void showEditDialog();
     bool copyFolder(const QString &srcFolder, const QString &dstFolder, qint64, bool);
-    void autoBookmarkMounts();
+    //void autoBookmarkMounts();
     void renameFile();
     void actionMapper(QString);
     void folderPropertiesLauncher();
@@ -149,6 +149,9 @@ public slots:
     void addressChanged(int,int);
     void loadSettings();
     void firstRunBookmarks(bool isFirstRun);
+    void loadBookmarks();
+    void writeBookmarks();
+    void handleBookmarksChanged();
 
     void showAboutBox();
 

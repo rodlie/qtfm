@@ -219,6 +219,7 @@ MainWindow::MainWindow()
 
     // Create bookmarks model
     modelBookmarks = new bookmarkmodel(modelList->folderIcons);
+    connect(modelBookmarks, SIGNAL(bookmarksChanged()), this, SLOT(handleBookmarksChanged()));
 
     // Load settings before showing window
     loadSettings();
@@ -398,7 +399,9 @@ void MainWindow::loadSettings() {
   // Restore window state
   if (!settings->value("windowState").isValid()) { dockTree->hide(); } // don't show dock tree as default
   restoreState(settings->value("windowState").toByteArray(), 1);
-  resize(settings->value("size", QSize(640, 400)).toSize());
+  restoreGeometry(settings->value("windowGeo").toByteArray());
+  bool wasMax = settings->value("windowMax").toBool();
+  if (wasMax) { showMaximized(); }
 
   // Load info whether use real mime types
   modelList->setRealMimeTypes(settings->value("realMimeTypes", true).toBool());
@@ -411,12 +414,7 @@ void MainWindow::loadSettings() {
   modelBookmarks->removeRows(0, modelBookmarks->rowCount());
 
   // Load bookmarks
-  settings->beginGroup("bookmarks");
-  foreach (QString key,settings->childKeys()) {
-    QStringList temp(settings->value(key).toStringList());
-    modelBookmarks->addBookmark(temp[0], temp[1], temp[2], temp.last());
-  }
-  settings->endGroup();
+  loadBookmarks();
 
   // Set bookmarks
   //autoBookmarkMounts();
@@ -476,17 +474,53 @@ void MainWindow::loadSettings() {
 
 void MainWindow::firstRunBookmarks(bool isFirstRun)
 {
+    qDebug() << "first run, setup default bookmarks";
     if (!isFirstRun) { return; }
-    modelBookmarks->addBookmark(tr("Computer"), "/", "", "computer");
-    modelBookmarks->addBookmark(tr("Home"), QDir::homePath(), "", "user-home");
-    modelBookmarks->addBookmark(tr("Desktop"), QString("%1/Desktop").arg(QDir::homePath()), "", "user-desktop");
-    //modelBookmarks->addBookmark(tr("Documents"), QString("%1/Documents").arg(QDir::homePath()), "", "text-x-generic");
-    //modelBookmarks->addBookmark(tr("Downloads"), QString("%1/Dowloads").arg(QDir::homePath()), "", "applications-internet");
-    //modelBookmarks->addBookmark(tr("Pictures"), QString("%1/Pictures").arg(QDir::homePath()), "", "image-x-generic");
-    //modelBookmarks->addBookmark(tr("Videos"), QString("%1/Videos").arg(QDir::homePath()), "", "video-x-generic");
-    //modelBookmarks->addBookmark(tr("Music"), QString("%1/Music").arg(QDir::homePath()), "", "audio-x-generic");
-    modelBookmarks->addBookmark(tr("Trash"), QString("%1/.local/share/Trash").arg(QDir::homePath()), "", "user-trash");
-    modelBookmarks->addBookmark("", "", "", "");
+    modelBookmarks->addBookmark(tr("Computer"), "/", "", "computer", "", false, false);
+    modelBookmarks->addBookmark(tr("Home"), QDir::homePath(), "", "user-home", "", false, false);
+    modelBookmarks->addBookmark(tr("Desktop"), QString("%1/Desktop").arg(QDir::homePath()), "", "user-desktop", "", false, false);
+    //modelBookmarks->addBookmark(tr("Documents"), QString("%1/Documents").arg(QDir::homePath()), "", "text-x-generic", "", false, false);
+    //modelBookmarks->addBookmark(tr("Downloads"), QString("%1/Dowloads").arg(QDir::homePath()), "", "applications-internet", "", false, false);
+    //modelBookmarks->addBookmark(tr("Pictures"), QString("%1/Pictures").arg(QDir::homePath()), "", "image-x-generic", "", false, false);
+    //modelBookmarks->addBookmark(tr("Videos"), QString("%1/Videos").arg(QDir::homePath()), "", "video-x-generic", "", false, false);
+    //modelBookmarks->addBookmark(tr("Music"), QString("%1/Music").arg(QDir::homePath()), "", "audio-x-generic", "", false, false);
+    modelBookmarks->addBookmark(tr("Trash"), QString("%1/.local/share/Trash").arg(QDir::homePath()), "", "user-trash", "", false, false);
+    modelBookmarks->addBookmark("", "", "", "", "", false, false);
+    writeBookmarks();
+}
+
+void MainWindow::loadBookmarks()
+{
+    qDebug() << "load bookmarks";
+    settings->beginGroup("bookmarks");
+    foreach (QString key,settings->childKeys()) {
+      QStringList temp(settings->value(key).toStringList());
+      modelBookmarks->addBookmark(temp[0], temp[1], temp[2], temp.last(), "", false, false);
+    }
+    settings->endGroup();
+}
+
+void MainWindow::writeBookmarks()
+{
+    qDebug() << "write bookmarks";
+    settings->remove("bookmarks");
+    settings->beginGroup("bookmarks");
+    for (int i = 0; i < modelBookmarks->rowCount(); i++) {
+      if (modelBookmarks->item(i)->data(MEDIA_MODEL).toBool()) { continue; } // ignore media devices
+      QStringList temp;
+      temp << modelBookmarks->item(i)->text()
+           << modelBookmarks->item(i)->data(32).toString()
+           << modelBookmarks->item(i)->data(34).toString()
+           << modelBookmarks->item(i)->data(33).toString();
+      settings->setValue(QString(i),temp);
+    }
+    settings->endGroup();
+}
+
+void MainWindow::handleBookmarksChanged()
+{
+    qDebug() << "bookmarks changed, save";
+    QTimer::singleShot(1000, this, SLOT(writeBookmarks()));
 }
 //---------------------------------------------------------------------------
 
@@ -528,6 +562,8 @@ void MainWindow::exitAction() {
 
 void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
 {
+    Q_UNUSED(previous)
+
     QFileInfo name = modelList->fileInfo(modelTree->mapToSource(current));
     if(!name.exists()) return;
 
@@ -630,6 +666,9 @@ void MainWindow::thumbUpdate(QModelIndex index)
 //---------------------------------------------------------------------------
 void MainWindow::listSelectionChanged(const QItemSelection selected, const QItemSelection deselected)
 {
+    Q_UNUSED(selected)
+    Q_UNUSED(deselected)
+
     QModelIndexList items;
 
     if(listSelectionModel->selectedRows(0).count()) items = listSelectionModel->selectedRows(0);
@@ -720,16 +759,12 @@ void MainWindow::listItemPressed(QModelIndex current)
     //middle-click -> open new tab
     //ctrl+middle-click -> open new instance
 
-    if(QApplication::mouseButtons() == Qt::MidButton)
-        if(modelList->isDir(modelView->mapToSource(current)))
-        {
-            if(QApplication::keyboardModifiers() == Qt::ControlModifier)
-                openFile();
-            else
-                addTab(modelList->filePath(modelView->mapToSource(current)));
-        }
-        else
-            openFile();
+    if(QApplication::mouseButtons() == Qt::MidButton) {
+        if(modelList->isDir(modelView->mapToSource(current))) {
+            if(QApplication::keyboardModifiers() == Qt::ControlModifier) { openFile(); }
+            else { addTab(modelList->filePath(modelView->mapToSource(current))); }
+        } else { openFile(); }
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -1061,17 +1096,20 @@ void MainWindow::progressFinished(int ret,QStringList newFiles)
 void MainWindow::folderPropertiesLauncher()
 {
     QModelIndexList selList;
-    if(focusWidget() == bookmarksList) selList.append(modelView->mapFromSource(modelList->index(bookmarksList->currentIndex().data(32).toString())));
-    else if(focusWidget() == list || focusWidget() == detailTree)
-        if(listSelectionModel->selectedRows(0).count()) selList = listSelectionModel->selectedRows(0);
-        else selList = listSelectionModel->selectedIndexes();
+    if(focusWidget() == bookmarksList) {
+        selList.append(modelView->mapFromSource(modelList->index(bookmarksList->currentIndex().data(32).toString())));
+    } else if(focusWidget() == list || focusWidget() == detailTree) {
+        if (listSelectionModel->selectedRows(0).count()) { selList = listSelectionModel->selectedRows(0); }
+        else { selList = listSelectionModel->selectedIndexes(); }
+    }
 
-    if(selList.count() == 0) selList << modelView->mapFromSource(modelList->index(pathEdit->currentText()));
+    if(selList.count() == 0) { selList << modelView->mapFromSource(modelList->index(pathEdit->currentText())); }
 
     QStringList paths;
 
-    foreach(QModelIndex item, selList)
+    foreach(QModelIndex item, selList) {
         paths.append(modelList->filePath(modelView->mapToSource(item)));
+    }
 
     properties = new PropertiesDialog(paths, modelList);
     connect(properties,SIGNAL(propertiesUpdated()),this,SLOT(clearCutItems()));
@@ -1085,7 +1123,6 @@ void MainWindow::folderPropertiesLauncher()
 void MainWindow::writeSettings() {
 
   // Write general settings
-  settings->setValue("size", size());
   settings->setValue("viewMode", stackWidget->currentIndex());
   settings->setValue("iconMode", iconAct->isChecked());
   settings->setValue("zoom", zoom);
@@ -1099,22 +1136,13 @@ void MainWindow::writeSettings() {
   settings->setValue("lockLayout", lockLayoutAct->isChecked());
   settings->setValue("tabsOnTop", tabsOnTopAct->isChecked());
   settings->setValue("windowState", saveState(1));
+  settings->setValue("windowGeo", saveGeometry());
+  settings->setValue("windowMax", isMaximized());
   settings->setValue("header", detailTree->header()->saveState());
   settings->setValue("realMimeTypes",  modelList->isRealMimeTypes());
 
   // Write bookmarks
-  settings->remove("bookmarks");
-  settings->beginGroup("bookmarks");
-  for (int i = 0; i < modelBookmarks->rowCount(); i++) {
-    if (modelBookmarks->item(i)->data(MEDIA_MODEL).toBool()) { continue; } // ignore media devices
-    QStringList temp;
-    temp << modelBookmarks->item(i)->text()
-         << modelBookmarks->item(i)->data(32).toString()
-         << modelBookmarks->item(i)->data(34).toString()
-         << modelBookmarks->item(i)->data(33).toString();
-    settings->setValue(QString(i),temp);
-  }
-  settings->endGroup();
+  writeBookmarks();
 }
 //---------------------------------------------------------------------------
 
@@ -1164,9 +1192,11 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         QString type = modelList->getMimeType(modelList->index(curIndex.filePath()));
 
         // Add custom actions to the list of actions
+        qDebug() << "add custom actions";
         QHashIterator<QString, QAction*> i(*customActManager->getActions());
         while (i.hasNext()) {
           i.next();
+          qDebug() << "custom action" << i.key() << i.value();
           if (type.contains(i.key())) actions.append(i.value());
         }
 
@@ -1436,7 +1466,8 @@ void MainWindow::populateMedia()
                                     "",
                                     device.value()->isOptical?"drive-optical":"drive-removable-media",
                                     device.value()->path,
-                                    true);
+                                    true,
+                                    false);
     }
 }
 

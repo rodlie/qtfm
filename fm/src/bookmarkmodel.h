@@ -36,10 +36,11 @@ public:
     bookmarkmodel(QHash<QString,QIcon> *);
     QStringList mimeTypes () const;
     bool dropMimeData(const QMimeData * data,Qt::DropAction action,int row,int column,const QModelIndex & parent);
-    void addBookmark(QString name, QString path, QString isAuto, QString icon, QString mediaPath = QString(), bool isMedia = false);
+    void addBookmark(QString name, QString path, QString isAuto, QString icon, QString mediaPath = QString(), bool isMedia = false, bool changed = true);
 
 signals:
     void bookmarkPaste(const QMimeData * data, QString newPath, QStringList cutList);
+    void bookmarksChanged();
 
 private:
     QHash<QString,QIcon> *folderIcons;
