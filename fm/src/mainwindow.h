@@ -170,6 +170,8 @@ private slots:
     void handleMediaAdded(QString path);
     void handleMediaRemoved(QString path);
     void handleMediaChanged(QString path, bool present);
+    void handleMediaUnmount();
+    void handleMediaEject();
 private:
     void createActions();
     void createActionIcons();
@@ -286,6 +288,8 @@ private:
     QAction *closeTabAct;
     QAction *tabsOnTopAct;
     QAction *aboutAct;
+    QAction *mediaUnmountAct;
+    QAction *mediaEjectAct;
 
     // libdisks
     Disks *disks;

@@ -335,6 +335,14 @@ void MainWindow::createActions() {
   connect(aboutAct, SIGNAL(triggered()), this, SLOT(showAboutBox()));
   actionList->append(aboutAct);
 
+  mediaUnmountAct = new QAction(tr("Safely Remove"), this);
+  mediaUnmountAct->setIcon(QIcon::fromTheme("media-eject"));
+  connect(mediaUnmountAct, SIGNAL(triggered(bool)), this, SLOT(handleMediaUnmount()));
+
+  mediaEjectAct = new QAction(tr("Eject"), this);
+  mediaEjectAct->setIcon(QIcon::fromTheme("media-eject"));
+  connect(mediaEjectAct, SIGNAL(triggered(bool)), this, SLOT(handleMediaEject()));
+
   // We don't need the icon list anymore
   delete actionIcons;
 }

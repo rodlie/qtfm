@@ -1326,7 +1326,15 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
             popup->addAction(delBookmarkAct);
             popup->addAction(editBookmarkAct);	//icon
         } else {
-            // TODO: add unmount/eject action
+            // media actions
+            QString mediaPath = bookmarksList->currentIndex().data(MEDIA_PATH).toString();
+            if (!mediaPath.isEmpty()) {
+                if (!disks->devices[mediaPath]->mountpoint.isEmpty()) { // mounted
+                    popup->addAction(mediaUnmountAct);
+                } else { // unmounted
+                    if (disks->devices[mediaPath]->isOptical) { popup->addAction(mediaEjectAct); }
+                }
+            }
         }
       } else {
         bookmarksList->clearSelection();
@@ -1513,6 +1521,26 @@ void MainWindow::handleMediaChanged(QString path, bool present)
     } else if (disks->devices[path]->isOptical && present && mediaBookmarkExists(path)==-1) {
         handleMediaAdded(path);
     }
+}
+
+void MainWindow::handleMediaUnmount()
+{
+    qDebug() << "handle media unmount";
+    QStandardItem *item = modelBookmarks->itemFromIndex(bookmarksList->currentIndex());
+    if (item == NULL) { return; }
+    QString path = item->data(MEDIA_PATH).toString();
+    if (path.isEmpty()) { return; }
+    disks->devices[path]->unmount();
+}
+
+void MainWindow::handleMediaEject()
+{
+    qDebug() << "handle media eject";
+    QStandardItem *item = modelBookmarks->itemFromIndex(bookmarksList->currentIndex());
+    if (item == NULL) { return; }
+    QString path = item->data(MEDIA_PATH).toString();
+    if (path.isEmpty()) { return; }
+    disks->devices[path]->eject();
 }
 //---------------------------------------------------------------------------
 

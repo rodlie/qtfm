@@ -82,7 +82,7 @@ void bookmarkmodel::addBookmark(QString name, QString path, QString isAuto, QStr
 //---------------------------------------------------------------------------
 void MainWindow::mountWatcherTriggered()
 {
-    QTimer::singleShot(1000,this,SLOT(autoBookmarkMounts()));
+    //QTimer::singleShot(1000,this,SLOT(autoBookmarkMounts()));
 }
 
 //---------------------------------------------------------------------------
