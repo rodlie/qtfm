@@ -98,13 +98,36 @@ qint64 FileUtils::totalSize(const QList<QUrl> &files) {
  */
 QStringList FileUtils::getApplicationNames() {
   QStringList appNames;
-  QDirIterator it("/usr/share/applications", QStringList("*.desktop"),
+  QDirIterator it1(QString("%1/.local/share/applications").arg(QDir::homePath()), QStringList("*.desktop"),
                   QDir::Files | QDir::NoDotAndDotDot,
                   QDirIterator::Subdirectories);
-  while (it.hasNext()) {
-    it.next();
-    appNames.append(it.fileName());
+  while (it1.hasNext()) {
+    it1.next();
+    appNames.append(it1.fileName());
   }
+  QDirIterator it2(QString("%1/../share/applications").arg(qApp->applicationFilePath()), QStringList("*.desktop"),
+                  QDir::Files | QDir::NoDotAndDotDot,
+                  QDirIterator::Subdirectories);
+  while (it2.hasNext()) {
+    it2.next();
+    appNames.append(it2.fileName());
+  }
+  QDirIterator it3("/usr/share/applications", QStringList("*.desktop"),
+                  QDir::Files | QDir::NoDotAndDotDot,
+                  QDirIterator::Subdirectories);
+  while (it3.hasNext()) {
+    it3.next();
+    appNames.append(it3.fileName());
+  }
+  QDirIterator it4("/usr/local/share/applications", QStringList("*.desktop"),
+                  QDir::Files | QDir::NoDotAndDotDot,
+                  QDirIterator::Subdirectories);
+  while (it4.hasNext()) {
+    it4.next();
+    appNames.append(it4.fileName());
+  }
+  appNames.removeDuplicates();
+  qDebug() << "applications" << appNames;
   return appNames;
 }
 //---------------------------------------------------------------------------

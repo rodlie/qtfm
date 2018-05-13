@@ -69,10 +69,9 @@ MainWindow::MainWindow()
 
     settings = new QSettings();
 
-    QString temp = QIcon::themeName(); //settings->value("forceTheme").toString();
+    QString temp = QIcon::themeName();
     if(temp.isEmpty() || temp == "hicolor") {
-        //check for gtk-2.0 settings
-        if(QFile::exists(QDir::homePath() + "/" + ".gtkrc-2.0")) {
+        if(QFile::exists(QDir::homePath() + "/" + ".gtkrc-2.0")) { // try gtk-2.0
             QSettings gtkFile(QDir::homePath() + "/.gtkrc-2.0",QSettings::IniFormat,this);
             temp = gtkFile.value("gtk-icon-theme-name").toString().remove("\"");
         }
@@ -82,14 +81,27 @@ MainWindow::MainWindow()
         }
         //fallback
         if(temp.isNull()) {
-            if (QFile::exists("/usr/share/icons/Tango")) { temp = "Tango"; }
-            else if (QFile::exists("/usr/share/icons/gnome")) { temp = "gnome"; }
-            else if (QFile::exists("/usr/share/icons/oxygen")) { temp = "oxygen"; }
-            else { temp = "hicolor"; }
-            settings->setValue("forceTheme",temp);
+            QStringList themes;
+            themes << QString("%1/../share/icons/Tango").arg(qApp->applicationFilePath());
+            themes << "/usr/share/icons/Tango" << "/usr/local/share/icons/Tango";
+            themes << QString("%1/../share/icons/Adwaita").arg(qApp->applicationFilePath());
+            themes << "/usr/share/icons/Adwaita" << "/usr/local/share/icons/Adwaita";
+            themes << QString("%1/../share/icons/gnome").arg(qApp->applicationFilePath());
+            themes << "/usr/share/icons/gnome" << "/usr/local/share/icons/gnome";
+            themes << QString("%1/../share/icons/oxygen").arg(qApp->applicationFilePath());
+            themes << "/usr/share/icons/oxygen" << "/usr/local/share/icons/oxygen";
+            themes << QString("%1/../share/icons/hicolor").arg(qApp->applicationFilePath());
+            themes << "/usr/share/icons/hicolor" << "/usr/local/share/icons/hicolor";
+            for (int i=0;i<themes.size();++i) {
+                qDebug() << "checking for icon theme ..." << themes.at(i);
+                if (QFile::exists(themes.at(i))) {
+                    qDebug() << "found icon theme" << themes.at(i);
+                    temp = QString(themes.at(i)).split("/").takeLast();
+                    break;
+                }
+            }
         }
     }
-
     QIcon::setThemeName(temp);
     qDebug() << "using icon theme" << QIcon::themeName();
 
