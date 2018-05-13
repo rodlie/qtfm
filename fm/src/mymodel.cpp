@@ -550,6 +550,8 @@ void myModel::setMode(bool icons) {
  */
 void myModel::loadMimeTypes() const {
 
+    // TODO: fixme!
+    qDebug() << "loadmimetypes, fixme!";
   // Open file with mime/suffix associations
   QFile mimeInfo("/usr/share/mime/globs");
   mimeInfo.open(QIODevice::ReadOnly);
@@ -569,7 +571,7 @@ void myModel::loadMimeTypes() const {
   mimeInfo.close();
 
   // Open file with mime/generic-mime associations
-  mimeInfo.setFileName("/usr/share/mime/generic-icons");
+  mimeInfo.setFileName("/usr/share/mime/generic-icons"); // FIXME!
   mimeInfo.open(QIODevice::ReadOnly);
   out.setDevice(&mimeInfo);
 

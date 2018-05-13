@@ -1405,6 +1405,8 @@ QMenu* MainWindow::createOpenWithMenu() {
     }
 
     // Load desktop file for application
+    // TODO: fixme!
+    qDebug() << "DesktopFile, fixme!";
     DesktopFile df = DesktopFile("/usr/share/applications/" + appName);
 
     // Create action
@@ -1434,6 +1436,8 @@ QMenu* MainWindow::createOpenWithMenu() {
  */
 void MainWindow::selectApp() {
 
+    // TODO: fixme
+    qDebug() << "selectApp, fixme!";
   // Select application in the dialog
   ApplicationDialog *dialog = new ApplicationDialog(this);
   if (dialog->exec()) {

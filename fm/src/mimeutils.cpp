@@ -56,6 +56,8 @@ QString MimeUtils::getMimeType(const QString &path) {
  */
 QStringList MimeUtils::getMimeTypes() const {
 
+    // TODO: fixme!
+    qDebug() << "getMimeTypes, fixme!";
   // Check whether file with mime descriptions exists
   QFile file("/usr/share/mime/types");
   if (!file.exists()) {

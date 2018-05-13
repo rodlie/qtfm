@@ -227,6 +227,7 @@ QIcon FileUtils::searchGenericIcon(const QString &category,
 QIcon FileUtils::searchAppIcon(const DesktopFile &app,
                                const QIcon &defaultIcon) {
 
+    qDebug() << "searchAppIcon (checkme)";
   // Resulting icon
   QIcon icon;
 
@@ -252,6 +253,7 @@ QIcon FileUtils::searchAppIcon(const DesktopFile &app,
   }
 
   // Last chance
+  // TODO: replace
   QDir appIcons("/usr/share/pixmaps","", 0, QDir::Files | QDir::NoDotAndDotDot);
   QStringList iconFiles = appIcons.entryList();
   QStringList searchIcons = iconFiles.filter(name);

@@ -10,6 +10,7 @@
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QAction>
+#include <QStringList>
 
 /**
  * @brief Creates settings dialog
@@ -317,8 +318,28 @@ QWidget* SettingsDialog::createMimeSettings() {
   apps.sort();
 
   // Prepare source of icons
-  QDir appIcons("/usr/share/pixmaps","", 0, QDir::Files | QDir::NoDotAndDotDot);
-  QStringList iconFiles = appIcons.entryList();
+  QDir appIcons1(QString("%1/config/share/pixmaps").arg(QDir::homePath()),"", 0, QDir::Files | QDir::NoDotAndDotDot);
+  QDir appIcons2(QString("%1/../share/pixmaps").arg(qApp->applicationFilePath()),"", 0, QDir::Files | QDir::NoDotAndDotDot);
+  QDir appIcons3("/usr/share/pixmaps","", 0, QDir::Files | QDir::NoDotAndDotDot);
+  QDir appIcons4("/usr/local/share/pixmaps","", 0, QDir::Files | QDir::NoDotAndDotDot);
+  QStringList iconFiles;
+  for (int i=0;i<appIcons1.entryList().size();++i) {
+      iconFiles << QString("%1/%2").arg(appIcons1.absolutePath()).arg(appIcons1.entryList().at(i));
+  }
+  for (int i=0;i<appIcons2.entryList().size();++i) {
+      iconFiles << QString("%1/%2").arg(appIcons2.absolutePath()).arg(appIcons2.entryList().at(i));
+  }
+  for (int i=0;i<appIcons3.entryList().size();++i) {
+      iconFiles << QString("%1/%2").arg(appIcons3.absolutePath()).arg(appIcons3.entryList().at(i));
+  }
+  for (int i=0;i<appIcons4.entryList().size();++i) {
+      iconFiles << QString("%1/%2").arg(appIcons4.absolutePath()).arg(appIcons4.entryList().at(i));
+  }
+  qDebug() << "icons" << iconFiles;
+  /*QStringList iconFiles = appIcons1.entryList();
+  iconFiles << appIcons2.entryList() << appIcons3.entryList() << appIcons4.entryList();
+  iconFiles.removeDuplicates();
+  qDebug() << "icons" << iconFiles;*/
   QIcon defaultIcon = QIcon::fromTheme("application-x-executable");
 
   // Loads icon list
@@ -330,7 +351,8 @@ QWidget* SettingsDialog::createMimeSettings() {
     } else {
       QStringList searchIcons = iconFiles.filter(app);
       if (searchIcons.count() > 0) {
-        icons.append(QIcon("/usr/share/pixmaps/" + searchIcons.at(0)));
+        qDebug() << "found icon" << searchIcons.at(0);
+        icons.append(QIcon(/*"/usr/share/pixmaps/" + */searchIcons.at(0)));
       } else {
         icons.append(defaultIcon);
       }
@@ -373,7 +395,8 @@ void SettingsDialog::onMimeSelected(QTreeWidgetItem *current,
   // Enable editation
   grpAssoc->setEnabled(true);
 
-  // Prepare source of icons
+  // Prepare source of icons FIXME!
+  qDebug() << "onmimeselected, fixme!";
   QDir appIcons("/usr/share/pixmaps","", 0, QDir::Files | QDir::NoDotAndDotDot);
   QStringList iconFiles = appIcons.entryList();
   QIcon defaultIcon = QIcon::fromTheme("application-x-executable");

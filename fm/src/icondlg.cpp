@@ -57,6 +57,8 @@ icondlg::icondlg()
 //---------------------------------------------------------------------------
 void icondlg::scanTheme()
 {
+    // TODO: fixme
+    qDebug() << "scanTheme, fixme!";
     foreach(QString theme, themes)
     {
         QDirIterator it("/usr/share/icons/" + theme,QStringList("*.png"),QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
