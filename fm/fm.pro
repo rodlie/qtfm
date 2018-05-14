@@ -28,7 +28,8 @@ HEADERS += src/mainwindow.h \
     src/applicationdialog.h \
     src/properties.h \
     src/mimeutils.h \
-    src/aboutdialog.h
+    src/aboutdialog.h \
+    src/common.h
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/mymodel.cpp \
