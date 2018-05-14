@@ -75,10 +75,10 @@ docs.path += $${DOCDIR}/$${TARGET}-$${VERSION}
 docs.files += ../COPYING
 INSTALLS += target desktop docs
 
-exists(../lib) {
+exists(../libdisks) {
     message("Using embedded libdisks")
-    INCLUDEPATH += ../lib
-    LIBS += -L../lib -lDisks
+    INCLUDEPATH += ../libdisks
+    LIBS += -L../libdisks -lDisks
 } else {
     message("Using external libdisks")
     CONFIG += link_pkgconfig

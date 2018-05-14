@@ -49,7 +49,6 @@
 
 // libdisks
 #include <disks.h>
-#include <device.h>
 
 QT_BEGIN_NAMESPACE
 class QAction;

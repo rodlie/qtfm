@@ -1,7 +1,7 @@
 TEMPLATE = subdirs
 CONFIG += ordered
-exists(lib) {
-    SUBDIRS += lib
+exists(libdisks) {
+    SUBDIRS += libdisks
 }
 SUBDIRS += fm
 OTHER_FILES += README.md
