@@ -42,6 +42,8 @@
 #include "fileutils.h"
 #include "applicationdialog.h"
 
+#include "common.h"
+
 MainWindow::MainWindow()
 {
     // libdisks
@@ -1399,16 +1401,15 @@ QMenu* MainWindow::createOpenWithMenu() {
   // Create actions for opening
   QList<QAction*> defaultApps;
   foreach (QString appName, appNames) {
-
     // Skip empty app name
-    if (appName.isEmpty()) {
-      continue;
-    }
+    if (appName.isEmpty()) { continue; }
+
+    // find .desktop
+    QString appDesktopFile = Common::findApplication(appName);
+    if (appDesktopFile.isEmpty()) { continue; }
 
     // Load desktop file for application
-    // TODO: fixme!
-    qDebug() << "DesktopFile, fixme!";
-    DesktopFile df = DesktopFile("/usr/share/applications/" + appName);
+    DesktopFile df = DesktopFile(appDesktopFile);
 
     // Create action
     QAction* action = new QAction(df.getName(), openMenu);
@@ -1436,15 +1437,14 @@ QMenu* MainWindow::createOpenWithMenu() {
  * @brief Selects application for opening file
  */
 void MainWindow::selectApp() {
-
-    // TODO: fixme
-    qDebug() << "selectApp, fixme!";
   // Select application in the dialog
   ApplicationDialog *dialog = new ApplicationDialog(this);
   if (dialog->exec()) {
     if (dialog->getCurrentLauncher().compare("") != 0) {
       QString appName = dialog->getCurrentLauncher() + ".desktop";
-      DesktopFile df = DesktopFile("/usr/share/applications/" + appName);
+      QString desktop = Common::findApplication(appName);
+      if (desktop.isEmpty()) { return; }
+      DesktopFile df = DesktopFile(desktop);
       mimeUtils->openInApp(df.getExec(), curIndex, this);
     }
   }

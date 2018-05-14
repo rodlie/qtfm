@@ -2,6 +2,8 @@
 #include <QDirIterator>
 #include <sys/vfs.h>
 
+#include "common.h"
+
 /**
  * @brief Recursive removes file or directory
  * @param path path to file
@@ -98,36 +100,17 @@ qint64 FileUtils::totalSize(const QList<QUrl> &files) {
  */
 QStringList FileUtils::getApplicationNames() {
   QStringList appNames;
-  QDirIterator it1(QString("%1/.local/share/applications").arg(QDir::homePath()), QStringList("*.desktop"),
-                  QDir::Files | QDir::NoDotAndDotDot,
-                  QDirIterator::Subdirectories);
-  while (it1.hasNext()) {
-    it1.next();
-    appNames.append(it1.fileName());
+  QStringList locations = Common::applicationLocations();
+  for (int i=0;i<locations.size();++i) {
+      QDirIterator it1(locations.at(i), QStringList("*.desktop"),
+                      QDir::Files | QDir::NoDotAndDotDot,
+                      QDirIterator::Subdirectories);
+      while (it1.hasNext()) {
+        it1.next();
+        appNames.append(it1.fileName());
+      }
   }
-  QDirIterator it2(QString("%1/../share/applications").arg(qApp->applicationFilePath()), QStringList("*.desktop"),
-                  QDir::Files | QDir::NoDotAndDotDot,
-                  QDirIterator::Subdirectories);
-  while (it2.hasNext()) {
-    it2.next();
-    appNames.append(it2.fileName());
-  }
-  QDirIterator it3("/usr/share/applications", QStringList("*.desktop"),
-                  QDir::Files | QDir::NoDotAndDotDot,
-                  QDirIterator::Subdirectories);
-  while (it3.hasNext()) {
-    it3.next();
-    appNames.append(it3.fileName());
-  }
-  QDirIterator it4("/usr/local/share/applications", QStringList("*.desktop"),
-                  QDir::Files | QDir::NoDotAndDotDot,
-                  QDirIterator::Subdirectories);
-  while (it4.hasNext()) {
-    it4.next();
-    appNames.append(it4.fileName());
-  }
-  appNames.removeDuplicates();
-  qDebug() << "applications" << appNames;
+  qDebug() << "applications names" << appNames;
   return appNames;
 }
 //---------------------------------------------------------------------------
@@ -138,12 +121,15 @@ QStringList FileUtils::getApplicationNames() {
  */
 QList<DesktopFile> FileUtils::getApplications() {
   QList<DesktopFile> apps;
-  QDirIterator it("/usr/share/applications", QStringList("*.desktop"),
-                  QDir::Files | QDir::NoDotAndDotDot,
-                  QDirIterator::Subdirectories);
-  while (it.hasNext()) {
-    it.next();
-    apps.append(DesktopFile(it.filePath()));
+  QStringList locations = Common::applicationLocations();
+  for (int i=0;i<locations.size();++i) {
+      QDirIterator it(locations.at(i), QStringList("*.desktop"),
+                      QDir::Files | QDir::NoDotAndDotDot,
+                      QDirIterator::Subdirectories);
+      while (it.hasNext()) {
+        it.next();
+        apps.append(DesktopFile(it.filePath()));
+      }
   }
   return apps;
 }
@@ -224,44 +210,11 @@ QIcon FileUtils::searchGenericIcon(const QString &category,
  * @param defaultIcon
  * @return icon
  */
-QIcon FileUtils::searchAppIcon(const DesktopFile &app,
-                               const QIcon &defaultIcon) {
-
-    qDebug() << "searchAppIcon (checkme)";
-  // Resulting icon
-  QIcon icon;
-
-  // First attempt, check whether icon is a valid file
-  if (QFile(app.getIcon()).exists()) {
-    icon = QIcon(app.getIcon());
-    if (!icon.isNull()) {
-      return icon;
-    }
-  }
-
-  // Second attempt, try load icon from theme
-  icon = QIcon::fromTheme(app.getIcon());
-  if (!icon.isNull()) {
-    return icon;
-  }
-
-  // Next, try luck with application name
-  QString name = app.getFileName().remove(".desktop").split("/").last();
-  icon = QIcon::fromTheme(name);
-  if (!icon.isNull()) {
-    return icon;
-  }
-
-  // Last chance
-  // TODO: replace
-  QDir appIcons("/usr/share/pixmaps","", 0, QDir::Files | QDir::NoDotAndDotDot);
-  QStringList iconFiles = appIcons.entryList();
-  QStringList searchIcons = iconFiles.filter(name);
-  if (searchIcons.count() > 0) {
-    return QIcon("/usr/share/pixmaps/" + searchIcons.at(0));
-  }
-
-  // Default icon
+QIcon FileUtils::searchAppIcon(const DesktopFile &app, const QIcon &defaultIcon)
+{
+  if (QFile::exists(app.getIcon())) { return QIcon(app.getIcon()); }
+  QIcon icon(Common::findIcon(app.getIcon()));
+  if (!icon.isNull()) { return icon; }
   return defaultIcon;
 }
 //---------------------------------------------------------------------------

@@ -318,6 +318,7 @@ QWidget* SettingsDialog::createMimeSettings() {
   apps.replaceInStrings(".desktop", "");
   apps.sort();
 
+#warning fixme
   // Prepare source of icons
   QDir appIcons1(QString("%1/.config/share/pixmaps").arg(QDir::homePath()),"", 0, QDir::Files | QDir::NoDotAndDotDot);
   QDir appIcons2(QString("%1/../share/pixmaps").arg(qApp->applicationFilePath()),"", 0, QDir::Files | QDir::NoDotAndDotDot);
