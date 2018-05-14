@@ -51,6 +51,8 @@ public:
     static QString findIconInDir(QString dir, QString icon)
     {
         QString result;
+        if (dir.isEmpty() || icon.isEmpty()) { return result; }
+
         QString theme = QIcon::themeName();
         if (theme.isEmpty()) { theme = "hicolor"; }
 
@@ -96,6 +98,7 @@ public:
     static QString findIcon(QString fileIcon)
     {
         QString result;
+        if (fileIcon.isEmpty()) { return result; }
         for (int i=0;i<iconLocations().size();++i) {
             QString icon = findIconInDir(iconLocations().at(i), fileIcon);
             if (!icon.isEmpty()) { return icon; }
@@ -105,6 +108,7 @@ public:
     static QString findApplication(QString desktopFile)
     {
         QString result;
+        if (desktopFile.isEmpty()) { return result; }
         for (int i=0;i<applicationLocations().size();++i) {
             QDirIterator it(applicationLocations().at(i), QStringList("*.desktop"), QDir::Files|QDir::NoDotAndDotDot);
             while (it.hasNext()) {

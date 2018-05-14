@@ -4,7 +4,14 @@
 #include <QProcess>
 #include <QDebug>
 #include <QMessageBox>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QMimeDatabase>
+#include <QMimeType>
+#else
 #include <magic.h>
+#endif
+
+#include "common.h"
 
 /**
  * @brief Creates mime utils
@@ -42,11 +49,17 @@ MimeUtils::~MimeUtils() {
  * @return mime type
  */
 QString MimeUtils::getMimeType(const QString &path) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QMimeDatabase db;
+    QMimeType type = db.mimeTypeForFile(path);
+    return type.name();
+#else
   magic_t cookie = magic_open(MAGIC_MIME);
   magic_load(cookie, 0);
   QString temp = magic_file(cookie, path.toLocal8Bit());
   magic_close(cookie);
   return temp.left(temp.indexOf(";"));
+#endif
 }
 //---------------------------------------------------------------------------
 
@@ -56,7 +69,7 @@ QString MimeUtils::getMimeType(const QString &path) {
  */
 QStringList MimeUtils::getMimeTypes() const {
 
-    // TODO: fixme!
+#warning FIXME
     qDebug() << "getMimeTypes, fixme!";
   // Check whether file with mime descriptions exists
   QFile file("/usr/share/mime/types");
@@ -88,8 +101,9 @@ QStringList MimeUtils::getMimeTypes() const {
 void MimeUtils::openInApp(const QFileInfo &file, QObject *processOwner) {
   QString mime = getMimeType(file.filePath());
   QString app = defaults->value(mime).toString().split(";").first();
-  if (!app.isEmpty()) {
-    DesktopFile df = DesktopFile("/usr/share/applications/" + app);
+  QString desktop = Common::findApplication(app);
+  if (!desktop.isEmpty()) {
+    DesktopFile df = DesktopFile(desktop);
     openInApp(df.getExec(), file, processOwner);
   } else {
     QString title = tr("No default application");
