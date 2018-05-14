@@ -11,6 +11,8 @@
 #include <QMessageBox>
 #include <QAction>
 
+#include "common.h"
+
 /**
  * @brief Creates settings dialog
  * @param actionList

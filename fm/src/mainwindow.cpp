@@ -52,14 +52,14 @@ MainWindow::MainWindow()
     connect(disks, SIGNAL(removedDevice(QString)), this, SLOT(handleMediaRemoved(QString)));
     connect(disks, SIGNAL(mediaChanged(QString,bool)), this, SLOT(handleMediaChanged(QString,bool)));
 
-    isDaemon = 0;
+    //isDaemon = 0;
     startPath = QDir::currentPath();
     QStringList args = QApplication::arguments();
 
     if(args.count() > 1)
     {
-        if(args.at(1) == "-d") isDaemon = 1;
-        else startPath = args.at(1);
+        //if(args.at(1) == "-d") isDaemon = 1;
+        /*else*/ startPath = args.at(1);
 
         #if QT_VERSION >= 0x040800
         if(QUrl(startPath).isLocalFile())
@@ -221,8 +221,8 @@ MainWindow::MainWindow()
     // Load settings before showing window
     loadSettings();
 
-    if (isDaemon) startDaemon();
-    else show();
+    //if (isDaemon) startDaemon();
+    /*else*/ show();
 
     QTimer::singleShot(0, this, SLOT(lateStart()));
 }
@@ -266,6 +266,7 @@ void MainWindow::lateStart() {
                         QAbstractItemView::SelectedClicked);
 
   // Watch for mounts
+  // TODO:: remove?
   int fd = open("/proc/self/mounts", O_RDONLY, 0);
   notify = new QSocketNotifier(fd, QSocketNotifier::Write);
 
@@ -371,7 +372,7 @@ void MainWindow::lateStart() {
 
   qApp->setKeyboardInputInterval(1000);
 
-  connect(&daemon, SIGNAL(newConnection()), this, SLOT(newConnection()));
+  //connect(&daemon, SIGNAL(newConnection()), this, SLOT(newConnection()));
 
   // Read custom actions
   QTimer::singleShot(100, customActManager, SLOT(readActions()));
@@ -474,8 +475,8 @@ void MainWindow::loadSettings() {
 
 void MainWindow::firstRunBookmarks(bool isFirstRun)
 {
-    qDebug() << "first run, setup default bookmarks";
     if (!isFirstRun) { return; }
+    qDebug() << "first run, setup default bookmarks";
     modelBookmarks->addBookmark(tr("Computer"), "/", "", "computer", "", false, false);
     modelBookmarks->addBookmark(tr("Home"), QDir::homePath(), "", "user-home", "", false, false);
     modelBookmarks->addBookmark(tr("Desktop"), QString("%1/Desktop").arg(QDir::homePath()), "", "user-desktop", "", false, false);
@@ -534,7 +535,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
   writeSettings();
 
   // If deamon, ignore event
-  if (isDaemon) {
+  /*if (isDaemon) {
     this->setVisible(0);
     startDaemon();
     customComplete->setModel(0);
@@ -544,10 +545,10 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     tree->scrollTo(tree->currentIndex());
     customComplete->setModel(modelTree);
     event->ignore();
-  } else {
+  } else {*/
     modelList->cacheInfo();
     event->accept();
-  }
+  //}
 }
 //---------------------------------------------------------------------------
 
@@ -555,7 +556,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
  * @brief Closes main window
  */
 void MainWindow::exitAction() {
-  isDaemon = 0;
+  //isDaemon = 0;
   close();
 }
 //---------------------------------------------------------------------------
@@ -1619,17 +1620,17 @@ void MainWindow::refresh()
 }
 
 //---------------------------------------------------------------------------------
-void MainWindow::newConnection()
+/*void MainWindow::newConnection()
 {
     showNormal();
     daemon.close();
-}
+}*/
 
 //---------------------------------------------------------------------------------
-void MainWindow::startDaemon()
+/*void MainWindow::startDaemon()
 {
     if(!daemon.listen(APP)) isDaemon = 0;
-}
+}*/
 
 //---------------------------------------------------------------------------------
 void MainWindow::clearCutItems()

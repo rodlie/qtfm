@@ -24,8 +24,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QtNetwork/QLocalServer>
-#include <QtNetwork/QLocalSocket>
+//#include <QtNetwork/QLocalServer>
+//#include <QtNetwork/QLocalSocket>
 #include <QSettings>
 #include <QSplitter>
 #include <QTreeView>
@@ -139,8 +139,8 @@ public slots:
     void zoomOutAction();
     void focusAction();
     void openFolderAction();
-    void newConnection();
-    void startDaemon();
+    //void newConnection();
+    //void startDaemon();
     void exitAction();
 
     void dirLoaded();
@@ -194,8 +194,8 @@ private:
 
     tabBar *tabs;
 
-    bool isDaemon;
-    QLocalServer daemon;
+   // bool isDaemon;
+  //  QLocalServer daemon;
 
     MimeUtils *mimeUtils;
 

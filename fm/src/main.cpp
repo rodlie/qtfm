@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
 
   // Connect to daemon if available, otherwise create new instance
-  if (app.arguments().count() == 1) {
+  /*if (app.arguments().count() == 1) {
     QLocalServer server;
     if (!server.listen(APP)) {
       QLocalSocket client;
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
       }
     }
     server.close();
-  }
+  }*/
 
   // Initialize resources
  // Q_INIT_RESOURCE(resources);
