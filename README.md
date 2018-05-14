@@ -1,15 +1,13 @@
 ![screenshot](qtfm.png)
 
-QtFM is an simple and lightweight file manager using Qt.
+lightweight file manager using Qt.
 
- * Theme and mime integration
+ * Desktop (theme/applications/mime) integration
  * Customizable interface
  * Powerful custom command system
  * Customizable key bindings
  * Drag & drop functionality
  * Tabs
-
-Originally created by [Wittfella](http://www.qtfm.org/) in 2010, and further developed by [Michal Rost](http://qt-apps.org/content/show.php/QtFM?content=158787) in 2012 has found a new home. This project [continues](https://github.com/rodlie/qtfm/compare/cea6fbacc6ebb52032077bea03b2891a67f85c3f...master) from the v5.9 source code released in 2013.
 
 ## Links
 
@@ -21,8 +19,8 @@ Originally created by [Wittfella](http://www.qtfm.org/) in 2010, and further dev
 
 Download the latest [release](https://github.com/rodlie/qtfm/releases), then make sure you have the required dependencies.
 
-* Requires [Qt](http://qt.io) 4.8+ (5.6+ recommended) development files
-* Requires [file](http://darwinsys.com/file/) development files
+* Requires [Qt](http://qt.io) 4/5 development files
+* Requires [file](http://darwinsys.com/file/) development files **if using Qt 4**
 * Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/) at run time
 * Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/) at run time
 * Optional [tango-icon-theme](http://tango.freedesktop.org) (or similar) at run time

@@ -9,9 +9,6 @@ TEMPLATE = app
 DEPENDPATH += . src
 INCLUDEPATH += . src
 
-#OBJECTS_DIR = .obj
-#MOC_DIR = .moc
-
 HEADERS += src/mainwindow.h \
     src/mymodel.h \
     src/bookmarkmodel.h \
@@ -85,5 +82,5 @@ exists(../libdisks) {
     CONFIG += link_pkgconfig
     PKGCONFIG += Disks
 }
-LIBS += -lmagic
+lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 
