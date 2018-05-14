@@ -27,6 +27,8 @@
 #include <QApplication>
 #include <QMessageBox>
 
+#include "common.h"
+
 /**
  * @brief Creates file system model
  * @param realMime
@@ -47,7 +49,7 @@ myModel::myModel(bool realMime, MimeUtils *mimeUtils) {
   icons->setMaxCost(500);
 
   // Loads cached mime icons
-  QFile fileIcons(QDir::homePath() + QString("/.config/%16/file.cache").arg(APP));
+  QFile fileIcons(QString("%1/file.cache").arg(Common::configDir()));
   if (fileIcons.open(QIODevice::ReadOnly)) {
       QDataStream out(&fileIcons);
       out >> *mimeIcons;
@@ -55,7 +57,7 @@ myModel::myModel(bool realMime, MimeUtils *mimeUtils) {
   }
 
   // Loads folder cache
-  fileIcons.setFileName(QDir::homePath() + QString("/.config/%16/folder.cache").arg(APP));
+  fileIcons.setFileName(QString("%1/folder.cache").arg(Common::configDir()));
   if (fileIcons.open(QIODevice::ReadOnly)) {
       QDataStream out(&fileIcons);
       out.setDevice(&fileIcons);
@@ -105,8 +107,8 @@ myModel::~myModel() {
 void myModel::clearIconCache() {
   folderIcons->clear();
   mimeIcons->clear();
-  QFile(QDir::homePath() + QString("/.config/%16/folder.cache").arg(APP)).remove();
-  QFile(QDir::homePath() + QString("/.config/%16/file.cache").arg(APP)).remove();
+  QFile(QString("%1/folder.cache").arg(Common::configDir())).remove();
+  QFile(QString("%1/file.cache").arg(Common::configDir())).remove();
 }
 //---------------------------------------------------------------------------
 
@@ -510,26 +512,31 @@ QMimeData * myModel::mimeData(const QModelIndexList & indexes) const
 //---------------------------------------------------------------------------------
 void myModel::cacheInfo()
 {
-    QFile fileIcons(QDir::homePath() + QString("/.config/%16/file.cache").arg(APP));
-    fileIcons.open(QIODevice::WriteOnly);
-    QDataStream out(&fileIcons);
-    out << *mimeIcons;
-    fileIcons.close();
+    QFile fileIcons(QString("%1/file.cache").arg(Common::configDir()));
+    if (fileIcons.open(QIODevice::WriteOnly)) {
+        QDataStream out(&fileIcons);
+        out << *mimeIcons;
+        fileIcons.close();
+    }
 
-    fileIcons.setFileName(QDir::homePath() + QString("/.config/%16/folder.cache").arg(APP));
-    fileIcons.open(QIODevice::WriteOnly);
-    out.setDevice(&fileIcons);
-    out << *folderIcons;
-    fileIcons.close();
+    fileIcons.setFileName(QString("%1/folder.cache").arg(Common::configDir()));
+    if (fileIcons.open(QIODevice::WriteOnly)) {
+        QDataStream out(&fileIcons);
+        out.setDevice(&fileIcons);
+        out << *folderIcons;
+        fileIcons.close();
+    }
 
     if(thumbs->count() > thumbCount) {
-        fileIcons.setFileName(QDir::homePath() + QString("/.config/%16/thumbs.cache").arg(APP));
+        fileIcons.setFileName(QString("%1/thumbs.cache").arg(Common::configDir()));
         if(fileIcons.size() > 10000000) { fileIcons.remove(); }
         else {
-            fileIcons.open(QIODevice::WriteOnly);
-            out.setDevice(&fileIcons);
-            out << *thumbs;
-            fileIcons.close();
+            if (fileIcons.open(QIODevice::WriteOnly)) {
+                QDataStream out(&fileIcons);
+                out.setDevice(&fileIcons);
+                out << *thumbs;
+                fileIcons.close();
+            }
         }
     }
 }
@@ -554,38 +561,36 @@ void myModel::loadMimeTypes() const {
     qDebug() << "loadmimetypes, fixme!";
   // Open file with mime/suffix associations
   QFile mimeInfo("/usr/share/mime/globs");
-  mimeInfo.open(QIODevice::ReadOnly);
-  QTextStream out(&mimeInfo);
-
-  // Read associations
-  do {
-    QStringList line = out.readLine().split(":");
-    if (line.count() == 2) {
-      QString suffix = line.at(1);
-      suffix.remove("*.");
-      QString mimeName = line.at(0);
-      mimeName.replace("/","-");
-      mimeGlob->insert(suffix, mimeName);
-    }
-  } while (!out.atEnd());
-  mimeInfo.close();
+  if (mimeInfo.open(QIODevice::ReadOnly)) {
+      QTextStream out(&mimeInfo);
+      do { // Read associations
+        QStringList line = out.readLine().split(":");
+        if (line.count() == 2) {
+          QString suffix = line.at(1);
+          suffix.remove("*.");
+          QString mimeName = line.at(0);
+          mimeName.replace("/","-");
+          mimeGlob->insert(suffix, mimeName);
+        }
+      } while (!out.atEnd());
+      mimeInfo.close();
+  }
 
   // Open file with mime/generic-mime associations
   mimeInfo.setFileName("/usr/share/mime/generic-icons"); // FIXME!
-  mimeInfo.open(QIODevice::ReadOnly);
-  out.setDevice(&mimeInfo);
-
-  // Read associations
-  do {
-    QStringList line = out.readLine().split(":");
-    if (line.count() == 2) {
-      QString mimeName = line.at(0);
-      mimeName.replace("/","-");
-      QString icon = line.at(1);
-      mimeGeneric->insert(mimeName, icon);
-    }
-  } while (!out.atEnd());
-  mimeInfo.close();
+  if (mimeInfo.open(QIODevice::ReadOnly)) {
+      QTextStream out(&mimeInfo);
+      do { // Read associations
+        QStringList line = out.readLine().split(":");
+        if (line.count() == 2) {
+          QString mimeName = line.at(0);
+          mimeName.replace("/","-");
+          QString icon = line.at(1);
+          mimeGeneric->insert(mimeName, icon);
+        }
+      } while (!out.atEnd());
+      mimeInfo.close();
+  }
 }
 //---------------------------------------------------------------------------
 
@@ -610,11 +615,12 @@ void myModel::loadThumbs(QModelIndexList indexes) {
   // Loads thumbnails from cache
   if (files.count()) {
     if (thumbs->count() == 0) {
-      QFile fileIcons(QDir::homePath() + QString("/.config/%16/thumbs.cache").arg(APP));
-      fileIcons.open(QIODevice::ReadOnly);
-      QDataStream out(&fileIcons);
-      out >> *thumbs;
-      fileIcons.close();
+      QFile fileIcons(QString("%1/thumbs.cache").arg(Common::configDir()));
+      if (fileIcons.open(QIODevice::ReadOnly)) {
+          QDataStream out(&fileIcons);
+          out >> *thumbs;
+          fileIcons.close();
+      }
       thumbCount = thumbs->count();
     }
     foreach (QString item, files) {
