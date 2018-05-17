@@ -68,28 +68,9 @@ QString MimeUtils::getMimeType(const QString &path) {
  * @return list of available mimetypes
  */
 QStringList MimeUtils::getMimeTypes() const {
-
-#warning FIXME
-    qDebug() << "getMimeTypes, fixme!";
-  // Check whether file with mime descriptions exists
-  QFile file("/usr/share/mime/types");
-  if (!file.exists()) {
-    return QStringList();
-  }
-
-  // Try to open file
-  if (!file.open(QFile::ReadOnly)) {
-    return QStringList();
-  }
-
-  // Read mime types
-  QStringList result;
-  QTextStream stream(&file);
-  while (!stream.atEnd()) {
-    result.append(stream.readLine());
-  }
-  file.close();
-  return result;
+    QStringList result = Common::getMimeTypes();
+    qDebug() << "getMimeTypes"  << result;
+    return result;
 }
 //---------------------------------------------------------------------------
 

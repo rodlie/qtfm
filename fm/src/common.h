@@ -67,6 +67,14 @@ public:
         result << "/usr/share/mime/generic-icons" << "/usr/local/share/mime/generic-icons";
         return result;
     }
+    static QStringList mimeTypeLocations()
+    {
+        QStringList result;
+        result << QString("%1/.local/share/mime/types").arg(QDir::homePath());
+        result << QString("%1/../share/mime/types").arg(qApp->applicationFilePath());
+        result << "/usr/share/mime/types" << "/usr/local/share/mime/types";
+        return result;
+    }
     static QString getDesktopIcon(QString desktop)
     {
         QString result;
@@ -233,6 +241,32 @@ public:
 
         }
         return map;
+    }
+    static QStringList getPixmaps()
+    {
+        QStringList result;
+        for (int i=0;i<pixmapLocations().size();++i) {
+            QDir pixmaps(pixmapLocations().at(i), "",  0, QDir::Files | QDir::NoDotAndDotDot);
+            for (int i=0;i<pixmaps.entryList().size();++i) {
+                result << QString("%1/%2").arg(pixmaps.absolutePath()).arg(pixmaps.entryList().at(i));
+            }
+        }
+        return result;
+    }
+    static QStringList getMimeTypes()
+    {
+        QStringList result;
+        for (int i=i;i<mimeTypeLocations().size();++i) {
+            QFile file(mimeTypeLocations().at(i));
+            if (!file.open(QIODevice::ReadOnly|QIODevice::Text)) { continue; }
+            QTextStream s(&file);
+            while (!s.atEnd()) {
+                QString line = s.readLine();
+                if (!line.isEmpty()) { result.append(line); }
+            }
+            file.close();
+        }
+        return result;
     }
 };
 
