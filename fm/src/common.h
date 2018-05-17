@@ -10,6 +10,8 @@
 #include <QDirIterator>
 #include <QRegExp>
 #include <QTextStream>
+#include <QMap>
+#include <QMapIterator>
 
 #define FM_MAJOR 6
 
@@ -47,6 +49,22 @@ public:
         result << QString("%1/.local/share/applications").arg(QDir::homePath());
         result << QString("%1/../share/applications").arg(qApp->applicationFilePath());
         result << "/usr/share/applications" << "/usr/local/share/applications";
+        return result;
+    }
+    static QStringList mimeGlobLocations()
+    {
+        QStringList result;
+        result << QString("%1/.local/share/mime/globs").arg(QDir::homePath());
+        result << QString("%1/../share/mime/globs").arg(qApp->applicationFilePath());
+        result << "/usr/share/mime/globs" << "/usr/local/share/mime/globs";
+        return result;
+    }
+    static QStringList mimeGenericLocations()
+    {
+        QStringList result;
+        result << QString("%1/.local/share/mime/generic-icons").arg(QDir::homePath());
+        result << QString("%1/../share/mime/generic-icons").arg(qApp->applicationFilePath());
+        result << "/usr/share/mime/generic-icons" << "/usr/local/share/mime/generic-icons";
         return result;
     }
     static QString getDesktopIcon(QString desktop)
@@ -149,6 +167,72 @@ public:
         if (icon.isEmpty()) { return result; }
         result = findIcon(icon);
         return result;
+    }
+    static QMap<QString, QString> readGlobMimesFromFile(QString filename)
+    {
+        QMap<QString, QString> map;
+        if (filename.isEmpty()) { return map; }
+        QFile file(filename);
+        if (!file.open(QIODevice::ReadOnly|QIODevice::Text)) { return map; }
+        QTextStream s(&file);
+        while (!s.atEnd()) {
+            QStringList line = s.readLine().split(":");
+            if (line.count() == 2) {
+                QString suffix = line.at(1);
+                if (!suffix.startsWith("*.")) { continue; }
+                suffix.remove("*.");
+                QString mime = line.at(0);
+                mime.replace("/", "-");
+                if (!suffix.isEmpty() && !mime.isEmpty()) { map[mime] = suffix; }
+            }
+        }
+        file.close();
+        return map;
+    }
+    static QMap<QString, QString> getMimesGlobs()
+    {
+        QMap<QString, QString> map;
+        for (int i=0;i<mimeGlobLocations().size();++i) {
+            QMapIterator<QString, QString> globs(readGlobMimesFromFile(mimeGlobLocations().at(i)));
+            while (globs.hasNext()) {
+                globs.next();
+                map[globs.key()] = globs.value();
+            }
+
+        }
+        return map;
+    }
+    static QMap<QString, QString> readGenericMimesFromFile(QString filename)
+    {
+        QMap<QString, QString> map;
+        if (filename.isEmpty()) { return map; }
+        QFile file(filename);
+        if (!file.open(QIODevice::ReadOnly|QIODevice::Text)) { return map; }
+        QTextStream s(&file);
+        while (!s.atEnd()) {
+            QStringList line = s.readLine().split(":");
+            if (line.count() == 2) {
+                QString mimeName = line.at(0);
+                mimeName.replace("/","-");
+                QString mimeIcon = line.at(1);
+                if (!mimeName.isEmpty() && !mimeIcon.isEmpty()) { map[mimeName] = mimeIcon; }
+            }
+        }
+        file.close();
+        return map;
+    }
+    static QMap<QString, QString> getMimesGeneric()
+    {
+        QMap<QString, QString> map;
+        for (int i=0;i<mimeGenericLocations().size();++i) {
+            QMapIterator<QString, QString> generic(readGenericMimesFromFile(mimeGenericLocations().at(i)));
+            while (generic.hasNext()) {
+                generic.next();
+                map[generic.key()] = generic.value();
+            }
+
+        }
+        return map;
     }
 };
 

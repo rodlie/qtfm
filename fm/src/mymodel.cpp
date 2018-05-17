@@ -556,41 +556,18 @@ void myModel::setMode(bool icons) {
  * @brief Loads mime types
  */
 void myModel::loadMimeTypes() const {
-
-    // TODO: fixme!
-    qDebug() << "loadmimetypes, fixme!";
-  // Open file with mime/suffix associations
-  QFile mimeInfo("/usr/share/mime/globs");
-  if (mimeInfo.open(QIODevice::ReadOnly)) {
-      QTextStream out(&mimeInfo);
-      do { // Read associations
-        QStringList line = out.readLine().split(":");
-        if (line.count() == 2) {
-          QString suffix = line.at(1);
-          suffix.remove("*.");
-          QString mimeName = line.at(0);
-          mimeName.replace("/","-");
-          mimeGlob->insert(suffix, mimeName);
-        }
-      } while (!out.atEnd());
-      mimeInfo.close();
-  }
-
-  // Open file with mime/generic-mime associations
-  mimeInfo.setFileName("/usr/share/mime/generic-icons"); // FIXME!
-  if (mimeInfo.open(QIODevice::ReadOnly)) {
-      QTextStream out(&mimeInfo);
-      do { // Read associations
-        QStringList line = out.readLine().split(":");
-        if (line.count() == 2) {
-          QString mimeName = line.at(0);
-          mimeName.replace("/","-");
-          QString icon = line.at(1);
-          mimeGeneric->insert(mimeName, icon);
-        }
-      } while (!out.atEnd());
-      mimeInfo.close();
-  }
+    QMapIterator<QString, QString> globs(Common::getMimesGlobs());
+    while(globs.hasNext()) {
+        globs.next();
+        //qDebug() << globs.value() << globs.key();
+        mimeGlob->insert(globs.value(), globs.key());
+    }
+    QMapIterator<QString, QString> generic(Common::getMimesGeneric());
+    while(generic.hasNext()) {
+        generic.next();
+        //qDebug() << generic.key() << generic.value();
+        mimeGeneric->insert(generic.key(), generic.value());
+    }
 }
 //---------------------------------------------------------------------------
 
