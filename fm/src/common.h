@@ -9,6 +9,7 @@
 #include <QIcon>
 #include <QDirIterator>
 #include <QRegExp>
+#include <QTextStream>
 
 #define FM_MAJOR 6
 
@@ -46,6 +47,24 @@ public:
         result << QString("%1/.local/share/applications").arg(QDir::homePath());
         result << QString("%1/../share/applications").arg(qApp->applicationFilePath());
         result << "/usr/share/applications" << "/usr/local/share/applications";
+        return result;
+    }
+    static QString getDesktopIcon(QString desktop)
+    {
+        QString result;
+        if (desktop.isEmpty()) { return result; }
+        QFile file(desktop);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) { return result; }
+        QTextStream in(&file);
+        while (!in.atEnd()) {
+            QString line = in.readLine();
+            if (line.trimmed().isEmpty()) { continue; }
+            if (line.trimmed().startsWith("Icon=")) {
+                result = line.trimmed().replace("Icon=", "");
+                break;
+            }
+        }
+        file.close();
         return result;
     }
     static QString findIconInDir(QString dir, QString icon)
@@ -119,6 +138,16 @@ public:
                 }
             }
         }
+        return result;
+    }
+    static QString findApplicationIcon(QString app)
+    {
+        QString result;
+        QString desktop = findApplication(app);
+        if (desktop.isEmpty()) { return result; }
+        QString icon = getDesktopIcon(desktop);
+        if (icon.isEmpty()) { return result; }
+        result = findIcon(icon);
         return result;
     }
 };

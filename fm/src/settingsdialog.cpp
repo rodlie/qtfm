@@ -397,10 +397,9 @@ void SettingsDialog::onMimeSelected(QTreeWidgetItem *current,
   // Enable editation
   grpAssoc->setEnabled(true);
 
-  // Prepare source of icons FIXME!
-  qDebug() << "onmimeselected, fixme!";
-  QDir appIcons("/usr/share/pixmaps","", 0, QDir::Files | QDir::NoDotAndDotDot);
-  QStringList iconFiles = appIcons.entryList();
+  // Prepare source of icons
+  //QDir appIcons("/usr/share/pixmaps","", 0, QDir::Files | QDir::NoDotAndDotDot);
+ // QStringList iconFiles = appIcons.entryList();
   QIcon defaultIcon = QIcon::fromTheme("application-x-executable");
 
   QStringList apps = mimesWidget->currentItem()->text(1).remove(" ").split(";");
@@ -414,12 +413,12 @@ void SettingsDialog::onMimeSelected(QTreeWidgetItem *current,
     // Finds icon
     QIcon temp = QIcon::fromTheme(app).pixmap(16, 16);
     if (temp.isNull()) {
-      QStringList searchIcons = iconFiles.filter(app);
-      if (searchIcons.count() > 0) {
-        temp = QIcon("/usr/share/pixmaps/" + searchIcons.at(0));
-      } else {
-        temp = defaultIcon;
-      }
+        QString foundIcon = Common::findApplicationIcon(app + ".desktop");
+        if (!foundIcon.isEmpty()) {
+            temp = QIcon(foundIcon);
+        } else {
+            temp = defaultIcon;
+        }
     }
 
     // Add application
@@ -675,6 +674,7 @@ void SettingsDialog::loadMimes(int section) {
 
   // Load list of mimes
   QStringList mimes = mimeUtilsPtr->getMimeTypes();
+  qDebug() << "mimes" << mimes;
 
   // Init process
   progressMime->setRange(1, mimes.size());
