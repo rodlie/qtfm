@@ -26,6 +26,8 @@
 #else
 #endif
 
+#include "common.h"
+
 //---------------------------------------------------------------------------
 icondlg::icondlg()
 {
@@ -45,10 +47,13 @@ icondlg::icondlg()
     layout->addWidget(buttons);
     setLayout(layout);
 
-    QSettings inherits("/usr/share/icons/" + QIcon::themeName() + "/index.theme",QSettings::IniFormat,this);
-    foreach(QString theme, inherits.value("Icon Theme/Inherits").toStringList())
-	themes.prepend(theme);
-    themes.append(QIcon::themeName());
+    for (int i=0;i<Common::iconLocations().size();++i) {
+        QSettings inherits(Common::iconLocations().at(i) + "/" + QIcon::themeName() + "/index.theme",QSettings::IniFormat,this);
+        foreach(QString theme, inherits.value("Icon Theme/Inherits").toStringList()) {
+            themes.prepend(theme);
+            themes.append(QIcon::themeName());
+        }
+    }
 
     thread.setFuture(QtConcurrent::run(this,&icondlg::scanTheme));
     connect(&thread,SIGNAL(finished()),this,SLOT(loadIcons()));
@@ -57,15 +62,14 @@ icondlg::icondlg()
 //---------------------------------------------------------------------------
 void icondlg::scanTheme()
 {
-    // TODO: fixme
-    qDebug() << "scanTheme, fixme!";
-    foreach(QString theme, themes)
-    {
-        QDirIterator it("/usr/share/icons/" + theme,QStringList("*.png"),QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
-        while (it.hasNext())
-        {
-            it.next();
-            fileNames.append(QFileInfo(it.fileName()).baseName());
+    foreach(QString theme, themes) {
+        qDebug() << theme;
+        for (int i=0;i<Common::iconLocations().size();++i) {
+            QDirIterator it(Common::iconLocations().at(i) + "/" + theme, QStringList("*.png"), QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
+            while (it.hasNext()) {
+                it.next();
+                fileNames.append(QFileInfo(it.fileName()).baseName());
+            }
         }
     }
 
