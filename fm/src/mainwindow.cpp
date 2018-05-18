@@ -71,8 +71,15 @@ MainWindow::MainWindow()
 
     settings = new QSettings();
 
+    if (settings->value("clearCache").toBool()) {
+        qDebug() << "clear cache";
+        Common::removeFileCache();
+        Common::removeFolderCache();
+        settings->setValue("clearCache", false);
+    }
+
     QString temp = QIcon::themeName();
-    if (temp.isEmpty()) { temp = settings->value("fallbackTheme").toString(); }
+    if (temp.isEmpty()  || temp == "hicolor") { temp = settings->value("fallbackTheme").toString(); }
     if(temp.isEmpty() || temp == "hicolor") {
         if(QFile::exists(QDir::homePath() + "/" + ".gtkrc-2.0")) { // try gtk-2.0
             QSettings gtkFile(QDir::homePath() + "/.gtkrc-2.0",QSettings::IniFormat,this);

@@ -12,6 +12,7 @@
 #include <QTextStream>
 #include <QMap>
 #include <QMapIterator>
+#include <QDirIterator>
 
 #define FM_MAJOR 6
 
@@ -267,6 +268,35 @@ public:
             file.close();
         }
         return result;
+    }
+    static QStringList getIconThemes()
+    {
+        QStringList result;
+        for (int i=0;i<iconLocations().size();++i) {
+            QDirIterator it(iconLocations().at(i), QDir::Dirs | QDir::NoDotAndDotDot);
+            while (it.hasNext()) {
+                it.next();
+                //qDebug() << it.fileName() << it.filePath();
+                if (QFile::exists(it.filePath()+"/index.theme")) { result.append(it.fileName()); }
+            }
+        }
+        return result;
+    }
+    static bool removeFileCache()
+    {
+        QFile cache(QString("%1/file.cache").arg(Common::configDir()));
+        if (cache.exists()) {
+            return cache.remove();
+        }
+        return false;
+    }
+    static bool removeFolderCache()
+    {
+        QFile cache(QString("%1/folder.cache").arg(Common::configDir()));
+        if (cache.exists()) {
+            return cache.remove();
+        }
+        return false;
     }
 };
 

@@ -105,8 +105,8 @@ QWidget *SettingsDialog::createGeneralSettings() {
   checkThumbs = new QCheckBox(grpAppear);
   checkHidden = new QCheckBox(grpAppear);
   checkTabs = new QCheckBox(grpAppear);
-  //cmbIconTheme = new QComboBox(grpAppear);
-  //layoutAppear->addRow(tr("Icon theme:"), cmbIconTheme);
+  cmbIconTheme = new QComboBox(grpAppear);
+  layoutAppear->addRow(tr("Fallback Icon theme:"), cmbIconTheme);
   layoutAppear->addRow(tr("Show thumbnails: "), checkThumbs);
   layoutAppear->addRow(tr("Show hidden files: "), checkHidden);
   layoutAppear->addRow(tr("Tabs on top: "), checkTabs);
@@ -518,15 +518,16 @@ void SettingsDialog::readSettings() {
   mimeUtilsPtr->setDefaultsFileName(cmbDefaultMimeApps->currentText());
 
   // Load icon themes
-  /*QString currentTheme = settingsPtr->value("forceTheme").toString();
-  QDirIterator it("/usr/share/icons", QDir::Dirs | QDir::NoDotAndDotDot);
+  QString currentTheme = settingsPtr->value("fallbackTheme").toString();
+  //QDirIterator it("/usr/share/icons", QDir::Dirs | QDir::NoDotAndDotDot);
   QStringList iconThemes;
-  while (it.hasNext()) {
+  iconThemes << Common::getIconThemes();
+  /*while (it.hasNext()) {
     it.next();
     iconThemes.append(it.fileName());
-  }
+  }*/
   cmbIconTheme->addItems(iconThemes);
-  cmbIconTheme->setCurrentIndex(iconThemes.indexOf(currentTheme));*/
+  cmbIconTheme->setCurrentIndex(iconThemes.indexOf(currentTheme));
 
   // Read custom actions
   checkOutput->setChecked(settingsPtr->value("showActionOutput", true).toBool());
@@ -733,7 +734,12 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("hiddenMode", checkHidden->isChecked());
   settingsPtr->setValue("confirmDelete", checkDelete->isChecked());
   //settingsPtr->setValue("term", editTerm->text());
-  //settingsPtr->setValue("forceTheme", cmbIconTheme->currentText());
+  if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
+      //QIcon::setThemeName(cmbIconTheme->currentText());
+      settingsPtr->setValue("clearCache", true);
+      QMessageBox::warning(this, tr("Restart to apply settings"), tr("You must restart to apply theme settings"));
+  }
+  settingsPtr->setValue("fallbackTheme", cmbIconTheme->currentText());
   settingsPtr->setValue("defMimeAppsFile", cmbDefaultMimeApps->currentText());
 
   // Custom actions
