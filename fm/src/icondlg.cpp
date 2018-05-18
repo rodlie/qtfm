@@ -63,7 +63,7 @@ icondlg::icondlg()
 void icondlg::scanTheme()
 {
     foreach(QString theme, themes) {
-        qDebug() << theme;
+        //qDebug() << theme;
         for (int i=0;i<Common::iconLocations().size();++i) {
             QDirIterator it(Common::iconLocations().at(i) + "/" + theme, QStringList("*.png"), QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
             while (it.hasNext()) {

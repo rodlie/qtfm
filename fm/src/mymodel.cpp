@@ -228,7 +228,7 @@ QString myModel::getMimeType(const QModelIndex &index)
             if(item->mMimeType.isNull()) item->mMimeType = "file";
         }
     }
-    qDebug() << "item mime" << item->absoluteFilePath() << item->mMimeType;
+    //qDebug() << "item mime" << item->absoluteFilePath() << item->mMimeType;
     return item->mMimeType;
 }
 

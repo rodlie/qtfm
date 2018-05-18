@@ -70,7 +70,7 @@ target.path = $${PREFIX}/bin
 desktop.files += $${TARGET}.desktop
 desktop.path += $${PREFIX}/share/applications
 docs.path += $${DOCDIR}/$${TARGET}-$${VERSION}
-docs.files += ../COPYING
+docs.files += ../LICENSE ../README.md
 INSTALLS += target desktop docs
 
 exists(../libdisks) {

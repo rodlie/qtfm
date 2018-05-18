@@ -57,7 +57,7 @@ void CustomActionsManager::freeActions() {
  */
 void CustomActionsManager::readActions() {
 
-    qDebug() << "read actions";
+    //qDebug() << "read actions";
   // Read keys
   settingsPtr->beginGroup("customActions");
   QStringList keys = settingsPtr->childKeys();
@@ -73,7 +73,7 @@ void CustomActionsManager::readActions() {
     // temp.at(2) - Icon
     // temp.at(3) - Command
     QStringList temp(settingsPtr->value(keys.at(i)).toStringList());
-    qDebug() << "loaded custom action" << temp;
+    //qDebug() << "loaded custom action" << temp;
 
     // Create new action and read it
     QAction *act = new QAction(QIcon::fromTheme(temp.at(2)), temp.at(1), this);
@@ -143,7 +143,7 @@ QList<QAction*>* CustomActionsManager::getActionList() const {
  */
 void CustomActionsManager::execAction(const QString &cmd, const QString &path) {
 
-    qDebug() << "custom action" << cmd << path;
+    //qDebug() << "custom action" << cmd << path;
   // Retrieve executable name from splitted command, the rest is arguments
   QStringList temp = cmd.split(" ");
   QString exec = temp.at(0);

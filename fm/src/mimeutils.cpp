@@ -69,7 +69,7 @@ QString MimeUtils::getMimeType(const QString &path) {
  */
 QStringList MimeUtils::getMimeTypes() const {
     QStringList result = Common::getMimeTypes();
-    qDebug() << "getMimeTypes"  << result;
+    //qDebug() << "getMimeTypes"  << result;
     return result;
 }
 //---------------------------------------------------------------------------

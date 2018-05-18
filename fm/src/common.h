@@ -160,7 +160,7 @@ public:
             while (it.hasNext()) {
                 QString found = it.next();
                 if (found.split("/").takeLast()==desktopFile) {
-                    qDebug() << "found app" << found;
+                    //qDebug() << "found app" << found;
                     return found;
                 }
             }

@@ -639,7 +639,7 @@ void SettingsDialog::readShortcuts() {
  */
 void SettingsDialog::loadMimes(int section) {
 
-    qDebug() << "LOAD MIMES";
+    //qDebug() << "LOAD MIMES";
   // Mime progress section
   const int MIME_PROGRESS_SECTION = 3;
 
@@ -656,7 +656,7 @@ void SettingsDialog::loadMimes(int section) {
 
   // Load list of mimes
   QStringList mimes = mimeUtilsPtr->getMimeTypes();
-  qDebug() << "mimes" << mimes;
+  //qDebug() << "mimes" << mimes;
 
   // Init process
   progressMime->setRange(1, mimes.size());
@@ -726,7 +726,7 @@ void SettingsDialog::loadMimes(int section) {
  */
 bool SettingsDialog::saveSettings() {
 
-    qDebug() << "save settings dialog";
+    //qDebug() << "save settings dialog";
   // General settings
   // ------------------------------------------------------------------------
   settingsPtr->setValue("showThumbs", checkThumbs->isChecked());
@@ -737,7 +737,7 @@ bool SettingsDialog::saveSettings() {
   if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
       //QIcon::setThemeName(cmbIconTheme->currentText());
       settingsPtr->setValue("clearCache", true);
-      QMessageBox::warning(this, tr("Restart to apply settings"), tr("You must restart to apply theme settings"));
+      QMessageBox::warning(this, tr("Restart to apply settings"), tr("You must restart application to apply theme settings"));
   }
   settingsPtr->setValue("fallbackTheme", cmbIconTheme->currentText());
   settingsPtr->setValue("defMimeAppsFile", cmbDefaultMimeApps->currentText());

@@ -72,7 +72,7 @@ MainWindow::MainWindow()
     settings = new QSettings();
 
     if (settings->value("clearCache").toBool()) {
-        qDebug() << "clear cache";
+        //qDebug() << "clear cache";
         Common::removeFileCache();
         Common::removeFolderCache();
         settings->setValue("clearCache", false);
@@ -103,9 +103,9 @@ MainWindow::MainWindow()
             themes << QString("%1/../share/icons/hicolor").arg(qApp->applicationFilePath());
             themes << "/usr/share/icons/hicolor" << "/usr/local/share/icons/hicolor";
             for (int i=0;i<themes.size();++i) {
-                qDebug() << "checking for icon theme ..." << themes.at(i);
+                //qDebug() << "checking for icon theme ..." << themes.at(i);
                 if (QFile::exists(themes.at(i))) {
-                    qDebug() << "found icon theme" << themes.at(i);
+                    //qDebug() << "found icon theme" << themes.at(i);
                     temp = QString(themes.at(i)).split("/").takeLast();
                     break;
                 }
@@ -114,7 +114,7 @@ MainWindow::MainWindow()
         if (temp!="hicolor") { settings->setValue("fallbackTheme", temp); }
     }
     QIcon::setThemeName(temp);
-    qDebug() << "using icon theme" << QIcon::themeName();
+    //qDebug() << "using icon theme" << QIcon::themeName();
 
     // Create mime utils
     mimeUtils = new MimeUtils(this);
@@ -489,7 +489,7 @@ void MainWindow::loadSettings() {
 void MainWindow::firstRunBookmarks(bool isFirstRun)
 {
     if (!isFirstRun) { return; }
-    qDebug() << "first run, setup default bookmarks";
+    //qDebug() << "first run, setup default bookmarks";
     modelBookmarks->addBookmark(tr("Computer"), "/", "", "computer", "", false, false);
     modelBookmarks->addBookmark(tr("Home"), QDir::homePath(), "", "user-home", "", false, false);
     modelBookmarks->addBookmark(tr("Desktop"), QString("%1/Desktop").arg(QDir::homePath()), "", "user-desktop", "", false, false);
@@ -505,7 +505,7 @@ void MainWindow::firstRunBookmarks(bool isFirstRun)
 
 void MainWindow::loadBookmarks()
 {
-    qDebug() << "load bookmarks";
+    //qDebug() << "load bookmarks";
     settings->beginGroup("bookmarks");
     foreach (QString key,settings->childKeys()) {
       QStringList temp(settings->value(key).toStringList());
@@ -516,7 +516,7 @@ void MainWindow::loadBookmarks()
 
 void MainWindow::writeBookmarks()
 {
-    qDebug() << "write bookmarks";
+    //qDebug() << "write bookmarks";
     settings->remove("bookmarks");
     settings->beginGroup("bookmarks");
     for (int i = 0; i < modelBookmarks->rowCount(); i++) {
@@ -533,7 +533,7 @@ void MainWindow::writeBookmarks()
 
 void MainWindow::handleBookmarksChanged()
 {
-    qDebug() << "bookmarks changed, save";
+    //qDebug() << "bookmarks changed, save";
     QTimer::singleShot(1000, this, SLOT(writeBookmarks()));
 }
 //---------------------------------------------------------------------------
@@ -1204,14 +1204,14 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       // File
       if (!curIndex.isDir()) {
         QString type = modelList->getMimeType(modelList->index(curIndex.filePath()));
-        qDebug() << "type" << type;
+        //qDebug() << "type" << type;
 
         // Add custom actions to the list of actions
-        qDebug() << "add custom actions";
+        //qDebug() << "add custom actions";
         QHashIterator<QString, QAction*> i(*customActManager->getActions());
         while (i.hasNext()) {
           i.next();
-          qDebug() << "custom action" << i.key() << i.value();
+          //qDebug() << "custom action" << i.key() << i.value();
           if (type.contains(i.key())) actions.append(i.value());
         }
 
@@ -1397,7 +1397,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
  */
 QMenu* MainWindow::createOpenWithMenu() {
 
-    qDebug() << "open with";
+    //qDebug() << "open with";
   // Add open with functionality ...
   QMenu *openMenu = new QMenu(tr("Open with"));
 
@@ -1411,7 +1411,7 @@ QMenu* MainWindow::createOpenWithMenu() {
   QString mime = mimeUtils->getMimeType(curIndex.filePath());
   QStringList appNames = mimeUtils->getDefault(mime);
 
-  qDebug() << mime << appNames;
+  //qDebug() << mime << appNames;
 
   // Create actions for opening
   QList<QAction*> defaultApps;
@@ -1534,7 +1534,7 @@ void MainWindow::handleMediaRemoved(QString path)
 
 void MainWindow::handleMediaChanged(QString path, bool present)
 {
-    qDebug() << "changed" << path << present;
+    //qDebug() << "changed" << path << present;
     if (path.isEmpty()) { return; }
     if (disks->devices[path]->isOptical && !present && mediaBookmarkExists(path)>-1) {
         handleMediaRemoved(path);
@@ -1545,7 +1545,7 @@ void MainWindow::handleMediaChanged(QString path, bool present)
 
 void MainWindow::handleMediaUnmount()
 {
-    qDebug() << "handle media unmount";
+    //qDebug() << "handle media unmount";
     QStandardItem *item = modelBookmarks->itemFromIndex(bookmarksList->currentIndex());
     if (item == NULL) { return; }
     QString path = item->data(MEDIA_PATH).toString();
@@ -1555,7 +1555,7 @@ void MainWindow::handleMediaUnmount()
 
 void MainWindow::handleMediaEject()
 {
-    qDebug() << "handle media eject";
+    //qDebug() << "handle media eject";
     QStandardItem *item = modelBookmarks->itemFromIndex(bookmarksList->currentIndex());
     if (item == NULL) { return; }
     QString path = item->data(MEDIA_PATH).toString();

@@ -50,7 +50,7 @@ bookmarkmodel::bookmarkmodel(QHash<QString, QIcon> *icons)
 //---------------------------------------------------------------------------
 void bookmarkmodel::addBookmark(QString name, QString path, QString isAuto, QString icon, QString mediaPath, bool isMedia, bool changed)
 {
-    qDebug() << "add bookmark" << name << path << isAuto << icon << mediaPath << isMedia;
+    //qDebug() << "add bookmark" << name << path << isAuto << icon << mediaPath << isMedia;
     if(path.isEmpty() && !isMedia)	    //add seperator
     {
         QStandardItem *item = new QStandardItem(QIcon::fromTheme(icon),"");

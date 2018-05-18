@@ -76,7 +76,7 @@ ProcessDialog::ProcessDialog(QProcess* proc, const QString &procName,
  */
 void ProcessDialog::onProcFinished() {
   //this->hide();
-    qDebug() << "proc finished";
+    //qDebug() << "proc finished";
   this->deleteLater();
 }
 //---------------------------------------------------------------------------
@@ -85,7 +85,7 @@ void ProcessDialog::onProcFinished() {
  * @brief Reaction on process start
  */
 void ProcessDialog::onProcStarted() {
-    qDebug() << "proc started";
+    //qDebug() << "proc started";
   this->show();
 }
 //---------------------------------------------------------------------------
