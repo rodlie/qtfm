@@ -72,6 +72,7 @@ MainWindow::MainWindow()
     settings = new QSettings();
 
     QString temp = QIcon::themeName();
+    if (temp.isEmpty()) { temp = settings->value("fallbackTheme").toString(); }
     if(temp.isEmpty() || temp == "hicolor") {
         if(QFile::exists(QDir::homePath() + "/" + ".gtkrc-2.0")) { // try gtk-2.0
             QSettings gtkFile(QDir::homePath() + "/.gtkrc-2.0",QSettings::IniFormat,this);
@@ -103,6 +104,7 @@ MainWindow::MainWindow()
                 }
             }
         }
+        if (temp!="hicolor") { settings->setValue("fallbackTheme", temp); }
     }
     QIcon::setThemeName(temp);
     qDebug() << "using icon theme" << QIcon::themeName();
@@ -396,9 +398,11 @@ void MainWindow::loadSettings() {
         settings->setValue("firstRun", false);
     }
 
+#if QT_VERSION >= 0x050000
   // fix style
   setStyleSheet("QToolBar { padding: 0; } QFrame { border: none;}");
   addressToolBar->setContentsMargins(0,0,5,0);
+#endif
 
   // Restore window state
   if (!settings->value("windowState").isValid()) { dockTree->hide(); } // don't show dock tree as default
@@ -1193,6 +1197,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       // File
       if (!curIndex.isDir()) {
         QString type = modelList->getMimeType(modelList->index(curIndex.filePath()));
+        qDebug() << "type" << type;
 
         // Add custom actions to the list of actions
         qDebug() << "add custom actions";
@@ -1385,6 +1390,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
  */
 QMenu* MainWindow::createOpenWithMenu() {
 
+    qDebug() << "open with";
   // Add open with functionality ...
   QMenu *openMenu = new QMenu(tr("Open with"));
 
@@ -1397,6 +1403,8 @@ QMenu* MainWindow::createOpenWithMenu() {
   // Load default applications for current mime
   QString mime = mimeUtils->getMimeType(curIndex.filePath());
   QStringList appNames = mimeUtils->getDefault(mime);
+
+  qDebug() << mime << appNames;
 
   // Create actions for opening
   QList<QAction*> defaultApps;

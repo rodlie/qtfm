@@ -509,7 +509,7 @@ void MainWindow::createToolBars() {
   navToolBar->addAction(backAct);
   navToolBar->addAction(upAct);
   navToolBar->addAction(homeAct);
-  navToolBar->addAction(refreshAct);
+  //navToolBar->addAction(refreshAct);
 
   addressToolBar = addToolBar(tr("Address"));
   addressToolBar->setObjectName("Address");

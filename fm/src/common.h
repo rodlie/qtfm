@@ -256,7 +256,7 @@ public:
     static QStringList getMimeTypes()
     {
         QStringList result;
-        for (int i=i;i<mimeTypeLocations().size();++i) {
+        for (int i=0;i<mimeTypeLocations().size();++i) {
             QFile file(mimeTypeLocations().at(i));
             if (!file.open(QIODevice::ReadOnly|QIODevice::Text)) { continue; }
             QTextStream s(&file);

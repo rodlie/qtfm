@@ -30,6 +30,7 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   this->mimeUtilsPtr = mimeUtils;
 
   // Main widgets of this dialog
+  setWindowTitle(tr("Settings"));
   selector = new QListWidget(this);
   stack = new QStackedWidget(this);
   selector->setMaximumWidth(150);
