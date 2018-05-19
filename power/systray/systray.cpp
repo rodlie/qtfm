@@ -27,7 +27,7 @@ SysTray::SysTray(QObject *parent)
     , showNotifications(true)
 {
     // setup tray
-    tray = new QSystemTrayIcon(QIcon::fromTheme(DEFAULT_BATTERY_ICON, QIcon(QString(":/%1.png").arg(DEFAULT_BATTERY_ICON))), this);
+    tray = new QSystemTrayIcon(QIcon::fromTheme(DEFAULT_BATTERY_ICON, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON))), this);
     connect(tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
     if (tray->isSystemTrayAvailable()) { tray->show(); }
 
@@ -205,14 +205,51 @@ void SysTray::handleCritical()
 // draw battery percent over tray icon
 void SysTray::drawBattery(double left)
 {
-    QIcon icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON, QIcon(QString(":/%1.png").arg(DEFAULT_BATTERY_ICON)));
+    QIcon icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON)));
     if (left<=(double)lowBatteryValue && man->onBattery()) {
-        icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON_LOW, QIcon(QString(":/%1.png").arg(DEFAULT_BATTERY_ICON_LOW)));
+        icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON_LOW, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON_LOW)));
         if (!wasLowBattery) { tray->showMessage(tr("Low Battery!"), tr("You battery is almost empty, please consider connecting your computer to a power supply.")); }
         wasLowBattery = true;
-    } else { wasLowBattery = false; }
+    } else {
+        wasLowBattery = false;
+        if (left<=(double)lowBatteryValue) { // low (on ac)
+            qDebug() << "low on ac";
+            icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON_LOW_AC, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON_LOW_AC)));
+        } else if (left<=critBatteryValue) { // critical
+            qDebug() << "critical";
+            if (man->onBattery()) {
+                icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON_CRIT, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON_CRIT)));
+            } else {
+                icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON_CRIT_AC, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON_CRIT_AC)));
+            }
+        } else if (left>(double)lowBatteryValue && left<90) { // good
+            qDebug() << "good";
+            if (man->onBattery()) {
+                icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON_GOOD, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON_GOOD)));
+            } else {
+                icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON_GOOD_AC, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON_GOOD_AC)));
+            }
+        } else if (left>=90 && left<99) { // almost full
+            qDebug() << "almost full";
+            if (man->onBattery()) {
+                icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON_FULL, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON_FULL)));
+            } else {
+                icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON_FULL_AC, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON_FULL_AC)));
+            }
+        } else if(left>=99) { // full
+            qDebug() << "full";
+            if (man->onBattery()) {
+                icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON_FULL, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON_FULL)));
+            } else {
+                icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON_CHARGED, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON_CHARGED)));
+            }
+        } else {
+            qDebug() << "something else";
+            // TODO
+        }
+    }
 
-    if (left > 99 || left == 0) {
+    if (left > 99 || left == 0 || !man->onBattery()) {
         tray->setIcon(icon);
         return;
     }
