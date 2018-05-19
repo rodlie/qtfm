@@ -1,9 +1,10 @@
 QT+= core gui dbus
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+include(../qtfm.pri)
 
-TARGET = qtfm
-TARGET_NAME = "QtFM"
-VERSION = 6.0.0
+TARGET = $${QTFM_TARGET}
+TARGET_NAME = $${QTFM_TARGET_NAME}
+VERSION = $${QTFM_MAJOR}.$${QTFM_MINOR}.$${QTFM_PATCH}
 TEMPLATE = app
 
 DEPENDPATH += . src
@@ -54,10 +55,6 @@ RESOURCES += $${TARGET}.qrc
 DEFINES += APP=\"\\\"$${TARGET}\\\"\"
 DEFINES += APP_NAME=\"\\\"$${TARGET_NAME}\\\"\"
 DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\"
-
-exists(../qtfm.pri) {
-    include(../qtfm.pri)
-}
 
 isEmpty(PREFIX) {
     PREFIX = /usr/local
