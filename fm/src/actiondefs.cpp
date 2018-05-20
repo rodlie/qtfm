@@ -372,7 +372,7 @@ void MainWindow::readShortcuts() {
     shortcuts.insert(pasteAct->text(),"ctrl+v");
     shortcuts.insert(upAct->text(),"alt+up");
     shortcuts.insert(backAct->text(),"backspace");
-    shortcuts.insert(homeAct->text(),"f3");
+    //shortcuts.insert(homeAct->text(),"f1");
     shortcuts.insert(hiddenAct->text(),"ctrl+h");
     shortcuts.insert(deleteAct->text(),"del");
     //shortcuts.insert(terminalAct->text(),"f4");
@@ -382,6 +382,22 @@ void MainWindow::readShortcuts() {
     shortcuts.insert(escapeAct->text(),"esc");
     shortcuts.insert(zoomOutAct->text(),"ctrl+-");
     shortcuts.insert(zoomInAct->text(),"ctrl++");
+    shortcuts.insert(focusAddressAct->text(), "ctrl+l");
+    shortcuts.insert(iconAct->text(), "f3");
+    shortcuts.insert(detailAct->text(), "f4");
+
+    settings->beginGroup("customShortcuts");
+    QHashIterator<QString, QString> i(shortcuts);
+    int count = 0;
+    while (i.hasNext()) {
+        i.next();
+        QStringList action;
+        action << i.key() << i.value();
+        settings->setValue(QString(count), action);
+        ++count;
+    }
+    settings->endGroup();
+    settings->sync();
   }
 
   // Remove all bookmarks from actions
