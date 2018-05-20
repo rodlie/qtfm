@@ -15,6 +15,7 @@ PKGCONFIG += x11 xscrnsaver
 #LIBS += -lX11 -lXss
 
 include(../../qtfm.pri)
+DEFINES += CONFIG_DIR=\"\\\"$${QTFM_TARGET}$${QTFM_MAJOR}\\\"\"
 
 exists(../../libpower) {
     message("Using embedded libpower")
