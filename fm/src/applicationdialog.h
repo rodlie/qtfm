@@ -11,6 +11,8 @@ class ApplicationDialog : public QDialog {
 public:
   explicit ApplicationDialog(QWidget *parent = 0);
   QString getCurrentLauncher() const;
+private slots:
+  void populate();
 protected slots:
   void updateCommand(QTreeWidgetItem* current, QTreeWidgetItem* previous);
 protected:

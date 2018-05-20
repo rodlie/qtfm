@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QFormLayout>
 #include <QCompleter>
+#include <QApplication>
 
 /**
  * @brief Constructor
@@ -56,32 +57,6 @@ ApplicationDialog::ApplicationDialog(QWidget *parent) : QDialog(parent) {
   // Load default icon
   defaultIcon = QIcon::fromTheme("application-x-executable");
 
-  // Create default application cathegories
-  categories.clear();
-  createCategories();
-
-  // Load applications and create category tree list
-  QList<DesktopFile> apps = FileUtils::getApplications();
-  foreach (DesktopFile app, apps) {
-
-    // Check for name
-    if (app.getName().compare("") == 0) {
-      continue;
-    }
-
-    // Find category
-    QTreeWidgetItem* category = findCategory(app);
-
-    // Create item from current mime
-    QTreeWidgetItem *item = new QTreeWidgetItem(category);
-    item->setIcon(0, FileUtils::searchAppIcon(app, defaultIcon));
-    item->setText(0, app.getName());
-    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-
-    // Register application
-    applications.insert(app.getPureFileName(), item);
-  }
-
   // Create completer and its model for editation of command
   QStringListModel* model = new QStringListModel(this);
   model->setStringList(applications.keys());
@@ -93,6 +68,9 @@ ApplicationDialog::ApplicationDialog(QWidget *parent) : QDialog(parent) {
   connect(appList,
           SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
           SLOT(updateCommand(QTreeWidgetItem*,QTreeWidgetItem*)));
+
+  // populate
+  QTimer::singleShot(100, this, SLOT(populate()));
 }
 //---------------------------------------------------------------------------
 
@@ -101,7 +79,35 @@ ApplicationDialog::ApplicationDialog(QWidget *parent) : QDialog(parent) {
  * @return currently selected launcher
  */
 QString ApplicationDialog::getCurrentLauncher() const {
-  return edtCommand->text();
+    return edtCommand->text();
+}
+
+void ApplicationDialog::populate()
+{
+    // Create default application cathegories
+    categories.clear();
+    createCategories();
+
+    // Load applications and create category tree list
+    QList<DesktopFile> apps = FileUtils::getApplications();
+    foreach (DesktopFile app, apps) {
+
+      // Check for name
+      if (app.getName().compare("") == 0) { continue; }
+
+      // Find category
+      QTreeWidgetItem* category = findCategory(app);
+
+      // Create item from current mime
+      QTreeWidgetItem *item = new QTreeWidgetItem(category);
+      item->setIcon(0, FileUtils::searchAppIcon(app, defaultIcon));
+      item->setText(0, app.getName());
+      item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+      // Register application
+      QApplication::processEvents();
+      applications.insert(app.getPureFileName(), item);
+    }
 }
 //---------------------------------------------------------------------------
 
