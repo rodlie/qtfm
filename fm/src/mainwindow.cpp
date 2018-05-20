@@ -235,6 +235,7 @@ MainWindow::MainWindow()
     //if (isDaemon) startDaemon();
     /*else*/ show();
 
+    isRefreshing = false;
     QTimer::singleShot(0, this, SLOT(lateStart()));
 }
 //---------------------------------------------------------------------------
@@ -1647,6 +1648,11 @@ void MainWindow::actionMapper(QString cmd)
 
 void MainWindow::refresh()
 {
+    if (isRefreshing) { return; }
+    isRefreshing = true;
+
+    if (!QFile::exists(modelList->getRootPath())) { return; }
+
     QApplication::clipboard()->clear();
     listSelectionModel->clear();
 
@@ -1656,6 +1662,7 @@ void MainWindow::refresh()
     modelView->invalidate();
     dirLoaded();
 
+    isRefreshing = false;
     return;
 }
 
