@@ -152,7 +152,7 @@ public slots:
     void loadBookmarks();
     void writeBookmarks();
     void handleBookmarksChanged();
-
+    void firstRunCustomActions(bool isFirstRun);
     void showAboutBox();
 
 signals:

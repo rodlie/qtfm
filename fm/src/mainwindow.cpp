@@ -481,6 +481,9 @@ void MainWindow::loadSettings() {
   // Load terminal command
   //term = settings->value("term").toString();
 
+  // custom actions
+  firstRunCustomActions(isFirstRun);
+
   // Load information whether tabs can be shown on top
   tabsOnTopAct->setChecked(settings->value("tabsOnTop", 0).toBool());
   tabsOnTop();
@@ -535,6 +538,28 @@ void MainWindow::handleBookmarksChanged()
 {
     //qDebug() << "bookmarks changed, save";
     QTimer::singleShot(1000, this, SLOT(writeBookmarks()));
+}
+
+void MainWindow::firstRunCustomActions(bool isFirstRun)
+{
+    if (!isFirstRun) { return; }
+    settings->beginGroup("customActions");
+    int childs = settings->childKeys().size();
+    if (childs>0) { return; }
+    QStringList action1;
+    action1 << "gz,bz2,xz,tar" << "Extract here ..." << "package-x-generic" << "tar xvf %f";
+    QStringList action2;
+    action2 << "*" << "Compress to tar.gz" << "filesave" << "tar cvvzf %n.tar.gz %f";
+    QStringList action3;
+    action3 << "*" << "Compress to tar.bz2" << "filesave" << "tar cvvjf %n.tar.bz2 %f";
+    QStringList action4;
+    action4 << "*" << "Compress to tar.xz" << "filesave" << "tar cvvJf %n.tar.bz2 %f";
+    settings->setValue(QString(1), action1);
+    settings->setValue(QString(2), action2);
+    settings->setValue(QString(3), action3);
+    settings->setValue(QString(4), action4);
+    settings->endGroup();
+    settings->sync();
 }
 //---------------------------------------------------------------------------
 
