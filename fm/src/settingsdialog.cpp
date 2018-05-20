@@ -10,6 +10,7 @@
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QAction>
+#include <QApplication>
 
 #include "common.h"
 
@@ -85,7 +86,7 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   }
 
   // Read settings
-  readSettings();
+  QTimer::singleShot(100, this, SLOT(readSettings()));
 }
 //---------------------------------------------------------------------------
 
@@ -327,6 +328,7 @@ QWidget* SettingsDialog::createMimeSettings() {
   // Loads icon list
   QList<QIcon> icons;
   foreach (QString app, apps) {
+    QApplication::processEvents();
     QPixmap temp = QIcon::fromTheme(app).pixmap(16, 16);
     if (!temp.isNull()) {
       icons.append(temp);
@@ -534,6 +536,7 @@ void SettingsDialog::readSettings() {
   settingsPtr->beginGroup("customActions");
   QStringList keys = settingsPtr->childKeys();
   for (int i = 0; i < keys.count(); ++i) {
+    QApplication::processEvents();
     QStringList temp = settingsPtr->value(keys.at(i)).toStringList();
     bool setChecked = 0;
     QString cmd = temp.at(3);
@@ -569,6 +572,7 @@ void SettingsDialog::readSettings() {
 
   // Loads icons for actions
   for (int x = 0; x < actionsWidget->topLevelItemCount(); x++) {
+    QApplication::processEvents();
     QString name = actionsWidget->topLevelItem(x)->text(2);
     actionsWidget->topLevelItem(x)->setIcon(2, QIcon::fromTheme(name));
   }
@@ -596,6 +600,7 @@ void SettingsDialog::readShortcuts() {
   settingsPtr->beginGroup("customShortcuts");
   QStringList keys = settingsPtr->childKeys();
   for (int i = 0; i < keys.count(); ++i) {
+    QApplication::processEvents();
     QStringList temp(settingsPtr->value(keys.at(i)).toStringList());
     shortcuts.insert(temp.at(0), temp.at(1));
   }
@@ -603,6 +608,7 @@ void SettingsDialog::readShortcuts() {
 
   // Assign shortcuts to action and bookmarks
   for (int i = 0; i < actionListPtr->count(); ++i) {
+    QApplication::processEvents();
     QAction* act = actionListPtr->at(i);
     QString text = shortcuts.value(act->text());
     text = text.isEmpty() ? text : QKeySequence::fromString(text).toString();
@@ -618,6 +624,7 @@ void SettingsDialog::readShortcuts() {
 
   // Assign shortcuts to custom actions
   for (int i = 0; i < actionsWidget->topLevelItemCount(); i++) {
+    QApplication::processEvents();
     QTreeWidgetItem *srcItem = actionsWidget->topLevelItem(i);
     QString text = shortcuts.value(srcItem->text(1));
     text = text.isEmpty() ? text : QKeySequence::fromString(text).toString();
@@ -671,6 +678,7 @@ void SettingsDialog::loadMimes(int section) {
   // Load mime settings
   foreach (QString mime, mimes) {
 
+    QApplication::processEvents();
     // Updates progress
     progressMime->setValue(progressMime->value() + 1);
 
