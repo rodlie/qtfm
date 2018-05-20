@@ -66,6 +66,7 @@ public:
   bool isDir(const QModelIndex &index);
   bool canFetchMore (const QModelIndex & parent) const;
   bool setRootPath(const QString& path);
+  QString getRootPath();
   void setRealMimeTypes(bool realMimeTypes);
   bool isRealMimeTypes() const;
   QModelIndex index(int row, int column, const QModelIndex &parent) const;

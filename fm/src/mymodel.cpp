@@ -348,6 +348,11 @@ bool myModel::setRootPath(const QString& path)
     return false;
 }
 
+QString myModel::getRootPath()
+{
+    return currentRootPath;
+}
+
 //---------------------------------------------------------------------------------------
 bool myModel::canFetchMore (const QModelIndex & parent) const
 {
