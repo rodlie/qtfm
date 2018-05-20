@@ -3,9 +3,10 @@
 
 #include <QObject>
 #include <QSystemTrayIcon>
+#include <QTimer>
 #include "power.h"
 #include "powermanagement.h"
-#include <QTimer>
+#include "screensaver.h"
 
 class SysTray : public QObject
 {
@@ -18,6 +19,7 @@ private:
     QSystemTrayIcon *tray;
     Power *man;
     PowerManagement *pm;
+    ScreenSaver *ss;
     bool wasLowBattery;
     int lowBatteryValue;
     int critBatteryValue;

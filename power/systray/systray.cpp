@@ -13,6 +13,7 @@ SysTray::SysTray(QObject *parent)
     , tray(0)
     , man(0)
     , pm(0)
+    , ss(0)
     , wasLowBattery(false)
     , lowBatteryValue(LOW_BATTERY)
     , critBatteryValue(CRITICAL_BATTERY)
@@ -44,6 +45,9 @@ SysTray::SysTray(QObject *parent)
     connect(pm, SIGNAL(HasInhibitChanged(bool)), this, SLOT(handleHasInhibitChanged(bool)));
     connect(pm, SIGNAL(update()), this, SLOT(loadSettings()));
 
+    // setup org.freedesktop.ScreenSaver
+    ss = new ScreenSaver();
+
     // setup timer
     timer = new QTimer(this);
     timer->setInterval(60000);
@@ -70,6 +74,8 @@ void SysTray::trayActivated(QSystemTrayIcon::ActivationReason reason)
 
 void SysTray::checkDevices()
 {
+    if (tray->isSystemTrayAvailable() && !tray->isVisible()) { tray->show(); }
+
     // get battery left and add tooltip
     double batteryLeft = man->batteryLeft();
     tray->setToolTip(tr("Battery at %1%").arg(batteryLeft));
@@ -169,11 +175,19 @@ void SysTray::registerService()
         qWarning("Cannot connect to D-Bus.");
         return;
     }
-    if (!QDBusConnection::sessionBus().registerService(SERVICE)) {
+    if (!QDBusConnection::sessionBus().registerService(PM_SERVICE)) {
         qWarning() << QDBusConnection::sessionBus().lastError().message();
         return;
     }
-    if (!QDBusConnection::sessionBus().registerObject("/PowerManagement", pm, QDBusConnection::ExportAllContents)) {
+    if (!QDBusConnection::sessionBus().registerObject(PM_PATH, pm, QDBusConnection::ExportAllContents)) {
+        qWarning() << QDBusConnection::sessionBus().lastError().message();
+        return;
+    }
+    if (!QDBusConnection::sessionBus().registerService(SS_SERVICE)) {
+        qWarning() << QDBusConnection::sessionBus().lastError().message();
+        return;
+    }
+    if (!QDBusConnection::sessionBus().registerObject(SS_PATH, ss, QDBusConnection::ExportAllContents)) {
         qWarning() << QDBusConnection::sessionBus().lastError().message();
         return;
     }
@@ -267,6 +281,8 @@ void SysTray::drawBattery(double left)
 // timeouts and xss must be >= user value and service has to be empty before auto sleep
 void SysTray::timeout()
 {
+    if (tray->isSystemTrayAvailable() && !tray->isVisible()) { tray->show(); }
+
     qDebug() << "timeout?" << timeouts;
     qDebug() << "XSS?" << xIdle();
     qDebug() << "inhibit?" << pm->HasInhibit();
