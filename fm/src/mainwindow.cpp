@@ -235,7 +235,10 @@ MainWindow::MainWindow()
     //if (isDaemon) startDaemon();
     /*else*/ show();
 
+    //
     isRefreshing = false;
+    trashDir = Common::trashDir();
+
     QTimer::singleShot(0, this, SLOT(lateStart()));
 }
 //---------------------------------------------------------------------------
@@ -1289,6 +1292,9 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         }
         actions = (customActManager->getActions()->values("*"));
         popup->addActions(actions);
+        if (modelList->getRootPath() != trashDir) {
+            popup->addAction(trashAct);
+        }
         popup->addAction(deleteAct);
         popup->addSeparator();
         actions = customActManager->getActions()->values(curIndex.path());    //children of $parent
@@ -1314,6 +1320,9 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
 
         actions = customActManager->getActions()->values("*");
         popup->addActions(actions);
+        if (modelList->getRootPath() != trashDir) {
+            popup->addAction(trashAct);
+        }
         popup->addAction(deleteAct);
         popup->addSeparator();
 
@@ -1395,6 +1404,9 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       popup->addSeparator();
       popup->addAction(renameAct);
       popup->addSeparator();
+      if (modelList->getRootPath() != trashDir) {
+        popup->addAction(trashAct);
+      }
       popup->addAction(deleteAct);
     }
     popup->addSeparator();

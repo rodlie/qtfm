@@ -37,7 +37,7 @@ void MainWindow::createActionIcons() {
   out >> *actionIcons;
   icons.close();*/
 
-  if (actionIcons->count() < 27) {
+  if (actionIcons->count() < 28) {
     actionIcons->append(QIcon::fromTheme("folder-new",QIcon(":/images/folder-new.png")));
     actionIcons->append(QIcon::fromTheme("document-new",QIcon(":/images/document-new.png")));
     actionIcons->append(QIcon::fromTheme("edit-cut",QIcon(":/images/cut.png")));
@@ -65,7 +65,7 @@ void MainWindow::createActionIcons() {
     actionIcons->append(QIcon::fromTheme("zoom-out",QIcon(":/images/zoom-out.png")));
     actionIcons->append(QIcon::fromTheme("window-close",QIcon(":/images/window-close.png")));
     actionIcons->append(QIcon::fromTheme("tab-new",QIcon(":/images/folder-new.png")));          //26
-
+    actionIcons->append(QIcon::fromTheme("user-trash",QIcon(":/images/user-trash.png")));          //27
     /*icons.open(QIODevice::WriteOnly);
     QDataStream out(&icons);
     out << *actionIcons;
@@ -227,8 +227,14 @@ void MainWindow::createActions() {
   connect(wrapBookmarksAct, SIGNAL(triggered()),this,SLOT(toggleWrapBookmarks()));
   actionList->append(wrapBookmarksAct);
 
+  trashAct = new QAction(tr("Move to Trash"), this);
+  trashAct->setStatusTip(tr("Move selected to trash"));
+  connect(trashAct, SIGNAL(triggered(bool)), this, SLOT(trashFile()));
+  trashAct->setIcon(actionIcons->at(27));
+  actionList->append(trashAct);
+
   deleteAct = new QAction(tr("Delete"), this);
-  deleteAct->setStatusTip(tr("Delete selected file"));
+  deleteAct->setStatusTip(tr("Delete selected"));
   connect(deleteAct, SIGNAL(triggered()), this, SLOT(deleteFile()));
   deleteAct->setIcon(actionIcons->at(14));
   actionList->append(deleteAct);
@@ -374,7 +380,8 @@ void MainWindow::readShortcuts() {
     shortcuts.insert(backAct->text(),"backspace");
     //shortcuts.insert(homeAct->text(),"f1");
     shortcuts.insert(hiddenAct->text(),"ctrl+h");
-    shortcuts.insert(deleteAct->text(),"del");
+    shortcuts.insert(trashAct->text(), "del");
+    shortcuts.insert(deleteAct->text(),"shift+del");
     //shortcuts.insert(terminalAct->text(),"f4");
     shortcuts.insert(exitAct->text(),"ctrl+q");
     shortcuts.insert(renameAct->text(),"f2");
@@ -459,6 +466,7 @@ void MainWindow::createMenus() {
   editMenu->addAction(copyAct);
   editMenu->addAction(pasteAct);
   editMenu->addAction(renameAct);
+  editMenu->addAction(trashAct);
   editMenu->addAction(deleteAct);
   editMenu->addSeparator();
   editMenu->addAction(addBookmarkAct);

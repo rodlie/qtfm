@@ -28,5 +28,6 @@
         <file>images/preferences.png</file>
         <file>images/properties.png</file>
         <file>images/background.png</file>
+        <file>images/user-trash.png</file>
     </qresource>
 </RCC>
