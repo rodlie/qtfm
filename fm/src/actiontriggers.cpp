@@ -254,10 +254,59 @@ void MainWindow::deleteFile() {
     QString title = tr("Failed");
     QString msg = tr("Could not delete some items...do you have the right "
                      "permissions?");
-    QMessageBox::information(this, title, msg);
+    QMessageBox::warning(this, title, msg);
   }
 
   return;
+}
+
+void MainWindow::trashFile()
+{
+    // Temporary selection files
+    QModelIndexList selList;
+    QStringList fileList;
+
+    // Selection
+    if (focusWidget() == tree) {
+      selList << modelView->mapFromSource(modelList->index(pathEdit->itemText(0)));
+    } else if (listSelectionModel->selectedRows(0).count()) {
+      selList = listSelectionModel->selectedRows(0);
+    } else {
+      selList = listSelectionModel->selectedIndexes();
+    }
+
+    // Retrieve selected indices
+    foreach (QModelIndex item, selList) {
+      fileList.append(modelList->filePath(modelView->mapToSource(item)));
+    }
+
+    bool ok = true;
+    for (int i=0;i<fileList.size();++i) {
+        QFileInfo file(fileList.at(i));
+        if (!file.isWritable()) {
+            ok = false;
+            continue;
+        }
+        QString trashPath = QString("%1/%2").arg(trashDir).arg(file.absoluteFilePath().split("/").takeLast());
+        while (QFile::exists(trashPath)) {
+            trashPath = QString("%1/%2.%3").arg(trashDir).arg(file.absoluteFilePath().split("/").takeLast()).arg(QDateTime::currentDateTime().toString("yyyyMMddHHmmssz"));
+        }
+        if (file.isDir()) {
+            QDir origDir(file.absoluteFilePath());
+            bool movedDir = origDir.rename(file.absoluteFilePath(), trashPath);
+            if (!movedDir) { ok = false; }
+        } else if (file.isFile()) {
+            QFile origFile(file.absoluteFilePath());
+            bool movedFile = origFile.rename(file.absoluteFilePath(), trashPath);
+            if (!movedFile) { ok = false; }
+        }
+    }
+    if(!ok) {
+      QString title = tr("Failed");
+      QString msg = tr("Could not move some items...do you have the right "
+                       "permissions?");
+      QMessageBox::warning(this, title, msg);
+    }
 }
 //---------------------------------------------------------------------------
 

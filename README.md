@@ -8,6 +8,15 @@ lightweight file manager using Qt.
  * Customizable key bindings
  * Drag & drop functionality
  * Tabs
+ * Udisks support
+ * UPower support (experimental)
+   * org.freedesktop.ScreenSaver support
+   * org.freedesktop.PowerManagement support
+   * Critical battery action
+   * auto sleep action
+   * lid action
+   
+UPower support is a seperate application called ``qtfm-power``, and should be started during the X11 session.
 
 ## Links
 
@@ -21,9 +30,12 @@ Download the latest [release](https://github.com/rodlie/qtfm/releases), then mak
 
 * Requires [Qt](http://qt.io) 4/5 development files
 * Requires [file](http://darwinsys.com/file/) development files **if using Qt 4**
+* Requires xss (X11 Screen Saver extension client library) if building qtfm-power
 * Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/) at run time
 * Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/) at run time
+* Optional [upower](https://upower.freedesktop.org/) at run time if using qtfm-power
 * Optional [tango-icon-theme](http://tango.freedesktop.org) (or similar) at run time
+* Optional [xscreensaver](https://www.jwz.org/xscreensaver/) at run time if using qtfm-power
 
 Download and extract:
 ```

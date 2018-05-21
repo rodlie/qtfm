@@ -28,6 +28,15 @@ public:
         }
         return dir;
     }
+    static QString trashDir()
+    {
+        QString dir = QString("%1/.local/share/Trash").arg(QDir::homePath());
+        if (!QFile::exists(dir)) {
+            QDir makedir(dir);
+            if (!makedir.mkpath(dir)) { dir.clear(); }
+        }
+        return dir;
+    }
     static QStringList iconLocations()
     {
         QStringList result;

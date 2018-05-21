@@ -82,6 +82,7 @@ public slots:
     void goBackDir();
     void goHomeDir();
     void deleteFile();
+    void trashFile();
     void cutFile();
     void copyFile();
     bool cutCopyFile(const QString &source, QString dest, qint64 totalSize, bool cut);
@@ -290,10 +291,12 @@ private:
     QAction *aboutAct;
     QAction *mediaUnmountAct;
     QAction *mediaEjectAct;
+    QAction *trashAct;
 
     // libdisks
     Disks *disks;
     bool isRefreshing;
+    QString trashDir;
 };
 
 //---------------------------------------------------------------------------------

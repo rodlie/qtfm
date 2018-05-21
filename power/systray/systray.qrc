@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/battery-caution-charging.png</file>
+        <file>icons/battery-empty.png</file>
+        <file>icons/battery-full-charged.png</file>
+        <file>icons/battery-full-charging.png</file>
+        <file>icons/battery-full.png</file>
+        <file>icons/battery-good-charging.png</file>
+        <file>icons/battery-good.png</file>
+        <file>icons/battery-low-charging.png</file>
+        <file>icons/battery-low.png</file>
+        <file>icons/battery-missing.png</file>
+        <file>icons/battery-caution.png</file>
+        <file>icons/battery.png</file>
+    </qresource>
+</RCC>

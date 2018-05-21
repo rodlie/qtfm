@@ -3,5 +3,8 @@ CONFIG += ordered
 exists(libdisks) {
     SUBDIRS += libdisks
 }
-SUBDIRS += fm
+exists(libpower) {
+    SUBDIRS += libpower
+}
+SUBDIRS += fm power
 OTHER_FILES += README.md
