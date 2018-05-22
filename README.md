@@ -65,7 +65,7 @@ mkdir build && cd build
 ```
 qmake CONFIG+=release ..
 ```
-** Add CONFIG+=with_power to enable qtfm-power**
+_Add **CONFIG+=with_power** to enable qtfm-power_
 
 ```
 make
