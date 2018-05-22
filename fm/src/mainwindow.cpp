@@ -946,7 +946,10 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
   // If drag mode is unknown then ask what to do
   if (dragMode == myModel::DM_UNKNOWN) {
     QMessageBox box;
-    box.setWindowTitle(tr("What do you want to do?"));
+    box.setWindowTitle(tr("Select file action"));
+    box.setWindowIcon(QIcon::fromTheme("folder"));
+    box.setIconPixmap(QIcon::fromTheme("dialog-information").pixmap(QSize(32, 32)));
+    box.setText(tr("<h3>What do you want to do?</h3>"));
     QAbstractButton *move = box.addButton(tr("Move here"), QMessageBox::ActionRole);
     QAbstractButton *copy = box.addButton(tr("Copy here"), QMessageBox::ActionRole);
     QAbstractButton *link = box.addButton(tr("Link here"), QMessageBox::ActionRole);
