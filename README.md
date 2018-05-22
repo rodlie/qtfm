@@ -1,7 +1,5 @@
 ![screenshot](qtfm.png)
 
-## QtFM
-
 Lightweight file manager using Qt.
 
  * Desktop (theme/applications/mime) integration
@@ -12,9 +10,11 @@ Lightweight file manager using Qt.
  * Tabs
  * Udisks device support
 
-## QtFM Power (experimental)
+## QtFM Power
 
-Lightweight power daemon/systray with support for UPower and freedesktop.
+![screenshot2](qtfm-power.png)
+
+Experimental lightweight power daemon/systray with support for UPower and freedesktop.
 
  * org.freedesktop.ScreenSaver support
  * org.freedesktop.PowerManagement support
