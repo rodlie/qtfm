@@ -7,6 +7,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp dialog.cpp
 HEADERS += dialog.h ../common.h
+RESOURCES += res.qrc
 INCLUDEPATH += ..
 
 include(../../qtfm.pri)
@@ -21,5 +22,4 @@ target_docs.files = ../../LICENSE ../../README.md
 INSTALLS += target target_desktop
 # target_docs
 
-RESOURCES += \
-    res.qrc
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT

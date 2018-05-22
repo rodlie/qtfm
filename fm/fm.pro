@@ -81,3 +81,4 @@ exists(../libdisks) {
 }
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT

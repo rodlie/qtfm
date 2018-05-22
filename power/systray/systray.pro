@@ -34,3 +34,5 @@ target_docs.path = $${DOCDIR}/$${TARGET}-$${VERSION}
 target_docs.files = ../../LICENSE ../../README.md
 INSTALLS += target
 # target_desktop target_docs
+
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
