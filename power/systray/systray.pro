@@ -32,4 +32,5 @@ target_desktop.path = $${XDGDIR}/autostart
 target_desktop.files = $${TARGET}.desktop
 target_docs.path = $${DOCDIR}/$${TARGET}-$${VERSION}
 target_docs.files = ../../LICENSE ../../README.md
-INSTALLS += target target_desktop target_docs
+INSTALLS += target
+# target_desktop target_docs

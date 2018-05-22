@@ -18,7 +18,8 @@ target_desktop.path = $${PREFIX}/share/applications
 target_desktop.files = $${TARGET}.desktop
 target_docs.path = $${DOCDIR}/$${TARGET}-$${VERSION}
 target_docs.files = ../../LICENSE ../../README.md
-INSTALLS += target target_desktop target_docs
+INSTALLS += target target_desktop
+# target_docs
 
 RESOURCES += \
     res.qrc

@@ -84,7 +84,24 @@ Example:
 
 ```
 mkdir build && cd build
-qmake CONFIG+=release PREFIX=/usr ..
+qmake CONFIG+=release CONFIG+=with_power PREFIX=/usr ..
 make -jX
 make INSTALL_ROOT=/package_temp_path install
 ```
+```
+package
+└── usr
+    ├── bin
+    │   ├── qtfm
+    │   ├── qtfm-power
+    │   └── qtfm-power-settings
+    └── share
+        ├── applications
+        │   ├── qtfm-power-settings.desktop
+        │   └── qtfm.desktop
+        └── doc
+            └── qtfm-6.0.0
+                ├── LICENSE
+                └── README.md
+```
+* You can change the doc location with ``DOCDIR=``, default is ``PREFIX/share/doc``.
