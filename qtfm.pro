@@ -3,8 +3,10 @@ CONFIG += ordered
 exists(libdisks) {
     SUBDIRS += libdisks
 }
-exists(libpower) {
-    SUBDIRS += libpower
+SUBDIRS += fm
+contains(CONFIG, with_power) {
+    message("Enabled qtfm-power")
+    exists(libpower): SUBDIRS += libpower
+    SUBDIRS += power
 }
-SUBDIRS += fm power
 OTHER_FILES += README.md

@@ -1,6 +1,8 @@
 ![screenshot](qtfm.png)
 
-lightweight file manager using Qt.
+## QtFM
+
+Lightweight file manager using Qt.
 
  * Desktop (theme/applications/mime) integration
  * Customizable interface
@@ -8,15 +10,19 @@ lightweight file manager using Qt.
  * Customizable key bindings
  * Drag & drop functionality
  * Tabs
- * Udisks support
- * UPower support (experimental)
-   * org.freedesktop.ScreenSaver support
-   * org.freedesktop.PowerManagement support
-   * Critical battery action
-   * auto sleep action
-   * lid action
+ * Udisks device support
+
+## QtFM Power (experimental)
+
+Lightweight power daemon/systray with support for UPower and freedesktop.
+
+ * org.freedesktop.ScreenSaver support
+ * org.freedesktop.PowerManagement support
+ * Critical battery action
+ * auto sleep action
+ * lid action
    
-UPower support is a seperate application called ``qtfm-power``, and should be started during the X11 session.
+This is a seperate application called ``qtfm-power``, and should be started during the X11 session in Fluxbox ``~/.fluxbox/startup`` or Openbox ``~/.config/openbox/autostart``.
 
 ## Links
 
@@ -51,10 +57,20 @@ git submodule update --init --recursive
 ```
 
 Now you just need to build it:
+
 ```
 mkdir build && cd build
-qmake CONFIG+=release .. && make
 ```
+
+```
+qmake CONFIG+=release ..
+```
+** Add CONFIG+=with_power to enable qtfm-power**
+
+```
+make
+```
+
 You can run the binary ``fm/qtfm`` or install to ``/usr/local``:
 ```
 sudo make install
