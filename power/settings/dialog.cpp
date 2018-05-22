@@ -15,6 +15,7 @@
 #include "common.h"
 #include <QDBusConnection>
 #include <QDBusInterface>
+#include <QMessageBox>
 
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
@@ -25,15 +26,25 @@ Dialog::Dialog(QWidget *parent)
     , criticalBattery(0)
     , autoSleepBattery(0)
     , autoSleepAC(0)
+    , desktopSS(0)
+    , desktopPM(0)
+    , showNotifications(0)
+    , showBatteryPercent(0)
+    , showSystemTray(0)
 {
     // setup dialog
     setAttribute(Qt::WA_QuitOnClose, true);
     setWindowTitle(tr("Power Settings"));
     setWindowIcon(QIcon::fromTheme(DEFAULT_BATTERY_ICON, QIcon(":/battery.png")));
+    setMinimumSize(QSize(400,200));
 
     // setup widgets
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
     QTabWidget *containerWidget = new QTabWidget(this);
+
+    QWidget *wrapper = new QWidget(this);
+    QHBoxLayout *wrapperLayout = new QHBoxLayout(wrapper);
+    layout->addWidget(wrapper);
 
     QLabel *powerLabel = new QLabel(this);
     QIcon powerIcon = QIcon::fromTheme(DEFAULT_BATTERY_ICON, QIcon(":/battery.png"));
@@ -42,8 +53,8 @@ Dialog::Dialog(QWidget *parent)
     powerLabel->setMaximumSize(QSize(64, 64));
 
     //layout->setSizeConstraint(QLayout::SetFixedSize); // lock dialog size
-    layout->addWidget(powerLabel);
-    layout->addWidget(containerWidget);
+    wrapperLayout->addWidget(powerLabel);
+    wrapperLayout->addWidget(containerWidget);
 
     QWidget *batteryContainer = new QWidget(this);
     QVBoxLayout *batteryContainerLayout = new QVBoxLayout(batteryContainer);
@@ -139,6 +150,37 @@ Dialog::Dialog(QWidget *parent)
     acContainerLayout->addStretch();
     containerWidget->addTab(acContainer, tr("On AC"));
 
+    QWidget *desktopContainer = new QWidget(this);
+    QVBoxLayout *desktopContainerLayout = new QVBoxLayout(desktopContainer);
+
+    desktopSS = new QCheckBox(this);
+    desktopSS->setText("org.freedesktop.ScreenSaver");
+    desktopPM = new QCheckBox(this);
+    desktopPM->setText("org.freedesktop.PowerManagement");
+
+    desktopContainerLayout->addWidget(desktopSS);
+    desktopContainerLayout->addWidget(desktopPM);
+
+    desktopContainerLayout->addStretch();
+    containerWidget->addTab(desktopContainer, tr("Desktop Integration"));
+
+    QWidget *extraContainer = new QWidget(this);
+    QHBoxLayout *extraContainerLayout = new QHBoxLayout(extraContainer);
+
+    showSystemTray  = new QCheckBox(this);
+    showSystemTray->setText(tr("System tray"));
+    extraContainerLayout->addWidget(showSystemTray);
+
+    showNotifications = new QCheckBox(this);
+    showNotifications->setText(tr("Notifications"));
+    extraContainerLayout->addWidget(showNotifications);
+
+    showBatteryPercent = new QCheckBox(this);
+    showBatteryPercent->setText(tr("Battery percent"));
+    extraContainerLayout->addWidget(showBatteryPercent);
+
+    layout->addWidget(extraContainer);
+
     populate(); // populate boxes
     loadSettings(); // load settings
 
@@ -150,6 +192,11 @@ Dialog::Dialog(QWidget *parent)
     connect(criticalBattery, SIGNAL(valueChanged(int)), this, SLOT(handleCriticalBattery(int)));
     connect(autoSleepBattery, SIGNAL(valueChanged(int)), this, SLOT(handleAutoSleepBattery(int)));
     connect(autoSleepAC, SIGNAL(valueChanged(int)), this, SLOT(handleAutoSleepAC(int)));
+    connect(desktopSS, SIGNAL(toggled(bool)), this, SLOT(handleDesktopSS(bool)));
+    connect(desktopPM, SIGNAL(toggled(bool)), this, SLOT(handleDesktopPM(bool)));
+    connect(showNotifications, SIGNAL(toggled(bool)), this, SLOT(handleShowNotifications(bool)));
+    connect(showBatteryPercent, SIGNAL(toggled(bool)), this, SLOT(handleShowBatteryPercent(bool)));
+    connect(showSystemTray, SIGNAL(toggled(bool)), this, SLOT(handleShowSystemTray(bool)));
 }
 
 // populate widgets with default values
@@ -217,6 +264,36 @@ void Dialog::loadSettings()
         defaultCriticalAction = Common::loadPowerSettings("criticalAction").toInt();
     }
     setDefaultAction(criticalActionBattery, defaultCriticalAction);
+
+    bool defaultDesktopSS = true;
+    if (Common::validPowerSettings("desktop_ss")) {
+        defaultDesktopSS = Common::loadPowerSettings("desktop_ss").toBool();
+    }
+    desktopSS->setChecked(defaultDesktopSS);
+
+    bool defaultDesktopPM = true;
+    if (Common::validPowerSettings("desktop_pm")) {
+        defaultDesktopPM = Common::loadPowerSettings("desktop_pm").toBool();
+    }
+    desktopPM->setChecked(defaultDesktopPM);
+
+    bool defaultShowNotifications = true;
+    if (Common::validPowerSettings("tray_notify")) {
+        defaultShowNotifications = Common::loadPowerSettings("tray_notify").toBool();
+    }
+    showNotifications->setChecked(defaultShowNotifications);
+
+    bool defaultShowBatteryPercent = true;
+    if (Common::validPowerSettings("show_battery_percent")) {
+        defaultShowBatteryPercent = Common::loadPowerSettings("show_battery_percent").toBool();
+    }
+    showBatteryPercent->setChecked(defaultShowBatteryPercent);
+
+    bool defaultShowTray = true;
+    if (Common::validPowerSettings("show_tray")) {
+        defaultShowTray = Common::loadPowerSettings("show_tray").toBool();
+    }
+    showSystemTray->setChecked(defaultShowTray);
 }
 
 // tell power manager to update settings
@@ -284,5 +361,37 @@ void Dialog::handleAutoSleepBattery(int value)
 void Dialog::handleAutoSleepAC(int value)
 {
     Common::savePowerSettings("autoSleepAC", value);
+    updatePM();
+}
+
+void Dialog::handleDesktopSS(bool triggered)
+{
+    Common::savePowerSettings("desktop_ss", triggered);
+    updatePM();
+    QMessageBox::information(this, tr("Restart required"), tr("You must restart the power daemon to apply this setting"));
+}
+
+void Dialog::handleDesktopPM(bool triggered)
+{
+    Common::savePowerSettings("desktop_pm", triggered);
+    updatePM();
+    QMessageBox::information(this, tr("Restart required"), tr("You must restart the power daemon to apply this setting"));
+}
+
+void Dialog::handleShowNotifications(bool triggered)
+{
+    Common::savePowerSettings("tray_notify", triggered);
+    updatePM();
+}
+
+void Dialog::handleShowBatteryPercent(bool triggered)
+{
+    Common::savePowerSettings("show_battery_percent", triggered);
+    updatePM();
+}
+
+void Dialog::handleShowSystemTray(bool triggered)
+{
+    Common::savePowerSettings("show_tray", triggered);
     updatePM();
 }

@@ -32,6 +32,10 @@ private:
     QTimer *timer;
     int timeouts;
     bool showNotifications;
+    bool desktopSS;
+    bool desktopPM;
+    bool showBatteryPercent;
+    bool showTray;
 
 private slots:
     void trayActivated(QSystemTrayIcon::ActivationReason reason);

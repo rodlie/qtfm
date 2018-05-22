@@ -26,6 +26,10 @@ SysTray::SysTray(QObject *parent)
     , timer(0)
     , timeouts(0)
     , showNotifications(true)
+    , desktopSS(true)
+    , desktopPM(true)
+    , showBatteryPercent(true)
+    , showTray(true)
 {
     // setup tray
     tray = new QSystemTrayIcon(QIcon::fromTheme(DEFAULT_BATTERY_ICON, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON))), this);
@@ -74,7 +78,8 @@ void SysTray::trayActivated(QSystemTrayIcon::ActivationReason reason)
 
 void SysTray::checkDevices()
 {
-    if (tray->isSystemTrayAvailable() && !tray->isVisible()) { tray->show(); }
+    if (tray->isSystemTrayAvailable() && !tray->isVisible() && showTray) { tray->show(); }
+    if (!showTray && tray->isVisible()) { tray->hide(); }
 
     // get battery left and add tooltip
     double batteryLeft = man->batteryLeft();
@@ -121,7 +126,7 @@ void SysTray::handleOpenedLid()
 // do something when switched to battery power
 void SysTray::handleOnBattery()
 {
-    if (showNotifications) {
+    if (showNotifications && tray->isVisible()) {
         tray->showMessage(tr("On Battery"), tr("Switched to battery power."));
     }
 }
@@ -129,7 +134,7 @@ void SysTray::handleOnBattery()
 // do something when switched to ac power
 void SysTray::handleOnAC()
 {
-    if (showNotifications) {
+    if (showNotifications && tray->isVisible()) {
         tray->showMessage(tr("On AC"), tr("Switched to AC power."));
     }
 }
@@ -158,6 +163,27 @@ void SysTray::loadSettings()
     if (Common::validPowerSettings("criticalAction")) {
         criticalAction = Common::loadPowerSettings("criticalAction").toInt();
     }
+    if (Common::validPowerSettings("desktop_ss")) {
+        desktopSS = Common::loadPowerSettings("desktop_ss").toBool();
+    }
+    if (Common::validPowerSettings("desktop_pm")) {
+        desktopPM = Common::loadPowerSettings("desktop_pm").toBool();
+    }
+    if (Common::validPowerSettings("tray_notify")) {
+        showNotifications = Common::loadPowerSettings("tray_notify").toBool();
+    }
+    if (Common::validPowerSettings("show_battery_percent")) {
+        showBatteryPercent = Common::loadPowerSettings("show_battery_percent").toBool();
+    }
+    if (Common::validPowerSettings("show_tray")) {
+        showTray = Common::loadPowerSettings("show_tray").toBool();
+    }
+
+    qDebug() << "show tray" << showTray;
+    qDebug() << "battery percent" << showBatteryPercent;
+    qDebug() << "tray notify" << showNotifications;
+    qDebug() << "desktop ss" << desktopSS;
+    qDebug() << "desktop pm" << desktopPM;
     qDebug() << "auto sleep battery" << autoSleepBattery;
     qDebug() << "auto sleep ac" << autoSleepAC;
     qDebug() << "low battery setting" << lowBatteryValue;
@@ -175,21 +201,27 @@ void SysTray::registerService()
         qWarning("Cannot connect to D-Bus.");
         return;
     }
-    if (!QDBusConnection::sessionBus().registerService(PM_SERVICE)) {
-        qWarning() << QDBusConnection::sessionBus().lastError().message();
-        return;
+    if (desktopPM) {
+        if (!QDBusConnection::sessionBus().registerService(PM_SERVICE)) {
+            qWarning() << QDBusConnection::sessionBus().lastError().message();
+            return;
+        }
+        if (!QDBusConnection::sessionBus().registerObject(PM_PATH, pm, QDBusConnection::ExportAllContents)) {
+            qWarning() << QDBusConnection::sessionBus().lastError().message();
+            return;
+        }
+        qDebug() << "Enabled org.freedesktop.PowerManagement";
     }
-    if (!QDBusConnection::sessionBus().registerObject(PM_PATH, pm, QDBusConnection::ExportAllContents)) {
-        qWarning() << QDBusConnection::sessionBus().lastError().message();
-        return;
-    }
-    if (!QDBusConnection::sessionBus().registerService(SS_SERVICE)) {
-        qWarning() << QDBusConnection::sessionBus().lastError().message();
-        return;
-    }
-    if (!QDBusConnection::sessionBus().registerObject(SS_PATH, ss, QDBusConnection::ExportAllContents)) {
-        qWarning() << QDBusConnection::sessionBus().lastError().message();
-        return;
+    if (desktopSS) {
+        if (!QDBusConnection::sessionBus().registerService(SS_SERVICE)) {
+            qWarning() << QDBusConnection::sessionBus().lastError().message();
+            return;
+        }
+        if (!QDBusConnection::sessionBus().registerObject(SS_PATH, ss, QDBusConnection::ExportAllContents)) {
+            qWarning() << QDBusConnection::sessionBus().lastError().message();
+            return;
+        }
+        qDebug() << "Enabled org.freedesktop.ScreenSaver";
     }
     hasService = true;
 }
@@ -219,6 +251,12 @@ void SysTray::handleCritical()
 // draw battery percent over tray icon
 void SysTray::drawBattery(double left)
 {
+    if (!showTray && tray->isVisible()) {
+        tray->hide();
+        return;
+    }
+    if (tray->isSystemTrayAvailable() && !tray->isVisible() && showTray) { tray->show(); }
+
     QIcon icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON)));
     if (left<=(double)lowBatteryValue && man->onBattery()) {
         icon = QIcon::fromTheme(DEFAULT_BATTERY_ICON_LOW, QIcon(QString(":/icons/%1.png").arg(DEFAULT_BATTERY_ICON_LOW)));
@@ -263,7 +301,7 @@ void SysTray::drawBattery(double left)
         }
     }
 
-    if (left > 99 || left == 0 || !man->onBattery()) {
+    if (left > 99 || left == 0 || !man->onBattery() || !showBatteryPercent) {
         tray->setIcon(icon);
         return;
     }
@@ -281,7 +319,8 @@ void SysTray::drawBattery(double left)
 // timeouts and xss must be >= user value and service has to be empty before auto sleep
 void SysTray::timeout()
 {
-    if (tray->isSystemTrayAvailable() && !tray->isVisible()) { tray->show(); }
+    if (!showTray && tray->isVisible()) { tray->hide(); }
+    if (tray->isSystemTrayAvailable() && !tray->isVisible() && showTray) { tray->show(); }
 
     qDebug() << "timeout?" << timeouts;
     qDebug() << "XSS?" << xIdle();
