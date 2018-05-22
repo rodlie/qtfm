@@ -8,7 +8,7 @@ VERSION = $${QTFM_MAJOR}.$${QTFM_MINOR}.$${QTFM_PATCH}
 TEMPLATE = app
 
 DEPENDPATH += . src
-INCLUDEPATH += . src
+INCLUDEPATH += . src ../libfm
 
 HEADERS += src/mainwindow.h \
     src/mymodel.h \
@@ -27,7 +27,7 @@ HEADERS += src/mainwindow.h \
     src/properties.h \
     src/mimeutils.h \
     src/aboutdialog.h \
-    src/common.h
+    ../libfm/common.h
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/mymodel.cpp \
