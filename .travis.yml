@@ -11,12 +11,18 @@ install:
   
 script:
   - git submodule update --init --recursive
-  - qmake -qt=qt5 CONFIG+=release CONFIG+=with_power
+  - export CWD=`pwd`
+  - mkdir $CWD/qt5
+  - cd $CWD/qt5
+  - qmake -qt=qt5 CONFIG+=release PREFIX=/usr CONFIG+=with_power ..
   - make
-  - make INSTALL_ROOT=`pwd`/build1 install
-  - make clean
-  - rm -rf .qmake* Makefile*
-  - qmake -qt=qt4 CONFIG+=release CONFIG+=with_power
+  - make INSTALL_ROOT=`pwd`/pkg install
+  - tree pkg
+  - cd $CWD
+  - mkdir $CWD/qt4
+  - cd $CWD/qt4
+  - qmake -qt=qt4 CONFIG+=release PREFIX=/usr CONFIG+=with_power ..
   - make
-  - make INSTALL_ROOT=`pwd`/build2 install
-  - tree build1 build2
+  - make INSTALL_ROOT=`pwd`/pkg install
+  - tree pkg
+  - cd $CWD
