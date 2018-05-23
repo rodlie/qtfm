@@ -1,0 +1,22 @@
+language: cpp
+compiler: g++
+dist: trusty
+sudo: required
+
+before_install:
+  - sudo apt-get update
+
+install:
+  - sudo apt-get install qt4-dev-tools qtbase5-dev libxss-dev libmagic-dev qt4-qmake qt5-qmake tree
+  
+script:
+  - git submodule update --init --recursive
+  - qmake -qt=qt5 CONFIG+=release CONFIG+=with_power
+  - make
+  - make INSTALL_ROOT=`pwd`/build1 install
+  - make clean
+  - rm -rf .qmake* Makefile*
+  - qmake -qt=qt4 CONFIG+=release CONFIG+=with_power
+  - make
+  - make INSTALL_ROOT=`pwd`/build2 install
+  - tree build1 build2
