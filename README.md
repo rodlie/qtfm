@@ -31,6 +31,8 @@ This is a seperate application called ``qtfm-power``, and should be started duri
  * [Releases](https://github.com/rodlie/qtfm/releases)
  * [Milestones](https://github.com/rodlie/qtfm/milestones)
  * [Issues](https://github.com/rodlie/qtfm/issues)
+ * [Slackware](https://slackbuilds.org/repository/14.2/system/qtfm/)
+ * [Arch Linux](https://aur.archlinux.org/packages/qtfm/)
  
 ## Build
 
