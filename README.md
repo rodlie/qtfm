@@ -33,6 +33,7 @@ This is a seperate application called ``qtfm-power``, and should be started duri
  * [Issues](https://github.com/rodlie/qtfm/issues)
  * [Slackware](https://slackbuilds.org/repository/14.2/system/qtfm/)
  * [Arch Linux](https://aur.archlinux.org/packages/qtfm/)
+ * [Gentoo](https://packages.gentoo.org/packages/x11-misc/qtfm)
  
 ## Build
 
