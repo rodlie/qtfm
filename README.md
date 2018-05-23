@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
+
 ![screenshot](qtfm.png)
 
 Lightweight file manager using Qt.
