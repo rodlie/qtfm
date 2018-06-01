@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
+
 ![screenshot](qtfm.png)
 
 Lightweight file manager using Qt.
@@ -29,6 +31,9 @@ This is a seperate application called ``qtfm-power``, and should be started duri
  * [Releases](https://github.com/rodlie/qtfm/releases)
  * [Milestones](https://github.com/rodlie/qtfm/milestones)
  * [Issues](https://github.com/rodlie/qtfm/issues)
+ * [Slackware](https://slackbuilds.org/repository/14.2/system/qtfm/)
+ * [Arch Linux](https://aur.archlinux.org/packages/qtfm/)
+ * [Gentoo](https://packages.gentoo.org/packages/x11-misc/qtfm)
  
 ## Build
 
