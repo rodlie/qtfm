@@ -506,7 +506,8 @@ QMimeData * myModel::mimeData(const QModelIndexList & indexes) const
 
     foreach(QModelIndex index, indexes) {
         myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
-        files.append(QUrl::fromLocalFile(item->absoluteFilePath()));
+        QUrl url = QUrl::fromLocalFile(item->absoluteFilePath());
+        if (!files.contains(url)) { files.append(url); }
     }
 
     data->setUrls(files);
