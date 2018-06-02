@@ -52,13 +52,16 @@ QString MimeUtils::getMimeType(const QString &path) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QMimeDatabase db;
     QMimeType type = db.mimeTypeForFile(path);
+    qDebug() << "mime type" << type.name() << path;
     return type.name();
 #else
   magic_t cookie = magic_open(MAGIC_MIME);
   magic_load(cookie, 0);
   QString temp = magic_file(cookie, path.toLocal8Bit());
   magic_close(cookie);
-  return temp.left(temp.indexOf(";"));
+  QString mimeType = temp.left(temp.indexOf(";"));
+  qDebug()<< "mime type" << mimeType << path;
+  return mimeType;
 #endif
 }
 //---------------------------------------------------------------------------
@@ -79,13 +82,17 @@ QStringList MimeUtils::getMimeTypes() const {
  * @param file
  * @param processOwner
  */
-void MimeUtils::openInApp(const QFileInfo &file, QObject *processOwner) {
+void MimeUtils::openInApp(const QFileInfo &file, QString termCmd) {
   QString mime = getMimeType(file.filePath());
   QString app = defaults->value(mime).toString().split(";").first();
   QString desktop = Common::findApplication(app);
   if (!desktop.isEmpty()) {
     DesktopFile df = DesktopFile(desktop);
-    openInApp(df.getExec(), file, processOwner);
+    if (!df.isTerminal()) { termCmd.clear(); }
+    else {
+        if (termCmd.isEmpty()) { termCmd = "xterm"; }
+    }
+    openInApp(df.getExec(), file, termCmd);
   } else {
     QString title = tr("No default application");
     QString msg = tr("No default application for mime: %1!").arg(mime);
@@ -101,7 +108,9 @@ void MimeUtils::openInApp(const QFileInfo &file, QObject *processOwner) {
  * @param processOwner process owner (default NULL)
  */
 void MimeUtils::openInApp(QString exe, const QFileInfo &file,
-                          QObject *processOwner) {
+                          QString termCmd) {
+
+  qDebug() << "openInApp" << exe << file.absoluteFilePath() << termCmd;
 
   // This is not the right the solution, but qpdfview won't start otherwise
   // TODO: Repair it correctly
@@ -128,13 +137,23 @@ void MimeUtils::openInApp(QString exe, const QFileInfo &file,
     args.append(/*"\"" + */file.filePath()/* + "\""*/);
   }
 
-  //qDebug() << name << args;
+  qDebug() << "qprocess start detached" << name << args;
 
   // Start application
-  QProcess *myProcess = new QProcess(processOwner);
+ /* QProcess *myProcess = new QProcess(processOwner);
   myProcess->startDetached(name, QStringList() << args);
   myProcess->waitForFinished(1000);
-  //myProcess->terminate();
+  //myProcess->terminate();*/
+  //Q_UNUSED(processOwner)
+  QString cmd = name;
+  if (termCmd.isEmpty()) {
+    cmd.append(" ");
+    cmd.append(args);
+  } else {
+    cmd = QString("%1 -e \"%2 %3\"").arg(termCmd).arg(name).arg(args);
+  }
+  qDebug() << "running:" << cmd;
+  QProcess::startDetached(cmd);
 }
 //---------------------------------------------------------------------------
 
