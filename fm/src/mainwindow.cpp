@@ -1451,8 +1451,12 @@ QMenu* MainWindow::createOpenWithMenu() {
   // Load default applications for current mime
   QString mime = mimeUtils->getMimeType(curIndex.filePath());
   QStringList appNames = mimeUtils->getDefault(mime);
+  if (appNames.size()==1 && appNames.at(0).isEmpty() && mime.startsWith("text/")) {
+      qDebug() << "get fallback apps for text/plain";
+      appNames = mimeUtils->getDefault("text/plain");
+  }
 
-  //qDebug() << mime << appNames;
+  qDebug() << mime << appNames;
 
   // Create actions for opening
   QList<QAction*> defaultApps;
