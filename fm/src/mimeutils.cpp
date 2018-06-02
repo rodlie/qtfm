@@ -52,13 +52,16 @@ QString MimeUtils::getMimeType(const QString &path) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QMimeDatabase db;
     QMimeType type = db.mimeTypeForFile(path);
+    qDebug() << "mime type" << type.name() << path;
     return type.name();
 #else
   magic_t cookie = magic_open(MAGIC_MIME);
   magic_load(cookie, 0);
   QString temp = magic_file(cookie, path.toLocal8Bit());
   magic_close(cookie);
-  return temp.left(temp.indexOf(";"));
+  QString mimeType = temp.left(temp.indexOf(";"));
+  qDebug()<< "mime type" << mimeType << path;
+  return mimeType;
 #endif
 }
 //---------------------------------------------------------------------------
@@ -103,6 +106,8 @@ void MimeUtils::openInApp(const QFileInfo &file, QObject *processOwner) {
 void MimeUtils::openInApp(QString exe, const QFileInfo &file,
                           QObject *processOwner) {
 
+  qDebug() << "openInApp" << exe << file.absoluteFilePath();
+
   // This is not the right the solution, but qpdfview won't start otherwise
   // TODO: Repair it correctly
   if (exe.contains("qpdfview")) {
@@ -128,13 +133,18 @@ void MimeUtils::openInApp(QString exe, const QFileInfo &file,
     args.append(/*"\"" + */file.filePath()/* + "\""*/);
   }
 
-  //qDebug() << name << args;
+  qDebug() << "qprocess start detached" << name << args;
 
   // Start application
-  QProcess *myProcess = new QProcess(processOwner);
+ /* QProcess *myProcess = new QProcess(processOwner);
   myProcess->startDetached(name, QStringList() << args);
   myProcess->waitForFinished(1000);
-  //myProcess->terminate();
+  //myProcess->terminate();*/
+  Q_UNUSED(processOwner)
+  QString cmd = name;
+  cmd.append(" ");
+  cmd.append(args);
+  QProcess::startDetached(cmd);
 }
 //---------------------------------------------------------------------------
 
