@@ -483,7 +483,7 @@ void MainWindow::loadSettings() {
   modelView->sort(currentSortColumn, currentSortOrder);
 
   // Load terminal command
-  //term = settings->value("term").toString();
+  term = settings->value("term", "xterm").toString();
 
   // custom actions
   firstRunCustomActions(isFirstRun);
@@ -1473,7 +1473,7 @@ QMenu* MainWindow::createOpenWithMenu() {
 
     // Create action
     QAction* action = new QAction(df.getName(), openMenu);
-    action->setData(df.getExec());
+    action->setData(/*df.getExec()*/appDesktopFile);
     action->setIcon(FileUtils::searchAppIcon(df));
     defaultApps.append(action);
 
@@ -1505,7 +1505,7 @@ void MainWindow::selectApp() {
       QString desktop = Common::findApplication(appName);
       if (desktop.isEmpty()) { return; }
       DesktopFile df = DesktopFile(desktop);
-      mimeUtils->openInApp(df.getExec(), curIndex, this);
+      mimeUtils->openInApp(df.getExec(), curIndex, df.isTerminal()?term:"");
     }
   }
 }
@@ -1517,7 +1517,9 @@ void MainWindow::selectApp() {
 void MainWindow::openInApp() {
   QAction* action = dynamic_cast<QAction*>(sender());
   if (action) {
-    mimeUtils->openInApp(action->data().toString(), curIndex, this);
+    DesktopFile df = DesktopFile(action->data().toString());
+    if (df.getExec().isEmpty()) { return; }
+    mimeUtils->openInApp(df.getExec(), curIndex, df.isTerminal()?term:"");
   }
 }
 

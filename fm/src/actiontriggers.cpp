@@ -26,7 +26,7 @@ void MainWindow::executeFile(QModelIndex index, bool run) {
     QProcess *myProcess = new QProcess(this);
     myProcess->startDetached(modelList->filePath(srcIndex));
   } else {
-    mimeUtils->openInApp(modelList->fileInfo(srcIndex), this);
+    mimeUtils->openInApp(modelList->fileInfo(srcIndex), ""/*term*/);
   }
 }
 //---------------------------------------------------------------------------

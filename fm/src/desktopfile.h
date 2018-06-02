@@ -18,6 +18,7 @@ public:
   QString getExec() const;
   QString getIcon() const;
   QString getType() const;
+  bool isTerminal() const;
   QStringList getCategories() const;
   QStringList getMimeType() const;
 private:
@@ -26,6 +27,7 @@ private:
   QString exec;
   QString icon;
   QString type;
+  bool terminal;
   QStringList categories;
   QStringList mimeType;
 };

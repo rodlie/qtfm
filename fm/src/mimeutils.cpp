@@ -82,13 +82,17 @@ QStringList MimeUtils::getMimeTypes() const {
  * @param file
  * @param processOwner
  */
-void MimeUtils::openInApp(const QFileInfo &file, QObject *processOwner) {
+void MimeUtils::openInApp(const QFileInfo &file, QString termCmd) {
   QString mime = getMimeType(file.filePath());
   QString app = defaults->value(mime).toString().split(";").first();
   QString desktop = Common::findApplication(app);
   if (!desktop.isEmpty()) {
     DesktopFile df = DesktopFile(desktop);
-    openInApp(df.getExec(), file, processOwner);
+    if (!df.isTerminal()) { termCmd.clear(); }
+    else {
+        if (termCmd.isEmpty()) { termCmd = "xterm"; }
+    }
+    openInApp(df.getExec(), file, termCmd);
   } else {
     QString title = tr("No default application");
     QString msg = tr("No default application for mime: %1!").arg(mime);
@@ -104,9 +108,9 @@ void MimeUtils::openInApp(const QFileInfo &file, QObject *processOwner) {
  * @param processOwner process owner (default NULL)
  */
 void MimeUtils::openInApp(QString exe, const QFileInfo &file,
-                          QObject *processOwner) {
+                          QString termCmd) {
 
-  qDebug() << "openInApp" << exe << file.absoluteFilePath();
+  qDebug() << "openInApp" << exe << file.absoluteFilePath() << termCmd;
 
   // This is not the right the solution, but qpdfview won't start otherwise
   // TODO: Repair it correctly
@@ -140,10 +144,15 @@ void MimeUtils::openInApp(QString exe, const QFileInfo &file,
   myProcess->startDetached(name, QStringList() << args);
   myProcess->waitForFinished(1000);
   //myProcess->terminate();*/
-  Q_UNUSED(processOwner)
+  //Q_UNUSED(processOwner)
   QString cmd = name;
-  cmd.append(" ");
-  cmd.append(args);
+  if (termCmd.isEmpty()) {
+    cmd.append(" ");
+    cmd.append(args);
+  } else {
+    cmd = QString("%1 -e \"%2 %3\"").arg(termCmd).arg(name).arg(args);
+  }
+  qDebug() << "running:" << cmd;
   QProcess::startDetached(cmd);
 }
 //---------------------------------------------------------------------------

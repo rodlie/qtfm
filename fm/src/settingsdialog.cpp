@@ -119,10 +119,10 @@ QWidget *SettingsDialog::createGeneralSettings() {
   layoutConfirm->addRow(tr("Ask before file is deleted: "), checkDelete);
 
   // Terminal emulator
-  /*QGroupBox* grpTerm = new QGroupBox(tr("Terminal emulator"), widget);
+  QGroupBox* grpTerm = new QGroupBox(tr("Terminal emulator"), widget);
   QFormLayout* layoutTerm = new QFormLayout(grpTerm);
   editTerm = new QLineEdit(grpTerm);
-  layoutTerm->addRow(tr("Command: "), editTerm);*/
+  layoutTerm->addRow(tr("Command: "), editTerm);
 
   // Default mime apps
   QGroupBox* grpDMime = new QGroupBox(tr("Default mime applications"), widget);
@@ -135,7 +135,7 @@ QWidget *SettingsDialog::createGeneralSettings() {
   // Layout of widget
   layoutWidget->addWidget(grpAppear);
   layoutWidget->addWidget(grpConfirm);
-  //layoutWidget->addWidget(grpTerm);
+  layoutWidget->addWidget(grpTerm);
   layoutWidget->addWidget(grpDMime);
   layoutWidget->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Fixed,
                                               QSizePolicy::MinimumExpanding));
@@ -507,7 +507,7 @@ void SettingsDialog::readSettings() {
   checkTabs->setChecked(settingsPtr->value("tabsOnTop", false).toBool());
   checkHidden->setChecked(settingsPtr->value("hiddenMode", true).toBool());
   checkDelete->setChecked(settingsPtr->value("confirmDelete", true).toBool());
-  //editTerm->setText(settingsPtr->value("term").toString());
+  editTerm->setText(settingsPtr->value("term", "xterm").toString());
 
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
@@ -741,7 +741,7 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("tabsOnTop", checkTabs->isChecked());
   settingsPtr->setValue("hiddenMode", checkHidden->isChecked());
   settingsPtr->setValue("confirmDelete", checkDelete->isChecked());
-  //settingsPtr->setValue("term", editTerm->text());
+  settingsPtr->setValue("term", editTerm->text());
   if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
       //QIcon::setThemeName(cmbIconTheme->currentText());
       settingsPtr->setValue("clearCache", true);
