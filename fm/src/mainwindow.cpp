@@ -863,6 +863,11 @@ void MainWindow::tabChanged(int index)
         tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(tabs->tabData(index).toString())));
 }
 
+void MainWindow::newWindow()
+{
+    QProcess::startDetached(qApp->applicationFilePath());
+}
+
 
 //---------------------------------------------------------------------------
 
@@ -1399,6 +1404,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       bookmarksList->clearSelection();
       popup->addAction(newDirAct);
       popup->addAction(newFileAct);
+      popup->addAction(newWinAct);
       popup->addAction(openTabAct);
       popup->addSeparator();
       popup->addAction(cutAct);

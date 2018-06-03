@@ -130,6 +130,7 @@ public slots:
 
     void listItemPressed(QModelIndex);
     void tabChanged(int index);
+    void newWindow();
     void openTab();
     void tabsOnTop();
     int addTab(QString path);
@@ -285,6 +286,7 @@ private:
     QAction *focusBookmarksAct;
     QAction *focusListAct;
     QAction *openFolderAct;
+    QAction *newWinAct;
     QAction *openTabAct;
     QAction *closeTabAct;
     QAction *tabsOnTopAct;

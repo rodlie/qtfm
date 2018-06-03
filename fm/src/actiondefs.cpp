@@ -37,7 +37,7 @@ void MainWindow::createActionIcons() {
   out >> *actionIcons;
   icons.close();*/
 
-  if (actionIcons->count() < 28) {
+  if (actionIcons->count() < 29) {
     actionIcons->append(QIcon::fromTheme("folder-new",QIcon(":/images/folder-new.png")));
     actionIcons->append(QIcon::fromTheme("document-new",QIcon(":/images/document-new.png")));
     actionIcons->append(QIcon::fromTheme("edit-cut",QIcon(":/images/cut.png")));
@@ -66,6 +66,7 @@ void MainWindow::createActionIcons() {
     actionIcons->append(QIcon::fromTheme("window-close",QIcon(":/images/window-close.png")));
     actionIcons->append(QIcon::fromTheme("tab-new",QIcon(":/images/folder-new.png")));          //26
     actionIcons->append(QIcon::fromTheme("user-trash",QIcon(":/images/user-trash.png")));          //27
+    actionIcons->append(QIcon::fromTheme("document-new",QIcon(":/images/document-new.png")));          //28
     /*icons.open(QIODevice::WriteOnly);
     QDataStream out(&icons);
     out << *actionIcons;
@@ -89,6 +90,11 @@ void MainWindow::createActions() {
   connect(newFileAct, SIGNAL(triggered()), this, SLOT(newFile()));
   newFileAct->setIcon(actionIcons->at(1));
   actionList->append(newFileAct);
+
+  newWinAct = new QAction(tr("New window"), this);
+  connect(newWinAct, SIGNAL(triggered()), this, SLOT(newWindow()));
+  newWinAct->setIcon(actionIcons->at(28));
+  actionList->append(newWinAct);
 
   openTabAct = new QAction(tr("New tab"), this);
   openTabAct->setStatusTip(tr("Middle-click things to open tab"));
@@ -371,6 +377,7 @@ void MainWindow::readShortcuts() {
 
   // Default shortcuts
   if (shortcuts.count() == 0) {
+    shortcuts.insert(newWinAct->text(),"ctrl+n");
     shortcuts.insert(openTabAct->text(),"ctrl+t");
     shortcuts.insert(closeTabAct->text(),"ctrl+w");
     shortcuts.insert(cutAct->text(),"ctrl+x");
@@ -454,6 +461,8 @@ void MainWindow::createMenus() {
   QMenu *fileMenu = new QMenu(tr("File"));
   fileMenu->addAction(newDirAct);
   fileMenu->addAction(newFileAct);
+  fileMenu->addSeparator();
+  fileMenu->addAction(newWinAct);
   fileMenu->addAction(openTabAct);
   fileMenu->addSeparator();
   fileMenu->addAction(closeAct);

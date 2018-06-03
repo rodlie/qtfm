@@ -307,6 +307,14 @@ public:
         }
         return false;
     }
+    static bool removeThumbsCache()
+    {
+        QFile cache(QString("%1/thumbs.cache").arg(Common::configDir()));
+        if (cache.exists()) {
+            return cache.remove();
+        }
+        return false;
+    }
 };
 
 #endif // COMMON_H
