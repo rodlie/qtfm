@@ -16,24 +16,25 @@ HEADERS += src/mainwindow.h \
     src/progressdlg.h \
     src/icondlg.h \
     src/propertiesdlg.h \
-    src/fileutils.h \
+    ../libfm/fileutils.h \
     src/tabbar.h \
     src/mymodelitem.h \
     src/settingsdialog.h \
     src/customactionsmanager.h \
     src/processdialog.h \
-    src/desktopfile.h \
+    ../libfm/desktopfile.h \
     src/applicationdialog.h \
     src/properties.h \
-    src/mimeutils.h \
+    ../libfm/mimeutils.h \
     src/aboutdialog.h \
-    ../libfm/common.h
+    ../libfm/common.h \
+    applicationdock.h
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/mymodel.cpp \
     src/bookmarks.cpp \
     src/progressdlg.cpp \
-    src/fileutils.cpp \
+    ../libfm/fileutils.cpp \
     src/icondlg.cpp \
     src/propertiesdlg.cpp \
     src/tabbar.cpp \
@@ -41,13 +42,14 @@ SOURCES += src/main.cpp \
     src/settingsdialog.cpp \
     src/customactionsmanager.cpp \
     src/processdialog.cpp \
-    src/desktopfile.cpp \
+    ../libfm/desktopfile.cpp \
     src/applicationdialog.cpp \
     src/properties.cpp \
-    src/mimeutils.cpp \
+    ../libfm/mimeutils.cpp \
     src/aboutdialog.cpp \
     src/actiondefs.cpp \
-    src/actiontriggers.cpp
+    src/actiontriggers.cpp \
+    applicationdock.cpp
 
 OTHER_FILES += $${TARGET}.desktop
 RESOURCES += $${TARGET}.qrc
