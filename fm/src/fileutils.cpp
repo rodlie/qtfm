@@ -162,21 +162,47 @@ QString FileUtils::getRealSuffix(const QString &name) {
  * @return icon
  */
 QIcon FileUtils::searchMimeIcon(QString mime, const QIcon &defaultIcon) {
-    //qDebug() << "search mime icon" << mime << QIcon::themeName();
+  qDebug() << "search mime icon" << mime << QIcon::themeName();
   QIcon icon = QIcon::fromTheme(mime.replace("/", "-"));
   if (icon.isNull()) {
       if (mime.startsWith("image")) {
           icon = QIcon::fromTheme("image-x-generic");
       } else if(mime.startsWith("audio")) {
           icon = QIcon::fromTheme("audio-x-generic");
+      } else if(mime.startsWith("video")) {
+          icon = QIcon::fromTheme("video-x-generic");
       } else if (mime.contains("-tar") ||
                  mime.contains("compressed") ||
                  mime.contains("xz") ||
+                 mime.contains("bz2") ||
+                 mime.contains("gz") ||
+                 mime.contains("rar") ||
                  mime.contains("zip")) {
           icon = QIcon::fromTheme("package-x-generic");
+      } else if (mime.contains("office")) {
+          if (mime.contains("document")) {
+              icon = QIcon::fromTheme("x-office-document");
+          }
+          else if (mime.contains("drawing")) {
+              icon = QIcon::fromTheme("x-office-drawing");
+          }
+          else if (mime.contains("presentation")) {
+              icon = QIcon::fromTheme("x-office-presentation");
+          }
+          else if (mime.contains("spreadsheet")) {
+              icon = QIcon::fromTheme("x-office-spreadsheet");
+          }
       } else if (mime.startsWith("text")) {
-          if (mime.contains("python") || mime.contains("perl") || mime.contains("script")) {
+          if (mime.contains("python") ||
+              mime.contains("perl") ||
+              mime.contains("php") ||
+              mime.contains("ruby") ||
+              mime.contains("script") ||
+              mime.contains("shell"))
+          {
               icon = QIcon::fromTheme("text-x-script");
+          } else if(mime.contains("html")) {
+              icon = QIcon::fromTheme("text-html");
           } else {
               icon = QIcon::fromTheme("text-x-generic");
           }
