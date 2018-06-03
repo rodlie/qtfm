@@ -10,7 +10,7 @@
 #include <QTreeWidget>
 #include <QToolButton>
 #include <QSettings>
-#include <QProgressBar>
+//#include <QProgressBar>
 #include <QComboBox>
 #include <QGroupBox>
 
@@ -75,7 +75,7 @@ protected:
   QTreeWidget* shortsWidget;
 
   QGroupBox* grpAssoc;
-  QProgressBar* progressMime;
+  //QProgressBar* progressMime;
   QTreeWidget* mimesWidget;
   QListWidget* listAssoc;
 };

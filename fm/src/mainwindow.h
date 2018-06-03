@@ -130,6 +130,7 @@ public slots:
 
     void listItemPressed(QModelIndex);
     void tabChanged(int index);
+    void newWindow();
     void openTab();
     void tabsOnTop();
     int addTab(QString path);
@@ -173,6 +174,7 @@ private slots:
     void handleMediaChanged(QString path, bool present);
     void handleMediaUnmount();
     void handleMediaEject();
+    void clearCache();
 private:
     void createActions();
     void createActionIcons();
@@ -285,6 +287,7 @@ private:
     QAction *focusBookmarksAct;
     QAction *focusListAct;
     QAction *openFolderAct;
+    QAction *newWinAct;
     QAction *openTabAct;
     QAction *closeTabAct;
     QAction *tabsOnTopAct;
@@ -292,6 +295,7 @@ private:
     QAction *mediaUnmountAct;
     QAction *mediaEjectAct;
     QAction *trashAct;
+    QAction *clearCacheAct;
 
     // libdisks
     Disks *disks;

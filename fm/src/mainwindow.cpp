@@ -72,9 +72,10 @@ MainWindow::MainWindow()
     settings = new QSettings();
 
     if (settings->value("clearCache").toBool()) {
-        //qDebug() << "clear cache";
+        qDebug() << "clear cache";
         Common::removeFileCache();
         Common::removeFolderCache();
+        Common::removeThumbsCache();
         settings->setValue("clearCache", false);
     }
 
@@ -863,6 +864,15 @@ void MainWindow::tabChanged(int index)
         tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(tabs->tabData(index).toString())));
 }
 
+void MainWindow::newWindow()
+{
+    if (settings->value("clearCache").toBool()) {
+        settings->setValue("clearCache", false); // we don't want the new window to clear our existing cache
+    }
+    writeSettings();
+    QProcess::startDetached(qApp->applicationFilePath());
+}
+
 
 //---------------------------------------------------------------------------
 
@@ -1399,6 +1409,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       bookmarksList->clearSelection();
       popup->addAction(newDirAct);
       popup->addAction(newFileAct);
+      popup->addAction(newWinAct);
       popup->addAction(openTabAct);
       popup->addSeparator();
       popup->addAction(cutAct);
@@ -1608,6 +1619,12 @@ void MainWindow::handleMediaEject()
     QString path = item->data(MEDIA_PATH).toString();
     if (path.isEmpty()) { return; }
     disks->devices[path]->eject();
+}
+
+void MainWindow::clearCache()
+{
+    settings->setValue("clearCache", true);
+    QMessageBox::information(this, tr("Close window"), tr("Please close window to apply action."));
 }
 //---------------------------------------------------------------------------
 

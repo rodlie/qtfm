@@ -83,9 +83,14 @@ QStringList MimeUtils::getMimeTypes() const {
  * @param processOwner
  */
 void MimeUtils::openInApp(const QFileInfo &file, QString termCmd) {
-  QString mime = getMimeType(file.filePath());
+  QString mime = getMimeType(file.absoluteFilePath());
   QString app = defaults->value(mime).toString().split(";").first();
+  if (app.isEmpty() && mime.startsWith("text/") && mime != "text/plain") {
+      // fallback for text
+      app = defaults->value("text/plain").toString().split(";").first();
+  }
   QString desktop = Common::findApplication(app);
+  qDebug() << "openInApp" << file.absoluteFilePath() << termCmd << mime << app << desktop;
   if (!desktop.isEmpty()) {
     DesktopFile df = DesktopFile(desktop);
     if (!df.isTerminal()) { termCmd.clear(); }

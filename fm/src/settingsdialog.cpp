@@ -74,7 +74,7 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   stack->addWidget(createGeneralSettings());
   stack->addWidget(createActionsSettings());
   stack->addWidget(createShortcutSettings());
-  stack->addWidget(createMimeProgress());
+  //stack->addWidget(createMimeProgress());
   stack->addWidget(createMimeSettings());
   connect(selector, SIGNAL(currentRowChanged(int)), stack,
           SLOT(setCurrentIndex(int)));
@@ -250,7 +250,7 @@ QWidget* SettingsDialog::createShortcutSettings() {
  * @brief Creates widget with mime progress bar
  * @return widget
  */
-QWidget* SettingsDialog::createMimeProgress() {
+/*QWidget* SettingsDialog::createMimeProgress() {
 
   // Widget and its layout
   QWidget* widget = new QWidget();
@@ -270,7 +270,7 @@ QWidget* SettingsDialog::createMimeProgress() {
                                   QSizePolicy::MinimumExpanding), 3, 1);
 
   return widget;
-}
+}*/
 //---------------------------------------------------------------------------
 
 /**
@@ -666,10 +666,10 @@ void SettingsDialog::loadMimes(int section) {
   //qDebug() << "mimes" << mimes;
 
   // Init process
-  progressMime->setRange(1, mimes.size());
+  //progressMime->setRange(1, mimes.size());
 
   // Default icon
-  QIcon defaultIcon = QIcon::fromTheme("unknown");
+  QIcon defaultIcon = QIcon::fromTheme("text-x-generic");
 
   // Mime cathegories and their icons
   QMap<QString, QTreeWidgetItem*> categories;
@@ -680,7 +680,7 @@ void SettingsDialog::loadMimes(int section) {
 
     QApplication::processEvents();
     // Updates progress
-    progressMime->setValue(progressMime->value() + 1);
+    //progressMime->setValue(progressMime->value() + 1);
 
     // Skip all 'inode' nodes including 'inode/directory'
     if (mime.startsWith("inode")) {
@@ -696,7 +696,7 @@ void SettingsDialog::loadMimes(int section) {
     QStringList splitMime = mime.split("/");
 
     // Retrieve cathegory
-    QIcon icon;
+    QIcon icon = defaultIcon;
     QString categoryName = splitMime.first();
     QTreeWidgetItem* category = categories.value(categoryName, NULL);
     if (!category) {
@@ -704,15 +704,15 @@ void SettingsDialog::loadMimes(int section) {
       category->setText(0, categoryName);
       category->setFlags(Qt::ItemIsEnabled);
       categories.insert(categoryName, category);
-      icon = FileUtils::searchGenericIcon(categoryName, defaultIcon);
+      //icon = FileUtils::searchGenericIcon(categoryName, defaultIcon);
       genericIcons.insert(category, icon);
-    } else {
+    } /*else {
       icon = genericIcons.value(category);
-    }
+    }*/
 
     // Load icon and default application for current mime
     // NOTE: if icon is not found generic icon is used
-    icon = FileUtils::searchMimeIcon(mime, icon);
+    //icon = FileUtils::searchMimeIcon(mime, icon);
     QString appNames = mimeUtilsPtr->getDefault(mime).join(";");
 
     // Create item from current mime
