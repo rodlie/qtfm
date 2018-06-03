@@ -866,6 +866,9 @@ void MainWindow::tabChanged(int index)
 
 void MainWindow::newWindow()
 {
+    if (settings->value("clearCache").toBool()) {
+        settings->setValue("clearCache", false); // we don't want the new window to clear our existing cache
+    }
     writeSettings();
     QProcess::startDetached(qApp->applicationFilePath());
 }
