@@ -72,9 +72,10 @@ MainWindow::MainWindow()
     settings = new QSettings();
 
     if (settings->value("clearCache").toBool()) {
-        //qDebug() << "clear cache";
+        qDebug() << "clear cache";
         Common::removeFileCache();
         Common::removeFolderCache();
+        Common::removeThumbsCache();
         settings->setValue("clearCache", false);
     }
 
@@ -865,6 +866,7 @@ void MainWindow::tabChanged(int index)
 
 void MainWindow::newWindow()
 {
+    writeSettings();
     QProcess::startDetached(qApp->applicationFilePath());
 }
 
@@ -1614,6 +1616,12 @@ void MainWindow::handleMediaEject()
     QString path = item->data(MEDIA_PATH).toString();
     if (path.isEmpty()) { return; }
     disks->devices[path]->eject();
+}
+
+void MainWindow::clearCache()
+{
+    settings->setValue("clearCache", true);
+    QMessageBox::information(this, tr("Close window"), tr("Please close window to apply action."));
 }
 //---------------------------------------------------------------------------
 

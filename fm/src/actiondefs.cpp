@@ -355,6 +355,10 @@ void MainWindow::createActions() {
   mediaEjectAct->setIcon(QIcon::fromTheme("media-eject"));
   connect(mediaEjectAct, SIGNAL(triggered(bool)), this, SLOT(handleMediaEject()));
 
+  clearCacheAct = new QAction(tr("Clear cache"), this);
+  clearCacheAct->setIcon(QIcon::fromTheme("edit-clear"));
+  connect(clearCacheAct, SIGNAL(triggered()), this, SLOT(clearCache()));
+
   // We don't need the icon list anymore
   delete actionIcons;
 }
@@ -520,6 +524,8 @@ void MainWindow::createMenus() {
   // ----------------------------------------------------------------------
   QMenu* helpMenu = new QMenu(tr("Help"));
   helpMenu->addAction(aboutAct);
+  helpMenu->addSeparator();
+  helpMenu->addAction(clearCacheAct);
 
   // Place all menus on menu bar
   // ----------------------------------------------------------------------

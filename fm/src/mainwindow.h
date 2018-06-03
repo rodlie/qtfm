@@ -174,6 +174,7 @@ private slots:
     void handleMediaChanged(QString path, bool present);
     void handleMediaUnmount();
     void handleMediaEject();
+    void clearCache();
 private:
     void createActions();
     void createActionIcons();
@@ -294,6 +295,7 @@ private:
     QAction *mediaUnmountAct;
     QAction *mediaEjectAct;
     QAction *trashAct;
+    QAction *clearCacheAct;
 
     // libdisks
     Disks *disks;
