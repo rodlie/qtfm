@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=QtFM Power Manager
-Comment=QtFM Power Manager
-Icon=battery
-Exec=qtfm-power
-Terminal=false
-Type=Application
-StartupNotify=false
