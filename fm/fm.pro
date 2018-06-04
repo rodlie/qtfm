@@ -70,7 +70,7 @@ docs.path += $${DOCDIR}/$${TARGET}-$${VERSION}
 docs.files += ../LICENSE ../README.md
 INSTALLS += target desktop docs
 
-exists(../libdisks) {
+exists(../libdisks/libdisks.pro) {
     message("Using embedded libdisks")
     INCLUDEPATH += ../libdisks
     LIBS += -L../libdisks -lDisks
@@ -79,6 +79,17 @@ exists(../libdisks) {
     CONFIG += link_pkgconfig
     PKGCONFIG += Disks
 }
+
+exists(../libpower/libpower.pro) {
+    message("Using embedded libpower")
+    INCLUDEPATH += ../libpower
+    LIBS += -L../libpower -lPower
+} else {
+    message("Using external libpower")
+    CONFIG += link_pkgconfig
+    PKGCONFIG += Power
+}
+
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
