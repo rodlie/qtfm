@@ -359,6 +359,16 @@ void MainWindow::createActions() {
   clearCacheAct->setIcon(QIcon::fromTheme("edit-clear"));
   connect(clearCacheAct, SIGNAL(triggered()), this, SLOT(clearCache()));
 
+  suspendAct = new QAction(tr("Suspend"), this);
+  suspendAct->setDisabled(true);
+  suspendAct->setIcon(QIcon::fromTheme("system-suspend"));
+  connect(suspendAct, SIGNAL(triggered()), this, SLOT(doSuspend()));
+
+  hibernateAct = new QAction(tr("Hibernate"), this);
+  hibernateAct->setDisabled(true);
+  hibernateAct->setIcon(QIcon::fromTheme("system-hibernate"));
+  connect(hibernateAct, SIGNAL(triggered()), this, SLOT(doHibernate()));
+
   // We don't need the icon list anymore
   delete actionIcons;
 }
@@ -468,6 +478,9 @@ void MainWindow::createMenus() {
   fileMenu->addSeparator();
   fileMenu->addAction(newWinAct);
   fileMenu->addAction(openTabAct);
+  fileMenu->addSeparator();
+  fileMenu->addAction(suspendAct);
+  fileMenu->addAction(hibernateAct);
   fileMenu->addSeparator();
   fileMenu->addAction(closeAct);
   fileMenu->addAction(exitAct);

@@ -178,6 +178,9 @@ private slots:
     void handleMediaUnmount();
     void handleMediaEject();
     void clearCache();
+    void checkPower();
+    void doSuspend();
+    void doHibernate();
 private:
     void createActions();
     void createActionIcons();
@@ -299,6 +302,8 @@ private:
     QAction *mediaEjectAct;
     QAction *trashAct;
     QAction *clearCacheAct;
+    QAction *suspendAct;
+    QAction *hibernateAct;
 
     // libdisks
     Disks *disks;

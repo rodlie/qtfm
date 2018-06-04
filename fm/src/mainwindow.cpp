@@ -55,9 +55,6 @@ MainWindow::MainWindow()
     connect(disks, SIGNAL(removedDevice(QString)), this, SLOT(handleMediaRemoved(QString)));
     connect(disks, SIGNAL(mediaChanged(QString,bool)), this, SLOT(handleMediaChanged(QString,bool)));
 
-    qDebug() << "can suspend?" << UPower::canSuspend();
-    qDebug() << "can hibernate?" << UPower::canHibernate();
-
     //isDaemon = 0;
     startPath = QDir::currentPath();
     QStringList args = QApplication::arguments();
@@ -249,6 +246,7 @@ MainWindow::MainWindow()
     trashDir = Common::trashDir();
 
     QTimer::singleShot(0, this, SLOT(lateStart()));
+    QTimer::singleShot(100, this, SLOT(checkPower()));
 }
 //---------------------------------------------------------------------------
 
@@ -1633,6 +1631,22 @@ void MainWindow::clearCache()
 {
     settings->setValue("clearCache", true);
     QMessageBox::information(this, tr("Close window"), tr("Please close window to apply action."));
+}
+
+void MainWindow::checkPower()
+{
+    suspendAct->setEnabled(UPower::canSuspend());
+    hibernateAct->setEnabled(UPower::canHibernate());
+}
+
+void MainWindow::doSuspend()
+{
+    if (UPower::canSuspend()) { UPower::suspend(); }
+}
+
+void MainWindow::doHibernate()
+{
+    if (UPower::canHibernate()) { UPower::hibernate(); }
 }
 //---------------------------------------------------------------------------
 
