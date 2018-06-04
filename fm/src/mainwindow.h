@@ -50,6 +50,9 @@
 // libdisks
 #include <disks.h>
 
+// appdock
+#include "applicationdock.h"
+
 QT_BEGIN_NAMESPACE
 class QAction;
 class QMenu;
@@ -301,6 +304,8 @@ private:
     Disks *disks;
     bool isRefreshing;
     QString trashDir;
+
+    ApplicationDock *appDock;
 };
 
 //---------------------------------------------------------------------------------

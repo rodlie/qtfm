@@ -216,6 +216,10 @@ MainWindow::MainWindow()
     tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(startPath)));
     tree->scrollTo(tree->currentIndex());
 
+    appDock = new ApplicationDock(this, Qt::SubWindow);
+    appDock->setObjectName("appDock");
+    addDockWidget(Qt::LeftDockWidgetArea, appDock);
+
     createActions();
     createToolBars();
     createMenus();
@@ -1224,7 +1228,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
     popup->addAction(lockLayoutAct);
     popup->exec(event->globalPos());
     return;
-  }
+  } else if (focusWidget() == appDock->widget()) { return; }
 
   // Continue with poups for folders and files
   QList<QAction*> actions;
@@ -1699,6 +1703,8 @@ void MainWindow::refresh()
     modelTree->sort(0,Qt::AscendingOrder);
     modelView->invalidate();
     dirLoaded();
+
+    appDock->refresh();
 
     isRefreshing = false;
     return;
