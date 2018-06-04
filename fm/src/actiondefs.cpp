@@ -253,6 +253,7 @@ void MainWindow::createActions() {
 
   renameAct = new QAction(tr("Rename"), this);
   renameAct->setStatusTip(tr("Rename file"));
+  renameAct->setIcon(QIcon::fromTheme("format-text-italic"));
   connect(renameAct, SIGNAL(triggered()),this, SLOT(renameFile()));
   actionList->append(renameAct);
 
@@ -343,7 +344,7 @@ void MainWindow::createActions() {
   connect(focusListAct, SIGNAL(triggered()), this, SLOT(focusAction()));
   actionList->append(focusListAct);
 
-  aboutAct = new QAction(tr("About"), this);
+  aboutAct = new QAction(tr("About %1").arg(APP_NAME), this);
   connect(aboutAct, SIGNAL(triggered()), this, SLOT(showAboutBox()));
   actionList->append(aboutAct);
 
