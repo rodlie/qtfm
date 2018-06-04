@@ -345,6 +345,7 @@ void MainWindow::createActions() {
   actionList->append(focusListAct);
 
   aboutAct = new QAction(tr("About %1").arg(APP_NAME), this);
+  aboutAct->setIcon(QIcon::fromTheme("folder"));
   connect(aboutAct, SIGNAL(triggered()), this, SLOT(showAboutBox()));
   actionList->append(aboutAct);
 
