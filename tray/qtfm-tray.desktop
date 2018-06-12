@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=QtFM Device Manager
+Comment=QtFM Device Manager
+Icon=drive-removable-media
+Exec=qtfm-tray
+Terminal=false
+Type=Application
+NotShowIn=GNOME;KDE;LXDE;LXQt;MATE;Razor;ROX;TDE;Unity;XFCE;Cinnamon;
+StartupNotify=false
