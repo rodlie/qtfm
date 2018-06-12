@@ -21,7 +21,9 @@ SysTray::SysTray(QObject *parent)
 {
     menu = new QMenu();
 
-    disktray = new QSystemTrayIcon(QIcon::fromTheme("drive-removable-media"), this);
+    disktray = new QSystemTrayIcon(QIcon::fromTheme("drive-removable-media", QIcon(":/icons/drive-removable-media.png")), this);
+    disktray->setToolTip(tr("Removable Devices"));
+
     connect(disktray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(disktrayActivated(QSystemTrayIcon::ActivationReason)));
     connect(disktray, SIGNAL(messageClicked()), this, SLOT(handleDisktrayMessageClicked()));
 
@@ -31,7 +33,8 @@ SysTray::SysTray(QObject *parent)
     connect(man, SIGNAL(mediaChanged(QString,bool)), this, SLOT(handleDeviceMediaChanged(QString,bool)));
     connect(man, SIGNAL(mountpointChanged(QString,QString)), this, SLOT(handleDeviceMountpointChanged(QString,QString)));
     connect(man, SIGNAL(foundNewDevice(QString)), this, SLOT(handleFoundNewDevice(QString)));
-    QTimer::singleShot(10000, this, SLOT(generateContextMenu()));
+
+    QTimer::singleShot(10000, this, SLOT(generateContextMenu())); // slow start to make sure udisks etc are running
 }
 
 void SysTray::generateContextMenu()
@@ -57,11 +60,11 @@ void SysTray::generateContextMenu()
         menu->addAction(deviceAction);
 
         if (device.value()->mountpoint.isEmpty()) {
-            deviceAction->setIcon(QIcon::fromTheme(device.value()->isOptical?"drive-optical":"drive-removable-media"));
+            deviceAction->setIcon(QIcon::fromTheme(device.value()->isOptical?"drive-optical":"drive-removable-media", QIcon(device.value()->isOptical?":/icons/drive-optical.png":":/icons/drive-removable-media.png")));
             bool hasAudio = device.value()->opticalAudioTracks>0?true:false;
             bool hasData = device.value()->opticalDataTracks>0?true:false;
-            if (device.value()->isBlankDisc||(hasAudio&&!hasData)) { deviceAction->setIcon(QIcon::fromTheme("media-eject")); }
-        } else { deviceAction->setIcon(QIcon::fromTheme("media-eject")); }
+            if (device.value()->isBlankDisc||(hasAudio&&!hasData)) { deviceAction->setIcon(QIcon::fromTheme("media-eject", QIcon(":/icons/media-eject.png"))); }
+        } else { deviceAction->setIcon(QIcon::fromTheme("media-eject", QIcon(":/icons/media-eject.png"))); }
     }
 
     //qDebug() << menu->actions();

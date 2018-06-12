@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/drive-optical.png</file>
+        <file>icons/drive-removable-media.png</file>
+        <file>icons/media-eject.png</file>
+    </qresource>
+</RCC>

@@ -14,6 +14,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp systray.cpp
 HEADERS += systray.h
+RESOURCES += tray.qrc
 
 exists(../libdisks/libdisks.pro) {
     message("Using embedded libdisks")
