@@ -28,7 +28,8 @@ HEADERS += src/mainwindow.h \
     ../libfm/mimeutils.h \
     src/aboutdialog.h \
     ../libfm/common.h \
-    applicationdock.h
+    applicationdock.h \
+    ../libfm/upower.h
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/mymodel.cpp \
@@ -80,16 +81,6 @@ exists(../libdisks/libdisks.pro) {
     message("Using external libdisks")
     CONFIG += link_pkgconfig
     PKGCONFIG += Disks
-}
-
-exists(../libpower/libpower.pro) {
-    message("Using embedded libpower")
-    INCLUDEPATH += ../libpower
-    LIBS += -L../libpower -lPower
-} else {
-    message("Using external libpower")
-    CONFIG += link_pkgconfig
-    PKGCONFIG += Power
 }
 
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
