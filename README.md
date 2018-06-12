@@ -33,7 +33,7 @@ Download the latest [release](https://github.com/rodlie/qtfm/releases), then mak
 
 Download and extract:
 ```
-tar xvf qtfm-VERSION.tar.xz
+tar xvf qtfm-VERSION.tar.gz
 cd qtfm-VERSION
 ```
 
@@ -41,7 +41,6 @@ Or use git:
 ```
 git clone https://github.com/rodlie/qtfm
 cd qtfm
-git submodule update --init --recursive
 ```
 
 Now you just need to build it:
