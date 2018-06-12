@@ -83,3 +83,7 @@ package/
                 └── README.md
 ```
 * You can change the doc location with ``DOCDIR=``, default is ``PREFIX/share/doc``.
+
+## Related
+
+ * [Power Dwarf](https://github.com/rodlie/powerdwarf) : Desktop Independent Power Manager
