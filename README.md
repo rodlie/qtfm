@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
 
-![screenshot](qtfm.png)
+![screenshot1](fm/screenshot.png)
 
 Lightweight file manager using Qt.
 
@@ -11,6 +11,13 @@ Lightweight file manager using Qt.
  * Drag & drop functionality
  * Tabs
  * Udisks device support
+
+### qtfm-open
+
+![screenshot2](open/screenshot.png)
+
+A simple application launcher.
+
 
 ## Links
 
