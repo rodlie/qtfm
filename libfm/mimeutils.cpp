@@ -194,6 +194,9 @@ void MimeUtils::generateDefaults() {
   // ------------------------------------------------------------------------
   foreach (DesktopFile a, apps) {
 
+  // ignore NoDisplay=true
+  if (a.noDisplay()) { continue; }
+
     // For each mime of current application...
     QStringList mimes = a.getMimeType();
     foreach (QString mime, mimes) {
