@@ -14,6 +14,9 @@
 #include <QMapIterator>
 #include <QDirIterator>
 
+#ifndef APP
+#define APP "qtfm"
+#endif
 #define FM_MAJOR 6
 
 class Common
@@ -27,6 +30,10 @@ public:
             if (!makedir.mkpath(dir)) { dir.clear(); }
         }
         return dir;
+    }
+    static QString configFile()
+    {
+        return QString("%1/%2%3").arg(configDir()).arg(APP).arg(FM_MAJOR);
     }
     static QString trashDir()
     {

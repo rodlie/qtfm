@@ -15,6 +15,7 @@ public:
   QString getFileName() const;
   QString getPureFileName() const;
   QString getName() const;
+  QString getGenericName() const;
   QString getExec() const;
   QString getIcon() const;
   QString getType() const;
@@ -24,6 +25,7 @@ public:
 private:
   QString fileName;
   QString name;
+  QString genericName;
   QString exec;
   QString icon;
   QString type;

@@ -20,6 +20,7 @@ DesktopFile::DesktopFile(const QString &fileName) {
   // Loads .desktop file (read from 'Desktop Entry' group)
   Properties desktop(fileName, "Desktop Entry");
   name = desktop.value("Name", "").toString();
+  genericName = desktop.value("GenericName", "").toString();
   exec = desktop.value("Exec", "").toString();
   icon = desktop.value("Icon", "").toString();
   type = desktop.value("Type", "Application").toString();
@@ -45,7 +46,11 @@ QString DesktopFile::getPureFileName() const {
 //---------------------------------------------------------------------------
 
 QString DesktopFile::getName() const {
-  return name;
+    return name;
+}
+
+QString DesktopFile::getGenericName() const {
+    return genericName;
 }
 //---------------------------------------------------------------------------
 
