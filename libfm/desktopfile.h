@@ -19,6 +19,7 @@ public:
   QString getExec() const;
   QString getIcon() const;
   QString getType() const;
+  bool noDisplay() const;
   bool isTerminal() const;
   QStringList getCategories() const;
   QStringList getMimeType() const;
@@ -29,6 +30,7 @@ private:
   QString exec;
   QString icon;
   QString type;
+  bool no_display;
   bool terminal;
   QStringList categories;
   QStringList mimeType;

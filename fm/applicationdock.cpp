@@ -13,7 +13,7 @@ ApplicationDock::ApplicationDock(QWidget *parent, Qt::WindowFlags flags)  : QDoc
 
     appList = new QTreeWidget(this);
     appList->setIconSize(QSize(24, 24));
-    appList->setAlternatingRowColors(true);
+    appList->setAlternatingRowColors(false);
     appList->headerItem()->setText(0, tr("Application"));
     appList->setHeaderHidden(true);
 
@@ -55,7 +55,7 @@ void ApplicationDock::populate()
     QList<DesktopFile> apps = FileUtils::getApplications();
     foreach (DesktopFile app, apps) {
         // Check for name
-        if (app.getName().compare("") == 0) { continue; }
+        if (app.getName().compare("") == 0 || app.noDisplay()) { continue; }
 
         // Find category
         QTreeWidgetItem* category = findCategory(app);

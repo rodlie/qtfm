@@ -81,7 +81,7 @@ void Dialog::handleUserInput(QString input)
 {
     appSuggestions->clear();
     foreach (DesktopFile app, apps) {
-        if (app.getName().compare("") == 0) { continue; }
+        if (app.getName().compare("") == 0 || app.noDisplay()) { continue; }
         if (app.getName().contains(input, Qt::CaseInsensitive) ||
             app.getGenericName().contains(input, Qt::CaseInsensitive))
         {
