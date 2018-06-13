@@ -34,7 +34,13 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
   info->setText(QString("<h1>%1</h1><p>Version %2<br/><a href=\"http://qtfm.dracolinux.org\">qtfm.dracolinux.org</a><br><a href=\"https://github.com/rodlie/qtfm\">github.com/rodlie/qtfm</a></p>").arg(APP_NAME).arg(APP_VERSION));
 
   QLabel *icon = new QLabel(this);
+
+#if QT_VERSION >= 0x050000
   icon->setPixmap(QIcon::fromTheme("folder").pixmap(QSize(64, 64)));
+#else
+  // for some reason 64x64 is broken in qt4
+  icon->setPixmap(QIcon::fromTheme("folder").pixmap(QSize(48,48)));
+#endif
 
   QWidget *header = new QWidget(this);
   header->setContentsMargins(0,0,0,0);
