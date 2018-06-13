@@ -17,11 +17,9 @@ HEADERS += systray.h
 RESOURCES += tray.qrc
 
 exists(../libdisks/libdisks.pro) {
-    message("Using embedded libdisks")
     INCLUDEPATH += ../libdisks
     LIBS += -L../libdisks -lDisks
 } else {
-    message("Using external libdisks")
     CONFIG += link_pkgconfig
     PKGCONFIG += Disks
 }

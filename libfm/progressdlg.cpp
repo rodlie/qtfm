@@ -21,8 +21,8 @@
 
 #include <QtGui>
 #include <QPushButton>
+#include <QGridLayout>
 #include "progressdlg.h"
-#include "mainwindow.h"
 
 //---------------------------------------------------------------------------
 myProgressDialog::myProgressDialog(QString title)

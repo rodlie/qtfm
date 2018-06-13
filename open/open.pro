@@ -12,9 +12,10 @@ include(../qtfm.pri)
 TARGET = qtfm-open
 TEMPLATE = app
 
-SOURCES += main.cpp dialog.cpp ../libfm/fileutils.cpp ../libfm/desktopfile.cpp ../fm/src/properties.cpp
-HEADERS += dialog.h ../libfm/fileutils.h ../libfm/desktopfile.h ../fm/src/properties.h
-INCLUDEPATH += ../libfm ../fm/src
+SOURCES += main.cpp dialog.cpp
+HEADERS += dialog.h
+INCLUDEPATH += ../libfm
+LIBS += -L../libfm -lQtFM
 
 target.path = $${PREFIX}/bin
 INSTALLS += target

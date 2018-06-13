@@ -9,33 +9,25 @@ TEMPLATE = app
 
 DEPENDPATH += . src
 INCLUDEPATH += . src ../libfm
+LIBS += -L../libfm -lQtFM
 
 HEADERS += src/mainwindow.h \
     src/mymodel.h \
     src/bookmarkmodel.h \
-    src/progressdlg.h \
     src/icondlg.h \
     src/propertiesdlg.h \
-    ../libfm/fileutils.h \
     src/tabbar.h \
     src/mymodelitem.h \
     src/settingsdialog.h \
     src/customactionsmanager.h \
     src/processdialog.h \
-    ../libfm/desktopfile.h \
     src/applicationdialog.h \
-    src/properties.h \
-    ../libfm/mimeutils.h \
     src/aboutdialog.h \
-    ../libfm/common.h \
-    applicationdock.h \
-    ../libfm/upower.h
+    applicationdock.h
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/mymodel.cpp \
     src/bookmarks.cpp \
-    src/progressdlg.cpp \
-    ../libfm/fileutils.cpp \
     src/icondlg.cpp \
     src/propertiesdlg.cpp \
     src/tabbar.cpp \
@@ -43,10 +35,7 @@ SOURCES += src/main.cpp \
     src/settingsdialog.cpp \
     src/customactionsmanager.cpp \
     src/processdialog.cpp \
-    ../libfm/desktopfile.cpp \
     src/applicationdialog.cpp \
-    src/properties.cpp \
-    ../libfm/mimeutils.cpp \
     src/aboutdialog.cpp \
     src/actiondefs.cpp \
     src/actiontriggers.cpp \
@@ -74,15 +63,12 @@ docs.files += ../LICENSE ../README.md
 INSTALLS += target desktop docs
 
 exists(../libdisks/libdisks.pro) {
-    message("Using embedded libdisks")
     INCLUDEPATH += ../libdisks
     LIBS += -L../libdisks -lDisks
 } else {
-    message("Using external libdisks")
     CONFIG += link_pkgconfig
     PKGCONFIG += Disks
 }
 
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
-
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT

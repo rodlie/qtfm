@@ -16,14 +16,8 @@ TEMPLATE = lib
 SOURCES += disks.cpp
 HEADERS += disks.h udisks2.h
 
-# if embedded in lumina-extra
-exists(../../lumina-extra.pri) {
-    message("libdisks using lumina-extra override")
-    include(../../lumina-extra.pri)
-}
 # if embedded in qtfm
 exists(../qtfm.pri) {
-    message("libdisks using qtfm override")
     include(../qtfm.pri)
 }
 
