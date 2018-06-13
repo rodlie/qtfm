@@ -23,6 +23,7 @@ DesktopFile::DesktopFile(const QString &fileName) {
   exec = desktop.value("Exec", "").toString();
   icon = desktop.value("Icon", "").toString();
   type = desktop.value("Type", "Application").toString();
+  no_display = desktop.value("NoDisplay", false).toBool();
   terminal = desktop.value("Terminal", false).toBool();
   categories = desktop.value("Categories").toString().remove(" ").split(";");
   mimeType = desktop.value("MimeType").toString().remove(" ").split(";");
@@ -61,6 +62,11 @@ QString DesktopFile::getIcon() const {
 
 QString DesktopFile::getType() const {
     return type;
+}
+
+bool DesktopFile::noDisplay() const
+{
+    return no_display;
 }
 
 bool DesktopFile::isTerminal() const
