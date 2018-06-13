@@ -69,15 +69,21 @@ make -jX
 make INSTALL_ROOT=/package_temp_path install
 ```
 ```
-package/
+package
+├── etc
+│   └── xdg
+│       └── autostart
+│           └── qtfm-tray.desktop
 └── usr
     ├── bin
-    │   └── qtfm
+    │   ├── qtfm
+    │   ├── qtfm-open
+    │   └── qtfm-tray
     └── share
         ├── applications
         │   └── qtfm.desktop
         └── doc
-            └── qtfm-6.0.0
+            └── qtfm-6.1.0
                 ├── LICENSE
                 └── README.md
 ```
