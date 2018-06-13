@@ -41,12 +41,12 @@ Dialog::Dialog(QWidget *parent)
     , appSuggestions(0)
 {
     setAttribute(Qt::WA_QuitOnClose, true);
+    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_NoSystemBackground);
+    setAttribute(Qt::WA_TranslucentBackground);
+    setAttribute(Qt::WA_TransparentForMouseEvents);
     setWindowTitle(tr("Open Application"));
     setMinimumWidth(350);
-    setMaximumWidth(minimumWidth());
-    setMinimumHeight(200);
-    setMaximumHeight(minimumHeight());
-
     setupTheme();
 
     ih = new iconHandler();
@@ -59,8 +59,9 @@ Dialog::Dialog(QWidget *parent)
 
     userInput = new QLineEdit(this);
     appSuggestions = new QListWidget(this);
-    appSuggestions->setAlternatingRowColors(true);
-    appSuggestions->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    appSuggestions->setMinimumHeight(100);
+    appSuggestions->setAlternatingRowColors(false);
+    appSuggestions->hide();
 
     containerLayout->addWidget(userInput);
     containerLayout->addWidget(appSuggestions);
@@ -80,6 +81,7 @@ Dialog::~Dialog()
 void Dialog::handleUserInput(QString input)
 {
     appSuggestions->clear();
+    if (appSuggestions->isHidden()) { appSuggestions->show(); }
     foreach (DesktopFile app, apps) {
         if (app.getName().compare("") == 0 || app.noDisplay()) { continue; }
         if (app.getName().contains(input, Qt::CaseInsensitive) ||
@@ -93,6 +95,11 @@ void Dialog::handleUserInput(QString input)
             ih->requestIcon(app.getIcon());
         }
     }
+
+    QDesktopWidget wid;
+    int screenWidth = wid.screen()->width();
+    int screenHeight = wid.screen()->height();
+    setGeometry((screenWidth/2)-(width()/2),(screenHeight/2)-(height()/2),width(),height());
 }
 
 void Dialog::handleUserEnter()
@@ -134,6 +141,23 @@ void Dialog::handleFoundIcon(QString icon, QString result)
 void Dialog::setupTheme()
 {
     Common::setupIconTheme();
+    QPalette palette;
+    palette.setColor(QPalette::Window, QColor(53,53,53));
+    palette.setColor(QPalette::WindowText, Qt::white);
+    palette.setColor(QPalette::Base, QColor(15,15,15));
+    palette.setColor(QPalette::AlternateBase, QColor(53,53,53));
+    palette.setColor(QPalette::Link, Qt::white);
+    palette.setColor(QPalette::LinkVisited, Qt::white);
+    palette.setColor(QPalette::ToolTipText, Qt::black);
+    palette.setColor(QPalette::Text, Qt::white);
+    palette.setColor(QPalette::Button, QColor(53,53,53));
+    palette.setColor(QPalette::ButtonText, Qt::white);
+    palette.setColor(QPalette::BrightText, Qt::red);
+    palette.setColor(QPalette::Highlight, Qt::white);
+    palette.setColor(QPalette::HighlightedText, Qt::black);
+    palette.setColor(QPalette::Disabled, QPalette::Text, Qt::darkGray);
+    palette.setColor(QPalette::Disabled, QPalette::ButtonText, Qt::darkGray);
+    qApp->setPalette(palette);
 }
 
 QString Dialog::getTerminal()

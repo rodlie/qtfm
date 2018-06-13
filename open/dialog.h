@@ -18,6 +18,7 @@
 #include <QProcess>
 #include <QThread>
 #include <QSettings>
+#include <QDesktopWidget>
 
 #include "properties.h"
 #include "desktopfile.h"
