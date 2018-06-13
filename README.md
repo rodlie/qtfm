@@ -16,7 +16,27 @@ Lightweight file manager using Qt.
 
 ![screenshot2](open/screenshot.png)
 
-A simple application launcher.
+A simple application launcher for use in Fluxbox, Openbox and other window managers.
+
+#### Fluxbox
+
+Open ``~/.fluxbox/keys`` and find the line starting with ``Mod1 F2``, replace existing launcher ``fbrun`` with ``qtfm-open``.
+```
+# open a dialog to run programs
+Mod1 F2 :Exec qtfm-open
+```
+
+#### Openbox
+
+Open ``~/.config/openbox/rc.xml`` and find the line line ``<!-- Keybindings for running applications -->``. Then add:
+
+```
+  <keybind key="A-F2">
+    <action name="Execute">
+      <command>qtfm-open</command>
+    </action>
+  </keybind>
+```
 
 
 ## Links
