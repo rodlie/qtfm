@@ -112,7 +112,11 @@ void Dialog::handleUserEnter()
 void Dialog::handleAppClicked(QListWidgetItem *app)
 {
     if (!app) { return; }
-    QProcess::startDetached(app->data(LIST_EXE).toString());
+    QString cmd = app->data(LIST_EXE).toString();
+    if (app->data(LIST_TERM).toBool()) {
+        cmd = QString("%1 -e  \"%2\"").arg(getTerminal()).arg(cmd);
+    }
+    QProcess::startDetached(cmd);
     close();
 }
 
