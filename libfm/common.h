@@ -13,6 +13,7 @@
 #include <QMap>
 #include <QMapIterator>
 #include <QDirIterator>
+#include <QSettings>
 
 #ifndef APP
 #define APP "qtfm"
@@ -33,7 +34,7 @@ public:
     }
     static QString configFile()
     {
-        return QString("%1/%2%3").arg(configDir()).arg(APP).arg(FM_MAJOR);
+        return QString("%1/%2%3.conf").arg(configDir()).arg(APP).arg(FM_MAJOR);
     }
     static QString trashDir()
     {
@@ -321,6 +322,55 @@ public:
             return cache.remove();
         }
         return false;
+    }
+    static void setupIconTheme()
+    {
+        QString temp = QIcon::themeName();
+        if (temp.isEmpty()  || temp == "hicolor") {
+            qDebug() << "checking for icon theme in settings" << Common::configFile();
+            QSettings settings(Common::configFile(), QSettings::IniFormat);
+            temp = settings.value("fallbackTheme").toString();
+        }
+        if(temp.isEmpty() || temp == "hicolor") {
+            if(QFile::exists(QDir::homePath() + "/" + ".gtkrc-2.0")) { // try gtk-2.0
+                qDebug() << "checking for icon theme in gtkrc-2.0";
+                QSettings gtkFile(QDir::homePath() + "/.gtkrc-2.0",QSettings::IniFormat/*,this*/);
+                temp = gtkFile.value("gtk-icon-theme-name").toString().remove("\"");
+            }
+            else { //try gtk-3.0
+                qDebug() << "checking for icon theme in gtk-3.0";
+                QSettings gtkFile(QDir::homePath() + "/.config/gtk-3.0/settings.ini",QSettings::IniFormat/*,this*/);
+                temp = gtkFile.value("gtk-fallback-icon-theme").toString().remove("\"");
+            }
+            //fallback
+            if(temp.isNull()) {
+                qDebug() << "checking for icon theme in static fallback";
+                QStringList themes;
+                themes << QString("%1/../share/icons/Tango").arg(qApp->applicationFilePath());
+                themes << "/usr/share/icons/Tango" << "/usr/local/share/icons/Tango";
+                themes << QString("%1/../share/icons/Adwaita").arg(qApp->applicationFilePath());
+                themes << "/usr/share/icons/Adwaita" << "/usr/local/share/icons/Adwaita";
+                themes << QString("%1/../share/icons/gnome").arg(qApp->applicationFilePath());
+                themes << "/usr/share/icons/gnome" << "/usr/local/share/icons/gnome";
+                themes << QString("%1/../share/icons/oxygen").arg(qApp->applicationFilePath());
+                themes << "/usr/share/icons/oxygen" << "/usr/local/share/icons/oxygen";
+                themes << QString("%1/../share/icons/hicolor").arg(qApp->applicationFilePath());
+                themes << "/usr/share/icons/hicolor" << "/usr/local/share/icons/hicolor";
+                for (int i=0;i<themes.size();++i) {
+                    if (QFile::exists(themes.at(i))) {
+                        temp = QString(themes.at(i)).split("/").takeLast();
+                        break;
+                    }
+                }
+            }
+            if (temp!="hicolor" && !temp.isEmpty()) {
+                qDebug() << "save icon theme for later use";
+                QSettings settings(Common::configFile(), QSettings::IniFormat);
+                settings.setValue("fallbackTheme", temp);
+            }
+        }
+        qDebug() << "setting icon theme" << temp;
+        QIcon::setThemeName(temp);
     }
 };
 

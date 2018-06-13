@@ -24,8 +24,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-//#include <QtNetwork/QLocalServer>
-//#include <QtNetwork/QLocalSocket>
 #include <QSettings>
 #include <QSplitter>
 #include <QTreeView>
@@ -114,7 +112,6 @@ public slots:
     void toggleWrapBookmarks();
     void showEditDialog();
     bool copyFolder(const QString &srcFolder, const QString &dstFolder, qint64, bool);
-    //void autoBookmarkMounts();
     void renameFile();
     void actionMapper(QString);
     void folderPropertiesLauncher();
@@ -128,29 +125,22 @@ public slots:
     void pasteLauncher(const QList<QUrl> &files, const QString &newPath, const QStringList &cutList, bool link = false);
     void pasteClipboard();
     void progressFinished(int,QStringList);
-    void mountWatcherTriggered();
     void listItemClicked(QModelIndex);
-
     void listItemPressed(QModelIndex);
     void tabChanged(int index);
     void newWindow();
     void openTab();
     void tabsOnTop();
     int addTab(QString path);
-
     void refresh();
     void clearCutItems();
     void zoomInAction();
     void zoomOutAction();
     void focusAction();
     void openFolderAction();
-    //void newConnection();
-    //void startDaemon();
     void exitAction();
-
     void dirLoaded();
     void thumbUpdate(QModelIndex);
-
     void addressChanged(int,int);
     void loadSettings();
     void firstRunBookmarks(bool isFirstRun);
@@ -200,12 +190,7 @@ private:
     Qt::SortOrder currentSortOrder;
 
     QCompleter *customComplete;
-
     tabBar *tabs;
-
-   // bool isDaemon;
-  //  QLocalServer daemon;
-
     MimeUtils *mimeUtils;
 
     myProgressDialog * progress;

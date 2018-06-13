@@ -80,61 +80,6 @@ void bookmarkmodel::addBookmark(QString name, QString path, QString isAuto, QStr
 }
 
 //---------------------------------------------------------------------------
-void MainWindow::mountWatcherTriggered()
-{
-    //QTimer::singleShot(1000,this,SLOT(autoBookmarkMounts()));
-}
-
-//---------------------------------------------------------------------------
-/*void MainWindow::autoBookmarkMounts()
-{
-    QList<QStandardItem *> theBookmarks = modelBookmarks->findItems("*",Qt::MatchWildcard);
-
-    QStringList autoBookmarks;
-
-    foreach(QStandardItem *item, theBookmarks)
-    {
-        if(item->data(34).toString() == "1")		    //is an automount
-            autoBookmarks.append(item->data(32).toString());
-    }
-
-    QStringList mtabMounts;
-    QFile mtab("/etc/mtab");
-    mtab.open(QFile::ReadOnly);
-    QTextStream stream(&mtab);
-    do mtabMounts.append(stream.readLine());
-    while (!stream.atEnd());
-    mtab.close();
-
-    QStringList sysMounts = QStringList() << "/dev" << "/sys" << "/pro" << "/tmp" << "/run";
-    QStringList dontShowList = settings->value("hideBookmarks",0).toStringList();
-    mounts.clear();
-
-    foreach(QString item, mtabMounts)
-	if(!sysMounts.contains(item.split(" ").at(1).left(4)))
-        {
-            QString path = item.split(" ").at(1);
-            path.replace("\\040"," ");
-
-            mounts.append(path);
-            if(!dontShowList.contains(path))
-                if(!autoBookmarks.contains(path))	    //add a new auto bookmark if it doesn't exist
-                {
-			autoBookmarks.append(path);
-                    if(item.split(" ").at(2) == "iso9660") modelBookmarks->addBookmark(path,path,"1","drive-optical");
-                    else if(item.split(" ").at(2).contains("fat")) modelBookmarks->addBookmark(path,path,"1","drive-removable-media");
-                    else modelBookmarks->addBookmark(path,path,"1","drive-harddisk");
-                }
-        }
-
-//remove existing automounts that no longer exist
-    foreach(QStandardItem *item, theBookmarks)
-        if(autoBookmarks.contains(item->data(32).toString()))
-            if(!mounts.contains(item->data(32).toString()))
-                modelBookmarks->removeRow(item->row());
-}*/
-
-//---------------------------------------------------------------------------
 void MainWindow::delBookmark()
 {
     QModelIndexList list = bookmarksList->selectionModel()->selectedIndexes();

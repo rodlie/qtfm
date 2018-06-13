@@ -133,42 +133,7 @@ void Dialog::handleFoundIcon(QString icon, QString result)
 
 void Dialog::setupTheme()
 {
-    QString temp = QIcon::themeName();
-    if (temp.isEmpty()  || temp == "hicolor") {
-        QSettings settings(Common::configFile());
-        temp = settings.value("fallbackTheme").toString();
-    }
-    if(temp.isEmpty() || temp == "hicolor") {
-        if(QFile::exists(QDir::homePath() + "/" + ".gtkrc-2.0")) { // try gtk-2.0
-            QSettings gtkFile(QDir::homePath() + "/.gtkrc-2.0",QSettings::IniFormat,this);
-            temp = gtkFile.value("gtk-icon-theme-name").toString().remove("\"");
-        }
-        else { //try gtk-3.0
-            QSettings gtkFile(QDir::homePath() + "/.config/gtk-3.0/settings.ini",QSettings::IniFormat,this);
-            temp = gtkFile.value("gtk-fallback-icon-theme").toString().remove("\"");
-        }
-        //fallback
-        if(temp.isNull()) {
-            QStringList themes;
-            themes << QString("%1/../share/icons/Tango").arg(qApp->applicationFilePath());
-            themes << "/usr/share/icons/Tango" << "/usr/local/share/icons/Tango";
-            themes << QString("%1/../share/icons/Adwaita").arg(qApp->applicationFilePath());
-            themes << "/usr/share/icons/Adwaita" << "/usr/local/share/icons/Adwaita";
-            themes << QString("%1/../share/icons/gnome").arg(qApp->applicationFilePath());
-            themes << "/usr/share/icons/gnome" << "/usr/local/share/icons/gnome";
-            themes << QString("%1/../share/icons/oxygen").arg(qApp->applicationFilePath());
-            themes << "/usr/share/icons/oxygen" << "/usr/local/share/icons/oxygen";
-            themes << QString("%1/../share/icons/hicolor").arg(qApp->applicationFilePath());
-            themes << "/usr/share/icons/hicolor" << "/usr/local/share/icons/hicolor";
-            for (int i=0;i<themes.size();++i) {
-                if (QFile::exists(themes.at(i))) {
-                    temp = QString(themes.at(i)).split("/").takeLast();
-                    break;
-                }
-            }
-        }
-    }
-    QIcon::setThemeName(temp);
+    Common::setupIconTheme();
 }
 
 QString Dialog::getTerminal()
