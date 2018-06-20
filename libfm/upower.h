@@ -51,7 +51,7 @@ public:
     {
         QDBusInterface iface(DBUS_SERVICE, DBUS_PATH, DBUS_SERVICE, QDBusConnection::systemBus());
         if (!iface.isValid()) { return false; }
-        QDBusMessage reply = iface.call("CanSuspend");
+        QDBusMessage reply = iface.call("SuspendAllowed");
         return reply.arguments().first().toBool();
     }
     static QString suspend()
@@ -65,7 +65,7 @@ public:
     {
         QDBusInterface iface(DBUS_SERVICE, DBUS_PATH, DBUS_SERVICE, QDBusConnection::systemBus());
         if (!iface.isValid()) { return false; }
-        QDBusMessage reply = iface.call("CanHibernate");
+        QDBusMessage reply = iface.call("HibernateAllowed");
         return reply.arguments().first().toBool();
     }
     static QString hibernate()
