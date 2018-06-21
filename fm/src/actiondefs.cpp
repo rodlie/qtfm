@@ -258,11 +258,11 @@ void MainWindow::createActions() {
   connect(renameAct, SIGNAL(triggered()),this, SLOT(renameFile()));
   actionList->append(renameAct);
 
-  /*terminalAct = new QAction(tr("Terminal"), this);
+  terminalAct = new QAction(tr("Terminal"), this);
   terminalAct->setStatusTip(tr("Open virtual terminal"));
   connect(terminalAct, SIGNAL(triggered()), this, SLOT(terminalRun()));
   terminalAct->setIcon(actionIcons->at(17));
-  actionList->append(terminalAct);*/
+  actionList->append(terminalAct);
 
   openAct = new QAction(tr("Open"), this);
   openAct->setStatusTip(tr("Open the file"));
@@ -311,9 +311,9 @@ void MainWindow::createActions() {
   lockLayoutAct->setIcon(actionIcons->at(21));
   actionList->append(lockLayoutAct);
 
-  escapeAct = new QAction(tr("Cancel"), this);
+  /*escapeAct = new QAction(tr("Cancel"), this);
   connect(escapeAct, SIGNAL(triggered()), this, SLOT(refresh()));
-  actionList->append(escapeAct);
+  actionList->append(escapeAct);*/
 
   zoomInAct = new QAction(tr("Zoom in"), this);
   connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomInAction()));
@@ -402,10 +402,10 @@ void MainWindow::readShortcuts() {
     shortcuts.insert(hiddenAct->text(),"ctrl+h");
     shortcuts.insert(trashAct->text(), "del");
     shortcuts.insert(deleteAct->text(),"shift+del");
-    //shortcuts.insert(terminalAct->text(),"f4");
+    shortcuts.insert(terminalAct->text(),"f1");
     shortcuts.insert(exitAct->text(),"ctrl+q");
     shortcuts.insert(renameAct->text(),"f2");
-    shortcuts.insert(escapeAct->text(),"esc");
+    //shortcuts.insert(escapeAct->text(),"esc");
     shortcuts.insert(zoomOutAct->text(),"ctrl+-");
     shortcuts.insert(zoomInAct->text(),"ctrl++");
     shortcuts.insert(focusAddressAct->text(), "ctrl+l");
@@ -562,7 +562,7 @@ void MainWindow::createToolBars() {
   addressToolBar = addToolBar(tr("Address"));
   addressToolBar->setObjectName("Address");
   addressToolBar->addWidget(pathEdit);
-  //addressToolBar->addAction(terminalAct);
+  addressToolBar->addAction(terminalAct);
 }
 //---------------------------------------------------------------------------
 

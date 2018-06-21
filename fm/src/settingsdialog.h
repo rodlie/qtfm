@@ -43,7 +43,8 @@ protected slots:
   void removeAppAssoc();
   void moveAppAssocUp();
   void moveAppAssocDown();
-  void updatedSingleClick(int triggered);
+  void restartToApply(int triggered);
+  void restartToApply(bool triggered);
 protected:
   QWidget* createGeneralSettings();
   QWidget* createActionsSettings();
@@ -71,6 +72,8 @@ protected:
   QComboBox* cmbIconTheme;
   QComboBox* cmbDefaultMimeApps;
   QComboBox* comboSingleClick;
+  QCheckBox* showTerminalButton;
+  QCheckBox* showHomeButton;
 
   QTreeWidget *actionsWidget;
   QToolButton *addButton;

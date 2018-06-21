@@ -450,6 +450,10 @@ void MainWindow::loadSettings() {
   // Load information whether tabs can be shown on top
   tabsOnTopAct->setChecked(settings->value("tabsOnTop", 0).toBool());
   tabsOnTop();
+
+  // show/hide buttons
+  homeAct->setVisible(settings->value("home_button", true).toBool());
+  terminalAct->setVisible(settings->value("terminal_button", true).toBool());
 }
 
 void MainWindow::firstRunBookmarks(bool isFirstRun)
@@ -512,11 +516,11 @@ void MainWindow::firstRunCustomActions(bool isFirstRun)
     QStringList action1;
     action1 << "gz,bz2,xz,tar" << "Extract here ..." << "package-x-generic" << "tar xvf %f";
     QStringList action2;
-    action2 << "*" << "Compress to tar.gz" << "filesave" << "tar cvvzf %n.tar.gz %f";
+    action2 << "*" << "Compress to tar.gz" << "package-x-generic" << "tar cvvzf %n.tar.gz %f";
     QStringList action3;
-    action3 << "*" << "Compress to tar.bz2" << "filesave" << "tar cvvjf %n.tar.bz2 %f";
+    action3 << "*" << "Compress to tar.bz2" << "package-x-generic" << "tar cvvjf %n.tar.bz2 %f";
     QStringList action4;
-    action4 << "*" << "Compress to tar.xz" << "filesave" << "tar cvvJf %n.tar.bz2 %f";
+    action4 << "*" << "Compress to tar.xz" << "package-x-generic" << "tar cvvJf %n.tar.bz2 %f";
     settings->setValue(QString(1), action1);
     settings->setValue(QString(2), action2);
     settings->setValue(QString(3), action3);
@@ -1239,6 +1243,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         if (!actions.isEmpty()) {
           popup->addSeparator();
           popup->addActions(actions);
+          popup->addSeparator();
         }
 
         // Add menus
@@ -1263,6 +1268,9 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         }
         actions = (customActManager->getActions()->values("*"));
         popup->addActions(actions);
+        if (customActManager->getActionList()->size()>0) {
+            popup->addSeparator();
+        }
         if (modelList->getRootPath() != trashDir) {
             popup->addAction(trashAct);
         }

@@ -112,6 +112,11 @@ QWidget *SettingsDialog::createGeneralSettings() {
   layoutAppear->addRow(tr("Show hidden files: "), checkHidden);
   layoutAppear->addRow(tr("Tabs on top: "), checkTabs);
 
+  showHomeButton = new QCheckBox(grpAppear);
+  showTerminalButton = new QCheckBox(grpAppear);
+  layoutAppear->addRow(tr("Show Home button"), showHomeButton);
+  layoutAppear->addRow(tr("Show Terminal button"), showTerminalButton);
+
   // Behaviour
   QGroupBox* grpBehav = new QGroupBox(tr("Default behaviour"), widget);
   QFormLayout* layoutBehav = new QFormLayout(grpBehav);
@@ -526,9 +531,14 @@ void SettingsDialog::moveAppAssocDown() {
   updateMimeAssoc(mimesWidget->currentItem());
 }
 
-void SettingsDialog::updatedSingleClick(int /*triggered*/)
+void SettingsDialog::restartToApply(int /*triggered*/)
 {
     QMessageBox::information(this, tr("Settings information"), tr("You must re-start the application to apply this setting."));
+}
+
+void SettingsDialog::restartToApply(bool /*triggered*/)
+{
+    restartToApply(0);
 }
 //---------------------------------------------------------------------------
 
@@ -550,6 +560,8 @@ void SettingsDialog::readSettings() {
   comboDADshift->setCurrentIndex(settingsPtr->value("dad_shift", 2).toInt());
 
   comboSingleClick->setCurrentIndex(settingsPtr->value("singleClick", 0).toInt());
+  showHomeButton->setChecked(settingsPtr->value("home_button", true).toBool());
+  showTerminalButton->setChecked(settingsPtr->value("terminal_button", true).toBool());
 
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
@@ -619,7 +631,7 @@ void SettingsDialog::readSettings() {
     actionsWidget->topLevelItem(x)->setIcon(2, QIcon::fromTheme(name));
   }
 
-  connect(comboSingleClick, SIGNAL(currentIndexChanged(int)), this, SLOT(updatedSingleClick(int)));
+  connect(comboSingleClick, SIGNAL(currentIndexChanged(int)), this, SLOT(restartToApply(int)));
 
   // Read shortcuts
   readShortcuts();
@@ -792,6 +804,8 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("dad_shift", comboDADshift->currentIndex());
 
   settingsPtr->setValue("singleClick", comboSingleClick->currentIndex());
+  settingsPtr->setValue("home_button", showHomeButton->isChecked());
+  settingsPtr->setValue("terminal_button", showTerminalButton->isChecked());
 
   if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
       //QIcon::setThemeName(cmbIconTheme->currentText());

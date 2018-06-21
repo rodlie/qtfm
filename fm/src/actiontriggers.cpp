@@ -115,13 +115,13 @@ void MainWindow::goHomeDir() {
 /**
  * @brief Starts terminal
  */
-/*void MainWindow::terminalRun() {
+void MainWindow::terminalRun() {
 
   // If terminal was not specified, asks user for terminal command
   if (term.isEmpty()) {
     QString title = tr("Setting");
-    QString label = tr("Default terminal:");
-    QString def = "urxvt";
+    QString label = tr("Set default terminal:");
+    QString def = "xterm";
     term = QInputDialog::getText(this, title, label, QLineEdit::Normal, def);
     settings->setValue("term", term);
   }
@@ -131,7 +131,7 @@ void MainWindow::goHomeDir() {
   QString name = args.at(0);
   args.removeAt(0);
   QProcess::startDetached(name, args, pathEdit->itemText(0));
-}*/
+}
 //---------------------------------------------------------------------------
 
 /**

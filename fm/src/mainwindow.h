@@ -92,7 +92,7 @@ public slots:
     void newDir();
     void newFile();
     void pathEditChanged(QString);
-    //void terminalRun();
+    void terminalRun();
     void executeFile(QModelIndex, bool);
     void runFile();
     void openFile();
@@ -262,13 +262,13 @@ private:
     QAction *pasteAct;
     QAction *settingsAct;
     QAction *renameAct;
-    //QAction *terminalAct;
+    QAction *terminalAct;
     QAction *openAct;
     QAction *runAct;
     QAction *thumbsAct;
     QAction *folderPropertiesAct;
     QAction *lockLayoutAct;
-    QAction *escapeAct;
+    //QAction *escapeAct;
     QAction *zoomInAct;
     QAction *zoomOutAct;
     QAction *focusAddressAct;
