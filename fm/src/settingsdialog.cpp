@@ -113,7 +113,7 @@ QWidget *SettingsDialog::createGeneralSettings() {
   layoutAppear->addRow(tr("Tabs on top: "), checkTabs);
 
   // Behaviour
-  QGroupBox* grpBehav = new QGroupBox(tr("Drag and Drop"), widget);
+  QGroupBox* grpBehav = new QGroupBox(tr("Default behaviour"), widget);
   QFormLayout* layoutBehav = new QFormLayout(grpBehav);
   comboDAD = new QComboBox(grpBehav);
   comboDADctl = new QComboBox(grpBehav);
@@ -130,10 +130,16 @@ QWidget *SettingsDialog::createGeneralSettings() {
       dads.at(i)->addItem(tr("Move"),2);
       dads.at(i)->addItem(tr("Link"),3);
   }
-  layoutBehav->addRow(tr("Default action: "), comboDAD);
-  layoutBehav->addRow(tr("CTRL action: "), comboDADctl);
-  layoutBehav->addRow(tr("SHIFT action: "), comboDADshift);
-  layoutBehav->addRow(tr("ALT action: "), comboDADalt);
+  layoutBehav->addRow(tr("Drag and Drop Default action: "), comboDAD);
+  layoutBehav->addRow(tr("Drag and Drop CTRL action: "), comboDADctl);
+  layoutBehav->addRow(tr("Drag and Drop SHIFT action: "), comboDADshift);
+  layoutBehav->addRow(tr("Drag and Drop ALT action: "), comboDADalt);
+
+  comboSingleClick = new QComboBox(grpBehav);
+  comboSingleClick->addItem(tr("No"),0);
+  comboSingleClick->addItem(tr("Directories only"),1);
+  comboSingleClick->addItem(tr("Everything"),2);
+  layoutBehav->addRow(tr("Enable Single Click"), comboSingleClick);
 
   // Confirmation
   QGroupBox* grpConfirm = new QGroupBox(tr("Confirmation"), widget);
@@ -519,6 +525,11 @@ void SettingsDialog::moveAppAssocDown() {
   listAssoc->insertItem(nextIndex, current);
   updateMimeAssoc(mimesWidget->currentItem());
 }
+
+void SettingsDialog::updatedSingleClick(int /*triggered*/)
+{
+    QMessageBox::information(this, tr("Settings information"), tr("You must re-start the application to apply this setting."));
+}
 //---------------------------------------------------------------------------
 
 /**
@@ -537,6 +548,8 @@ void SettingsDialog::readSettings() {
   comboDADalt->setCurrentIndex(settingsPtr->value("dad_alt", 0).toInt());
   comboDADctl->setCurrentIndex(settingsPtr->value("dad_ctrl", 1).toInt());
   comboDADshift->setCurrentIndex(settingsPtr->value("dad_shift", 2).toInt());
+
+  comboSingleClick->setCurrentIndex(settingsPtr->value("singleClick", 0).toInt());
 
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
@@ -605,6 +618,8 @@ void SettingsDialog::readSettings() {
     QString name = actionsWidget->topLevelItem(x)->text(2);
     actionsWidget->topLevelItem(x)->setIcon(2, QIcon::fromTheme(name));
   }
+
+  connect(comboSingleClick, SIGNAL(currentIndexChanged(int)), this, SLOT(updatedSingleClick(int)));
 
   // Read shortcuts
   readShortcuts();
@@ -775,6 +790,8 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("dad_alt", comboDADalt->currentIndex());
   settingsPtr->setValue("dad_ctrl", comboDADctl->currentIndex());
   settingsPtr->setValue("dad_shift", comboDADshift->currentIndex());
+
+  settingsPtr->setValue("singleClick", comboSingleClick->currentIndex());
 
   if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
       //QIcon::setThemeName(cmbIconTheme->currentText());

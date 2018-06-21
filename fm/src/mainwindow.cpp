@@ -264,7 +264,6 @@ void MainWindow::lateStart() {
   tabs->setExpanding(0);
 
   // Connect mouse clicks in views
-  // TODO add in settings
   if (settings->value("singleClick").toInt() == 1) {
     connect(list, SIGNAL(clicked(QModelIndex)),
             this, SLOT(listItemClicked(QModelIndex)));
