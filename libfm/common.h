@@ -23,6 +23,12 @@
 class Common
 {
 public:
+    enum DragMode {
+      DM_UNKNOWN = 0,
+      DM_COPY,
+      DM_MOVE,
+      DM_LINK
+    };
     static QString configDir()
     {
         QString dir = QString("%1/.config/%2%3").arg(QDir::homePath()).arg(APP).arg(FM_MAJOR);
@@ -371,6 +377,23 @@ public:
         }
         qDebug() << "setting icon theme" << temp;
         QIcon::setThemeName(temp);
+    }
+    static DragMode getDefaultDragAndDrop()
+    {
+        QSettings settings(Common::configFile(), QSettings::IniFormat);
+        int dad = settings.value("dad").toInt();
+        switch (dad) {
+        case 0:
+            return DM_UNKNOWN;
+        case 1:
+            return DM_COPY;
+        case 2:
+            return DM_MOVE;
+        case 3:
+            return DM_LINK;
+        default:
+            return DM_MOVE;
+        }
     }
 };
 

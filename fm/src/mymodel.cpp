@@ -27,8 +27,6 @@
 #include <QApplication>
 #include <QMessageBox>
 
-#include "common.h"
-
 /**
  * @brief Creates file system model
  * @param realMime
@@ -963,13 +961,15 @@ bool myModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
     return false;
   }
 
-  // Holding ctrl is copy, holding shift is move
+  // Holding ctrl is copy, holding shift is move, holding alt is ask
   Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
-  DragMode mode = DM_UNKNOWN;
+  Common::DragMode mode = Common::getDefaultDragAndDrop();
   if (mods == Qt::ControlModifier) {
-    mode = DM_COPY;
+    mode = Common::DM_COPY;
   } else if (mods == Qt::ShiftModifier) {
-    mode = DM_MOVE;
+    mode = Common::DM_MOVE;
+  } else if (mods == Qt::AltModifier) {
+    mode = Common::DM_UNKNOWN;
   }
 
 

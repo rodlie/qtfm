@@ -112,6 +112,16 @@ QWidget *SettingsDialog::createGeneralSettings() {
   layoutAppear->addRow(tr("Show hidden files: "), checkHidden);
   layoutAppear->addRow(tr("Tabs on top: "), checkTabs);
 
+  // Behaviour
+  QGroupBox* grpBehav = new QGroupBox(tr("Behaviour"), widget);
+  QFormLayout* layoutBehav = new QFormLayout(grpBehav);
+  comboDAD = new QComboBox(grpBehav);
+  comboDAD->addItem(tr("Ask"),0);
+  comboDAD->addItem(tr("Copy"),1);
+  comboDAD->addItem(tr("Move"),2);
+  comboDAD->addItem(tr("Link"),3);
+  layoutBehav->addRow(tr("Drag and Drop: "), comboDAD);
+
   // Confirmation
   QGroupBox* grpConfirm = new QGroupBox(tr("Confirmation"), widget);
   QFormLayout* layoutConfirm = new QFormLayout(grpConfirm);
@@ -134,6 +144,7 @@ QWidget *SettingsDialog::createGeneralSettings() {
 
   // Layout of widget
   layoutWidget->addWidget(grpAppear);
+  layoutWidget->addWidget(grpBehav);
   layoutWidget->addWidget(grpConfirm);
   layoutWidget->addWidget(grpTerm);
   layoutWidget->addWidget(grpDMime);
@@ -508,6 +519,7 @@ void SettingsDialog::readSettings() {
   checkHidden->setChecked(settingsPtr->value("hiddenMode", true).toBool());
   checkDelete->setChecked(settingsPtr->value("confirmDelete", true).toBool());
   editTerm->setText(settingsPtr->value("term", "xterm").toString());
+  comboDAD->setCurrentIndex(settingsPtr->value("dad", 2).toInt());
 
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
@@ -734,7 +746,6 @@ void SettingsDialog::loadMimes(int section) {
  */
 bool SettingsDialog::saveSettings() {
 
-    //qDebug() << "save settings dialog";
   // General settings
   // ------------------------------------------------------------------------
   settingsPtr->setValue("showThumbs", checkThumbs->isChecked());
@@ -742,6 +753,8 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("hiddenMode", checkHidden->isChecked());
   settingsPtr->setValue("confirmDelete", checkDelete->isChecked());
   settingsPtr->setValue("term", editTerm->text());
+  settingsPtr->setValue("dad", comboDAD->currentIndex());
+
   if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
       //QIcon::setThemeName(cmbIconTheme->currentText());
       settingsPtr->setValue("clearCache", true);

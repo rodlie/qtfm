@@ -221,14 +221,14 @@ void MainWindow::lateStart() {
 
   // Configure bookmarks list
   bookmarksList->setDragDropMode(QAbstractItemView::DragDrop);
-  bookmarksList->setDropIndicatorShown(true);
+  bookmarksList->setDropIndicatorShown(false);
   bookmarksList->setDefaultDropAction(Qt::MoveAction);
   bookmarksList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
   // Configure tree view
   tree->setDragDropMode(QAbstractItemView::DragDrop);
   tree->setDefaultDropAction(Qt::MoveAction);
-  tree->setDropIndicatorShown(true);
+  tree->setDropIndicatorShown(false);
   tree->setEditTriggers(QAbstractItemView::EditKeyPressed |
                         QAbstractItemView::SelectedClicked);
 
@@ -236,7 +236,7 @@ void MainWindow::lateStart() {
   detailTree->setSelectionMode(QAbstractItemView::ExtendedSelection);
   detailTree->setDragDropMode(QAbstractItemView::DragDrop);
   detailTree->setDefaultDropAction(Qt::MoveAction);
-  detailTree->setDropIndicatorShown(true);
+  detailTree->setDropIndicatorShown(false);
   detailTree->setEditTriggers(QAbstractItemView::EditKeyPressed |
                               QAbstractItemView::SelectedClicked);
 
@@ -329,9 +329,9 @@ void MainWindow::lateStart() {
 
   // Conect list model
   connect(modelList,
-          SIGNAL(dragDropPaste(const QMimeData *, QString, myModel::DragMode)),
+          SIGNAL(dragDropPaste(const QMimeData *, QString, Common::DragMode)),
           this,
-          SLOT(dragLauncher(const QMimeData *, QString, myModel::DragMode)));
+          SLOT(dragLauncher(const QMimeData *, QString, Common::DragMode)));
 
   // Connect tabs
   connect(tabs, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
@@ -883,13 +883,13 @@ void MainWindow::pasteClipboard() {
  * @param dragMode mode of dragging
  */
 void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
-                              myModel::DragMode dragMode) {
+                              Common::DragMode dragMode) {
 
   // Retrieve urls (paths) of data
   QList<QUrl> files = data->urls();
 
   // If drag mode is unknown then ask what to do
-  if (dragMode == myModel::DM_UNKNOWN) {
+  if (dragMode == Common::DM_UNKNOWN) {
     QMessageBox box;
     box.setWindowTitle(tr("Select file action"));
     box.setWindowIcon(QIcon::fromTheme("folder"));
@@ -901,11 +901,11 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
     QAbstractButton *canc = box.addButton(QMessageBox::Cancel);
     box.exec();
     if (box.clickedButton() == move) {
-      dragMode = myModel::DM_MOVE;
+      dragMode = Common::DM_MOVE;
     } else if (box.clickedButton() == copy) {
-      dragMode = myModel::DM_COPY;
+      dragMode = Common::DM_COPY;
     } else if (box.clickedButton() == link) {
-      dragMode = myModel::DM_LINK;
+      dragMode = Common::DM_LINK;
     } else if (box.clickedButton() == canc) {
       return;
     }
@@ -913,7 +913,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
 
   // If moving is enabled, cut files from the original location
   QStringList cutList;
-  if (dragMode == myModel::DM_MOVE) {
+  if (dragMode == Common::DM_MOVE) {
     foreach (QUrl item, files) {
       cutList.append(item.path());
     }
@@ -921,7 +921,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
 
   // Paste launcher (this method has to be called instead of that with 'data'
   // parameter, because that 'data' can timeout)
-  pasteLauncher(files, newPath, cutList, dragMode == myModel::DM_LINK);
+  pasteLauncher(files, newPath, cutList, dragMode == Common::DM_LINK);
 }
 //---------------------------------------------------------------------------
 

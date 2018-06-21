@@ -26,6 +26,8 @@
 #include "mymodelitem.h"
 #include "mimeutils.h"
 
+#include "common.h"
+
 QString formatSize(qint64);
 
 /**
@@ -36,17 +38,6 @@ QString formatSize(qint64);
 class myModel : public QAbstractItemModel {
   Q_OBJECT
 public:
-
-  /**
-   * @enum DragMode
-   * @brief Represents drag mode
-   */
-  enum DragMode {
-    DM_UNKNOWN = 0,
-    DM_COPY,
-    DM_MOVE,
-    DM_LINK
-  };
 
   myModel(bool realMime, MimeUtils* mimeUtils);
   ~myModel();
@@ -97,7 +88,7 @@ public slots:
   void clearIconCache();
 signals:
   void dragDropPaste(const QMimeData *data, QString newPath,
-                     myModel::DragMode mode = DM_UNKNOWN);
+                     Common::DragMode mode = Common::DM_UNKNOWN);
   void thumbUpdate(const QModelIndex index);
 protected:
   QVariant data(const QModelIndex & index, int role) const;
