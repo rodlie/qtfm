@@ -352,10 +352,10 @@ public:
             if(temp.isNull()) {
                 qDebug() << "checking for icon theme in static fallback";
                 QStringList themes;
-                themes << QString("%1/../share/icons/Tango").arg(qApp->applicationFilePath());
-                themes << "/usr/share/icons/Tango" << "/usr/local/share/icons/Tango";
                 themes << QString("%1/../share/icons/Adwaita").arg(qApp->applicationFilePath());
                 themes << "/usr/share/icons/Adwaita" << "/usr/local/share/icons/Adwaita";
+                themes << QString("%1/../share/icons/Tango").arg(qApp->applicationFilePath());
+                themes << "/usr/share/icons/Tango" << "/usr/local/share/icons/Tango";
                 themes << QString("%1/../share/icons/gnome").arg(qApp->applicationFilePath());
                 themes << "/usr/share/icons/gnome" << "/usr/local/share/icons/gnome";
                 themes << QString("%1/../share/icons/oxygen").arg(qApp->applicationFilePath());

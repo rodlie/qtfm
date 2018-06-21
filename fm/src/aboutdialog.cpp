@@ -11,7 +11,7 @@
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
 
     setAttribute(Qt::WA_DeleteOnClose);
-  QString authors = "<strong>5. 2018 -</strong><br/> Ole-André Rodlie ("
+  QString authors = "<strong>5. 2018 -</strong><br/> Ole-Andr&eacute; Rodlie ("
                     "<a href=\"mailto:ole.andre.rodlie@gmail.com\">"
                     "ole.andre.rodlie@gmail.com</a>)<br/><br/>"
                     "<strong>8. 2012 - 5. 2013</strong><br/> Michal Rost ("
@@ -31,7 +31,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
   QVBoxLayout* layout = new QVBoxLayout(this);
   QTabWidget* tabWidget = new QTabWidget(this);
   QLabel* info = new QLabel(this);
-  info->setText(QString("<h1>%1</h1><p>Version %2<br/><a href=\"http://qtfm.dracolinux.org\">qtfm.dracolinux.org</a><br><a href=\"https://github.com/rodlie/qtfm\">github.com/rodlie/qtfm</a></p>").arg(APP_NAME).arg(APP_VERSION));
+  info->setText(QString("<h1>%1</h1><p>Version %2<br/><a href=\"https://github.com/rodlie/qtfm\">github.com/rodlie/qtfm</a></p>").arg(APP_NAME).arg(APP_VERSION));
 
   QLabel *icon = new QLabel(this);
 

@@ -111,6 +111,7 @@ void MainWindow::createActions() {
   tabsOnTopAct = new QAction(tr("Tabs on top"), this);
   tabsOnTopAct->setStatusTip(tr("Tabs on top"));
   tabsOnTopAct->setCheckable(true);
+  tabsOnTopAct->setIcon(QIcon::fromTheme("tab-new"));
   connect(tabsOnTopAct, SIGNAL(triggered()), this, SLOT(tabsOnTop()));
   actionList->append(tabsOnTopAct);
 
@@ -294,6 +295,7 @@ void MainWindow::createActions() {
   thumbsAct = new QAction(tr("Show thumbs"), this);
   thumbsAct->setStatusTip(tr("View thumbnails for image files"));
   thumbsAct->setCheckable(true);
+  thumbsAct->setIcon(QIcon::fromTheme("image-x-generic"));
   connect(thumbsAct, SIGNAL(triggered()), this, SLOT(toggleThumbs()));
   actionList->append(thumbsAct);
 

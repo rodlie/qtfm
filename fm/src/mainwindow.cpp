@@ -898,9 +898,10 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
   qDebug() << "oldpath:" << oldDevice << oldPath;
   qDebug() << "newpath:" << newDevice << newPath;
 
+  QString extraText;
   Common::DragMode currentDragMode = dragMode;
   if (oldDevice != newDevice) {
-      qDebug() << "original and new path has different device, ask!";
+      extraText = QString(tr("Source and destination is on a different storage."));
       currentDragMode = Common::DM_UNKNOWN;
   }
 
@@ -911,10 +912,18 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
     box.setWindowIcon(QIcon::fromTheme("folder"));
     box.setIconPixmap(QIcon::fromTheme("dialog-information").pixmap(QSize(32, 32)));
     box.setText(tr("<h3>What do you want to do?</h3>"));
+    if (!extraText.isEmpty()) {
+        box.setText(QString("%1<p>%2</p>").arg(box.text()).arg(extraText));
+    }
     QAbstractButton *move = box.addButton(tr("Move here"), QMessageBox::ActionRole);
     QAbstractButton *copy = box.addButton(tr("Copy here"), QMessageBox::ActionRole);
     QAbstractButton *link = box.addButton(tr("Link here"), QMessageBox::ActionRole);
     QAbstractButton *canc = box.addButton(QMessageBox::Cancel);
+    move->setIcon(QIcon::fromTheme("edit-cut"));
+    copy->setIcon(QIcon::fromTheme("edit-copy"));
+    link->setIcon(QIcon::fromTheme("insert-link"));
+    canc->setIcon(QIcon::fromTheme("edit-delete"));
+
     box.exec();
     if (box.clickedButton() == move) {
       dragMode = Common::DM_MOVE;
@@ -1045,7 +1054,7 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files, const QString &newPath,
 int MainWindow::showReplaceMsgBox(const QFileInfo &f1, const QFileInfo &f2) {
 
   // Create message
-  QString t = tr("Do you want to replace:<p><b>%1</p><p>Modified: %2<br>"
+  QString t = tr("<h3>Do you want to replace?</h3><p><b>%1</p><p>Modified: %2<br>"
                  "Size: %3 bytes</p><p>with:<p><b>%4</p><p>Modified: %5"
                  "<br>Size: %6 bytes</p>");
 
@@ -1091,7 +1100,7 @@ void MainWindow::progressFinished(int ret,QStringList newFiles)
     }
 
     if (ret == 1) { QMessageBox::information(this,tr("Failed"),tr("Paste failed...do you have write permissions?")); }
-    if (ret == 2) { QMessageBox::warning(this,tr("Too big!"),tr("There is not enough space on the destination drive!")); }
+    if (ret == 2) { QMessageBox::warning(this,tr("Too big!"),tr("There is not enough space on the destination storage!")); }
 }
 
 //---------------------------------------------------------------------------

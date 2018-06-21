@@ -252,7 +252,7 @@ void MainWindow::deleteFile() {
   // Display error message if deletion failed
   if(!ok) {
     QString title = tr("Failed");
-    QString msg = tr("Could not delete some items...do you have the right "
+    QString msg = tr("Failed to delete some items... Do you have the right "
                      "permissions?");
     QMessageBox::warning(this, title, msg);
   }

@@ -60,7 +60,7 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   QIcon icon1 = QIcon::fromTheme("system-file-manager");
   QIcon icon2 = QIcon::fromTheme("applications-system");
   QIcon icon3 = QIcon::fromTheme("accessories-character-map");
-  QIcon icon4 = QIcon::fromTheme("preferences-desktop-filetype-association");
+  QIcon icon4 = QIcon::fromTheme("preferences-desktop");
 
   // Add widget with configurations
   selector->setMinimumWidth(160);
