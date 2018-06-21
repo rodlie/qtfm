@@ -378,11 +378,9 @@ public:
         qDebug() << "setting icon theme" << temp;
         QIcon::setThemeName(temp);
     }
-    static DragMode getDefaultDragAndDrop()
+    static DragMode int2dad(int value)
     {
-        QSettings settings(Common::configFile(), QSettings::IniFormat);
-        int dad = settings.value("dad").toInt();
-        switch (dad) {
+        switch (value) {
         case 0:
             return DM_UNKNOWN;
         case 1:
@@ -394,6 +392,26 @@ public:
         default:
             return DM_MOVE;
         }
+    }
+    static DragMode getDADaltMod()
+    {
+        QSettings settings(Common::configFile(), QSettings::IniFormat);
+        return int2dad(settings.value("dad_alt").toInt());
+    }
+    static DragMode getDADctrlMod()
+    {
+        QSettings settings(Common::configFile(), QSettings::IniFormat);
+        return int2dad(settings.value("dad_ctrl").toInt());
+    }
+    static DragMode getDADshiftMod()
+    {
+        QSettings settings(Common::configFile(), QSettings::IniFormat);
+        return int2dad(settings.value("dad_shift").toInt());
+    }
+    static DragMode getDefaultDragAndDrop()
+    {
+        QSettings settings(Common::configFile(), QSettings::IniFormat);
+        return int2dad(settings.value("dad").toInt());
     }
     static QString getDeviceForDir(QString dir)
     {

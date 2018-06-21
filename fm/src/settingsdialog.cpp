@@ -113,14 +113,27 @@ QWidget *SettingsDialog::createGeneralSettings() {
   layoutAppear->addRow(tr("Tabs on top: "), checkTabs);
 
   // Behaviour
-  QGroupBox* grpBehav = new QGroupBox(tr("Behaviour"), widget);
+  QGroupBox* grpBehav = new QGroupBox(tr("Drag and Drop"), widget);
   QFormLayout* layoutBehav = new QFormLayout(grpBehav);
   comboDAD = new QComboBox(grpBehav);
-  comboDAD->addItem(tr("Ask"),0);
-  comboDAD->addItem(tr("Copy"),1);
-  comboDAD->addItem(tr("Move"),2);
-  comboDAD->addItem(tr("Link"),3);
-  layoutBehav->addRow(tr("Drag and Drop: "), comboDAD);
+  comboDADctl = new QComboBox(grpBehav);
+  comboDADshift = new QComboBox(grpBehav);
+  comboDADalt = new QComboBox(grpBehav);
+  QVector<QComboBox*> dads;
+  dads.append(comboDAD);
+  dads.append(comboDADalt);
+  dads.append(comboDADctl);
+  dads.append(comboDADshift);
+  for (int i=0;i<dads.size();++i) {
+      dads.at(i)->addItem(tr("Ask"),0);
+      dads.at(i)->addItem(tr("Copy"),1);
+      dads.at(i)->addItem(tr("Move"),2);
+      dads.at(i)->addItem(tr("Link"),3);
+  }
+  layoutBehav->addRow(tr("Default action: "), comboDAD);
+  layoutBehav->addRow(tr("CTRL action: "), comboDADctl);
+  layoutBehav->addRow(tr("SHIFT action: "), comboDADshift);
+  layoutBehav->addRow(tr("ALT action: "), comboDADalt);
 
   // Confirmation
   QGroupBox* grpConfirm = new QGroupBox(tr("Confirmation"), widget);
@@ -519,7 +532,11 @@ void SettingsDialog::readSettings() {
   checkHidden->setChecked(settingsPtr->value("hiddenMode", true).toBool());
   checkDelete->setChecked(settingsPtr->value("confirmDelete", true).toBool());
   editTerm->setText(settingsPtr->value("term", "xterm").toString());
+
   comboDAD->setCurrentIndex(settingsPtr->value("dad", 2).toInt());
+  comboDADalt->setCurrentIndex(settingsPtr->value("dad_alt", 0).toInt());
+  comboDADctl->setCurrentIndex(settingsPtr->value("dad_ctrl", 1).toInt());
+  comboDADshift->setCurrentIndex(settingsPtr->value("dad_shift", 2).toInt());
 
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
@@ -753,7 +770,11 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("hiddenMode", checkHidden->isChecked());
   settingsPtr->setValue("confirmDelete", checkDelete->isChecked());
   settingsPtr->setValue("term", editTerm->text());
+
   settingsPtr->setValue("dad", comboDAD->currentIndex());
+  settingsPtr->setValue("dad_alt", comboDADalt->currentIndex());
+  settingsPtr->setValue("dad_ctrl", comboDADctl->currentIndex());
+  settingsPtr->setValue("dad_shift", comboDADshift->currentIndex());
 
   if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
       //QIcon::setThemeName(cmbIconTheme->currentText());

@@ -965,11 +965,11 @@ bool myModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
   Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
   Common::DragMode mode = Common::getDefaultDragAndDrop();
   if (mods == Qt::ControlModifier) {
-    mode = Common::DM_COPY;
+    mode = Common::getDADctrlMod();
   } else if (mods == Qt::ShiftModifier) {
-    mode = Common::DM_MOVE;
+    mode = Common::getDADshiftMod();
   } else if (mods == Qt::AltModifier) {
-    mode = Common::DM_UNKNOWN;
+    mode = Common::getDADaltMod();
   }
 
 
