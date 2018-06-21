@@ -395,6 +395,45 @@ public:
             return DM_MOVE;
         }
     }
+    static QString getDeviceForDir(QString dir)
+    {
+        QFile mtab("/etc/mtab");
+        if (!mtab.open(QIODevice::ReadOnly)) { return QString(); }
+        QTextStream ts(&mtab);
+        QString root;
+        QVector<QStringList> result;
+        while(!ts.atEnd()) {
+            QString line = ts.readLine();
+            QStringList info = line.split(" ", QString::SkipEmptyParts);
+            if (info.size()>=2) {
+                QString dev = info.at(0);
+                QString mnt = info.at(1);
+                if (mnt == "/") {
+                    root = dev;
+                    continue;
+                }
+                if (dir.startsWith(mnt)) { result.append(QStringList() << dev << mnt); }
+            }
+        }
+        mtab.close();
+
+        if (result.size()==0) { return root; }
+        if (result.size()==1) { return result.at(0).at(0); }
+        if (result.size()>1) {
+            int lastDevCount = 0;
+            QString lastDevice;
+            for (int i=0;i<result.size();++i) {
+                QStringList device = result.at(i);
+                QStringList devCount = device.at(1).split("/");
+                if (devCount.size()>lastDevCount) {
+                    lastDevCount = devCount.size();
+                    lastDevice = device.at(0);
+                }
+            }
+            return lastDevice;
+        }
+        return QString();
+    }
 };
 
 #endif // COMMON_H

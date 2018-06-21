@@ -888,8 +888,24 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
   // Retrieve urls (paths) of data
   QList<QUrl> files = data->urls();
 
+  // get original path
+  QStringList getOldPath = files.at(0).toLocalFile().split("/", QString::SkipEmptyParts);
+  QString oldPath;
+  for (int i=0;i<getOldPath.size()-1;++i) { oldPath.append(QString("/%1").arg(getOldPath.at(i))); }
+  QString oldDevice = Common::getDeviceForDir(oldPath);
+  QString newDevice = Common::getDeviceForDir(newPath);
+
+  qDebug() << "oldpath:" << oldDevice << oldPath;
+  qDebug() << "newpath:" << newDevice << newPath;
+
+  Common::DragMode currentDragMode = dragMode;
+  if (oldDevice != newDevice) {
+      qDebug() << "original and new path has different device, ask!";
+      currentDragMode = Common::DM_UNKNOWN;
+  }
+
   // If drag mode is unknown then ask what to do
-  if (dragMode == Common::DM_UNKNOWN) {
+  if (currentDragMode == Common::DM_UNKNOWN) {
     QMessageBox box;
     box.setWindowTitle(tr("Select file action"));
     box.setWindowIcon(QIcon::fromTheme("folder"));
@@ -913,7 +929,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
 
   // If moving is enabled, cut files from the original location
   QStringList cutList;
-  if (dragMode == Common::DM_MOVE) {
+  if (currentDragMode == Common::DM_MOVE) {
     foreach (QUrl item, files) {
       cutList.append(item.path());
     }
