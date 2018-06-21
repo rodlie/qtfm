@@ -93,7 +93,7 @@ void ApplicationDialog::populate()
     foreach (DesktopFile app, apps) {
 
       // Check for name
-      if (app.getName().compare("") == 0) { continue; }
+      if (app.getName().compare("") == 0 || app.noDisplay()) { continue; }
 
       // Find category
       QTreeWidgetItem* category = findCategory(app);

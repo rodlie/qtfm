@@ -43,6 +43,7 @@
 #include "applicationdialog.h"
 
 #include "common.h"
+#include "upower.h"
 
 MainWindow::MainWindow()
 {
@@ -53,6 +54,9 @@ MainWindow::MainWindow()
     connect(disks, SIGNAL(foundNewDevice(QString)), this, SLOT(handleMediaAdded(QString)));
     connect(disks, SIGNAL(removedDevice(QString)), this, SLOT(handleMediaRemoved(QString)));
     connect(disks, SIGNAL(mediaChanged(QString,bool)), this, SLOT(handleMediaChanged(QString,bool)));
+
+    qDebug() << "can suspend?" << UPower::canSuspend();
+    qDebug() << "can hibernate?" << UPower::canHibernate();
 
     //isDaemon = 0;
     startPath = QDir::currentPath();

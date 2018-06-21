@@ -10,7 +10,6 @@ install:
   - sudo apt-get install qt4-dev-tools qtbase5-dev libxss-dev libmagic-dev qt4-qmake qt5-qmake tree
   
 script:
-  - git submodule update --init --recursive
   - export CWD=`pwd`
   - mkdir $CWD/qt5
   - cd $CWD/qt5

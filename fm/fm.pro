@@ -27,7 +27,8 @@ HEADERS += src/mainwindow.h \
     src/properties.h \
     src/mimeutils.h \
     src/aboutdialog.h \
-    ../libfm/common.h
+    ../libfm/common.h \
+    ../libfm/upower.h
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/mymodel.cpp \
@@ -70,7 +71,7 @@ docs.path += $${DOCDIR}/$${TARGET}-$${VERSION}
 docs.files += ../LICENSE ../README.md
 INSTALLS += target desktop docs
 
-exists(../libdisks) {
+exists(../libdisks/libdisks.pro) {
     message("Using embedded libdisks")
     INCLUDEPATH += ../libdisks
     LIBS += -L../libdisks -lDisks
@@ -79,6 +80,7 @@ exists(../libdisks) {
     CONFIG += link_pkgconfig
     PKGCONFIG += Disks
 }
+
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
