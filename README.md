@@ -48,6 +48,32 @@ Open ``~/.config/openbox/rc.xml`` and find the line line ``<!-- Keybindings for 
  * [Arch Linux](https://aur.archlinux.org/packages/qtfm/)
  * [Gentoo](https://packages.gentoo.org/packages/x11-misc/qtfm)
  
+## Default shortcuts
+
+ * New Window [ctrl+n]
+ * Open Tab [ctrl+t]
+ * Close Tab [ctrl+w]
+ * Copy Action [ctrl+c]
+ * Paste Action [ctrl+v]
+ * Up Action [alt+up]
+ * Back Action [backspace]
+ * Toggle Show Hidden Files [ctrl+h]
+ * Move to Trash [del]
+ * Delete [shift+del]
+ * Open Terminal [F1]
+ * Quit/Close [ctrl+q]
+ * Rename Action [F2]
+ * Zoom Out [ctrl+-]
+ * Zoom In [ctrl++]
+ * Focus Path [ctrl+l]
+ * Toogle Icon View [F3]
+ * Toogle Detail View [F4]
+ * Drag and Drop Move Modifier [shift]
+ * Drag and Drop Copy Modifier [ctrl]
+ * Drag and Drop Ask Action [alt]
+ 
+ All shortcuts can be modified in the settings.
+ 
 ## Build
 
 Download the latest [release](https://github.com/rodlie/qtfm/releases), then make sure you have the required dependencies.
