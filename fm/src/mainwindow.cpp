@@ -88,6 +88,7 @@ MainWindow::MainWindow()
     // Create filesystem model
     bool realMime = settings->value("realMimeTypes", true).toBool();
     modelList = new myModel(realMime, mimeUtils);
+    connect(modelList, SIGNAL(reloadDir()), this, SLOT(dirLoaded()));
 
     dockTree = new QDockWidget(tr("Tree"),this,Qt::SubWindow);
     dockTree->setObjectName("treeDock");
@@ -203,7 +204,6 @@ MainWindow::MainWindow()
     // show window
     show();
 
-    isRefreshing = false;
     trashDir = Common::trashDir();
 
     QTimer::singleShot(0, this, SLOT(lateStart()));
@@ -611,6 +611,7 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
 //---------------------------------------------------------------------------
 void MainWindow::dirLoaded()
 {
+    qDebug() << "dirLoaded";
     if (backIndex.isValid()) {
         backIndex = QModelIndex();
         return;
@@ -646,6 +647,7 @@ void MainWindow::dirLoaded()
 //---------------------------------------------------------------------------
 void MainWindow::thumbUpdate(QModelIndex index)
 {
+    qDebug() << "thumbUpdate";
     if (currentView == 2) { detailTree->update(modelView->mapFromSource(index)); }
     else { list->update(modelView->mapFromSource(index)); }
 }
@@ -959,6 +961,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
 void MainWindow::pasteLauncher(const QMimeData *data, const QString &newPath,
                                const QStringList &cutList) {
   QList<QUrl> files = data->urls();
+  if (files.isEmpty()) { return; }
   pasteLauncher(files, newPath, cutList);
 }
 //---------------------------------------------------------------------------
@@ -1654,29 +1657,6 @@ void MainWindow::actionMapper(QString cmd)
 
     customActManager->execAction(cmd, pathEdit->itemText(0));
 }
-//---------------------------------------------------------------------------
-
-void MainWindow::refresh()
-{
-    if (isRefreshing) { return; }
-    isRefreshing = true;
-
-    if (!QFile::exists(modelList->getRootPath())) { return; }
-
-    QApplication::clipboard()->clear();
-    listSelectionModel->clear();
-
-    modelList->refreshItems();
-    modelTree->invalidate();
-    modelTree->sort(0,Qt::AscendingOrder);
-    modelView->invalidate();
-    dirLoaded();
-
-    appDock->refresh();
-
-    isRefreshing = false;
-    return;
-}
 
 //---------------------------------------------------------------------------------
 void MainWindow::clearCutItems()
@@ -1696,9 +1676,10 @@ void MainWindow::clearCutItems()
 //---------------------------------------------------------------------------------
 bool mainTreeFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
+    if (sourceModel() == NULL) { return false; }
     QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
     myModel* fileModel = qobject_cast<myModel*>(sourceModel());
-
+    if (fileModel == NULL) { return false; }
     if (fileModel->isDir(index0)) {
         if (this->filterRegExp().isEmpty() || fileModel->fileInfo(index0).isHidden() == 0) { return true; }
     }

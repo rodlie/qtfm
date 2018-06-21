@@ -217,6 +217,7 @@ QString myModel::filePath(const QModelIndex &index)
 //---------------------------------------------------------------------------------------
 QString myModel::getMimeType(const QModelIndex &index)
 {
+    qDebug() << "myModel getMimeType";
     myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
     if(item->mMimeType.isNull()) {
         if(realMimeTypes) { item->mMimeType = mimeUtilsPtr->getMimeType(item->absoluteFilePath()); }
@@ -247,12 +248,13 @@ void myModel::notifyChange()
     while (at < end) {
         const inotify_event *event = reinterpret_cast<const inotify_event *>(at);
         int w = event->wd;
-        if(eventTimer.isActive()) {
-            if(w == lastEventID) {
+        lastEventFilename = event->name;
+        if (eventTimer.isActive()) {
+            if (w == lastEventID) {
                 eventTimer.start(40);
             } else {
                 eventTimer.stop();
-                notifyProcess(lastEventID);
+                notifyProcess(lastEventID, lastEventFilename);
                 lastEventID = w;
                 eventTimer.start(40);
             }
@@ -264,18 +266,20 @@ void myModel::notifyChange()
     }
 
     notifier->setEnabled(1);
+    emit reloadDir();
 }
 
 //---------------------------------------------------------------------------------------
 void myModel::eventTimeout()
 {
-    notifyProcess(lastEventID);
+    notifyProcess(lastEventID, lastEventFilename);
     eventTimer.stop();
 }
 
 //---------------------------------------------------------------------------------------
-void myModel::notifyProcess(int eventID)
+void myModel::notifyProcess(int eventID, QString fileName)
 {
+    qDebug() << "notifyProcess" << eventID << fileName;
     if(watchers.contains(eventID)) {
         myModelItem *parent = rootItem->matchPath(watchers.value(eventID).split(SEPARATOR));
         if(parent) {
@@ -308,13 +312,18 @@ void myModel::notifyProcess(int eventID)
         inotify_rm_watch(inotifyFD,eventID);
         watchers.remove(eventID);
     }
+    if (!fileName.isEmpty() && showThumbs) {
+        lastEventFilename = fileName;
+    }
+    emit reloadDir();
 }
 
 //---------------------------------------------------------------------------------
 void myModel::addWatcher(myModelItem *item)
 {
+    qDebug() << "addWatcher" << item->absoluteFilePath();
     while(item != rootItem) {
-        watchers.insert(inotify_add_watch(inotifyFD, item->absoluteFilePath().toLocal8Bit(), IN_MOVE | IN_CREATE | IN_DELETE),item->absoluteFilePath()); //IN_ONESHOT | IN_ALL_EVENTS)
+        watchers.insert(inotify_add_watch(inotifyFD, item->absoluteFilePath().toLocal8Bit(), IN_CREATE | IN_MODIFY | IN_MOVE | IN_CREATE | IN_DELETE),item->absoluteFilePath()); //IN_ONESHOT | IN_ALL_EVENTS)
         item->watched = 1;
         item = item->parent();
     }
@@ -380,6 +389,7 @@ void myModel::fetchMore (const QModelIndex & parent)
 //---------------------------------------------------------------------------------------
 void myModel::populateItem(myModelItem *item)
 {
+    if (item == NULL) { return; }
     item->walked = 1;
 
     QDir dir(item->absoluteFilePath());
@@ -427,7 +437,7 @@ void myModel::update()
 void myModel::refreshItems()
 {
     myModelItem *item = rootItem->matchPath(currentRootPath.split(SEPARATOR));
-
+    if (item == NULL) { return; }
     item->clearAll();
     populateItem(item);
 }
@@ -563,13 +573,11 @@ void myModel::loadMimeTypes() const {
     QMapIterator<QString, QString> globs(Common::getMimesGlobs());
     while(globs.hasNext()) {
         globs.next();
-        //qDebug() << globs.value() << globs.key();
         mimeGlob->insert(globs.value(), globs.key());
     }
     QMapIterator<QString, QString> generic(Common::getMimesGeneric());
     while(generic.hasNext()) {
         generic.next();
-        //qDebug() << generic.key() << generic.value();
         mimeGeneric->insert(generic.key(), generic.value());
     }
 }
@@ -596,20 +604,41 @@ void myModel::loadThumbs(QModelIndexList indexes) {
   // Loads thumbnails from cache
   if (files.count()) {
     if (thumbs->count() == 0) {
+        qDebug() << "thumbs are empty, try to load cache ...";
       QFile fileIcons(QString("%1/thumbs.cache").arg(Common::configDir()));
       if (fileIcons.open(QIODevice::ReadOnly)) {
+          qDebug() << "load thumbs from cache ...";
           QDataStream out(&fileIcons);
           out >> *thumbs;
           fileIcons.close();
       }
       thumbCount = thumbs->count();
+      qDebug() << "thumbcount" << thumbCount;
     }
     foreach (QString item, files) {
-      if (!thumbs->contains(item)) { thumbs->insert(item, getThumb(item)); }
-      emit thumbUpdate(index(item));
+      if (!thumbs->contains(item) || (item.split("/").takeLast() == lastEventFilename && !lastEventFilename.isEmpty())) {
+          qDebug() << "gen new thumb" << item;
+          thumbs->insert(item, getThumb(item));
+          emit thumbUpdate(index(item));
+          if (item.split("/").takeLast() == lastEventFilename) {
+              qDebug() << "save new thumb cache";
+              lastEventFilename.clear();
+              QFile fileIcons(QString("%1/thumbs.cache").arg(Common::configDir()));
+              if(fileIcons.size() > 10000000) { fileIcons.remove(); }
+              else {
+                  if (fileIcons.open(QIODevice::WriteOnly)) {
+                      QDataStream out(&fileIcons);
+                      out.setDevice(&fileIcons);
+                      out << *thumbs;
+                      fileIcons.close();
+                  }
+              }
+          }
+      }
     }
   }
 }
+
 //---------------------------------------------------------------------------
 
 /**
@@ -662,7 +691,6 @@ QByteArray myModel::getThumb(QString item) {
  * @return model data
  */
 QVariant myModel::data(const QModelIndex & index, int role) const {
-
   // Retrieve model item
   myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
 
@@ -778,6 +806,7 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
  */
 QVariant myModel::findIcon(myModelItem *item) const {
 
+  qDebug() << "findicon" << item->absoluteFilePath();
   // If type of file is directory, return icon of directory
   QFileInfo type(item->fileInfo());
   if (type.isDir()) {
@@ -789,9 +818,9 @@ QVariant myModel::findIcon(myModelItem *item) const {
 
   // If thumbnails are allowed and current file has it, show it
   if (showThumbs) {
-    if (icons->contains(item->absoluteFilePath())) {
+    /*if (icons->contains(item->absoluteFilePath())) {
       return *icons->object(item->absoluteFilePath());
-    } else if (thumbs->contains(item->absoluteFilePath())) {
+    } else*/ if (thumbs->contains(item->absoluteFilePath())) {
       QPixmap pic;
       pic.loadFromData(thumbs->value(item->absoluteFilePath()));
       icons->insert(item->absoluteFilePath(), new QIcon(pic), 1);

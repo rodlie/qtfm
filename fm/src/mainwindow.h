@@ -132,7 +132,6 @@ public slots:
     void openTab();
     void tabsOnTop();
     int addTab(QString path);
-    void refresh();
     void clearCutItems();
     void zoomInAction();
     void zoomOutAction();
@@ -269,7 +268,6 @@ private:
     QAction *thumbsAct;
     QAction *folderPropertiesAct;
     QAction *lockLayoutAct;
-    QAction *refreshAct;
     QAction *escapeAct;
     QAction *zoomInAct;
     QAction *zoomOutAct;
@@ -292,7 +290,6 @@ private:
 
     // libdisks
     Disks *disks;
-    bool isRefreshing;
     QString trashDir;
 
     ApplicationDock *appDock;

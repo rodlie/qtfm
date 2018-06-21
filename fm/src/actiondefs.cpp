@@ -311,11 +311,6 @@ void MainWindow::createActions() {
   lockLayoutAct->setIcon(actionIcons->at(21));
   actionList->append(lockLayoutAct);
 
-  refreshAct = new QAction(tr("Refresh"), this);
-  connect(refreshAct, SIGNAL(triggered()), this, SLOT(refresh()));
-  refreshAct->setIcon(actionIcons->at(19));
-  actionList->append(refreshAct);
-
   escapeAct = new QAction(tr("Cancel"), this);
   connect(escapeAct, SIGNAL(triggered()), this, SLOT(refresh()));
   actionList->append(escapeAct);
@@ -410,7 +405,6 @@ void MainWindow::readShortcuts() {
     //shortcuts.insert(terminalAct->text(),"f4");
     shortcuts.insert(exitAct->text(),"ctrl+q");
     shortcuts.insert(renameAct->text(),"f2");
-    shortcuts.insert(refreshAct->text(),"f5");
     shortcuts.insert(escapeAct->text(),"esc");
     shortcuts.insert(zoomOutAct->text(),"ctrl+-");
     shortcuts.insert(zoomInAct->text(),"ctrl++");
@@ -535,7 +529,6 @@ void MainWindow::createMenus() {
   viewMenu->addAction(upAct);
   viewMenu->addAction(backAct);
   viewMenu->addAction(homeAct);
-  viewMenu->addAction(refreshAct);
 
   // Help menu
   // ----------------------------------------------------------------------
@@ -565,7 +558,6 @@ void MainWindow::createToolBars() {
   navToolBar->addAction(backAct);
   navToolBar->addAction(upAct);
   navToolBar->addAction(homeAct);
-  //navToolBar->addAction(refreshAct);
 
   addressToolBar = addToolBar(tr("Address"));
   addressToolBar->setObjectName("Address");

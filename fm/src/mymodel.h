@@ -81,7 +81,7 @@ public:
   QCache<QString,QIcon> *icons;
 public slots:
   void notifyChange();
-  void notifyProcess(int eventID);
+  void notifyProcess(int eventID, QString fileName = QString());
   void eventTimeout();
   void addWatcher(myModelItem* path);
   void clearCutItems();
@@ -90,6 +90,7 @@ signals:
   void dragDropPaste(const QMimeData *data, QString newPath,
                      Common::DragMode mode = Common::DM_UNKNOWN);
   void thumbUpdate(const QModelIndex index);
+  void reloadDir();
 protected:
   QVariant data(const QModelIndex & index, int role) const;
   QVariant headerData(int section, Qt::Orientation orientation, int role) const;
@@ -120,6 +121,7 @@ private:
   QHash<int, QString> watchers;
   QTimer eventTimer;
   int lastEventID;
+  QString lastEventFilename;
 };
 
 #endif // MYMODEL_H
