@@ -63,6 +63,9 @@ protected:
   QCheckBox* checkTabs;
   QCheckBox* checkDelete;
   QComboBox* comboDAD;
+  QComboBox* comboDADctl;
+  QComboBox* comboDADshift;
+  QComboBox* comboDADalt;
   QLineEdit* editTerm;
   QComboBox* cmbIconTheme;
   QComboBox* cmbDefaultMimeApps;
