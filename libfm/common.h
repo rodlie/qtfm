@@ -117,12 +117,11 @@ public:
         file.close();
         return result;
     }
-    static QString findIconInDir(QString dir, QString icon)
+    static QString findIconInDir(QString theme, QString dir, QString icon)
     {
         QString result;
         if (dir.isEmpty() || icon.isEmpty()) { return result; }
 
-        QString theme = QIcon::themeName();
         if (theme.isEmpty()) { theme = "hicolor"; }
 
         QStringList iconSizes;
@@ -164,12 +163,12 @@ public:
         }
         return result;
     }
-    static QString findIcon(QString fileIcon)
+    static QString findIcon(QString theme, QString fileIcon)
     {
         QString result;
         if (fileIcon.isEmpty()) { return result; }
         for (int i=0;i<iconLocations().size();++i) {
-            QString icon = findIconInDir(iconLocations().at(i), fileIcon);
+            QString icon = findIconInDir(theme, iconLocations().at(i), fileIcon);
             if (!icon.isEmpty()) { return icon; }
         }
         return result;
@@ -207,14 +206,14 @@ public:
         }
         return result;
     }
-    static QString findApplicationIcon(QString app)
+    static QString findApplicationIcon(QString theme, QString app)
     {
         QString result;
         QString desktop = findApplication(app);
         if (desktop.isEmpty()) { return result; }
         QString icon = getDesktopIcon(desktop);
         if (icon.isEmpty()) { return result; }
-        result = findIcon(icon);
+        result = findIcon(theme, icon);
         return result;
     }
     static QMap<QString, QString> readGlobMimesFromFile(QString filename)
@@ -346,7 +345,7 @@ public:
         }
         return false;
     }
-    static void setupIconTheme()
+    static void setupIconTheme(QString appFilePath)
     {
         QString temp = QIcon::themeName();
         if (temp.isEmpty()  || temp == "hicolor") {
@@ -369,15 +368,15 @@ public:
             if(temp.isNull()) {
                 qDebug() << "checking for icon theme in static fallback";
                 QStringList themes;
-                themes << QString("%1/../share/icons/Adwaita").arg(qApp->applicationFilePath());
+                themes << QString("%1/../share/icons/Adwaita").arg(appFilePath);
                 themes << "/usr/share/icons/Adwaita" << "/usr/local/share/icons/Adwaita";
-                themes << QString("%1/../share/icons/Tango").arg(qApp->applicationFilePath());
+                themes << QString("%1/../share/icons/Tango").arg(appFilePath);
                 themes << "/usr/share/icons/Tango" << "/usr/local/share/icons/Tango";
-                themes << QString("%1/../share/icons/gnome").arg(qApp->applicationFilePath());
+                themes << QString("%1/../share/icons/gnome").arg(appFilePath);
                 themes << "/usr/share/icons/gnome" << "/usr/local/share/icons/gnome";
-                themes << QString("%1/../share/icons/oxygen").arg(qApp->applicationFilePath());
+                themes << QString("%1/../share/icons/oxygen").arg(appFilePath);
                 themes << "/usr/share/icons/oxygen" << "/usr/local/share/icons/oxygen";
-                themes << QString("%1/../share/icons/hicolor").arg(qApp->applicationFilePath());
+                themes << QString("%1/../share/icons/hicolor").arg(appFilePath);
                 themes << "/usr/share/icons/hicolor" << "/usr/local/share/icons/hicolor";
                 for (int i=0;i<themes.size();++i) {
                     if (QFile::exists(themes.at(i))) {

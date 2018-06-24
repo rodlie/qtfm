@@ -430,7 +430,7 @@ void SettingsDialog::onMimeSelected(QTreeWidgetItem *current,
     // Finds icon
     QIcon temp = QIcon::fromTheme(app).pixmap(16, 16);
     if (temp.isNull()) {
-        QString foundIcon = Common::findApplicationIcon(app + ".desktop");
+        QString foundIcon = Common::findApplicationIcon(QIcon::themeName(), app + ".desktop");
         if (!foundIcon.isEmpty()) {
             temp = QIcon(foundIcon);
         } else {

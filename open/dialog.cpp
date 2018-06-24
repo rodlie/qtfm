@@ -29,9 +29,9 @@ void iconHandler::findIcon(QString icon)
 {
     if (icon.isEmpty()) { return; }
     QString result;
-    if (icon != "application-x-executable") { result = Common::findIcon(icon); }
+    if (icon != "application-x-executable") { result = Common::findIcon(QIcon::themeName(), icon); }
     if (result.isEmpty()) {
-        result = Common::findIcon("application-x-executable");
+        result = Common::findIcon(QIcon::themeName(), "application-x-executable");
     }
     emit foundIcon(icon, result);
 }
@@ -104,11 +104,12 @@ void Dialog::handleUserInput(QString input)
     }
     QStringList additionalApps = Common::findApplications(input);
     for (int i=0;i<additionalApps.size();++i) {
-        if (appExists(additionalApps.at(i))) { continue; }
+        if (appExists(additionalApps.at(i)) || appExists(additionalApps.at(i).split("/").takeLast())) { continue; }
         QListWidgetItem *appItem = new QListWidgetItem(appSuggestions);
         appItem->setText(additionalApps.at(i).split("/").takeLast());
         appItem->setData(LIST_EXE, additionalApps.at(i));
         appItem->setData(LIST_ICON, "application-x-executable");
+        appItem->setData(LIST_TERM, true);
         ih->requestIcon(appItem->data(LIST_ICON).toString());
     }
 }
@@ -163,7 +164,7 @@ bool Dialog::appExists(QString exe)
 
 void Dialog::setupTheme()
 {
-    Common::setupIconTheme();
+    Common::setupIconTheme(qApp->applicationFilePath());
     QPalette palette;
     palette.setColor(QPalette::Window, QColor(53,53,53));
     palette.setColor(QPalette::WindowText, Qt::white);

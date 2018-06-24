@@ -77,7 +77,7 @@ MainWindow::MainWindow()
     }
 
     // set icon theme
-    Common::setupIconTheme();
+    Common::setupIconTheme(qApp->applicationFilePath());
 
     // Create mime utils
     mimeUtils = new MimeUtils(this);

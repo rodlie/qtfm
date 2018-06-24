@@ -239,7 +239,7 @@ QIcon FileUtils::searchGenericIcon(const QString &category,
 QIcon FileUtils::searchAppIcon(const DesktopFile &app, const QIcon &defaultIcon)
 {
   if (QFile::exists(app.getIcon())) { return QIcon(app.getIcon()); }
-  QIcon icon(Common::findIcon(app.getIcon()));
+  QIcon icon(Common::findIcon(QIcon::themeName(), app.getIcon()));
   if (!icon.isNull()) { return icon; }
   return defaultIcon;
 }
