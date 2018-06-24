@@ -32,33 +32,12 @@
 int main(int argc, char *argv[]) {
 
   QApplication app(argc, argv);
-
-  // Connect to daemon if available, otherwise create new instance
-  /*if (app.arguments().count() == 1) {
-    QLocalServer server;
-    if (!server.listen(APP)) {
-      QLocalSocket client;
-      client.connectToServer(APP);
-      client.waitForConnected(1000);
-      if (client.state() != QLocalSocket::ConnectedState) {
-        QFile::remove(QDir::tempPath() + QString("/%1").arg(APP));
-      } else {
-        client.close();
-        return 0;
-      }
-    }
-    server.close();
-  }*/
+  QApplication::setOrganizationName(APP);
+  QApplication::setApplicationName("dracolinux");
+  QApplication::setOrganizationDomain("org");
 
   // Initialize resources
- // Q_INIT_RESOURCE(resources);
-
-  // Set application info
-  QString appName = APP;
-  appName.append("6"); // don't use config from QtFM 5 or lower
-  app.setOrganizationName(appName);
-  app.setApplicationName(appName);
-  app.setOrganizationDomain("org.dracolinux");
+  //Q_INIT_RESOURCE(resources);
 
   // Translate application
   /*QTranslator qtTranslator;

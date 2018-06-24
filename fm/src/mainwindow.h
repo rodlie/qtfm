@@ -51,6 +51,9 @@
 // appdock
 #include "applicationdock.h"
 
+// service
+#include "service.h"
+
 QT_BEGIN_NAMESPACE
 class QAction;
 class QMenu;
@@ -170,6 +173,8 @@ private slots:
     void checkPower();
     void doSuspend();
     void doHibernate();
+    //
+    void handlePathRequested(QString path);
 private:
     void createActions();
     void createActionIcons();
@@ -293,6 +298,8 @@ private:
     QString trashDir;
 
     ApplicationDock *appDock;
+
+    qtfm *service;
 };
 
 //---------------------------------------------------------------------------------

@@ -28,6 +28,8 @@
 #include <QApplication>
 #include <QStatusBar>
 #include <QMenu>
+#include <QDBusConnection>
+
 #include <sys/vfs.h>
 #include <fcntl.h>
 
@@ -55,6 +57,21 @@ MainWindow::MainWindow()
     connect(disks, SIGNAL(removedDevice(QString)), this, SLOT(handleMediaRemoved(QString)));
     connect(disks, SIGNAL(mediaChanged(QString,bool)), this, SLOT(handleMediaChanged(QString,bool)));
 
+    // dbus service
+    if (QDBusConnection::sessionBus().isConnected()) {
+        if (QDBusConnection::sessionBus().registerService(QString("%1.%2.%3")
+                                                           .arg(QApplication::organizationDomain())
+                                                           .arg(QApplication::applicationName())
+                                                           .arg(APP)))
+        {
+            service = new qtfm();
+            connect(service, SIGNAL(pathRequested(QString)), this, SLOT(handlePathRequested(QString)));
+            if (!QDBusConnection::sessionBus().registerObject("/qtfm", service, QDBusConnection::ExportAllSlots)) {
+                qWarning() << QDBusConnection::sessionBus().lastError().message();
+            }
+        } else { qWarning() << QDBusConnection::sessionBus().lastError().message(); }
+    }
+
     startPath = QDir::currentPath();
     QStringList args = QApplication::arguments();
 
@@ -67,7 +84,7 @@ MainWindow::MainWindow()
 #endif
     }
 
-    settings = new QSettings();
+    settings = new QSettings(Common::configFile(), QSettings::IniFormat);
     if (settings->value("clearCache").toBool()) {
         qDebug() << "clear cache";
         Common::removeFileCache();
@@ -1607,6 +1624,15 @@ void MainWindow::doSuspend()
 void MainWindow::doHibernate()
 {
     if (UPower::canHibernate()) { UPower::hibernate(); }
+}
+
+void MainWindow::handlePathRequested(QString path)
+{
+    qDebug() << "handle service path requested" << path;
+    if (path == pathEdit->currentText() || path.isEmpty()) { return; }
+    if (path.contains("/.")) { modelList->setRootPath(path); }
+    tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(path)));
+    status->showMessage(getDriveInfo(curIndex.filePath()));
 }
 //---------------------------------------------------------------------------
 

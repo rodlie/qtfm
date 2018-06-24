@@ -806,7 +806,7 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
  */
 QVariant myModel::findIcon(myModelItem *item) const {
 
-  qDebug() << "findicon" << item->absoluteFilePath();
+  //qDebug() << "findicon" << item->absoluteFilePath();
   // If type of file is directory, return icon of directory
   QFileInfo type(item->fileInfo());
   if (type.isDir()) {
