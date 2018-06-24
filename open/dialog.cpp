@@ -186,7 +186,7 @@ void Dialog::setupTheme()
 
 QString Dialog::getTerminal()
 {
-    QSettings settings(Common::configFile());
+    QSettings settings(Common::configFile(), QSettings::IniFormat);
     QString term = settings.value("term").toString();
     if (term.isEmpty()) { term = "xterm"; }
     return term;
