@@ -24,6 +24,9 @@ exists(../libdisks/libdisks.pro) {
     PKGCONFIG += Disks
 }
 
+INCLUDEPATH += ../libfm
+LIBS += -L../libfm -lQtFM
+
 target.path = $${PREFIX}/bin
 target_desktop.path = $${XDGDIR}/autostart
 target_desktop.files = $${TARGET}.desktop

@@ -59,14 +59,10 @@ MainWindow::MainWindow()
 
     // dbus service
     if (QDBusConnection::sessionBus().isConnected()) {
-        if (QDBusConnection::sessionBus().registerService(QString("%1.%2.%3")
-                                                           .arg(QApplication::organizationDomain())
-                                                           .arg(QApplication::applicationName())
-                                                           .arg(APP)))
-        {
+        if (QDBusConnection::sessionBus().registerService(FM_SERVICE)) {
             service = new qtfm();
             connect(service, SIGNAL(pathRequested(QString)), this, SLOT(handlePathRequested(QString)));
-            if (!QDBusConnection::sessionBus().registerObject("/qtfm", service, QDBusConnection::ExportAllSlots)) {
+            if (!QDBusConnection::sessionBus().registerObject(FM_PATH, service, QDBusConnection::ExportAllSlots)) {
                 qWarning() << QDBusConnection::sessionBus().lastError().message();
             }
         } else { qWarning() << QDBusConnection::sessionBus().lastError().message(); }

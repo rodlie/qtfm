@@ -12,6 +12,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QDebug>
+#include "common.h"
 
 SysTray::SysTray(QObject *parent)
     : QObject(parent)
@@ -148,7 +149,16 @@ void SysTray::handleDeviceMountpointChanged(QString path, QString mountpoint)
 void SysTray::openMountpoint(QString mountpoint)
 {
     if (mountpoint.isEmpty()) { return; }
-    QProcess::startDetached(QString("qtfm %1").arg(mountpoint));
+
+    QDBusInterface fmSession(FM_SERVICE,
+                            FM_PATH,
+                            FM_SERVICE,
+                            QDBusConnection::sessionBus());
+    if (fmSession.isValid()) {
+        fmSession.call("openPath", mountpoint);
+    } else {
+        QProcess::startDetached(QString("qtfm %1").arg(mountpoint));
+    }
 }
 
 void SysTray::handleFoundNewDevice(QString path)

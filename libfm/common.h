@@ -20,6 +20,9 @@
 #endif
 #define FM_MAJOR 6
 
+#define FM_SERVICE "org.dracolinux.qtfm"
+#define FM_PATH "/qtfm"
+
 class Common
 {
 public:
