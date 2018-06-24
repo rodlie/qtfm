@@ -47,8 +47,9 @@ icondlg::icondlg()
     layout->addWidget(buttons);
     setLayout(layout);
 
-    for (int i=0;i<Common::iconLocations().size();++i) {
-        QSettings inherits(Common::iconLocations().at(i) + "/" + QIcon::themeName() + "/index.theme",QSettings::IniFormat,this);
+    QStringList icons = Common::iconLocations(qApp->applicationFilePath());
+    for (int i=0;i<icons.size();++i) {
+        QSettings inherits(icons.at(i) + "/" + QIcon::themeName() + "/index.theme",QSettings::IniFormat,this);
         foreach(QString theme, inherits.value("Icon Theme/Inherits").toStringList()) {
             themes.prepend(theme);
             themes.append(QIcon::themeName());
@@ -64,8 +65,9 @@ void icondlg::scanTheme()
 {
     foreach(QString theme, themes) {
         //qDebug() << theme;
-        for (int i=0;i<Common::iconLocations().size();++i) {
-            QDirIterator it(Common::iconLocations().at(i) + "/" + theme, QStringList("*.png"), QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
+        QStringList icons = Common::iconLocations(qApp->applicationFilePath());
+        for (int i=0;i<icons.size();++i) {
+            QDirIterator it(icons.at(i) + "/" + theme, QStringList("*.png"), QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
             while (it.hasNext()) {
                 it.next();
                 fileNames.append(QFileInfo(it.fileName()).baseName());

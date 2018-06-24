@@ -107,10 +107,12 @@ QWidget *SettingsDialog::createGeneralSettings() {
   checkHidden = new QCheckBox(grpAppear);
   checkTabs = new QCheckBox(grpAppear);
   cmbIconTheme = new QComboBox(grpAppear);
+  checkDarkTheme = new QCheckBox(grpAppear);
   layoutAppear->addRow(tr("Fallback Icon theme:"), cmbIconTheme);
   layoutAppear->addRow(tr("Show thumbnails: "), checkThumbs);
   layoutAppear->addRow(tr("Show hidden files: "), checkHidden);
   layoutAppear->addRow(tr("Tabs on top: "), checkTabs);
+  layoutAppear->addRow(tr("Use Dark theme"), checkDarkTheme);
 
   showHomeButton = new QCheckBox(grpAppear);
   showTerminalButton = new QCheckBox(grpAppear);
@@ -356,7 +358,7 @@ QWidget* SettingsDialog::createMimeSettings() {
   apps.sort();
 
   // Prepare source of icons
-  QStringList iconFiles = Common::getPixmaps();
+  QStringList iconFiles = Common::getPixmaps(qApp->applicationFilePath());
   //qDebug() << "icons" << iconFiles;
   QIcon defaultIcon = QIcon::fromTheme("application-x-executable");
 
@@ -430,7 +432,7 @@ void SettingsDialog::onMimeSelected(QTreeWidgetItem *current,
     // Finds icon
     QIcon temp = QIcon::fromTheme(app).pixmap(16, 16);
     if (temp.isNull()) {
-        QString foundIcon = Common::findApplicationIcon(QIcon::themeName(), app + ".desktop");
+        QString foundIcon = Common::findApplicationIcon(qApp->applicationFilePath(), QIcon::themeName(), app + ".desktop");
         if (!foundIcon.isEmpty()) {
             temp = QIcon(foundIcon);
         } else {
@@ -562,6 +564,7 @@ void SettingsDialog::readSettings() {
   comboSingleClick->setCurrentIndex(settingsPtr->value("singleClick", 0).toInt());
   showHomeButton->setChecked(settingsPtr->value("home_button", true).toBool());
   showTerminalButton->setChecked(settingsPtr->value("terminal_button", true).toBool());
+  checkDarkTheme->setChecked(settingsPtr->value("darkTheme", false).toBool());
 
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
@@ -577,7 +580,7 @@ void SettingsDialog::readSettings() {
   QString currentTheme = settingsPtr->value("fallbackTheme").toString();
   //QDirIterator it("/usr/share/icons", QDir::Dirs | QDir::NoDotAndDotDot);
   QStringList iconThemes;
-  iconThemes << Common::getIconThemes();
+  iconThemes << Common::getIconThemes(qApp->applicationFilePath());
   /*while (it.hasNext()) {
     it.next();
     iconThemes.append(it.fileName());
@@ -812,6 +815,12 @@ bool SettingsDialog::saveSettings() {
       settingsPtr->setValue("clearCache", true);
       QMessageBox::warning(this, tr("Restart to apply settings"), tr("You must restart application to apply theme settings"));
   }
+
+  if (checkDarkTheme->isChecked() != settingsPtr->value("darkTheme").toBool()) {
+      QMessageBox::warning(this, tr("Restart to apply settings"), tr("You must restart application to apply theme settings"));
+  }
+
+  settingsPtr->setValue("darkTheme", checkDarkTheme->isChecked());
   settingsPtr->setValue("fallbackTheme", cmbIconTheme->currentText());
   settingsPtr->setValue("defMimeAppsFile", cmbDefaultMimeApps->currentText());
 

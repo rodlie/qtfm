@@ -74,6 +74,7 @@ protected:
   QComboBox* comboSingleClick;
   QCheckBox* showTerminalButton;
   QCheckBox* showHomeButton;
+  QCheckBox* checkDarkTheme;
 
   QTreeWidget *actionsWidget;
   QToolButton *addButton;

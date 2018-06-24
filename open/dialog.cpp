@@ -29,9 +29,9 @@ void iconHandler::findIcon(QString icon)
 {
     if (icon.isEmpty()) { return; }
     QString result;
-    if (icon != "application-x-executable") { result = Common::findIcon(QIcon::themeName(), icon); }
+    if (icon != "application-x-executable") { result = Common::findIcon(qApp->applicationFilePath(), QIcon::themeName(), icon); }
     if (result.isEmpty()) {
-        result = Common::findIcon(QIcon::themeName(), "application-x-executable");
+        result = Common::findIcon(qApp->applicationFilePath(), QIcon::themeName(), "application-x-executable");
     }
     emit foundIcon(icon, result);
 }

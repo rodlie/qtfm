@@ -88,6 +88,10 @@ MainWindow::MainWindow()
         Common::removeThumbsCache();
         settings->setValue("clearCache", false);
     }
+    // Dark theme
+    if (settings->value("darkTheme").toBool()) {
+        qApp->setPalette(Common::darkTheme());
+    }
 
     // set icon theme
     Common::setupIconTheme(qApp->applicationFilePath());
@@ -1455,7 +1459,7 @@ QMenu* MainWindow::createOpenWithMenu() {
     if (appName.isEmpty()) { continue; }
 
     // find .desktop
-    QString appDesktopFile = Common::findApplication(appName);
+    QString appDesktopFile = Common::findApplication(qApp->applicationFilePath(), appName);
     if (appDesktopFile.isEmpty()) { continue; }
 
     // Load desktop file for application
@@ -1492,7 +1496,7 @@ void MainWindow::selectApp() {
   if (dialog->exec()) {
     if (dialog->getCurrentLauncher().compare("") != 0) {
       QString appName = dialog->getCurrentLauncher() + ".desktop";
-      QString desktop = Common::findApplication(appName);
+      QString desktop = Common::findApplication(qApp->applicationFilePath(), appName);
       if (desktop.isEmpty()) { return; }
       DesktopFile df = DesktopFile(desktop);
       mimeUtils->openInApp(df.getExec(), curIndex, df.isTerminal()?term:"");

@@ -5,7 +5,6 @@
 #include <QDir>
 #include <QFile>
 #include <QDebug>
-#include <QApplication>
 #include <QIcon>
 #include <QDirIterator>
 #include <QRegExp>
@@ -14,6 +13,7 @@
 #include <QMapIterator>
 #include <QDirIterator>
 #include <QSettings>
+#include <QPalette>
 
 #ifndef APP
 #define APP "qtfm"
@@ -54,51 +54,51 @@ public:
         }
         return dir;
     }
-    static QStringList iconLocations()
+    static QStringList iconLocations(QString appPath)
     {
         QStringList result;
         result << QString("%1/.local/share/icons").arg(QDir::homePath());
-        result << QString("%1/../share/icons").arg(qApp->applicationFilePath());
+        result << QString("%1/../share/icons").arg(appPath);
         result << "/usr/share/icons" << "/usr/local/share/icons";
         return result;
     }
-    static QStringList pixmapLocations()
+    static QStringList pixmapLocations(QString appPath)
     {
         QStringList result;
         result << QString("%1/.local/share/pixmaps").arg(QDir::homePath());
-        result << QString("%1/../share/pixmaps").arg(qApp->applicationFilePath());
+        result << QString("%1/../share/pixmaps").arg(appPath);
         result << "/usr/share/pixmaps" << "/usr/local/share/pixmaps";
         return result;
     }
-    static QStringList applicationLocations()
+    static QStringList applicationLocations(QString appPath)
     {
         QStringList result;
         result << QString("%1/.local/share/applications").arg(QDir::homePath());
-        result << QString("%1/../share/applications").arg(qApp->applicationFilePath());
+        result << QString("%1/../share/applications").arg(appPath);
         result << "/usr/share/applications" << "/usr/local/share/applications";
         return result;
     }
-    static QStringList mimeGlobLocations()
+    static QStringList mimeGlobLocations(QString appPath)
     {
         QStringList result;
         result << QString("%1/.local/share/mime/globs").arg(QDir::homePath());
-        result << QString("%1/../share/mime/globs").arg(qApp->applicationFilePath());
+        result << QString("%1/../share/mime/globs").arg(appPath);
         result << "/usr/share/mime/globs" << "/usr/local/share/mime/globs";
         return result;
     }
-    static QStringList mimeGenericLocations()
+    static QStringList mimeGenericLocations(QString appPath)
     {
         QStringList result;
         result << QString("%1/.local/share/mime/generic-icons").arg(QDir::homePath());
-        result << QString("%1/../share/mime/generic-icons").arg(qApp->applicationFilePath());
+        result << QString("%1/../share/mime/generic-icons").arg(appPath);
         result << "/usr/share/mime/generic-icons" << "/usr/local/share/mime/generic-icons";
         return result;
     }
-    static QStringList mimeTypeLocations()
+    static QStringList mimeTypeLocations(QString appPath)
     {
         QStringList result;
         result << QString("%1/.local/share/mime/types").arg(QDir::homePath());
-        result << QString("%1/../share/mime/types").arg(qApp->applicationFilePath());
+        result << QString("%1/../share/mime/types").arg(appPath);
         result << "/usr/share/mime/types" << "/usr/local/share/mime/types";
         return result;
     }
@@ -120,7 +120,7 @@ public:
         file.close();
         return result;
     }
-    static QString findIconInDir(QString theme, QString dir, QString icon)
+    static QString findIconInDir(QString appPath, QString theme, QString dir, QString icon)
     {
         QString result;
         if (dir.isEmpty() || icon.isEmpty()) { return result; }
@@ -157,8 +157,9 @@ public:
             }
         }
         // pixmaps
-        for (int i=0;i<pixmapLocations().size();++i) {
-            QDirIterator pixmaps(pixmapLocations().at(i), QStringList() << "*.png" << "*.jpg" << "*.xpm", QDir::Files|QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        QStringList pixs = pixmapLocations(appPath);
+        for (int i=0;i<pixs.size();++i) {
+            QDirIterator pixmaps(pixs.at(i), QStringList() << "*.png" << "*.jpg" << "*.xpm", QDir::Files|QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
             while (pixmaps.hasNext()) {
                 QString found = pixmaps.next();
                 if (found.split("/").takeLast().split(".").takeFirst()==icon) { return found; }
@@ -166,22 +167,24 @@ public:
         }
         return result;
     }
-    static QString findIcon(QString theme, QString fileIcon)
+    static QString findIcon(QString appPath, QString theme, QString fileIcon)
     {
         QString result;
         if (fileIcon.isEmpty()) { return result; }
-        for (int i=0;i<iconLocations().size();++i) {
-            QString icon = findIconInDir(theme, iconLocations().at(i), fileIcon);
+        QStringList icons = iconLocations(appPath);
+        for (int i=0;i<icons.size();++i) {
+            QString icon = findIconInDir(appPath, theme, icons.at(i), fileIcon);
             if (!icon.isEmpty()) { return icon; }
         }
         return result;
     }
-    static QString findApplication(QString desktopFile)
+    static QString findApplication(QString appPath, QString desktopFile)
     {
         QString result;
         if (desktopFile.isEmpty()) { return result; }
-        for (int i=0;i<applicationLocations().size();++i) {
-            QDirIterator it(applicationLocations().at(i), QStringList("*.desktop"), QDir::Files|QDir::NoDotAndDotDot);
+        QStringList apps = applicationLocations(appPath);
+        for (int i=0;i<apps.size();++i) {
+            QDirIterator it(apps.at(i), QStringList("*.desktop"), QDir::Files|QDir::NoDotAndDotDot);
             while (it.hasNext()) {
                 QString found = it.next();
                 if (found.split("/").takeLast()==desktopFile) {
@@ -209,14 +212,14 @@ public:
         }
         return result;
     }
-    static QString findApplicationIcon(QString theme, QString app)
+    static QString findApplicationIcon(QString appPath, QString theme, QString app)
     {
         QString result;
-        QString desktop = findApplication(app);
+        QString desktop = findApplication(appPath, app);
         if (desktop.isEmpty()) { return result; }
         QString icon = getDesktopIcon(desktop);
         if (icon.isEmpty()) { return result; }
-        result = findIcon(theme, icon);
+        result = findIcon(appPath, theme, icon);
         return result;
     }
     static QMap<QString, QString> readGlobMimesFromFile(QString filename)
@@ -240,11 +243,12 @@ public:
         file.close();
         return map;
     }
-    static QMap<QString, QString> getMimesGlobs()
+    static QMap<QString, QString> getMimesGlobs(QString appPath)
     {
         QMap<QString, QString> map;
-        for (int i=0;i<mimeGlobLocations().size();++i) {
-            QMapIterator<QString, QString> globs(readGlobMimesFromFile(mimeGlobLocations().at(i)));
+        QStringList mimes = mimeGlobLocations(appPath);
+        for (int i=0;i<mimes.size();++i) {
+            QMapIterator<QString, QString> globs(readGlobMimesFromFile(mimes.at(i)));
             while (globs.hasNext()) {
                 globs.next();
                 map[globs.key()] = globs.value();
@@ -272,11 +276,12 @@ public:
         file.close();
         return map;
     }
-    static QMap<QString, QString> getMimesGeneric()
+    static QMap<QString, QString> getMimesGeneric(QString appPath)
     {
         QMap<QString, QString> map;
-        for (int i=0;i<mimeGenericLocations().size();++i) {
-            QMapIterator<QString, QString> generic(readGenericMimesFromFile(mimeGenericLocations().at(i)));
+        QStringList mimes = mimeGenericLocations(appPath);
+        for (int i=0;i<mimes.size();++i) {
+            QMapIterator<QString, QString> generic(readGenericMimesFromFile(mimes.at(i)));
             while (generic.hasNext()) {
                 generic.next();
                 map[generic.key()] = generic.value();
@@ -285,22 +290,24 @@ public:
         }
         return map;
     }
-    static QStringList getPixmaps()
+    static QStringList getPixmaps(QString appPath)
     {
         QStringList result;
-        for (int i=0;i<pixmapLocations().size();++i) {
-            QDir pixmaps(pixmapLocations().at(i), "",  0, QDir::Files | QDir::NoDotAndDotDot);
+        QStringList pixs = pixmapLocations(appPath);
+        for (int i=0;i<pixs.size();++i) {
+            QDir pixmaps(pixs.at(i), "",  0, QDir::Files | QDir::NoDotAndDotDot);
             for (int i=0;i<pixmaps.entryList().size();++i) {
                 result << QString("%1/%2").arg(pixmaps.absolutePath()).arg(pixmaps.entryList().at(i));
             }
         }
         return result;
     }
-    static QStringList getMimeTypes()
+    static QStringList getMimeTypes(QString appPath)
     {
         QStringList result;
-        for (int i=0;i<mimeTypeLocations().size();++i) {
-            QFile file(mimeTypeLocations().at(i));
+        QStringList mimes = mimeTypeLocations(appPath);
+        for (int i=0;i<mimes.size();++i) {
+            QFile file(mimes.at(i));
             if (!file.open(QIODevice::ReadOnly|QIODevice::Text)) { continue; }
             QTextStream s(&file);
             while (!s.atEnd()) {
@@ -311,11 +318,12 @@ public:
         }
         return result;
     }
-    static QStringList getIconThemes()
+    static QStringList getIconThemes(QString appPath)
     {
         QStringList result;
-        for (int i=0;i<iconLocations().size();++i) {
-            QDirIterator it(iconLocations().at(i), QDir::Dirs | QDir::NoDotAndDotDot);
+        QStringList icons = iconLocations(appPath);
+        for (int i=0;i<icons.size();++i) {
+            QDirIterator it(icons.at(i), QDir::Dirs | QDir::NoDotAndDotDot);
             while (it.hasNext()) {
                 it.next();
                 //qDebug() << it.fileName() << it.filePath();
@@ -470,6 +478,28 @@ public:
             return lastDevice;
         }
         return QString();
+    }
+    static QPalette darkTheme()
+    {
+        QPalette palette;
+        palette.setColor(QPalette::Window, QColor(53,53,53));
+        palette.setColor(QPalette::WindowText, Qt::white);
+        palette.setColor(QPalette::Base, QColor(33,33,33));
+        palette.setColor(QPalette::AlternateBase, QColor(53,53,53));
+        //palette.setColor(QPalette::ToolTipBase, Qt::white);
+        //palette.setColor(QPalette::ToolTipText, Qt::white);
+        palette.setColor(QPalette::Link, Qt::white);
+        palette.setColor(QPalette::LinkVisited, Qt::white);
+        palette.setColor(QPalette::ToolTipText, Qt::black);
+        palette.setColor(QPalette::Text, Qt::white);
+        palette.setColor(QPalette::Button, QColor(53,53,53));
+        palette.setColor(QPalette::ButtonText, Qt::white);
+        palette.setColor(QPalette::BrightText, Qt::red);
+        palette.setColor(QPalette::Highlight, QColor(93,93,93));
+        palette.setColor(QPalette::HighlightedText, Qt::black);
+        palette.setColor(QPalette::Disabled, QPalette::Text, Qt::darkGray);
+        palette.setColor(QPalette::Disabled, QPalette::ButtonText, Qt::darkGray);
+        return palette;
     }
 };
 

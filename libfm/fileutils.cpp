@@ -100,7 +100,7 @@ qint64 FileUtils::totalSize(const QList<QUrl> &files) {
  */
 QStringList FileUtils::getApplicationNames() {
   QStringList appNames;
-  QStringList locations = Common::applicationLocations();
+  QStringList locations = Common::applicationLocations(qApp->applicationFilePath());
   for (int i=0;i<locations.size();++i) {
       QDirIterator it1(locations.at(i), QStringList("*.desktop"),
                       QDir::Files | QDir::NoDotAndDotDot,
@@ -121,7 +121,7 @@ QStringList FileUtils::getApplicationNames() {
  */
 QList<DesktopFile> FileUtils::getApplications() {
   QList<DesktopFile> apps;
-  QStringList locations = Common::applicationLocations();
+  QStringList locations = Common::applicationLocations(qApp->applicationFilePath());
   for (int i=0;i<locations.size();++i) {
       QDirIterator it(locations.at(i), QStringList("*.desktop"),
                       QDir::Files | QDir::NoDotAndDotDot,
@@ -239,7 +239,7 @@ QIcon FileUtils::searchGenericIcon(const QString &category,
 QIcon FileUtils::searchAppIcon(const DesktopFile &app, const QIcon &defaultIcon)
 {
   if (QFile::exists(app.getIcon())) { return QIcon(app.getIcon()); }
-  QIcon icon(Common::findIcon(QIcon::themeName(), app.getIcon()));
+  QIcon icon(Common::findIcon(qApp->applicationFilePath(), QIcon::themeName(), app.getIcon()));
   if (!icon.isNull()) { return icon; }
   return defaultIcon;
 }

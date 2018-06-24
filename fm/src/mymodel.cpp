@@ -570,12 +570,12 @@ void myModel::setMode(bool icons) {
  * @brief Loads mime types
  */
 void myModel::loadMimeTypes() const {
-    QMapIterator<QString, QString> globs(Common::getMimesGlobs());
+    QMapIterator<QString, QString> globs(Common::getMimesGlobs(qApp->applicationFilePath()));
     while(globs.hasNext()) {
         globs.next();
         mimeGlob->insert(globs.value(), globs.key());
     }
-    QMapIterator<QString, QString> generic(Common::getMimesGeneric());
+    QMapIterator<QString, QString> generic(Common::getMimesGeneric(qApp->applicationFilePath()));
     while(generic.hasNext()) {
         generic.next();
         mimeGeneric->insert(generic.key(), generic.value());
