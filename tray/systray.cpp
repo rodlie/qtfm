@@ -49,7 +49,14 @@ void SysTray::generateContextMenu()
     QMapIterator<QString, Device*> device(man->devices);
     while (device.hasNext()) {
         device.next();
-        if ((device.value()->isOptical && !device.value()->hasMedia) || (!device.value()->isOptical && !device.value()->isRemovable) || (!device.value()->isOptical && !device.value()->hasPartition)) {
+
+        qDebug() << device.value()->name << device.value()->isOptical << device.value()->hasMedia << device.value()->isRemovable << device.value()->hasPartition;
+
+        if ((device.value()->isOptical &&
+             !device.value()->hasMedia) ||
+             (!device.value()->isOptical && !device.value()->isRemovable) ||
+             (!device.value()->isOptical && !device.value()->hasPartition))
+        {
             continue;
         }
 
