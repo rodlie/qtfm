@@ -190,6 +190,23 @@ public:
         }
         return result;
     }
+    static QStringList findApplications(QString filename)
+    {
+        QStringList result;
+        if (filename.isEmpty()) { return result; }
+        QString path = qgetenv("PATH");
+        QStringList paths = path.split(":", QString::SkipEmptyParts);
+        for (int i=0;i<paths.size();++i) {
+            QDirIterator it(paths.at(i), QStringList("*"), QDir::Files|QDir::Executable|QDir::NoDotAndDotDot);
+            while (it.hasNext()) {
+                QString found = it.next();
+                if (found.split("/").takeLast().startsWith(filename)) {
+                    result << found;
+                }
+            }
+        }
+        return result;
+    }
     static QString findApplicationIcon(QString app)
     {
         QString result;

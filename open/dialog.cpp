@@ -28,7 +28,8 @@ void iconHandler::requestIcon(QString icon)
 void iconHandler::findIcon(QString icon)
 {
     if (icon.isEmpty()) { return; }
-    QString result = Common::findIcon(icon);
+    QString result;
+    if (icon != "application-x-executable") { result = Common::findIcon(icon); }
     if (result.isEmpty()) {
         result = Common::findIcon("application-x-executable");
     }
@@ -41,7 +42,7 @@ Dialog::Dialog(QWidget *parent)
     , appSuggestions(0)
 {
     setAttribute(Qt::WA_QuitOnClose, true);
-    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -81,7 +82,13 @@ Dialog::~Dialog()
 void Dialog::handleUserInput(QString input)
 {
     appSuggestions->clear();
-    if (appSuggestions->isHidden()) { appSuggestions->show(); }
+    if (appSuggestions->isHidden()) {
+        appSuggestions->show();
+        QDesktopWidget wid;
+        int screenWidth = wid.screen()->width();
+        int screenHeight = wid.screen()->height();
+        setGeometry((screenWidth/2)-(width()/2),(screenHeight/2)-(height()/2),width(),height());
+    }
     foreach (DesktopFile app, apps) {
         if (app.getName().compare("") == 0 || app.noDisplay()) { continue; }
         if (app.getName().contains(input, Qt::CaseInsensitive) ||
@@ -95,11 +102,15 @@ void Dialog::handleUserInput(QString input)
             ih->requestIcon(app.getIcon());
         }
     }
-
-    QDesktopWidget wid;
-    int screenWidth = wid.screen()->width();
-    int screenHeight = wid.screen()->height();
-    setGeometry((screenWidth/2)-(width()/2),(screenHeight/2)-(height()/2),width(),height());
+    QStringList additionalApps = Common::findApplications(input);
+    for (int i=0;i<additionalApps.size();++i) {
+        if (appExists(additionalApps.at(i))) { continue; }
+        QListWidgetItem *appItem = new QListWidgetItem(appSuggestions);
+        appItem->setText(additionalApps.at(i).split("/").takeLast());
+        appItem->setData(LIST_EXE, additionalApps.at(i));
+        appItem->setData(LIST_ICON, "application-x-executable");
+        ih->requestIcon(appItem->data(LIST_ICON).toString());
+    }
 }
 
 void Dialog::handleUserEnter()
@@ -136,6 +147,18 @@ void Dialog::handleFoundIcon(QString icon, QString result)
             item->setIcon(QIcon(result));
         }
     }
+}
+
+bool Dialog::appExists(QString exe)
+{
+    for (int i=0;i<appSuggestions->count();++i) {
+        QListWidgetItem *item = appSuggestions->item(i);
+        if (!item) { return false; }
+        if (item->data(LIST_EXE).toString() == exe) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void Dialog::setupTheme()

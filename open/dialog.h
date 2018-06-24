@@ -69,6 +69,7 @@ private slots:
     void handleUserEnter();
     void handleAppClicked(QListWidgetItem *app);
     void handleFoundIcon(QString icon, QString result);
+    bool appExists(QString exe);
     void setupTheme();
     QString getTerminal();
 };
