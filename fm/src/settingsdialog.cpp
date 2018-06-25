@@ -70,12 +70,14 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   selector->addItem(new QListWidgetItem(icon2, tr("Custom actions"), selector));
   selector->addItem(new QListWidgetItem(icon3, tr("Shortcuts"), selector));
   selector->addItem(new QListWidgetItem(icon4, tr("Mime types"), selector));
+  selector->addItem(new QListWidgetItem(icon4, tr("Default behaviour"), selector));
 
   stack->addWidget(createGeneralSettings());
   stack->addWidget(createActionsSettings());
   stack->addWidget(createShortcutSettings());
   //stack->addWidget(createMimeProgress());
   stack->addWidget(createMimeSettings());
+  stack->addWidget(createDefaultBehaviour());
   connect(selector, SIGNAL(currentRowChanged(int)), stack,
           SLOT(setCurrentIndex(int)));
   connect(selector, SIGNAL(currentRowChanged(int)), SLOT(loadMimes(int)));
@@ -120,7 +122,7 @@ QWidget *SettingsDialog::createGeneralSettings() {
   layoutAppear->addRow(tr("Show Terminal button"), showTerminalButton);
 
   // Behaviour
-  QGroupBox* grpBehav = new QGroupBox(tr("Default behaviour"), widget);
+  /*QGroupBox* grpBehav = new QGroupBox(tr("Default behaviour"), widget);
   QFormLayout* layoutBehav = new QFormLayout(grpBehav);
   comboDAD = new QComboBox(grpBehav);
   comboDADctl = new QComboBox(grpBehav);
@@ -146,7 +148,7 @@ QWidget *SettingsDialog::createGeneralSettings() {
   comboSingleClick->addItem(tr("No"),0);
   comboSingleClick->addItem(tr("Directories only"),1);
   comboSingleClick->addItem(tr("Everything"),2);
-  layoutBehav->addRow(tr("Enable Single Click"), comboSingleClick);
+  layoutBehav->addRow(tr("Enable Single Click"), comboSingleClick);*/
 
   // Confirmation
   QGroupBox* grpConfirm = new QGroupBox(tr("Confirmation"), widget);
@@ -170,7 +172,7 @@ QWidget *SettingsDialog::createGeneralSettings() {
 
   // Layout of widget
   layoutWidget->addWidget(grpAppear);
-  layoutWidget->addWidget(grpBehav);
+//  layoutWidget->addWidget(grpBehav);
   layoutWidget->addWidget(grpConfirm);
   layoutWidget->addWidget(grpTerm);
   layoutWidget->addWidget(grpDMime);
@@ -390,6 +392,47 @@ QWidget* SettingsDialog::createMimeSettings() {
   connect(btnDown, SIGNAL(clicked()), SLOT(moveAppAssocDown()));
 
   return widget;
+}
+
+QWidget *SettingsDialog::createDefaultBehaviour()
+{
+    // Main widget and layout
+    QWidget* widget = new QWidget();
+    QVBoxLayout* layoutWidget = new QVBoxLayout(widget);
+
+    // Behaviour
+    QGroupBox* grpBehav = new QGroupBox(tr("Default behaviour"), widget);
+    QFormLayout* layoutBehav = new QFormLayout(grpBehav);
+    comboDAD = new QComboBox(grpBehav);
+    comboDADctl = new QComboBox(grpBehav);
+    comboDADshift = new QComboBox(grpBehav);
+    comboDADalt = new QComboBox(grpBehav);
+    QVector<QComboBox*> dads;
+    dads.append(comboDAD);
+    dads.append(comboDADalt);
+    dads.append(comboDADctl);
+    dads.append(comboDADshift);
+    for (int i=0;i<dads.size();++i) {
+        dads.at(i)->addItem(tr("Ask"),0);
+        dads.at(i)->addItem(tr("Copy"),1);
+        dads.at(i)->addItem(tr("Move"),2);
+        dads.at(i)->addItem(tr("Link"),3);
+    }
+    layoutBehav->addRow(tr("Drag and Drop Default action: "), comboDAD);
+    layoutBehav->addRow(tr("Drag and Drop CTRL action: "), comboDADctl);
+    layoutBehav->addRow(tr("Drag and Drop SHIFT action: "), comboDADshift);
+    layoutBehav->addRow(tr("Drag and Drop ALT action: "), comboDADalt);
+
+    comboSingleClick = new QComboBox(grpBehav);
+    comboSingleClick->addItem(tr("No"),0);
+    comboSingleClick->addItem(tr("Directories only"),1);
+    comboSingleClick->addItem(tr("Everything"),2);
+    layoutBehav->addRow(tr("Enable Single Click"), comboSingleClick);
+
+    layoutWidget->addWidget(grpBehav);
+    layoutWidget->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Fixed,
+                                                QSizePolicy::MinimumExpanding));
+    return widget;
 }
 //---------------------------------------------------------------------------
 
@@ -705,7 +748,7 @@ void SettingsDialog::readShortcuts() {
  */
 void SettingsDialog::loadMimes(int section) {
 
-    //qDebug() << "LOAD MIMES";
+   qDebug() << "LOAD MIMES" << section;
   // Mime progress section
   const int MIME_PROGRESS_SECTION = 3;
 
@@ -716,7 +759,7 @@ void SettingsDialog::loadMimes(int section) {
 
   // If mimes have been already loaded move to another section (mime config)
   if (mimesWidget->topLevelItemCount() > 0) {
-    stack->setCurrentIndex(MIME_PROGRESS_SECTION + 1);
+    stack->setCurrentIndex(MIME_PROGRESS_SECTION /*+ 1*/);
     return;
   }
 
@@ -783,7 +826,7 @@ void SettingsDialog::loadMimes(int section) {
   }
 
   // Move to mimes
-  stack->setCurrentIndex(MIME_PROGRESS_SECTION + 1);
+  stack->setCurrentIndex(MIME_PROGRESS_SECTION /*+ 1*/);
 }
 //---------------------------------------------------------------------------
 

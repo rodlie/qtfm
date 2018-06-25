@@ -49,8 +49,9 @@ protected:
   QWidget* createGeneralSettings();
   QWidget* createActionsSettings();
   QWidget* createShortcutSettings();
-  QWidget* createMimeProgress();
+  //QWidget* createMimeProgress();
   QWidget* createMimeSettings();
+  QWidget* createDefaultBehaviour();
 
   MimeUtils* mimeUtilsPtr;
 
