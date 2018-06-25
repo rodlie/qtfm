@@ -374,7 +374,7 @@ void MainWindow::lateStart() {
 /**
  * @brief Loads application settings
  */
-void MainWindow::loadSettings() {
+void MainWindow::loadSettings(bool wState) {
 
   // first run?
     bool isFirstRun = false;
@@ -390,13 +390,16 @@ void MainWindow::loadSettings() {
 #endif
 
   // Restore window state
-  if (!settings->value("windowState").isValid()) { // don't show dock tree/app as default
-      dockTree->hide();
-      appDock->hide();
+  if (wState) {
+      qDebug() << "restore window state";
+      if (!settings->value("windowState").isValid()) { // don't show dock tree/app as default
+          dockTree->hide();
+          appDock->hide();
+      }
+      restoreState(settings->value("windowState").toByteArray(), 1);
+      restoreGeometry(settings->value("windowGeo").toByteArray());
+      if (settings->value("windowMax").toBool()) { showMaximized(); }
   }
-  restoreState(settings->value("windowState").toByteArray(), 1);
-  restoreGeometry(settings->value("windowGeo").toByteArray());
-  if (settings->value("windowMax").toBool()) { showMaximized(); }
 
   // Load info whether use real mime types
   modelList->setRealMimeTypes(settings->value("realMimeTypes", true).toBool());

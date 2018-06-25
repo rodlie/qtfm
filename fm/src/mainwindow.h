@@ -144,7 +144,7 @@ public slots:
     void dirLoaded();
     void thumbUpdate(QModelIndex);
     void addressChanged(int,int);
-    void loadSettings();
+    void loadSettings(bool wState = true);
     void firstRunBookmarks(bool isFirstRun);
     void loadBookmarks();
     void writeBookmarks();
