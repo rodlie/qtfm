@@ -37,7 +37,9 @@ Open ``~/.config/openbox/rc.xml`` and find the line line ``<!-- Keybindings for 
     </action>
   </keybind>
 ```
+## Packages
 
+[![Packaging status](https://repology.org/badge/vertical-allrepos/qtfm.svg)](https://repology.org/metapackage/qtfm)
 
 ## Links
 
