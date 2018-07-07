@@ -28,6 +28,7 @@
 #else
 #endif
 
+#include "common.h"
 #include "propertiesdlg.h"
 #include "icondlg.h"
 #include "mainwindow.h"
@@ -279,7 +280,7 @@ void PropertiesDialog::recurseProperties(QString path)
             if(it.fileInfo().isDir())
             {
                 folders++;
-                if(folders % 32 == 0) emit updateSignal();
+                if(folders % BOOKMARK_PATH == 0) emit updateSignal();
             }
             else
             {

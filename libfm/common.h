@@ -16,6 +16,10 @@
 
 #define FM_MAJOR 6
 
+#define BOOKMARK_PATH Qt::UserRole+1
+#define BOOKMARK_ICON Qt::UserRole+2
+#define BOOKMARKS_AUTO Qt::UserRole+3
+
 class Common
 {
 public:
