@@ -126,6 +126,7 @@ void Disks::setupDBus()
 
 void Disks::scanDevices()
 {
+    if (!dbus->isValid()) { return; }
     QStringList foundDevices = uDisks2::getDevices();
     for (int i=0;i<foundDevices.size();i++) {
         QString foundDevicePath = foundDevices.at(i);
