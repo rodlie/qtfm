@@ -23,6 +23,10 @@
 #define FM_SERVICE "org.dracolinux.qtfm"
 #define FM_PATH "/qtfm"
 
+#define BOOKMARK_PATH Qt::UserRole+1
+#define BOOKMARK_ICON Qt::UserRole+2
+#define BOOKMARKS_AUTO Qt::UserRole+3
+
 class Common
 {
 public:

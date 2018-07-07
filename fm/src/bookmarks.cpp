@@ -28,6 +28,7 @@
 #include "bookmarkmodel.h"
 #include "icondlg.h"
 #include "mainwindow.h"
+#include "common.h"
 
 //---------------------------------------------------------------------------
 void MainWindow::addBookmarkAction()
@@ -66,13 +67,15 @@ void bookmarkmodel::addBookmark(QString name, QString path, QString isAuto, QStr
     QIcon theIcon;
     theIcon = QIcon::fromTheme(icon,QApplication::style()->standardIcon(QStyle::SP_DirIcon));
 
-    if(icon.isEmpty()) if(folderIcons->contains(name)) theIcon = folderIcons->value(name);
+    if(icon.isEmpty()) {
+        if(folderIcons->contains(name)) { theIcon = folderIcons->value(name); }
+    }
 
     if(name.isEmpty()) name = "/";
     QStandardItem *item = new QStandardItem(theIcon,name);
-    item->setData(path,32);
-    item->setData(icon,33);
-    item->setData(isAuto,34);
+    item->setData(path, BOOKMARK_PATH);
+    item->setData(icon, BOOKMARK_ICON);
+    item->setData(isAuto, BOOKMARKS_AUTO);
     item->setData(isMedia, MEDIA_MODEL);
     if (isMedia) { item->setData(mediaPath, MEDIA_PATH); }
     this->appendRow(item);
@@ -86,10 +89,10 @@ void MainWindow::delBookmark()
 
     while(!list.isEmpty())
     {
-        if(list.first().data(34).toString() == "1")		//automount, add to dontShowList
+        if(list.first().data(BOOKMARKS_AUTO).toString() == "1")		//automount, add to dontShowList
         {
             QStringList temp = settings->value("hideBookmarks",0).toStringList();
-            temp.append(list.first().data(32).toString());
+            temp.append(list.first().data(BOOKMARK_PATH).toString());
             settings->setValue("hideBookmarks",temp);
         }
         modelBookmarks->removeRow(list.first().row());
@@ -105,7 +108,7 @@ void MainWindow::editBookmark()
     if(themeIcons->exec() == 1)
     {
         QStandardItem * item = modelBookmarks->itemFromIndex(bookmarksList->currentIndex());
-        item->setData(themeIcons->result,33);
+        item->setData(themeIcons->result, BOOKMARK_ICON);
         item->setIcon(QIcon::fromTheme(themeIcons->result));
         handleBookmarksChanged();
     }
@@ -123,30 +126,30 @@ void MainWindow::toggleWrapBookmarks()
 void MainWindow::bookmarkPressed(QModelIndex current)
 {
     if (current.data(MEDIA_MODEL).toBool() && !current.data(MEDIA_PATH).toString().isEmpty()) {
-        if (current.data(32).toString().isEmpty()) {
+        if (current.data(BOOKMARK_PATH).toString().isEmpty()) {
             disks->devices[current.data(MEDIA_PATH).toString()]->mount();
         }
     }
     if(QApplication::mouseButtons() == Qt::MidButton)
-        tabs->setCurrentIndex(addTab(current.data(32).toString()));
+        tabs->setCurrentIndex(addTab(current.data(BOOKMARK_PATH).toString()));
 }
 
 //---------------------------------------------------------------------------
 void MainWindow::bookmarkClicked(QModelIndex item)
 {
-    if(item.data(32).toString() == pathEdit->currentText()) return;
+    if(item.data(BOOKMARK_PATH).toString() == pathEdit->currentText()) return;
 
     if (item.data(MEDIA_MODEL).toBool() && !item.data(MEDIA_PATH).toString().isEmpty()) {
-        if (item.data(32).toString().isEmpty()) {
+        if (item.data(BOOKMARK_PATH).toString().isEmpty()) {
             disks->devices[item.data(MEDIA_PATH).toString()]->mount();
         }
     }
 
-    QString info(item.data(32).toString());
+    QString info(item.data(BOOKMARK_PATH).toString());
     if(info.isEmpty()) return;                                  //separator
     if(info.contains("/.")) modelList->setRootPath(info);       //hidden folders
 
-    tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(item.data(32).toString())));
+    tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(item.data(BOOKMARK_PATH).toString())));
     status->showMessage(getDriveInfo(curIndex.filePath()));
 }
 
@@ -183,7 +186,7 @@ bool bookmarkmodel::dropMimeData(const QMimeData * data,Qt::DropAction action,in
                 cutList.append(file.filePath());
     }
 
-    emit bookmarkPaste(data, parent.data(32).toString(), cutList);
+    emit bookmarkPaste(data, parent.data(BOOKMARK_PATH).toString(), cutList);
 
     return false;
 }

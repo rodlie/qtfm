@@ -513,9 +513,9 @@ void MainWindow::writeBookmarks()
       if (modelBookmarks->item(i)->data(MEDIA_MODEL).toBool()) { continue; } // ignore media devices
       QStringList temp;
       temp << modelBookmarks->item(i)->text()
-           << modelBookmarks->item(i)->data(32).toString()
-           << modelBookmarks->item(i)->data(34).toString()
-           << modelBookmarks->item(i)->data(33).toString();
+           << modelBookmarks->item(i)->data(BOOKMARK_PATH).toString()
+           << modelBookmarks->item(i)->data(BOOKMARKS_AUTO).toString()
+           << modelBookmarks->item(i)->data(BOOKMARK_ICON).toString();
       settings->setValue(QString(i),temp);
     }
     settings->endGroup();
@@ -1135,7 +1135,7 @@ void MainWindow::folderPropertiesLauncher()
 {
     QModelIndexList selList;
     if (focusWidget() == bookmarksList) {
-        selList.append(modelView->mapFromSource(modelList->index(bookmarksList->currentIndex().data(32).toString())));
+        selList.append(modelView->mapFromSource(modelList->index(bookmarksList->currentIndex().data(BOOKMARK_PATH).toString())));
     } else if (focusWidget() == list || focusWidget() == detailTree) {
         if (listSelectionModel->selectedRows(0).count()) { selList = listSelectionModel->selectedRows(0); }
         else { selList = listSelectionModel->selectedIndexes(); }
@@ -1369,7 +1369,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
     if (focusWidget() == bookmarksList) {
       listSelectionModel->clearSelection();
       if (bookmarksList->indexAt(bookmarksList->mapFromGlobal(event->globalPos())).isValid()) {
-        curIndex = bookmarksList->currentIndex().data(32).toString();
+        curIndex = bookmarksList->currentIndex().data(BOOKMARK_PATH).toString();
         isMedia = bookmarksList->currentIndex().data(MEDIA_MODEL).toBool();
         if (!isMedia) {
             popup->addAction(delBookmarkAct);
@@ -1549,7 +1549,7 @@ void MainWindow::handleMediaMountpointChanged(QString path, QString mountpoint)
     if (path.isEmpty()) { return; }
     for (int i = 0; i < modelBookmarks->rowCount(); i++) {
         if (modelBookmarks->item(i)->data(MEDIA_MODEL).toBool() && modelBookmarks->item(i)->data(MEDIA_PATH).toString() == path) {
-            modelBookmarks->item(i)->setData(disks->devices[path]->mountpoint, 32);
+            modelBookmarks->item(i)->setData(disks->devices[path]->mountpoint, BOOKMARK_PATH);
         }
     }
 }
