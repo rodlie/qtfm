@@ -2,6 +2,10 @@ QT+= core gui dbus
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 include(../qtfm.pri)
 
+CONFIG(basic) {
+    CONFIG += no_udisks no_tray no_open no_appdock no_dbus
+}
+
 TARGET = $${QTFM_TARGET}
 TARGET_NAME = $${QTFM_TARGET_NAME}
 VERSION = $${QTFM_MAJOR}.$${QTFM_MINOR}.$${QTFM_PATCH}
@@ -21,8 +25,8 @@ HEADERS += src/mainwindow.h \
     src/settingsdialog.h \
     src/customactionsmanager.h \
     src/processdialog.h \
-    src/applicationdialog.h \
-    applicationdock.h
+    src/applicationdialog.h
+!CONFIG(no_appdock): HEADERS += applicationdock.h
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/mymodel.cpp \
@@ -36,8 +40,8 @@ SOURCES += src/main.cpp \
     src/processdialog.cpp \
     src/applicationdialog.cpp \
     src/actiondefs.cpp \
-    src/actiontriggers.cpp \
-    applicationdock.cpp
+    src/actiontriggers.cpp
+!CONFIG(no_appdock): SOURCES += applicationdock.cpp
 
 OTHER_FILES += $${TARGET}.desktop
 RESOURCES += $${TARGET}.qrc

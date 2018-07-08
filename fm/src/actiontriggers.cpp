@@ -898,7 +898,9 @@ void MainWindow::toggleHidden() {
 void MainWindow::showAboutBox()
 {
     QMessageBox box;
+#if QT_VERSION >= 0x050000
     box.setStyleSheet("QLabel { min-width:280px; }");
+#endif
     box.setWindowTitle(tr("About %1").arg(APP_NAME));
     box.setWindowIcon(QIcon::fromTheme("user-home"));
     box.setText(QString("<p style=\"text-align:center;\">"
@@ -909,12 +911,14 @@ void MainWindow::showAboutBox()
                         "<a href=\"https://qtfm.dracolinux.org\">"
                         "qtfm.dracolinux.org"
                         "</a></p>").arg(APP_NAME).arg(APP_VERSION));
+#if QT_VERSION >= 0x050000
     box.setInformativeText(QString("<p style=\"text-align:center;font-size:small;\">"
                               "This program is free software; you can redistribute it and/or modify"
                               " it under the terms of the GNU General Public License as published by"
                               " the Free Software Foundation; either version 2 of the License, or"
                               " (at your option) any later version."
                               "</p>"));
+#endif
     box.exec();
 }
 //---------------------------------------------------------------------------

@@ -11,17 +11,51 @@ install:
   
 script:
   - export CWD=`pwd`
-  - mkdir $CWD/qt5
-  - cd $CWD/qt5
-  - qmake -qt=qt5 CONFIG+=release PREFIX=/usr CONFIG+=with_power ..
+  - mkdir $CWD/build1
+  - cd $CWD/build1
+  - qmake -qt=qt5 CONFIG+=release PREFIX=/usr  ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg
-  - cd $CWD
-  - mkdir $CWD/qt4
-  - cd $CWD/qt4
-  - qmake -qt=qt4 CONFIG+=release PREFIX=/usr CONFIG+=with_power ..
+  - mkdir $CWD/build2
+  - cd $CWD/build2
+  - qmake -qt=qt4 CONFIG+=release PREFIX=/usr  ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg
-  - cd $CWD
+  - mkdir $CWD/build3
+  - cd $CWD/build3
+  - qmake -qt=qt5 CONFIG+=debug PREFIX=/usr  ..
+  - make
+  - make INSTALL_ROOT=`pwd`/pkg install
+  - tree pkg
+  - mkdir $CWD/build4
+  - cd $CWD/build4
+  - qmake -qt=qt4 CONFIG+=debug PREFIX=/usr  ..
+  - make
+  - make INSTALL_ROOT=`pwd`/pkg install
+  - tree pkg
+  - mkdir $CWD/build5
+  - cd $CWD/build5
+  - qmake -qt=qt5 CONFIG+=debug PREFIX=/usr CONFIG+=basic ..
+  - make
+  - make INSTALL_ROOT=`pwd`/pkg install
+  - tree pkg
+  - mkdir $CWD/build6
+  - cd $CWD/build6
+  - qmake -qt=qt4 CONFIG+=debug PREFIX=/usr CONFIG+=basic ..
+  - make
+  - make INSTALL_ROOT=`pwd`/pkg install
+  - tree pkg
+  - mkdir $CWD/build7
+  - cd $CWD/build7
+  - qmake -qt=qt5 CONFIG+=release PREFIX=/usr CONFIG+=basic ..
+  - make
+  - make INSTALL_ROOT=`pwd`/pkg install
+  - tree pkg
+  - mkdir $CWD/build8
+  - cd $CWD/build8
+  - qmake -qt=qt4 CONFIG+=release PREFIX=/usr CONFIG+=basic ..
+  - make
+  - make INSTALL_ROOT=`pwd`/pkg install
+  - tree pkg
