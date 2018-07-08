@@ -22,8 +22,8 @@
 #ifndef BOOKMARKMODEL_H
 #define BOOKMARKMODEL_H
 
-#define MEDIA_MODEL Qt::UserRole+1
-#define MEDIA_PATH Qt::UserRole+2
+#define MEDIA_MODEL Qt::UserRole+4
+#define MEDIA_PATH Qt::UserRole+5
 
 #include <QtGui>
 
