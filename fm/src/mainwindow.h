@@ -150,7 +150,7 @@ public slots:
     void writeBookmarks();
     void handleBookmarksChanged();
     void firstRunCustomActions(bool isFirstRun);
-    void showAboutBox();
+    //void showAboutBox();
 
 signals:
     void updateCopyProgress(qint64, qint64, QString);
@@ -285,7 +285,7 @@ private:
     QAction *openTabAct;
     QAction *closeTabAct;
     QAction *tabsOnTopAct;
-    QAction *aboutAct;
+    //QAction *aboutAct;
     QAction *mediaUnmountAct;
     QAction *mediaEjectAct;
     QAction *trashAct;

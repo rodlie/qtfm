@@ -22,7 +22,6 @@ HEADERS += src/mainwindow.h \
     src/customactionsmanager.h \
     src/processdialog.h \
     src/applicationdialog.h \
-    src/aboutdialog.h \
     applicationdock.h
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
@@ -36,7 +35,6 @@ SOURCES += src/main.cpp \
     src/customactionsmanager.cpp \
     src/processdialog.cpp \
     src/applicationdialog.cpp \
-    src/aboutdialog.cpp \
     src/actiondefs.cpp \
     src/actiontriggers.cpp \
     applicationdock.cpp
@@ -59,7 +57,7 @@ target.path = $${PREFIX}/bin
 desktop.files += $${TARGET}.desktop
 desktop.path += $${PREFIX}/share/applications
 docs.path += $${DOCDIR}/$${TARGET}-$${VERSION}
-docs.files += ../LICENSE ../README.md
+docs.files += ../LICENSE ../README.md ../AUTHORS
 INSTALLS += target desktop docs
 
 exists(../libdisks/libdisks.pro) {

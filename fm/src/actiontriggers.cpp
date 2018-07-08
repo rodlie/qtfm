@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "aboutdialog.h"
+//#include "aboutdialog.h"
 #include "settingsdialog.h"
 
 #include <QApplication>
@@ -892,9 +892,9 @@ void MainWindow::toggleHidden() {
 /**
  * @brief Displays about box
  */
-void MainWindow::showAboutBox() {
+/*void MainWindow::showAboutBox() {
   (new AboutDialog(this))->exec();
-}
+}*/
 //---------------------------------------------------------------------------
 
 /**
