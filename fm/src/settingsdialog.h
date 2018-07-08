@@ -76,6 +76,7 @@ protected:
   QCheckBox* showTerminalButton;
   QCheckBox* showHomeButton;
   QCheckBox* checkDarkTheme;
+  QCheckBox* checkFileColor;
 
   QTreeWidget *actionsWidget;
   QToolButton *addButton;

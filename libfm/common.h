@@ -424,6 +424,14 @@ public:
             return DM_MOVE;
         }
     }
+    static QVariant readSetting(QString key) {
+        QSettings settings(Common::configFile(), QSettings::IniFormat);
+        return settings.value(key);
+    }
+    static void writeSetting(QString key, QVariant value) {
+        QSettings settings(Common::configFile(), QSettings::IniFormat);
+        settings.setValue(key, value);
+    }
     static DragMode getDADaltMod()
     {
         QSettings settings(Common::configFile(), QSettings::IniFormat);

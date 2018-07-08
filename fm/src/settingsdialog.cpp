@@ -110,11 +110,13 @@ QWidget *SettingsDialog::createGeneralSettings() {
   checkTabs = new QCheckBox(grpAppear);
   cmbIconTheme = new QComboBox(grpAppear);
   checkDarkTheme = new QCheckBox(grpAppear);
+  checkFileColor = new QCheckBox(grpAppear);
   layoutAppear->addRow(tr("Fallback Icon theme:"), cmbIconTheme);
   layoutAppear->addRow(tr("Show thumbnails: "), checkThumbs);
   layoutAppear->addRow(tr("Show hidden files: "), checkHidden);
   layoutAppear->addRow(tr("Tabs on top: "), checkTabs);
   layoutAppear->addRow(tr("Use Dark theme"), checkDarkTheme);
+  layoutAppear->addRow(tr("Colors on file names"), checkFileColor);
 
   showHomeButton = new QCheckBox(grpAppear);
   showTerminalButton = new QCheckBox(grpAppear);
@@ -608,6 +610,7 @@ void SettingsDialog::readSettings() {
   showHomeButton->setChecked(settingsPtr->value("home_button", true).toBool());
   showTerminalButton->setChecked(settingsPtr->value("terminal_button", true).toBool());
   checkDarkTheme->setChecked(settingsPtr->value("darkTheme", false).toBool());
+  checkFileColor->setChecked(settingsPtr->value("fileColor", true).toBool());
 
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
@@ -864,6 +867,7 @@ bool SettingsDialog::saveSettings() {
   }
 
   settingsPtr->setValue("darkTheme", checkDarkTheme->isChecked());
+  settingsPtr->setValue("fileColor", checkFileColor->isChecked());
   settingsPtr->setValue("fallbackTheme", cmbIconTheme->currentText());
   settingsPtr->setValue("defMimeAppsFile", cmbDefaultMimeApps->currentText());
 

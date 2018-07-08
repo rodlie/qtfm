@@ -695,8 +695,9 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
   myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
 
   // Color of filename (depends on file type)
-  // TODO: I don't like different colors on text, replace with something better!
   if (role == Qt::ForegroundRole) {
+    if (Common::readSetting("fileColor").isValid() &&
+        !Common::readSetting("fileColor").toBool()) { return colors.windowText(); }
     QFileInfo type(item->fileInfo());
     if (cutItems.contains(type.filePath())) {
       return colors.mid();
