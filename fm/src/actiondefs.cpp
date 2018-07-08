@@ -575,30 +575,26 @@ void MainWindow::zoomInAction()
 {
     int zoomLevel;
 
-    if(focusWidget() == tree)
-    {
+    if(focusWidget() == tree) {
         (zoomTree == 64) ? zoomTree=64 : zoomTree+= 8;
         tree->setIconSize(QSize(zoomTree,zoomTree));
         zoomLevel = zoomTree;
-    }
-    else
-    {
-        if(stackWidget->currentIndex() == 0)
-        {
-            if(iconAct->isChecked())
-            {
+    } else if (focusWidget() == bookmarksList) {
+        (zoomBook == 64) ? zoomBook=64 : zoomBook+= 8;
+        bookmarksList->setIconSize(QSize(zoomBook,zoomBook));
+        zoomLevel = zoomBook;
+    } else {
+        if(stackWidget->currentIndex() == 0) {
+            if(iconAct->isChecked()) {
                 (zoom == 128) ? zoom=128 : zoom+= 8;
                 zoomLevel = zoom;
-            }
-            else
-            {
+            } else {
                 (zoomList == 128) ? zoomList=128 : zoomList+= 8;
                 zoomLevel = zoomList;
             }
             toggleIcons();
         }
-        else
-        {
+        else {
             (zoomDetail == 64) ? zoomDetail=64 : zoomDetail+= 8;
             detailTree->setIconSize(QSize(zoomDetail,zoomDetail));
             zoomLevel = zoomDetail;
@@ -613,30 +609,25 @@ void MainWindow::zoomOutAction()
 {
     int zoomLevel;
 
-    if(focusWidget() == tree)
-    {
+    if(focusWidget() == tree) {
         (zoomTree == 16) ? zoomTree=16 : zoomTree-= 8;
         tree->setIconSize(QSize(zoomTree,zoomTree));
         zoomLevel = zoomTree;
-    }
-    else
-    {
-        if(stackWidget->currentIndex() == 0)
-        {
-            if(iconAct->isChecked())
-            {
+    } else if(focusWidget() == bookmarksList) {
+        (zoomBook == 16) ? zoomBook=16 : zoomBook-= 8;
+        bookmarksList->setIconSize(QSize(zoomBook,zoomBook));
+        zoomLevel = zoomBook;
+    } else {
+        if(stackWidget->currentIndex() == 0) {
+            if(iconAct->isChecked()) {
                 (zoom == 16) ? zoom=16 : zoom-= 8;
                 zoomLevel = zoom;
-            }
-            else
-            {
+            } else {
                 (zoomList == 16) ? zoomList=16 : zoomList-= 8;
                 zoomLevel = zoomList;
             }
             toggleIcons();
-        }
-        else
-        {
+        } else {
             (zoomDetail == 16) ? zoomDetail=16 : zoomDetail-= 8;
             detailTree->setIconSize(QSize(zoomDetail,zoomDetail));
             zoomLevel = zoomDetail;

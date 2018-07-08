@@ -175,6 +175,7 @@ MainWindow::MainWindow()
     modelView->setSortCaseSensitivity(Qt::CaseInsensitive);
 
     list->setWrapping(true);
+    list->setWordWrap(true);
     list->setModel(modelView);
     listSelectionModel = list->selectionModel();
 
@@ -448,10 +449,12 @@ void MainWindow::loadSettings(bool wState) {
   // Load zoom settings
   zoom = settings->value("zoom", 48).toInt();
   zoomTree = settings->value("zoomTree", 16).toInt();
+  zoomBook = settings->value("zoomBook", 16).toInt();
   zoomList = settings->value("zoomList", 24).toInt();
   zoomDetail = settings->value("zoomDetail", 16).toInt();
   detailTree->setIconSize(QSize(zoomDetail, zoomDetail));
   tree->setIconSize(QSize(zoomTree, zoomTree));
+  bookmarksList->setIconSize(QSize(zoomBook, zoomBook));
 
   // Load information whether thumbnails can be shown
   thumbsAct->setChecked(settings->value("showThumbs", 1).toBool());
@@ -1180,6 +1183,7 @@ void MainWindow::writeSettings() {
   settings->setValue("iconMode", iconAct->isChecked());
   settings->setValue("zoom", zoom);
   settings->setValue("zoomTree", zoomTree);
+  settings->setValue("zoomBook", zoomBook);
   settings->setValue("zoomList", zoomList);
   settings->setValue("zoomDetail", zoomDetail);
   settings->setValue("sortBy", currentSortColumn);
