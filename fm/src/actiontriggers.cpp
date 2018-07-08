@@ -892,9 +892,28 @@ void MainWindow::toggleHidden() {
 /**
  * @brief Displays about box
  */
-/*void MainWindow::showAboutBox() {
-  (new AboutDialog(this))->exec();
-}*/
+void MainWindow::showAboutBox()
+{
+    QMessageBox box;
+    box.setStyleSheet("QLabel { min-width:280px; }");
+    box.setWindowTitle(tr("About %1").arg(APP_NAME));
+    box.setWindowIcon(QIcon::fromTheme("user-home"));
+    box.setText(QString("<p style=\"text-align:center;\">"
+                        "<img src=\":/images/qtfm.png\">"
+                        "<h1>%1 %2</h1>"
+                        "</p>"
+                        "<p style=\"text-align:center;font-weight:bold;\">"
+                        "<a href=\"https://qtfm.dracolinux.org\">"
+                        "qtfm.dracolinux.org"
+                        "</a></p>").arg(APP_NAME).arg(APP_VERSION));
+    box.setInformativeText(QString("<p style=\"text-align:center;font-size:small;\">"
+                              "This program is free software; you can redistribute it and/or modify"
+                              " it under the terms of the GNU General Public License as published by"
+                              " the Free Software Foundation; either version 2 of the License, or"
+                              " (at your option) any later version."
+                              "</p>"));
+    box.exec();
+}
 //---------------------------------------------------------------------------
 
 /**

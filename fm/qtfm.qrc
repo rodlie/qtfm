@@ -17,7 +17,6 @@
         <file>images/key_bindings.png</file>
         <file>images/lock.png</file>
         <file>images/paste.png</file>
-        <file>images/qtfm.png</file>
         <file>images/refresh.png</file>
         <file>images/sep.png</file>
         <file>images/terminal.png</file>
@@ -29,5 +28,6 @@
         <file>images/properties.png</file>
         <file>images/background.png</file>
         <file>images/user-trash.png</file>
+        <file>images/qtfm.png</file>
     </qresource>
 </RCC>

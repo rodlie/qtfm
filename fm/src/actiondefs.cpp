@@ -341,10 +341,10 @@ void MainWindow::createActions() {
   connect(focusListAct, SIGNAL(triggered()), this, SLOT(focusAction()));
   actionList->append(focusListAct);
 
-  /*aboutAct = new QAction(tr("About %1").arg(APP_NAME), this);
-  aboutAct->setIcon(QIcon::fromTheme("folder"));
+  aboutAct = new QAction(tr("About"), this);
+  aboutAct->setIcon(QIcon::fromTheme("user-home"));
   connect(aboutAct, SIGNAL(triggered()), this, SLOT(showAboutBox()));
-  actionList->append(aboutAct);*/
+  actionList->append(aboutAct);
 
 #ifndef NO_UDISKS
   mediaUnmountAct = new QAction(tr("Safely Remove"), this);
@@ -535,10 +535,8 @@ void MainWindow::createMenus() {
 
   // Help menu
   // ----------------------------------------------------------------------
-  //QMenu* helpMenu = new QMenu(tr("Help"));
-  //helpMenu->addAction(aboutAct);
-  //helpMenu->addSeparator();
-  //helpMenu->addAction(clearCacheAct);
+  QMenu* helpMenu = new QMenu(tr("Help"));
+  helpMenu->addAction(aboutAct);
 
   // Place all menus on menu bar
   // ----------------------------------------------------------------------
@@ -546,7 +544,7 @@ void MainWindow::createMenus() {
   menuBar->addMenu(fileMenu);
   menuBar->addMenu(editMenu);
   menuBar->addMenu(viewMenu);
-  //menuBar->addMenu(helpMenu);
+  menuBar->addMenu(helpMenu);
   menuToolBar->addWidget(menuBar);
 }
 //---------------------------------------------------------------------------

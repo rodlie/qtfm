@@ -208,7 +208,7 @@ MainWindow::MainWindow()
     createMenus();
 
     setWindowIcon(QIcon::fromTheme("folder"));
-    setWindowTitle(tr("%1 %2").arg(APP_NAME).arg(APP_VERSION));
+    setWindowTitle(tr("%1").arg(APP_NAME));
 
     // Create custom action manager
     customActManager = new CustomActionsManager(settings, actionList, this);
