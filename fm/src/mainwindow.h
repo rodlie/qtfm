@@ -51,7 +51,9 @@
 #endif
 
 // appdock
+#ifndef NO_APPDOCK
 #include "applicationdock.h"
+#endif
 
 // service
 #include "service.h"
@@ -305,7 +307,9 @@ private:
 #endif
     QString trashDir;
 
+#ifndef NO_APPDOCK
     ApplicationDock *appDock;
+#endif
 
     qtfm *service;
 };

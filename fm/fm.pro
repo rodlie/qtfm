@@ -70,6 +70,7 @@ INSTALLS += target desktop docs
     }
 }
 CONFIG(no_udisks): DEFINES += NO_UDISKS
+CONFIG(no_appdock): DEFINES += NO_APPDOCK
 
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT

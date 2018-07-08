@@ -702,8 +702,9 @@ void MainWindow::toggleLockLayout() {
     newTitle = new QFrame();
     newTitle->setFrameShape(QFrame::StyledPanel);
     newTitle->setMinimumSize(0,1);
+#ifndef NO_APPDOCK
     appDock->setTitleBarWidget(newTitle);
-
+#endif
     menuToolBar->setMovable(0);
     //editToolBar->setMovable(0);
     //viewToolBar->setMovable(0);
@@ -713,7 +714,9 @@ void MainWindow::toggleLockLayout() {
   } else {
     dockTree->setTitleBarWidget(0);
     dockBookmarks->setTitleBarWidget(0);
+#ifndef NO_APPDOCK
     appDock->setTitleBarWidget(0);
+#endif
 
     menuToolBar->setMovable(1);
     //editToolBar->setMovable(1);
