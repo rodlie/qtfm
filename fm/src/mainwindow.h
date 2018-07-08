@@ -56,7 +56,9 @@
 #endif
 
 // service
+#ifndef NO_DBUS
 #include "service.h"
+#endif
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -176,10 +178,11 @@ private slots:
     void handleMediaEject();
 #endif
     void clearCache();
+#ifndef NO_DBUS
     void checkPower();
     void doSuspend();
     void doHibernate();
-    //
+#endif
     void handlePathRequested(QString path);
 private:
     void createActions();
@@ -298,9 +301,10 @@ private:
 #endif
     QAction *trashAct;
     QAction *clearCacheAct;
+#ifndef NO_DBUS
     QAction *suspendAct;
     QAction *hibernateAct;
-
+#endif
     // libdisks
 #ifndef NO_UDISKS
     Disks *disks;
@@ -311,7 +315,9 @@ private:
     ApplicationDock *appDock;
 #endif
 
+#ifndef NO_DBUS
     qtfm *service;
+#endif
 };
 
 //---------------------------------------------------------------------------------

@@ -28,8 +28,9 @@
 #include <QApplication>
 #include <QStatusBar>
 #include <QMenu>
+#ifndef NO_DBUS
 #include <QDBusConnection>
-
+#endif
 #include <sys/vfs.h>
 #include <fcntl.h>
 
@@ -45,7 +46,9 @@
 #include "applicationdialog.h"
 
 #include "common.h"
+#ifndef NO_DBUS
 #include "upower.h"
+#endif
 
 MainWindow::MainWindow()
 {
@@ -60,6 +63,7 @@ MainWindow::MainWindow()
 #endif
 
     // dbus service
+#ifndef NO_DBUS
     if (QDBusConnection::sessionBus().isConnected()) {
         if (QDBusConnection::sessionBus().registerService(FM_SERVICE)) {
             service = new qtfm();
@@ -69,6 +73,7 @@ MainWindow::MainWindow()
             }
         } else { qWarning() << QDBusConnection::sessionBus().lastError().message(); }
     }
+#endif
 
     startPath = QDir::currentPath();
     QStringList args = QApplication::arguments();
@@ -228,7 +233,9 @@ MainWindow::MainWindow()
     trashDir = Common::trashDir();
 
     QTimer::singleShot(0, this, SLOT(lateStart()));
+#ifndef NO_DBUS
     QTimer::singleShot(100, this, SLOT(checkPower()));
+#endif
 }
 //---------------------------------------------------------------------------
 
@@ -1628,6 +1635,7 @@ void MainWindow::clearCache()
     QMessageBox::information(this, tr("Close window"), tr("Please close window to apply action."));
 }
 
+#ifndef NO_DBUS
 void MainWindow::checkPower()
 {
     suspendAct->setEnabled(UPower::canSuspend());
@@ -1643,6 +1651,7 @@ void MainWindow::doHibernate()
 {
     if (UPower::canHibernate()) { UPower::hibernate(); }
 }
+#endif
 
 void MainWindow::handlePathRequested(QString path)
 {
