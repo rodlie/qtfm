@@ -67,10 +67,10 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   selector->setViewMode(QListView::ListMode);
   selector->setIconSize(QSize(32, 32));
   selector->addItem(new QListWidgetItem(icon1, tr("General"), selector));
-  selector->addItem(new QListWidgetItem(icon4, tr("General Behavior"), selector));
   selector->addItem(new QListWidgetItem(icon2, tr("Custom Actions"), selector));
   selector->addItem(new QListWidgetItem(icon3, tr("Shortcuts"), selector));
   selector->addItem(new QListWidgetItem(icon4, tr("Mime Types"), selector));
+  selector->addItem(new QListWidgetItem(icon4, tr("General Behavior"), selector));
 
   stack->addWidget(createGeneralSettings());
   stack->addWidget(createActionsSettings());
