@@ -67,10 +67,10 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   selector->setViewMode(QListView::ListMode);
   selector->setIconSize(QSize(32, 32));
   selector->addItem(new QListWidgetItem(icon1, tr("General"), selector));
-  selector->addItem(new QListWidgetItem(icon2, tr("Custom actions"), selector));
+  selector->addItem(new QListWidgetItem(icon4, tr("General Behavior"), selector));
+  selector->addItem(new QListWidgetItem(icon2, tr("Custom Actions"), selector));
   selector->addItem(new QListWidgetItem(icon3, tr("Shortcuts"), selector));
-  selector->addItem(new QListWidgetItem(icon4, tr("Mime types"), selector));
-  selector->addItem(new QListWidgetItem(icon4, tr("Default behaviour"), selector));
+  selector->addItem(new QListWidgetItem(icon4, tr("Mime Types"), selector));
 
   stack->addWidget(createGeneralSettings());
   stack->addWidget(createActionsSettings());
@@ -400,8 +400,8 @@ QWidget *SettingsDialog::createDefaultBehaviour()
     QWidget* widget = new QWidget();
     QVBoxLayout* layoutWidget = new QVBoxLayout(widget);
 
-    // Behaviour
-    QGroupBox* grpBehav = new QGroupBox(tr("Default behaviour"), widget);
+    // General Behavior
+    QGroupBox* grpBehav = new QGroupBox(tr("General Behavior"), widget);
     QFormLayout* layoutBehav = new QFormLayout(grpBehav);
     comboDAD = new QComboBox(grpBehav);
     comboDADctl = new QComboBox(grpBehav);
