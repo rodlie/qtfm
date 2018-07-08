@@ -634,6 +634,8 @@ void myModel::loadThumbs(QModelIndexList indexes) {
                   }
               }
           }
+      } else {
+          emit thumbUpdate(index(item));
       }
     }
   }
