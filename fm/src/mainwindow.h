@@ -46,7 +46,9 @@
 #include "customactionsmanager.h"
 
 // libdisks
+#ifndef NO_UDISKS
 #include <disks.h>
+#endif
 
 // appdock
 #include "applicationdock.h"
@@ -161,6 +163,7 @@ private slots:
     void selectApp();
     void openInApp();
     // libdisks
+#ifndef NO_UDISKS
     void populateMedia();
     void handleMediaMountpointChanged(QString path, QString mountpoint);
     int mediaBookmarkExists(QString path);
@@ -169,6 +172,7 @@ private slots:
     void handleMediaChanged(QString path, bool present);
     void handleMediaUnmount();
     void handleMediaEject();
+#endif
     void clearCache();
     void checkPower();
     void doSuspend();
@@ -286,15 +290,19 @@ private:
     QAction *closeTabAct;
     QAction *tabsOnTopAct;
     //QAction *aboutAct;
+#ifndef NO_UDISKS
     QAction *mediaUnmountAct;
     QAction *mediaEjectAct;
+#endif
     QAction *trashAct;
     QAction *clearCacheAct;
     QAction *suspendAct;
     QAction *hibernateAct;
 
     // libdisks
+#ifndef NO_UDISKS
     Disks *disks;
+#endif
     QString trashDir;
 
     ApplicationDock *appDock;

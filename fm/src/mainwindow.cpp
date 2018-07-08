@@ -50,12 +50,14 @@
 MainWindow::MainWindow()
 {
     // libdisks
+#ifndef NO_UDISKS
     disks = new Disks();
     connect(disks, SIGNAL(updatedDevices()), this, SLOT(populateMedia()));
     connect(disks, SIGNAL(mountpointChanged(QString,QString)), this, SLOT(handleMediaMountpointChanged(QString,QString)));
     connect(disks, SIGNAL(foundNewDevice(QString)), this, SLOT(handleMediaAdded(QString)));
     connect(disks, SIGNAL(removedDevice(QString)), this, SLOT(handleMediaRemoved(QString)));
     connect(disks, SIGNAL(mediaChanged(QString,bool)), this, SLOT(handleMediaChanged(QString,bool)));
+#endif
 
     // dbus service
     if (QDBusConnection::sessionBus().isConnected()) {
@@ -416,7 +418,9 @@ void MainWindow::loadSettings(bool wState) {
 
   // Set bookmarks
   firstRunBookmarks(isFirstRun);
+#ifndef NO_UDISKS
   populateMedia();
+#endif
   bookmarksList->setModel(modelBookmarks);
   bookmarksList->setResizeMode(QListView::Adjust);
   bookmarksList->setFlow(QListView::TopToBottom);
@@ -1376,6 +1380,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
             popup->addAction(editBookmarkAct);	//icon
         } else {
             // media actions
+#ifndef NO_UDISKS
             QString mediaPath = bookmarksList->currentIndex().data(MEDIA_PATH).toString();
             if (!mediaPath.isEmpty()) {
                 if (!disks->devices[mediaPath]->mountpoint.isEmpty()) { // mounted
@@ -1384,6 +1389,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
                     if (disks->devices[mediaPath]->isOptical) { popup->addAction(mediaEjectAct); }
                 }
             }
+#endif
         }
       } else {
         bookmarksList->clearSelection();
@@ -1524,6 +1530,7 @@ void MainWindow::openInApp() {
 /**
  * @brief media support
  */
+#ifndef NO_UDISKS
 void MainWindow::populateMedia()
 {
     QMapIterator<QString, Device*> device(disks->devices);
@@ -1606,6 +1613,7 @@ void MainWindow::handleMediaEject()
     if (path.isEmpty()) { return; }
     disks->devices[path]->eject();
 }
+#endif
 
 void MainWindow::clearCache()
 {

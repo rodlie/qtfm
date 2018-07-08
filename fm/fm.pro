@@ -60,13 +60,16 @@ docs.path += $${DOCDIR}/$${TARGET}-$${VERSION}
 docs.files += ../LICENSE ../README.md ../AUTHORS
 INSTALLS += target desktop docs
 
-exists(../libdisks/libdisks.pro) {
-    INCLUDEPATH += ../libdisks
-    LIBS += -L../libdisks -lDisks
-} else {
-    CONFIG += link_pkgconfig
-    PKGCONFIG += Disks
+!CONFIG(no_udisks) {
+    exists(../libdisks/libdisks.pro) {
+        INCLUDEPATH += ../libdisks
+        LIBS += -L../libdisks -lDisks
+    } else {
+        CONFIG += link_pkgconfig
+        PKGCONFIG += Disks
+    }
 }
+CONFIG(no_udisks): DEFINES += NO_UDISKS
 
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT

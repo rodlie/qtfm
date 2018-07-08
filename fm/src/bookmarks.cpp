@@ -125,11 +125,13 @@ void MainWindow::toggleWrapBookmarks()
 //---------------------------------------------------------------------------
 void MainWindow::bookmarkPressed(QModelIndex current)
 {
+#ifndef NO_UDISKS
     if (current.data(MEDIA_MODEL).toBool() && !current.data(MEDIA_PATH).toString().isEmpty()) {
         if (current.data(BOOKMARK_PATH).toString().isEmpty()) {
             disks->devices[current.data(MEDIA_PATH).toString()]->mount();
         }
     }
+#endif
     if(QApplication::mouseButtons() == Qt::MidButton)
         tabs->setCurrentIndex(addTab(current.data(BOOKMARK_PATH).toString()));
 }
@@ -139,11 +141,13 @@ void MainWindow::bookmarkClicked(QModelIndex item)
 {
     if(item.data(BOOKMARK_PATH).toString() == pathEdit->currentText()) return;
 
+#ifndef NO_UDISKS
     if (item.data(MEDIA_MODEL).toBool() && !item.data(MEDIA_PATH).toString().isEmpty()) {
         if (item.data(BOOKMARK_PATH).toString().isEmpty()) {
             disks->devices[item.data(MEDIA_PATH).toString()]->mount();
         }
     }
+#endif
 
     QString info(item.data(BOOKMARK_PATH).toString());
     if(info.isEmpty()) return;                                  //separator
