@@ -96,9 +96,11 @@ MainWindow::MainWindow()
         settings->setValue("clearCache", false);
     }
     // Dark theme
+#if QT_VERSION >= 0x050000
     if (settings->value("darkTheme").toBool()) {
         qApp->setPalette(Common::darkTheme());
     }
+#endif
 
     // set icon theme
     Common::setupIconTheme(qApp->applicationFilePath());
@@ -397,7 +399,10 @@ void MainWindow::loadSettings(bool wState, bool hState) {
 
 #if QT_VERSION >= 0x050000
   // fix style
-  setStyleSheet("QToolBar { padding: 0; } QFrame { border: none;}");
+  setStyleSheet("QToolBar { padding: 0;border:none; }"
+                "QFrame { border:none; }"
+                "QListView::item,QListView::text,QListView::icon"
+                "{ border:0px;padding-top:5px;padding-left:5px; }");
   addressToolBar->setContentsMargins(0,0,5,0);
 #endif
 

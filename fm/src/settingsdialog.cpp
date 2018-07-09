@@ -109,13 +109,17 @@ QWidget *SettingsDialog::createGeneralSettings() {
   //checkHidden = new QCheckBox(grpAppear);
   checkTabs = new QCheckBox(grpAppear);
   cmbIconTheme = new QComboBox(grpAppear);
+#if QT_VERSION >= 0x050000
   checkDarkTheme = new QCheckBox(grpAppear);
+#endif
   checkFileColor = new QCheckBox(grpAppear);
   layoutAppear->addRow(tr("Fallback Icon theme:"), cmbIconTheme);
   layoutAppear->addRow(tr("Show thumbnails: "), checkThumbs);
   //layoutAppear->addRow(tr("Show hidden files: "), checkHidden);
   layoutAppear->addRow(tr("Tabs on top: "), checkTabs);
+#if QT_VERSION >= 0x050000
   layoutAppear->addRow(tr("Use Dark theme"), checkDarkTheme);
+#endif
   layoutAppear->addRow(tr("Colors on file names"), checkFileColor);
 
   showHomeButton = new QCheckBox(grpAppear);
@@ -612,7 +616,9 @@ void SettingsDialog::readSettings() {
   comboSingleClick->setCurrentIndex(settingsPtr->value("singleClick", 0).toInt());
   showHomeButton->setChecked(settingsPtr->value("home_button", true).toBool());
   showTerminalButton->setChecked(settingsPtr->value("terminal_button", true).toBool());
+#if QT_VERSION >= 0x050000
   checkDarkTheme->setChecked(settingsPtr->value("darkTheme", false).toBool());
+#endif
   checkFileColor->setChecked(settingsPtr->value("fileColor", true).toBool());
   checkPathHistory->setChecked(settingsPtr->value("pathHistory", true).toBool());
 
@@ -860,17 +866,19 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("home_button", showHomeButton->isChecked());
   settingsPtr->setValue("terminal_button", showTerminalButton->isChecked());
 
+
   if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
       //QIcon::setThemeName(cmbIconTheme->currentText());
       settingsPtr->setValue("clearCache", true);
       QMessageBox::warning(this, tr("Restart to apply settings"), tr("You must restart application to apply theme settings"));
   }
 
+#if QT_VERSION >= 0x050000
   if (checkDarkTheme->isChecked() != settingsPtr->value("darkTheme").toBool()) {
       QMessageBox::warning(this, tr("Restart to apply settings"), tr("You must restart application to apply theme settings"));
   }
-
   settingsPtr->setValue("darkTheme", checkDarkTheme->isChecked());
+#endif
   settingsPtr->setValue("fileColor", checkFileColor->isChecked());
   settingsPtr->setValue("pathHistory", checkPathHistory->isChecked());
   settingsPtr->setValue("fallbackTheme", cmbIconTheme->currentText());

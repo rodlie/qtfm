@@ -75,7 +75,9 @@ protected:
   QComboBox* comboSingleClick;
   QCheckBox* showTerminalButton;
   QCheckBox* showHomeButton;
+#if QT_VERSION >= 0x050000
   QCheckBox* checkDarkTheme;
+#endif
   QCheckBox* checkFileColor;
   QCheckBox* checkPathHistory;
 
