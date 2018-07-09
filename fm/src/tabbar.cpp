@@ -103,7 +103,10 @@ int tabBar::addNewTab(QString path, int type)
     history.append(new QStringList(path));
     viewType.append(type);
 
-    int newtab = addTab(file.fileName());
+    QString filename = file.fileName();
+    if (filename.isEmpty()) { filename = "/"; }
+
+    int newtab = addTab(filename);
     setTabData(newtab,file.filePath());
     setIcon(newtab);
     return newtab;

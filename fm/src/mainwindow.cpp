@@ -631,7 +631,9 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
     else { list->setRootIndex(baseIndex); }
 
     if(tabs->count()) {
-        tabs->setTabText(tabs->currentIndex(),curIndex.fileName());
+        QString tabText = curIndex.fileName();
+        if (tabText.isEmpty()) { tabText = "/"; }
+        tabs->setTabText(tabs->currentIndex(),tabText);
         tabs->setTabData(tabs->currentIndex(),curIndex.filePath());
         tabs->setIcon(tabs->currentIndex());
     }
