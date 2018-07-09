@@ -494,6 +494,9 @@ void MainWindow::loadSettings(bool wState, bool hState) {
   // show/hide buttons
   homeAct->setVisible(settings->value("home_button", true).toBool());
   terminalAct->setVisible(settings->value("terminal_button", true).toBool());
+
+  // path history
+  pathHistory = settings->value("pathHistory", true).toBool();
 }
 
 void MainWindow::firstRunBookmarks(bool isFirstRun)
@@ -597,52 +600,46 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
     Q_UNUSED(previous)
 
     QFileInfo name = modelList->fileInfo(modelTree->mapToSource(current));
-    if(!name.exists()) return;
+    if (!name.exists()) { return; }
 
     curIndex = name;
     if (curIndex.fileName().isEmpty()) { setWindowTitle(curIndex.absolutePath()); }
     else { setWindowTitle(curIndex.fileName()); }
 
-    if(tree->hasFocus() && QApplication::mouseButtons() == Qt::MidButton)
-    {
+    if (tree->hasFocus() && QApplication::mouseButtons() == Qt::MidButton) {
         listItemPressed(modelView->mapFromSource(modelList->index(name.filePath())));
         tabs->setCurrentIndex(tabs->count() - 1);
-        if(currentView == 2) detailTree->setFocus(Qt::TabFocusReason);
-        else list->setFocus(Qt::TabFocusReason);
+        if (currentView == 2) { detailTree->setFocus(Qt::TabFocusReason); }
+        else { list->setFocus(Qt::TabFocusReason); }
     }
 
-    if(curIndex.filePath() != pathEdit->itemText(0))
-    {
-        if(tabs->count()) tabs->addHistory(curIndex.filePath());
+    if (curIndex.filePath() != pathEdit->itemText(0)) {
+        if (tabs->count()) { tabs->addHistory(curIndex.filePath()); }
         pathEdit->insertItem(0,curIndex.filePath());
         pathEdit->setCurrentIndex(0);
     }
 
-    if(!bookmarksList->hasFocus()) bookmarksList->clearSelection();
+    if (!bookmarksList->hasFocus()) { bookmarksList->clearSelection(); }
 
-    if(modelList->setRootPath(name.filePath())) modelView->invalidate();
+    if (modelList->setRootPath(name.filePath())) { modelView->invalidate(); }
 
     //////
     QModelIndex baseIndex = modelView->mapFromSource(modelList->index(name.filePath()));
 
-    if(currentView == 2) detailTree->setRootIndex(baseIndex);
-    else list->setRootIndex(baseIndex);
+    if (currentView == 2) { detailTree->setRootIndex(baseIndex); }
+    else { list->setRootIndex(baseIndex); }
 
-    if(tabs->count())
-    {
+    if(tabs->count()) {
         tabs->setTabText(tabs->currentIndex(),curIndex.fileName());
         tabs->setTabData(tabs->currentIndex(),curIndex.filePath());
         tabs->setIcon(tabs->currentIndex());
     }
 
-    if(backIndex.isValid())
-    {
+    if(backIndex.isValid()) {
         listSelectionModel->setCurrentIndex(modelView->mapFromSource(backIndex),QItemSelectionModel::ClearAndSelect);
-        if(currentView == 2) detailTree->scrollTo(modelView->mapFromSource(backIndex));
-        else list->scrollTo(modelView->mapFromSource(backIndex));
-    }
-    else
-    {
+        if (currentView == 2) { detailTree->scrollTo(modelView->mapFromSource(backIndex)); }
+        else { list->scrollTo(modelView->mapFromSource(backIndex)); }
+    } else {
         listSelectionModel->blockSignals(1);
         listSelectionModel->clear();
     }

@@ -431,6 +431,9 @@ QWidget *SettingsDialog::createDefaultBehaviour()
     comboSingleClick->addItem(tr("Everything"),2);
     layoutBehav->addRow(tr("Enable Single Click"), comboSingleClick);
 
+    checkPathHistory = new QCheckBox(grpBehav);
+    layoutBehav->addRow(tr("Enable path history"), checkPathHistory);
+
     layoutWidget->addWidget(grpBehav);
     layoutWidget->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Fixed,
                                                 QSizePolicy::MinimumExpanding));
@@ -611,6 +614,7 @@ void SettingsDialog::readSettings() {
   showTerminalButton->setChecked(settingsPtr->value("terminal_button", true).toBool());
   checkDarkTheme->setChecked(settingsPtr->value("darkTheme", false).toBool());
   checkFileColor->setChecked(settingsPtr->value("fileColor", true).toBool());
+  checkPathHistory->setChecked(settingsPtr->value("pathHistory", true).toBool());
 
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
@@ -868,6 +872,7 @@ bool SettingsDialog::saveSettings() {
 
   settingsPtr->setValue("darkTheme", checkDarkTheme->isChecked());
   settingsPtr->setValue("fileColor", checkFileColor->isChecked());
+  settingsPtr->setValue("pathHistory", checkPathHistory->isChecked());
   settingsPtr->setValue("fallbackTheme", cmbIconTheme->currentText());
   settingsPtr->setValue("defMimeAppsFile", cmbDefaultMimeApps->currentText());
 

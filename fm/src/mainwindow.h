@@ -319,6 +319,8 @@ private:
 #ifndef NO_DBUS
     qtfm *service;
 #endif
+
+    bool pathHistory;
 };
 
 //---------------------------------------------------------------------------------
