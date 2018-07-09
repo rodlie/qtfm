@@ -18,3 +18,5 @@ isEmpty(XDGDIR) {
 }
 CONFIG += staticlib
 CONFIG -= install_lib
+
+CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
