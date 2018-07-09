@@ -614,7 +614,8 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
     }
 
     if (curIndex.filePath() != pathEdit->itemText(0)) {
-        if (tabs->count()) { tabs->addHistory(curIndex.filePath()); }
+        if (tabs->count() && pathHistory) { tabs->addHistory(curIndex.filePath()); }
+        if (!pathHistory && pathEdit->count()>0) { pathEdit->clear(); }
         pathEdit->insertItem(0,curIndex.filePath());
         pathEdit->setCurrentIndex(0);
     }
