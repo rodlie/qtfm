@@ -62,7 +62,7 @@ protected:
   QStackedWidget* stack;
 
   QCheckBox* checkThumbs;
-  QCheckBox* checkHidden;
+  //QCheckBox* checkHidden;
   QCheckBox* checkTabs;
   QCheckBox* checkDelete;
   QComboBox* comboDAD;

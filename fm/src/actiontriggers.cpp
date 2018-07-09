@@ -939,7 +939,7 @@ void MainWindow::showEditDialog() {
   if (d->exec()) {
 
     // Reload settings
-    loadSettings(false /* dont reload window state/geo */);
+    loadSettings(false /* dont reload window state/geo */, false /* dont reload hidden state */);
 
     // If icon theme has changed, use new theme and clear cache
     QString newTheme = settings->value("forceTheme").toString();

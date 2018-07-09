@@ -106,14 +106,14 @@ QWidget *SettingsDialog::createGeneralSettings() {
   QGroupBox* grpAppear = new QGroupBox(tr("Appearance"), widget);
   QFormLayout* layoutAppear = new QFormLayout(grpAppear);
   checkThumbs = new QCheckBox(grpAppear);
-  checkHidden = new QCheckBox(grpAppear);
+  //checkHidden = new QCheckBox(grpAppear);
   checkTabs = new QCheckBox(grpAppear);
   cmbIconTheme = new QComboBox(grpAppear);
   checkDarkTheme = new QCheckBox(grpAppear);
   checkFileColor = new QCheckBox(grpAppear);
   layoutAppear->addRow(tr("Fallback Icon theme:"), cmbIconTheme);
   layoutAppear->addRow(tr("Show thumbnails: "), checkThumbs);
-  layoutAppear->addRow(tr("Show hidden files: "), checkHidden);
+  //layoutAppear->addRow(tr("Show hidden files: "), checkHidden);
   layoutAppear->addRow(tr("Tabs on top: "), checkTabs);
   layoutAppear->addRow(tr("Use Dark theme"), checkDarkTheme);
   layoutAppear->addRow(tr("Colors on file names"), checkFileColor);
@@ -597,7 +597,7 @@ void SettingsDialog::readSettings() {
   // Read general settings
   checkThumbs->setChecked(settingsPtr->value("showThumbs", true).toBool());
   checkTabs->setChecked(settingsPtr->value("tabsOnTop", false).toBool());
-  checkHidden->setChecked(settingsPtr->value("hiddenMode", true).toBool());
+  //checkHidden->setChecked(settingsPtr->value("hiddenMode", true).toBool());
   checkDelete->setChecked(settingsPtr->value("confirmDelete", true).toBool());
   editTerm->setText(settingsPtr->value("term", "xterm").toString());
 
@@ -843,7 +843,7 @@ bool SettingsDialog::saveSettings() {
   // ------------------------------------------------------------------------
   settingsPtr->setValue("showThumbs", checkThumbs->isChecked());
   settingsPtr->setValue("tabsOnTop", checkTabs->isChecked());
-  settingsPtr->setValue("hiddenMode", checkHidden->isChecked());
+  //settingsPtr->setValue("hiddenMode", checkHidden->isChecked());
   settingsPtr->setValue("confirmDelete", checkDelete->isChecked());
   settingsPtr->setValue("term", editTerm->text());
 

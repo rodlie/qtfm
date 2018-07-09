@@ -386,7 +386,7 @@ void MainWindow::lateStart() {
 /**
  * @brief Loads application settings
  */
-void MainWindow::loadSettings(bool wState) {
+void MainWindow::loadSettings(bool wState, bool hState) {
 
   // first run?
     bool isFirstRun = false;
@@ -419,8 +419,10 @@ void MainWindow::loadSettings(bool wState) {
   modelList->setRealMimeTypes(settings->value("realMimeTypes", true).toBool());
 
   // Load information whether hidden files can be displayed
-  hiddenAct->setChecked(settings->value("hiddenMode", 0).toBool());
-  toggleHidden();
+  if (hState) {
+      hiddenAct->setChecked(settings->value("hiddenMode", 0).toBool());
+      toggleHidden();
+  }
 
   // Remove old bookmarks
   modelBookmarks->removeRows(0, modelBookmarks->rowCount());
