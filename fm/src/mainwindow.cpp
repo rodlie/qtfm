@@ -388,7 +388,7 @@ void MainWindow::lateStart() {
 /**
  * @brief Loads application settings
  */
-void MainWindow::loadSettings(bool wState, bool hState) {
+void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thumbState) {
 
   // first run?
     bool isFirstRun = false;
@@ -464,7 +464,9 @@ void MainWindow::loadSettings(bool wState, bool hState) {
   bookmarksList->setIconSize(QSize(zoomBook, zoomBook));
 
   // Load information whether thumbnails can be shown
-  thumbsAct->setChecked(settings->value("showThumbs", 1).toBool());
+  if (thumbState) {
+    thumbsAct->setChecked(settings->value("showThumbs", 1).toBool());
+  }
 
   // Load view mode
   detailAct->setChecked(settings->value("viewMode", 0).toBool());
@@ -493,8 +495,10 @@ void MainWindow::loadSettings(bool wState, bool hState) {
   firstRunCustomActions(isFirstRun);
 
   // Load information whether tabs can be shown on top
-  tabsOnTopAct->setChecked(settings->value("tabsOnTop", 0).toBool());
-  tabsOnTop();
+  if (tabState) {
+      tabsOnTopAct->setChecked(settings->value("tabsOnTop", 0).toBool());
+      tabsOnTop();
+  }
 
   // show/hide buttons
   homeAct->setVisible(settings->value("home_button", true).toBool());

@@ -105,18 +105,18 @@ QWidget *SettingsDialog::createGeneralSettings() {
   // Appearance
   QGroupBox* grpAppear = new QGroupBox(tr("Appearance"), widget);
   QFormLayout* layoutAppear = new QFormLayout(grpAppear);
-  checkThumbs = new QCheckBox(grpAppear);
+  //checkThumbs = new QCheckBox(grpAppear);
   //checkHidden = new QCheckBox(grpAppear);
-  checkTabs = new QCheckBox(grpAppear);
+  //checkTabs = new QCheckBox(grpAppear);
   cmbIconTheme = new QComboBox(grpAppear);
 #if QT_VERSION >= 0x050000
   checkDarkTheme = new QCheckBox(grpAppear);
 #endif
   checkFileColor = new QCheckBox(grpAppear);
   layoutAppear->addRow(tr("Fallback Icon theme:"), cmbIconTheme);
-  layoutAppear->addRow(tr("Show thumbnails: "), checkThumbs);
+  //layoutAppear->addRow(tr("Show thumbnails: "), checkThumbs);
   //layoutAppear->addRow(tr("Show hidden files: "), checkHidden);
-  layoutAppear->addRow(tr("Tabs on top: "), checkTabs);
+  //layoutAppear->addRow(tr("Tabs on top: "), checkTabs);
 #if QT_VERSION >= 0x050000
   layoutAppear->addRow(tr("Use Dark theme"), checkDarkTheme);
 #endif
@@ -602,8 +602,8 @@ void SettingsDialog::restartToApply(bool /*triggered*/)
 void SettingsDialog::readSettings() {
 
   // Read general settings
-  checkThumbs->setChecked(settingsPtr->value("showThumbs", true).toBool());
-  checkTabs->setChecked(settingsPtr->value("tabsOnTop", false).toBool());
+  //checkThumbs->setChecked(settingsPtr->value("showThumbs", true).toBool());
+  //checkTabs->setChecked(settingsPtr->value("tabsOnTop", false).toBool());
   //checkHidden->setChecked(settingsPtr->value("hiddenMode", true).toBool());
   checkDelete->setChecked(settingsPtr->value("confirmDelete", true).toBool());
   editTerm->setText(settingsPtr->value("term", "xterm").toString());
@@ -851,8 +851,8 @@ bool SettingsDialog::saveSettings() {
 
   // General settings
   // ------------------------------------------------------------------------
-  settingsPtr->setValue("showThumbs", checkThumbs->isChecked());
-  settingsPtr->setValue("tabsOnTop", checkTabs->isChecked());
+  //settingsPtr->setValue("showThumbs", checkThumbs->isChecked());
+  //settingsPtr->setValue("tabsOnTop", checkTabs->isChecked());
   //settingsPtr->setValue("hiddenMode", checkHidden->isChecked());
   settingsPtr->setValue("confirmDelete", checkDelete->isChecked());
   settingsPtr->setValue("term", editTerm->text());

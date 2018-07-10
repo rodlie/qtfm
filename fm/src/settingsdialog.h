@@ -61,9 +61,9 @@ protected:
   QListWidget* selector;
   QStackedWidget* stack;
 
-  QCheckBox* checkThumbs;
+  //QCheckBox* checkThumbs;
   //QCheckBox* checkHidden;
-  QCheckBox* checkTabs;
+  //QCheckBox* checkTabs;
   QCheckBox* checkDelete;
   QComboBox* comboDAD;
   QComboBox* comboDADctl;
