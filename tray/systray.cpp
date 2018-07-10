@@ -23,6 +23,7 @@ SysTray::SysTray(QObject *parent)
     , man(0)
     , showNotifications(true)
     , mimeUtilsPtr(0)
+    , autoMount(false)
 {
     // set icon theme
     Common::setupIconTheme(qApp->applicationFilePath());
@@ -42,19 +43,29 @@ SysTray::SysTray(QObject *parent)
     connect(man, SIGNAL(mountpointChanged(QString,QString)), this, SLOT(handleDeviceMountpointChanged(QString,QString)));
     connect(man, SIGNAL(foundNewDevice(QString)), this, SLOT(handleFoundNewDevice(QString)));
 
+    // Create mime utils
+    mimeUtilsPtr = new MimeUtils(this);
+
+    // load settings
+    loadSettings();
+
+    QTimer::singleShot(10000, this, SLOT(generateContextMenu())); // slow start to make sure udisks etc are running
+}
+
+void SysTray::loadSettings()
+{
     if (Common::readSetting("trayNotify").isValid()) {
         showNotifications = Common::readSetting("trayNotify").toBool();
     }
+    if (Common::readSetting("trayAutoMount").isValid()) {
+        autoMount = Common::readSetting("trayAutoMount").toBool();
+    }
 
-    // Create mime utils
-    mimeUtilsPtr = new MimeUtils(this);
     QString mimeList = MIME_APPS;
     if (Common::readSetting("defMimeAppsFile").isValid()) {
         mimeList = Common::readSetting("defMimeAppsFile").toString();
     }
     mimeUtilsPtr->setDefaultsFileName(mimeList);
-
-    QTimer::singleShot(10000, this, SLOT(generateContextMenu())); // slow start to make sure udisks etc are running
 }
 
 void SysTray::generateContextMenu()
@@ -69,7 +80,7 @@ void SysTray::generateContextMenu()
     while (device.hasNext()) {
         device.next();
 
-        qDebug() << device.value()->name << device.value()->isOptical << device.value()->hasMedia << device.value()->isRemovable << device.value()->hasPartition;
+        //qDebug() << device.value()->name << device.value()->isOptical << device.value()->hasMedia << device.value()->isRemovable << device.value()->hasPartition;
 
         if ((device.value()->isOptical &&
              !device.value()->hasMedia) ||
@@ -113,7 +124,6 @@ void SysTray::handleDisktrayMessageClicked()
     handleShowHideDisktray();
 }
 
-
 void SysTray::showMessage(QString title, QString message)
 {
     if (!disktray->isSystemTrayAvailable() || !showNotifications) { return; }
@@ -131,7 +141,9 @@ void SysTray::handleContextMenuAction()
     if (!man->devices.contains(path)) { return; }
 
     if (man->devices[path]->mountpoint.isEmpty()) { // mount
-        if (man->devices[path]->isOptical && (man->devices[path]->isBlankDisc || man->devices[path]->opticalDataTracks==0)) { man->devices[path]->eject(); }
+        if (man->devices[path]->isOptical &&
+                (man->devices[path]->isBlankDisc ||
+                 man->devices[path]->opticalDataTracks==0)) { man->devices[path]->eject(); }
         else { man->devices[path]->mount(); }
     } else { // unmount
         man->devices[path]->unmount();
@@ -148,6 +160,7 @@ void SysTray::handleDeviceError(QString path, QString error)
 void SysTray::handleDeviceMediaChanged(QString path, bool media)
 {
     if (!man->devices.contains(path)) { return; }
+    qDebug() << "handle device media changed" << path << media;
     generateContextMenu();
     if (man->devices[path]->isOptical && media) {
         bool isData = man->devices[path]->opticalDataTracks>0?true:false;
@@ -158,8 +171,15 @@ void SysTray::handleDeviceMediaChanged(QString path, bool media)
         else if (isAudio) { opticalType = QObject::tr("audio"); }
         showMessage(QObject::tr("%1 has media").arg(man->devices[path]->name), QObject::tr("Detected %1 media in %2").arg(opticalType).arg(man->devices[path]->name));
 
+        // auto mount if enabled
+        if (Common::readSetting("trayAutoMount").toBool() && isData) {
+            qDebug() << "auto mount optical";
+            man->devices[path]->mount();
+            openMountpoint(man->devices[path]->mountpoint);
+            generateContextMenu();
+        }
         // auto play if enabled
-        if (Common::readSetting("autoPlayAudioCD").toBool()) {
+        if (Common::readSetting("autoPlayAudioCD").toBool() && isAudio) {
             QStringList apps = mimeUtilsPtr->getDefault("x-content/audio-cdda");
             QString desktop = Common::findApplication(qApp->applicationFilePath(), apps.at(0));
             if (desktop.isEmpty()) { return; }
@@ -175,9 +195,10 @@ void SysTray::handleDeviceMountpointChanged(QString path, QString mountpoint)
 {
     if (!man->devices.contains(path)) { return; }
     generateContextMenu();
-    if (!man->devices[path]->isRemovable) { return; }
+    if (!man->devices[path]->isRemovable || man->devices[path]->isOptical) { return; }
     if (mountpoint.isEmpty()) {
         if (!man->devices[path]->isOptical) {
+            // TODO
             showMessage(QObject::tr("%1 removed").arg(man->devices[path]->name), QObject::tr("It's now safe to remove %1 from your computer.").arg(man->devices[path]->name));
         }
     } else { openMountpoint(mountpoint); }
@@ -185,6 +206,7 @@ void SysTray::handleDeviceMountpointChanged(QString path, QString mountpoint)
 
 void SysTray::openMountpoint(QString mountpoint)
 {
+    qDebug() << "open mountpoint" << mountpoint;
     if (mountpoint.isEmpty()) { return; }
 
     QDBusInterface fmSession(FM_SERVICE,
@@ -201,7 +223,16 @@ void SysTray::openMountpoint(QString mountpoint)
 void SysTray::handleFoundNewDevice(QString path)
 {
     if (!man->devices.contains(path)) { return; }
-    showMessage(QString("Found %1").arg(man->devices[path]->name), QString("Found a new device (%1)").arg(man->devices[path]->dev));
+    if (man->devices[path]->isOptical) { return; }
+    loadSettings();
+
+    showMessage(QString("Found %1").arg(man->devices[path]->name),
+                QString("Found a new device (%1)").arg(man->devices[path]->dev));
+
+    // auto mount if enabled
+    if (!autoMount) { return; }
+    if (!man->devices[path]->mountpoint.isEmpty()) { return; }
+    man->devices[path]->mount();
 }
 
 void SysTray::handleShowHideDisktray()

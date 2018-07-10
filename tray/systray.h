@@ -26,8 +26,10 @@ private:
     Disks *man;
     bool showNotifications;
     MimeUtils* mimeUtilsPtr;
+    bool autoMount;
 
 private slots:
+    void loadSettings();
     void generateContextMenu();
     void disktrayActivated(QSystemTrayIcon::ActivationReason reason);
     void handleDisktrayMessageClicked();
