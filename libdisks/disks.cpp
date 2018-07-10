@@ -31,8 +31,14 @@ Device::Device(const QString block, QObject *parent)
 
 void Device::mount()
 {
+    qDebug() << "mount?" << path << mountpoint;
     if (!dbus->isValid() || !mountpoint.isEmpty()) { return; }
-    QString reply = uDisks2::mountDevice(path);
+    QString reply;
+    if (isOptical) {
+        reply = uDisks2::mountOptical(path);
+        qDebug() << "optical=" << uDisks2::getMountPointOptical(path);
+    }
+    else { reply = uDisks2::mountDevice(path); }
     if (!reply.isEmpty()) {
         emit errorMessage(path, reply);
         return;
@@ -42,10 +48,12 @@ void Device::mount()
 
 void Device::unmount()
 {
-    if (!dbus->isValid() || mountpoint.isEmpty()) { return; }
-    QString reply = uDisks2::unmountDevice(path);
+    if (!dbus->isValid() || (mountpoint.isEmpty() && !isOptical)) { return; }
+    QString reply;
+    if (isOptical) { reply = uDisks2::unmountOptical(path); }
+    else { reply = uDisks2::unmountDevice(path); }
     updateDeviceProperties();
-    if (!reply.isEmpty() || !mountpoint.isEmpty()) {
+    if (!reply.isEmpty() || (!mountpoint.isEmpty())) {
         if (reply.isEmpty()) { reply = QObject::tr("Failed to umount %1").arg(name); }
         emit errorMessage(path, reply);
         return;
@@ -76,9 +84,13 @@ void Device::updateDeviceProperties()
     name = uDisks2::getDeviceName(drive);
     dev = path.split("/").takeLast();
     isRemovable = uDisks2::isRemovable(drive);
-    mountpoint = uDisks2::getMountPoint(path);
     filesystem = uDisks2::getFileSystem(path);
     isOptical = uDisks2::isOptical(drive);
+    if (isOptical) {
+        mountpoint = uDisks2::getMountPointOptical(path);
+    } else {
+        mountpoint = uDisks2::getMountPoint(path);
+    }
     hasMedia = uDisks2::hasMedia(drive);
     opticalDataTracks = uDisks2::opticalDataTracks(drive);
     opticalAudioTracks = uDisks2::opticalAudioTracks(drive);

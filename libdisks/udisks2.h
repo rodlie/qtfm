@@ -16,6 +16,9 @@
 #include <QXmlStreamReader>
 #include <QDebug>
 #include <QStringList>
+#include <QProcess>
+#include <QFile>
+#include <QTextStream>
 
 #define DBUS_SERVICE "org.freedesktop.UDisks2"
 #define DBUS_PATH "/org/freedesktop/UDisks2"
@@ -102,6 +105,28 @@ public:
         if (!iface.isValid()) { return false; }
         return iface.property("OpticalNumAudioTracks").toBool();
     }
+    static QString getMountPointOptical(QString path)
+    {
+        QString mountpoint;
+        QString device = path.split("/").takeLast();
+        if (device.isEmpty()) { return mountpoint; }
+        QFile mtab("/etc/mtab");
+        if (!mtab.open(QIODevice::ReadOnly)) { return QString(); }
+        QTextStream ts(&mtab);
+        QVector<QStringList> result;
+        while(!ts.atEnd()) {
+            QString line = ts.readLine();
+            QStringList info = line.split(" ", QString::SkipEmptyParts);
+            if (info.size()>=2) {
+                QString dev = info.at(0);
+                QString mnt = info.at(1);
+                if (dev == QString("/dev/%1").arg(device)) { mountpoint = mnt; }
+            }
+        }
+        mtab.close();
+        qDebug() << "optical mountpoint" << mountpoint;
+        return mountpoint;
+    }
     static QString getMountPoint(QString path)
     {
         QString mountpoint;
@@ -118,6 +143,7 @@ public:
         }
         foreach (QByteArray point, argList) { mountpoints.append(point); }
         mountpoint = mountpoints.join("");
+        qDebug() << "mountpoint for path" << path << mountpoint;
         return mountpoint;
     }
     static QString getDeviceName(QString path)
@@ -138,12 +164,34 @@ public:
         QDBusReply<QString> mountpoint =  filesystem.call("Mount", options);
         return mountpoint.error().message();
     }
+    static QString mountOptical(QString path)
+    {
+        // something is broken somewhere in udev/udisk, whatever ...
+        // So we need to handle opticals using udisks cmd
+        // https://bugs.archlinux.org/task/49643
+        // https://bugs.freedesktop.org/show_bug.cgi?id=52357
+        QProcess proc;
+        proc.start(QString("udisks --mount /dev/%1").arg(path.split("/").takeLast()));
+        proc.waitForFinished();
+        return QString();
+    }
     static QString unmountDevice(QString path)
     {
         QDBusInterface filesystem(DBUS_SERVICE, path, QString("%1.Filesystem").arg(DBUS_SERVICE), QDBusConnection::systemBus());
         if (!filesystem.isValid()) { return QObject::tr("Failed D-Bus connection."); }
         QDBusMessage reply = filesystem.call("Unmount", QVariantMap());
         return reply.arguments().first().toString();
+    }
+    static QString unmountOptical(QString path)
+    {
+        // something is broken somewhere in udev/udisk, whatever ...
+        // So we need to handle opticals using udisks cmd
+        // https://bugs.archlinux.org/task/49643
+        // https://bugs.freedesktop.org/show_bug.cgi?id=52357
+        QProcess proc;
+        proc.start(QString("udisks --unmount /dev/%1").arg(path.split("/").takeLast()));
+        proc.waitForFinished();
+        return QString();
     }
     static QString ejectDevice(QString path)
     {
