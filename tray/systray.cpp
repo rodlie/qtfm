@@ -178,7 +178,7 @@ void SysTray::handleDeviceMediaChanged(QString path, bool media)
             openMountpoint(man->devices[path]->mountpoint);
             generateContextMenu();
         }
-        // auto play if enabled
+        // auto play CD if enabled
         if (Common::readSetting("autoPlayAudioCD").toBool() && isAudio) {
             QStringList apps = mimeUtilsPtr->getDefault("x-content/audio-cdda");
             QString desktop = Common::findApplication(qApp->applicationFilePath(), apps.at(0));
@@ -187,6 +187,35 @@ void SysTray::handleDeviceMediaChanged(QString path, bool media)
             QString app = df.getExec().split(" ").takeFirst();
             if (app.isEmpty()) { return; }
             QProcess::startDetached(QString("%1 cdda://%2").arg(app).arg(man->devices[path]->name));
+        }
+        // auto play DVD if enabled
+        if (Common::readSetting("autoPlayDVD").toBool() && isData) {
+            if (man->devices[path]->mountpoint.isEmpty()) {
+                man->devices[path]->mount();
+            }
+            QDir tsVideo(QString("%1/video_ts").arg(man->devices[path]->mountpoint));
+            QDir tsAudio(QString("%1/audio_ts").arg(man->devices[path]->mountpoint));
+
+            QString desktop;
+            if (tsVideo.exists()) {
+                QStringList apps = mimeUtilsPtr->getDefault("x-content/video-dvd");
+                qDebug() << "video dvd apps" << apps;
+                desktop = Common::findApplication(qApp->applicationFilePath(), apps.at(0));
+            } else if (!tsVideo.exists() && tsAudio.exists()) {
+                QStringList apps = mimeUtilsPtr->getDefault("x-content/audio-dvd");
+                qDebug() << "audio dvd apps" << apps;
+                desktop = Common::findApplication(qApp->applicationFilePath(), apps.at(0));
+            }
+            if (desktop.isEmpty()) { return; }
+            DesktopFile df(desktop);
+            QString app = df.getExec().split(" ").takeFirst();
+            if (app.isEmpty()) { return; }
+            if (app.endsWith("mplayer")) {
+                // workaround for mplayer
+                QProcess::startDetached(QString("%1 dvd:// -dvd-device /dev/%2").arg(app).arg(path.split("/").takeLast()));
+            } else {
+                QProcess::startDetached(QString("%1 dvd://%2").arg(app).arg(man->devices[path]->mountpoint));
+            }
         }
     }
 }

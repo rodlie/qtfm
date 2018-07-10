@@ -432,6 +432,9 @@ QWidget *SettingsDialog::createSystraySettings()
     checkAudioCD = new QCheckBox(trayGroup);
     layoutTray->addRow(tr("Auto play audio CD's"), checkAudioCD);
 
+    checkDVD = new QCheckBox(trayGroup);
+    layoutTray->addRow(tr("Auto play audio/video DVD's"), checkDVD);
+
     layoutWidget->addWidget(trayGroup);
 
     return widget;
@@ -613,6 +616,7 @@ void SettingsDialog::readSettings() {
   checkTrayNotify->setChecked(settingsPtr->value("trayNotify", true).toBool());
   checkAudioCD->setChecked(settingsPtr->value("autoPlayAudioCD", false).toBool());
   checkAutoMount->setChecked(settingsPtr->value("trayAutoMount", false).toBool());
+  checkDVD->setChecked(settingsPtr->value("autoPlayDVD", false).toBool());
 
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
@@ -766,7 +770,7 @@ void SettingsDialog::loadMimes(int section) {
     }
 
     // Skip all 'x-content' and 'message' nodes
-    if (mime.startsWith("x-content") || mime.startsWith("message")) {
+    if (/*mime.startsWith("x-content") ||*/ mime.startsWith("message")) {
       continue;
     }
 
@@ -824,6 +828,7 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("trayNotify", checkTrayNotify->isChecked());
   settingsPtr->setValue("autoPlayAudioCD", checkAudioCD->isChecked());
   settingsPtr->setValue("trayAutoMount", checkAutoMount->isChecked());
+  settingsPtr->setValue("autoPlayDVD", checkDVD->isChecked());
 
   if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
       settingsPtr->setValue("clearCache", true);
