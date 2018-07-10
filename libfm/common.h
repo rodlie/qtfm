@@ -27,6 +27,8 @@
 #define BOOKMARK_ICON Qt::UserRole+2
 #define BOOKMARKS_AUTO Qt::UserRole+3
 
+#define MIME_APPS "/.local/share/applications/mimeapps.list"
+
 class Common
 {
 public:

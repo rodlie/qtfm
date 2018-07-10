@@ -12,16 +12,21 @@
 #include <QSystemTrayIcon>
 #include <QMenu>
 #include "disks.h"
+#include "mimeutils.h"
 
 class SysTray : public QObject
 {
     Q_OBJECT
 public:
     explicit SysTray(QObject *parent = NULL);
+
 private:
     QSystemTrayIcon *disktray;
     QMenu *menu;
     Disks *man;
+    bool showNotifications;
+    MimeUtils* mimeUtilsPtr;
+
 private slots:
     void generateContextMenu();
     void disktrayActivated(QSystemTrayIcon::ActivationReason reason);

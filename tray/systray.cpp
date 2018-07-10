@@ -12,14 +12,21 @@
 #include <QMenu>
 #include <QAction>
 #include <QDebug>
+#include <QApplication>
 #include "common.h"
+#include "desktopfile.h"
 
 SysTray::SysTray(QObject *parent)
     : QObject(parent)
     , disktray(0)
     , menu(0)
     , man(0)
+    , showNotifications(true)
+    , mimeUtilsPtr(0)
 {
+    // set icon theme
+    Common::setupIconTheme(qApp->applicationFilePath());
+
     menu = new QMenu();
 
     disktray = new QSystemTrayIcon(QIcon::fromTheme("drive-removable-media", QIcon(":/icons/drive-removable-media.png")), this);
@@ -34,6 +41,18 @@ SysTray::SysTray(QObject *parent)
     connect(man, SIGNAL(mediaChanged(QString,bool)), this, SLOT(handleDeviceMediaChanged(QString,bool)));
     connect(man, SIGNAL(mountpointChanged(QString,QString)), this, SLOT(handleDeviceMountpointChanged(QString,QString)));
     connect(man, SIGNAL(foundNewDevice(QString)), this, SLOT(handleFoundNewDevice(QString)));
+
+    if (Common::readSetting("trayNotify").isValid()) {
+        showNotifications = Common::readSetting("trayNotify").toBool();
+    }
+
+    // Create mime utils
+    mimeUtilsPtr = new MimeUtils(this);
+    QString mimeList = MIME_APPS;
+    if (Common::readSetting("defMimeAppsFile").isValid()) {
+        mimeList = Common::readSetting("defMimeAppsFile").toString();
+    }
+    mimeUtilsPtr->setDefaultsFileName(mimeList);
 
     QTimer::singleShot(10000, this, SLOT(generateContextMenu())); // slow start to make sure udisks etc are running
 }
@@ -97,7 +116,7 @@ void SysTray::handleDisktrayMessageClicked()
 
 void SysTray::showMessage(QString title, QString message)
 {
-    if (!disktray->isSystemTrayAvailable()) { return; }
+    if (!disktray->isSystemTrayAvailable() || !showNotifications) { return; }
     if (!disktray->isVisible()) { disktray->show(); }
     disktray->showMessage(title, message);
     QTimer::singleShot(10000, this, SLOT(handleShowHideDisktray()));
@@ -138,6 +157,17 @@ void SysTray::handleDeviceMediaChanged(QString path, bool media)
         else if (isData) { opticalType = QObject::tr("data"); }
         else if (isAudio) { opticalType = QObject::tr("audio"); }
         showMessage(QObject::tr("%1 has media").arg(man->devices[path]->name), QObject::tr("Detected %1 media in %2").arg(opticalType).arg(man->devices[path]->name));
+
+        // auto play if enabled
+        if (Common::readSetting("autoPlayAudioCD").toBool()) {
+            QStringList apps = mimeUtilsPtr->getDefault("x-content/audio-cdda");
+            QString desktop = Common::findApplication(qApp->applicationFilePath(), apps.at(0));
+            if (desktop.isEmpty()) { return; }
+            DesktopFile df(desktop);
+            QString app = df.getExec().split(" ").takeFirst();
+            if (app.isEmpty()) { return; }
+            QProcess::startDetached(QString("%1 cdda://%2").arg(app).arg(man->devices[path]->name));
+        }
     }
 }
 
