@@ -73,12 +73,14 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   selector->addItem(new QListWidgetItem(icon2, tr("Custom Actions"), selector));
   selector->addItem(new QListWidgetItem(icon3, tr("Shortcuts"), selector));
   selector->addItem(new QListWidgetItem(icon4, tr("Mime Types"), selector));
+  selector->addItem(new QListWidgetItem(icon4, tr("System Tray"), selector));
 
   stack->addWidget(createGeneralSettings());
   stack->addWidget(createAppearanceSettings());
   stack->addWidget(createActionsSettings());
   stack->addWidget(createShortcutSettings());
   stack->addWidget(createMimeSettings());
+  stack->addWidget(createSystraySettings());
 
   connect(selector,
           SIGNAL(currentRowChanged(int)),
@@ -411,6 +413,29 @@ QWidget* SettingsDialog::createMimeSettings() {
 
   return widget;
 }
+
+QWidget *SettingsDialog::createSystraySettings()
+{
+    // Widget and its layout
+    QWidget *widget = new QWidget();
+    QVBoxLayout* layoutWidget = new QVBoxLayout(widget);
+
+    QGroupBox* trayGroup = new QGroupBox(tr("System Tray"), widget);
+    QFormLayout* layoutTray = new QFormLayout(trayGroup);
+
+    checkTrayNotify = new QCheckBox(trayGroup);
+    layoutTray->addRow(tr("Show notifications"), checkTrayNotify);
+
+    checkAutoMount = new QCheckBox(trayGroup);
+    layoutTray->addRow(tr("Auto mount removable devices"), checkAutoMount);
+
+    checkAudioCD = new QCheckBox(trayGroup);
+    layoutTray->addRow(tr("Auto play audio CD's"), checkAudioCD);
+
+    layoutWidget->addWidget(trayGroup);
+
+    return widget;
+}
 //---------------------------------------------------------------------------
 
 /**
@@ -584,6 +609,10 @@ void SettingsDialog::readSettings() {
 #endif
   checkFileColor->setChecked(settingsPtr->value("fileColor", true).toBool());
   checkPathHistory->setChecked(settingsPtr->value("pathHistory", true).toBool());
+
+  checkTrayNotify->setChecked(settingsPtr->value("trayNotify", true).toBool());
+  checkAudioCD->setChecked(settingsPtr->value("autoPlayAudioCD", false).toBool());
+  checkAutoMount->setChecked(settingsPtr->value("trayAutoMount", false).toBool());
 
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
@@ -792,6 +821,9 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("home_button", showHomeButton->isChecked());
   settingsPtr->setValue("terminal_button", showTerminalButton->isChecked());
 
+  settingsPtr->setValue("trayNotify", checkTrayNotify->isChecked());
+  settingsPtr->setValue("autoPlayAudioCD", checkAudioCD->isChecked());
+  settingsPtr->setValue("trayAutoMount", checkAutoMount->isChecked());
 
   if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
       settingsPtr->setValue("clearCache", true);

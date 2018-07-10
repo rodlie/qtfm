@@ -58,6 +58,7 @@ protected:
   QWidget* createActionsSettings();
   QWidget* createShortcutSettings();
   QWidget* createMimeSettings();
+  QWidget* createSystraySettings();
   MimeUtils* mimeUtilsPtr;
   QSettings* settingsPtr;
   QList<QAction*> *actionListPtr;
@@ -88,6 +89,9 @@ protected:
   QGroupBox* grpAssoc;
   QTreeWidget* mimesWidget;
   QListWidget* listAssoc;
+  QCheckBox* checkTrayNotify;
+  QCheckBox* checkAudioCD;
+  QCheckBox* checkAutoMount;
 };
 
 #endif // SETTINGSDIALOG_H
