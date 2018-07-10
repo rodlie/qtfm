@@ -22,7 +22,8 @@
  * @param parent
  */
 SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
-                               QSettings *settings, MimeUtils *mimeUtils,
+                               QSettings *settings,
+                               MimeUtils *mimeUtils,
                                QWidget *parent) : QDialog(parent) {
 
   // Store pointer to custom action manager
@@ -61,26 +62,31 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   QIcon icon2 = QIcon::fromTheme("applications-system");
   QIcon icon3 = QIcon::fromTheme("accessories-character-map");
   QIcon icon4 = QIcon::fromTheme("preferences-desktop");
+  QIcon icon5 = QIcon::fromTheme("applications-graphics");
 
   // Add widget with configurations
   selector->setMinimumWidth(160);
   selector->setViewMode(QListView::ListMode);
   selector->setIconSize(QSize(32, 32));
   selector->addItem(new QListWidgetItem(icon1, tr("General"), selector));
+  selector->addItem(new QListWidgetItem(icon5, tr("Appearance"), selector));
   selector->addItem(new QListWidgetItem(icon2, tr("Custom Actions"), selector));
   selector->addItem(new QListWidgetItem(icon3, tr("Shortcuts"), selector));
   selector->addItem(new QListWidgetItem(icon4, tr("Mime Types"), selector));
-  selector->addItem(new QListWidgetItem(icon4, tr("General Behavior"), selector));
 
   stack->addWidget(createGeneralSettings());
+  stack->addWidget(createAppearanceSettings());
   stack->addWidget(createActionsSettings());
   stack->addWidget(createShortcutSettings());
-  //stack->addWidget(createMimeProgress());
   stack->addWidget(createMimeSettings());
-  stack->addWidget(createDefaultBehaviour());
-  connect(selector, SIGNAL(currentRowChanged(int)), stack,
+
+  connect(selector,
+          SIGNAL(currentRowChanged(int)),
+          stack,
           SLOT(setCurrentIndex(int)));
-  connect(selector, SIGNAL(currentRowChanged(int)), SLOT(loadMimes(int)));
+  connect(selector,
+          SIGNAL(currentRowChanged(int)),
+          SLOT(loadMimes(int)));
 
   // Align items
   for (int i = 0; i < selector->count(); i++) {
@@ -102,33 +108,8 @@ QWidget *SettingsDialog::createGeneralSettings() {
   QWidget* widget = new QWidget();
   QVBoxLayout* layoutWidget = new QVBoxLayout(widget);
 
-  // Appearance
-  QGroupBox* grpAppear = new QGroupBox(tr("Appearance"), widget);
-  QFormLayout* layoutAppear = new QFormLayout(grpAppear);
-  //checkThumbs = new QCheckBox(grpAppear);
-  //checkHidden = new QCheckBox(grpAppear);
-  //checkTabs = new QCheckBox(grpAppear);
-  cmbIconTheme = new QComboBox(grpAppear);
-#if QT_VERSION >= 0x050000
-  checkDarkTheme = new QCheckBox(grpAppear);
-#endif
-  checkFileColor = new QCheckBox(grpAppear);
-  layoutAppear->addRow(tr("Fallback Icon theme:"), cmbIconTheme);
-  //layoutAppear->addRow(tr("Show thumbnails: "), checkThumbs);
-  //layoutAppear->addRow(tr("Show hidden files: "), checkHidden);
-  //layoutAppear->addRow(tr("Tabs on top: "), checkTabs);
-#if QT_VERSION >= 0x050000
-  layoutAppear->addRow(tr("Use Dark theme"), checkDarkTheme);
-#endif
-  layoutAppear->addRow(tr("Colors on file names"), checkFileColor);
-
-  showHomeButton = new QCheckBox(grpAppear);
-  showTerminalButton = new QCheckBox(grpAppear);
-  layoutAppear->addRow(tr("Show Home button"), showHomeButton);
-  layoutAppear->addRow(tr("Show Terminal button"), showTerminalButton);
-
   // Behaviour
-  /*QGroupBox* grpBehav = new QGroupBox(tr("Default behaviour"), widget);
+  QGroupBox* grpBehav = new QGroupBox(tr("Behaviour"), widget);
   QFormLayout* layoutBehav = new QFormLayout(grpBehav);
   comboDAD = new QComboBox(grpBehav);
   comboDADctl = new QComboBox(grpBehav);
@@ -154,7 +135,10 @@ QWidget *SettingsDialog::createGeneralSettings() {
   comboSingleClick->addItem(tr("No"),0);
   comboSingleClick->addItem(tr("Directories only"),1);
   comboSingleClick->addItem(tr("Everything"),2);
-  layoutBehav->addRow(tr("Enable Single Click"), comboSingleClick);*/
+  layoutBehav->addRow(tr("Enable Single Click"), comboSingleClick);
+
+  checkPathHistory = new QCheckBox(grpBehav);
+  layoutBehav->addRow(tr("Enable path history"), checkPathHistory);
 
   // Confirmation
   QGroupBox* grpConfirm = new QGroupBox(tr("Confirmation"), widget);
@@ -168,23 +152,52 @@ QWidget *SettingsDialog::createGeneralSettings() {
   editTerm = new QLineEdit(grpTerm);
   layoutTerm->addRow(tr("Command: "), editTerm);
 
-  // Default mime apps
-  QGroupBox* grpDMime = new QGroupBox(tr("Default mime applications"), widget);
-  QFormLayout* layoutDMime = new QFormLayout(grpDMime);
-  cmbDefaultMimeApps = new QComboBox(grpDMime);
-  cmbDefaultMimeApps->addItem("/.local/share/applications/mimeapps.list");
-  cmbDefaultMimeApps->addItem("/.local/share/applications/defaults.list");
-  layoutDMime->addRow(tr("Configuration file: "), cmbDefaultMimeApps);
-
   // Layout of widget
-  layoutWidget->addWidget(grpAppear);
-//  layoutWidget->addWidget(grpBehav);
+  layoutWidget->addWidget(grpBehav);
   layoutWidget->addWidget(grpConfirm);
   layoutWidget->addWidget(grpTerm);
-  layoutWidget->addWidget(grpDMime);
-  layoutWidget->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Fixed,
+  layoutWidget->addSpacerItem(new QSpacerItem(0,
+                                              0,
+                                              QSizePolicy::Fixed,
                                               QSizePolicy::MinimumExpanding));
   return widget;
+}
+
+QWidget *SettingsDialog::createAppearanceSettings()
+{
+    // Main widget and layout
+    QWidget* widget = new QWidget();
+    QVBoxLayout* layoutWidget = new QVBoxLayout(widget);
+
+    // Appearance
+    QGroupBox* grpAppear = new QGroupBox(tr("Appearance"), widget);
+    QFormLayout* layoutAppear = new QFormLayout(grpAppear);
+    cmbIconTheme = new QComboBox(grpAppear);
+
+#if QT_VERSION >= 0x050000
+    checkDarkTheme = new QCheckBox(grpAppear);
+#endif
+
+    checkFileColor = new QCheckBox(grpAppear);
+    layoutAppear->addRow(tr("Fallback Icon theme:"), cmbIconTheme);
+
+#if QT_VERSION >= 0x050000
+    layoutAppear->addRow(tr("Use \"Dark Mode\""), checkDarkTheme);
+#endif
+
+    layoutAppear->addRow(tr("Colors on file names"), checkFileColor);
+
+    showHomeButton = new QCheckBox(grpAppear);
+    showTerminalButton = new QCheckBox(grpAppear);
+    layoutAppear->addRow(tr("Show Home button"), showHomeButton);
+    layoutAppear->addRow(tr("Show Terminal button"), showTerminalButton);
+
+    // Layout widget
+    layoutWidget->addWidget(grpAppear);
+    layoutWidget->addSpacerItem(new QSpacerItem(0, 0,
+                                                QSizePolicy::Fixed,
+                                                QSizePolicy::MinimumExpanding));
+    return widget;
 }
 //---------------------------------------------------------------------------
 
@@ -225,10 +238,14 @@ QWidget* SettingsDialog::createActionsSettings() {
   header->setText(3, tr("Command"));
 
   // Connect action widget
-  connect(actionsWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *,int)),
-          this, SLOT(getIcon(QTreeWidgetItem *,int)));
-  connect(actionsWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
-          this, SLOT(onActionChanged(QTreeWidgetItem*,int)));
+  connect(actionsWidget,
+          SIGNAL(itemDoubleClicked(QTreeWidgetItem *,int)),
+          this,
+          SLOT(getIcon(QTreeWidgetItem *,int)));
+  connect(actionsWidget,
+          SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+          this,
+          SLOT(onActionChanged(QTreeWidgetItem*,int)));
 
   // Create control buttons
   QHBoxLayout* horizontalLayout = new QHBoxLayout();
@@ -249,7 +266,9 @@ QWidget* SettingsDialog::createActionsSettings() {
   horizontalLayout->addWidget(infoButton);
   horizontalLayout->addWidget(addButton);
   horizontalLayout->addWidget(delButton);
-  horizontalLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding));
+  horizontalLayout->addItem(new QSpacerItem(0,
+                                            0,
+                                            QSizePolicy::MinimumExpanding));
   mainLayout->addLayout(horizontalLayout);
 
   // Outer layout
@@ -292,33 +311,6 @@ QWidget* SettingsDialog::createShortcutSettings() {
 //---------------------------------------------------------------------------
 
 /**
- * @brief Creates widget with mime progress bar
- * @return widget
- */
-/*QWidget* SettingsDialog::createMimeProgress() {
-
-  // Widget and its layout
-  QWidget* widget = new QWidget();
-  QGridLayout* layout = new QGridLayout(widget);
-
-  // Mime progress bar
-  progressMime = new QProgressBar(widget);
-  progressMime->setMinimumWidth(250);
-  progressMime->setMaximumWidth(250);
-  layout->addWidget(new QLabel(tr("Loading mime types..."), widget), 1, 1);
-  layout->addWidget(progressMime, 2, 1);
-  layout->addItem(new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding), 0, 0, 4);
-  layout->addItem(new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding), 0, 2, 4);
-  layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Fixed,
-                                  QSizePolicy::MinimumExpanding), 0, 1);
-  layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Fixed,
-                                  QSizePolicy::MinimumExpanding), 3, 1);
-
-  return widget;
-}*/
-//---------------------------------------------------------------------------
-
-/**
  * @brief Creates widget with mime settings
  * @return widget
  */
@@ -357,8 +349,18 @@ QWidget* SettingsDialog::createMimeSettings() {
   header->setText(1, tr("Application"));
   mimesWidget->setColumnWidth(0, 220);
   layoutMimes->addWidget(mimesWidget);
+
+  // Default mime apps
+  QGroupBox* grpDMime = new QGroupBox(tr("Default mime applications"), widget);
+  QFormLayout* layoutDMime = new QFormLayout(grpDMime);
+  cmbDefaultMimeApps = new QComboBox(grpDMime);
+  cmbDefaultMimeApps->addItem("/.local/share/applications/mimeapps.list");
+  cmbDefaultMimeApps->addItem("/.local/share/applications/defaults.list");
+  layoutDMime->addRow(tr("Configuration file: "), cmbDefaultMimeApps);
+
   layoutWidget->addWidget(grpMimes);
   layoutWidget->addWidget(grpAssoc);
+  layoutWidget->addWidget(grpDMime);
 
   // Load application list
   QStringList apps = FileUtils::getApplicationNames();
@@ -390,58 +392,24 @@ QWidget* SettingsDialog::createMimeSettings() {
 
   // Connect
   connect(mimesWidget,
-          SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
-          SLOT(onMimeSelected(QTreeWidgetItem*,QTreeWidgetItem*)));
-  connect(btnAdd, SIGNAL(clicked()), SLOT(showAppDialog()));
-  connect(btnRem, SIGNAL(clicked()), SLOT(removeAppAssoc()));
-  connect(btnUp, SIGNAL(clicked()), SLOT(moveAppAssocUp()));
-  connect(btnDown, SIGNAL(clicked()), SLOT(moveAppAssocDown()));
+          SIGNAL(currentItemChanged(QTreeWidgetItem*,
+                                    QTreeWidgetItem*)),
+          SLOT(onMimeSelected(QTreeWidgetItem*,
+                              QTreeWidgetItem*)));
+  connect(btnAdd,
+          SIGNAL(clicked()),
+          SLOT(showAppDialog()));
+  connect(btnRem,
+          SIGNAL(clicked()),
+          SLOT(removeAppAssoc()));
+  connect(btnUp,
+          SIGNAL(clicked()),
+          SLOT(moveAppAssocUp()));
+  connect(btnDown,
+          SIGNAL(clicked()),
+          SLOT(moveAppAssocDown()));
 
   return widget;
-}
-
-QWidget *SettingsDialog::createDefaultBehaviour()
-{
-    // Main widget and layout
-    QWidget* widget = new QWidget();
-    QVBoxLayout* layoutWidget = new QVBoxLayout(widget);
-
-    // General Behavior
-    QGroupBox* grpBehav = new QGroupBox(tr("General Behavior"), widget);
-    QFormLayout* layoutBehav = new QFormLayout(grpBehav);
-    comboDAD = new QComboBox(grpBehav);
-    comboDADctl = new QComboBox(grpBehav);
-    comboDADshift = new QComboBox(grpBehav);
-    comboDADalt = new QComboBox(grpBehav);
-    QVector<QComboBox*> dads;
-    dads.append(comboDAD);
-    dads.append(comboDADalt);
-    dads.append(comboDADctl);
-    dads.append(comboDADshift);
-    for (int i=0;i<dads.size();++i) {
-        dads.at(i)->addItem(tr("Ask"),0);
-        dads.at(i)->addItem(tr("Copy"),1);
-        dads.at(i)->addItem(tr("Move"),2);
-        dads.at(i)->addItem(tr("Link"),3);
-    }
-    layoutBehav->addRow(tr("Drag and Drop Default action: "), comboDAD);
-    layoutBehav->addRow(tr("Drag and Drop CTRL action: "), comboDADctl);
-    layoutBehav->addRow(tr("Drag and Drop SHIFT action: "), comboDADshift);
-    layoutBehav->addRow(tr("Drag and Drop ALT action: "), comboDADalt);
-
-    comboSingleClick = new QComboBox(grpBehav);
-    comboSingleClick->addItem(tr("No"),0);
-    comboSingleClick->addItem(tr("Directories only"),1);
-    comboSingleClick->addItem(tr("Everything"),2);
-    layoutBehav->addRow(tr("Enable Single Click"), comboSingleClick);
-
-    checkPathHistory = new QCheckBox(grpBehav);
-    layoutBehav->addRow(tr("Enable path history"), checkPathHistory);
-
-    layoutWidget->addWidget(grpBehav);
-    layoutWidget->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Fixed,
-                                                QSizePolicy::MinimumExpanding));
-    return widget;
 }
 //---------------------------------------------------------------------------
 
@@ -469,8 +437,6 @@ void SettingsDialog::onMimeSelected(QTreeWidgetItem *current,
   grpAssoc->setEnabled(true);
 
   // Prepare source of icons
-  //QDir appIcons("/usr/share/pixmaps","", 0, QDir::Files | QDir::NoDotAndDotDot);
- // QStringList iconFiles = appIcons.entryList();
   QIcon defaultIcon = QIcon::fromTheme("application-x-executable");
 
   QStringList apps = mimesWidget->currentItem()->text(1).remove(" ").split(";");
@@ -602,9 +568,6 @@ void SettingsDialog::restartToApply(bool /*triggered*/)
 void SettingsDialog::readSettings() {
 
   // Read general settings
-  //checkThumbs->setChecked(settingsPtr->value("showThumbs", true).toBool());
-  //checkTabs->setChecked(settingsPtr->value("tabsOnTop", false).toBool());
-  //checkHidden->setChecked(settingsPtr->value("hiddenMode", true).toBool());
   checkDelete->setChecked(settingsPtr->value("confirmDelete", true).toBool());
   editTerm->setText(settingsPtr->value("term", "xterm").toString());
 
@@ -634,13 +597,8 @@ void SettingsDialog::readSettings() {
 
   // Load icon themes
   QString currentTheme = settingsPtr->value("fallbackTheme").toString();
-  //QDirIterator it("/usr/share/icons", QDir::Dirs | QDir::NoDotAndDotDot);
   QStringList iconThemes;
   iconThemes << Common::getIconThemes(qApp->applicationFilePath());
-  /*while (it.hasNext()) {
-    it.next();
-    iconThemes.append(it.fileName());
-  }*/
   cmbIconTheme->addItems(iconThemes);
   cmbIconTheme->setCurrentIndex(iconThemes.indexOf(currentTheme));
 
@@ -665,23 +623,6 @@ void SettingsDialog::readSettings() {
     item->setCheckState(3, setChecked ? Qt::Checked : Qt::Unchecked);
   }
   settingsPtr->endGroup();
-
-  // Add default actions
-  /*if (keys.count() == 0) {
-    QStringList def1, def2, def3;
-    def1 << "gz,bz2" << tr("Extract here") << "package-x-generic" << "tar xf %f";
-    def2 << "folder" << tr("Term here") << "terminal" << "urxvt -cd %F";
-    def3 << "*" << tr("Compress") << "filesave" << "tar czf %n.tar.gz %f";
-    QTreeWidgetItem *item1 = new QTreeWidgetItem(actionsWidget, def1, 0);
-    QTreeWidgetItem *item2 = new QTreeWidgetItem(actionsWidget, def2, 0);
-    QTreeWidgetItem *item3 = new QTreeWidgetItem(actionsWidget, def3, 0);
-    item1->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable
-                    | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
-    item2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable
-                    | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
-    item3->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable
-                    | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
-  }*/
 
   // Loads icons for actions
   for (int x = 0; x < actionsWidget->topLevelItemCount(); x++) {
@@ -761,9 +702,8 @@ void SettingsDialog::readShortcuts() {
  */
 void SettingsDialog::loadMimes(int section) {
 
-   qDebug() << "LOAD MIMES" << section;
   // Mime progress section
-  const int MIME_PROGRESS_SECTION = 3;
+  const int MIME_PROGRESS_SECTION = 4;
 
   // If section is not mime type configuration section exit
   if (section != MIME_PROGRESS_SECTION) {
@@ -778,15 +718,11 @@ void SettingsDialog::loadMimes(int section) {
 
   // Load list of mimes
   QStringList mimes = mimeUtilsPtr->getMimeTypes();
-  //qDebug() << "mimes" << mimes;
-
-  // Init process
-  //progressMime->setRange(1, mimes.size());
 
   // Default icon
   QIcon defaultIcon = QIcon::fromTheme("text-x-generic");
 
-  // Mime cathegories and their icons
+  // Mime categories and their icons
   QMap<QString, QTreeWidgetItem*> categories;
   QMap<QTreeWidgetItem*, QIcon> genericIcons;
 
@@ -794,8 +730,6 @@ void SettingsDialog::loadMimes(int section) {
   foreach (QString mime, mimes) {
 
     QApplication::processEvents();
-    // Updates progress
-    //progressMime->setValue(progressMime->value() + 1);
 
     // Skip all 'inode' nodes including 'inode/directory'
     if (mime.startsWith("inode")) {
@@ -810,7 +744,7 @@ void SettingsDialog::loadMimes(int section) {
     // Parse mime
     QStringList splitMime = mime.split("/");
 
-    // Retrieve cathegory
+    // Retrieve categories
     QIcon icon = defaultIcon;
     QString categoryName = splitMime.first();
     QTreeWidgetItem* category = categories.value(categoryName, NULL);
@@ -819,15 +753,11 @@ void SettingsDialog::loadMimes(int section) {
       category->setText(0, categoryName);
       category->setFlags(Qt::ItemIsEnabled);
       categories.insert(categoryName, category);
-      //icon = FileUtils::searchGenericIcon(categoryName, defaultIcon);
       genericIcons.insert(category, icon);
-    } /*else {
-      icon = genericIcons.value(category);
-    }*/
+    }
 
     // Load icon and default application for current mime
     // NOTE: if icon is not found generic icon is used
-    //icon = FileUtils::searchMimeIcon(mime, icon);
     QString appNames = mimeUtilsPtr->getDefault(mime).join(";");
 
     // Create item from current mime
@@ -850,10 +780,6 @@ void SettingsDialog::loadMimes(int section) {
 bool SettingsDialog::saveSettings() {
 
   // General settings
-  // ------------------------------------------------------------------------
-  //settingsPtr->setValue("showThumbs", checkThumbs->isChecked());
-  //settingsPtr->setValue("tabsOnTop", checkTabs->isChecked());
-  //settingsPtr->setValue("hiddenMode", checkHidden->isChecked());
   settingsPtr->setValue("confirmDelete", checkDelete->isChecked());
   settingsPtr->setValue("term", editTerm->text());
 
@@ -868,7 +794,6 @@ bool SettingsDialog::saveSettings() {
 
 
   if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
-      //QIcon::setThemeName(cmbIconTheme->currentText());
       settingsPtr->setValue("clearCache", true);
       QMessageBox::warning(this, tr("Restart to apply settings"), tr("You must restart application to apply theme settings"));
   }
@@ -885,7 +810,6 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("defMimeAppsFile", cmbDefaultMimeApps->currentText());
 
   // Custom actions
-  // ------------------------------------------------------------------------
   settingsPtr->setValue("showActionOutput", checkOutput->isChecked());
   settingsPtr->remove("customActions");
   settingsPtr->beginGroup("customActions");
@@ -903,7 +827,6 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("customHeader", actionsWidget->header()->saveState());
 
   // Shortcuts
-  // ------------------------------------------------------------------------
   QStringList shortcuts, duplicates;
   settingsPtr->remove("customShortcuts");
   settingsPtr->beginGroup("customShortcuts");
@@ -924,13 +847,12 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->endGroup();
 
   // Mime types
-  // ------------------------------------------------------------------------
   for (int i = 0; i < mimesWidget->topLevelItemCount(); ++i) {
-    QTreeWidgetItem* cathegory = mimesWidget->topLevelItem(i);
-    QString cathegoryName = cathegory->text(0) + "/";
-    for (int j = 0; j < cathegory->childCount(); j++) {
-      QString mime = cathegoryName + cathegory->child(j)->text(0);
-      QString appNames = cathegory->child(j)->text(1);
+    QTreeWidgetItem* category = mimesWidget->topLevelItem(i);
+    QString categoryName = category->text(0) + "/";
+    for (int j = 0; j < category->childCount(); j++) {
+      QString mime = categoryName + category->child(j)->text(0);
+      QString appNames = category->child(j)->text(1);
       if (!appNames.isEmpty()) {
         QStringList temps = appNames.split(";");
         for (int i = 0; i < temps.size(); i++) {
@@ -942,8 +864,7 @@ bool SettingsDialog::saveSettings() {
   }
   mimeUtilsPtr->saveDefaults();
 
-  // Check for shortcuts duplicity
-  // ------------------------------------------------------------------------
+  // Check for shortcuts duplicates
   if (duplicates.count()) {
     QString title = tr("Warning");
     QString msg = tr("Duplicate shortcuts detected:<p>%1");

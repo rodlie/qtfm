@@ -10,7 +10,6 @@
 #include <QTreeWidget>
 #include <QToolButton>
 #include <QSettings>
-//#include <QProgressBar>
 #include <QComboBox>
 #include <QGroupBox>
 
@@ -23,21 +22,28 @@
 class SettingsDialog : public QDialog {
   Q_OBJECT
 public:
-  SettingsDialog(QList<QAction*> *actionList, QSettings* settings,
-                 MimeUtils *mimeUtils, QWidget *parent = 0);
+  SettingsDialog(QList<QAction*> *actionList,
+                 QSettings* settings,
+                 MimeUtils *mimeUtils,
+                 QWidget *parent = 0);
+
 public slots:
   void accept();
   void loadMimes(int section);
   void readSettings();
   void readShortcuts();
   bool saveSettings();
+
 protected slots:
   void addCustomAction();
   void delCustomAction();
   void infoCustomAction();
-  void getIcon(QTreeWidgetItem *item, int column);
-  void onActionChanged(QTreeWidgetItem *item, int column);
-  void onMimeSelected(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+  void getIcon(QTreeWidgetItem *item,
+               int column);
+  void onActionChanged(QTreeWidgetItem *item,
+                       int column);
+  void onMimeSelected(QTreeWidgetItem* current,
+                      QTreeWidgetItem* previous);
   void updateMimeAssoc(QTreeWidgetItem* item);
   void showAppDialog();
   void removeAppAssoc();
@@ -45,25 +51,18 @@ protected slots:
   void moveAppAssocDown();
   void restartToApply(int triggered);
   void restartToApply(bool triggered);
+
 protected:
   QWidget* createGeneralSettings();
+  QWidget *createAppearanceSettings();
   QWidget* createActionsSettings();
   QWidget* createShortcutSettings();
-  //QWidget* createMimeProgress();
   QWidget* createMimeSettings();
-  QWidget* createDefaultBehaviour();
-
   MimeUtils* mimeUtilsPtr;
-
   QSettings* settingsPtr;
   QList<QAction*> *actionListPtr;
-
   QListWidget* selector;
   QStackedWidget* stack;
-
-  //QCheckBox* checkThumbs;
-  //QCheckBox* checkHidden;
-  //QCheckBox* checkTabs;
   QCheckBox* checkDelete;
   QComboBox* comboDAD;
   QComboBox* comboDADctl;
@@ -80,17 +79,13 @@ protected:
 #endif
   QCheckBox* checkFileColor;
   QCheckBox* checkPathHistory;
-
   QTreeWidget *actionsWidget;
   QToolButton *addButton;
   QToolButton *delButton;
   QToolButton *infoButton;
   QCheckBox* checkOutput;
-
   QTreeWidget* shortsWidget;
-
   QGroupBox* grpAssoc;
-  //QProgressBar* progressMime;
   QTreeWidget* mimesWidget;
   QListWidget* listAssoc;
 };
