@@ -31,3 +31,6 @@ target.path = $${PREFIX}/bin
 target_desktop.path = $${XDGDIR}/autostart
 target_desktop.files = $${TARGET}.desktop
 INSTALLS += target target_desktop
+
+lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
+
