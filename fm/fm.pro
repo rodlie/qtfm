@@ -3,7 +3,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 include(../qtfm.pri)
 
 CONFIG(basic) {
-    CONFIG += no_udisks no_tray no_open no_appdock no_dbus
+    CONFIG += no_udisks no_tray no_appdock no_dbus
 }
 
 TARGET = $${QTFM_TARGET}

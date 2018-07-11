@@ -19,10 +19,12 @@ HEADERS += \
     common.h \
     progressdlg.h
 !CONFIG(no_dbus) {
-    HEADERS += upower.h service.h
+    HEADERS += service.h
     QT += dbus
 }
 
 exists(../qtfm.pri) {
     include(../qtfm.pri)
 }
+
+lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic

@@ -178,11 +178,6 @@ private slots:
     void handleMediaEject();
 #endif
     void clearCache();
-#ifndef NO_DBUS
-    void checkPower();
-    void doSuspend();
-    void doHibernate();
-#endif
     void handlePathRequested(QString path);
 private:
     void createActions();
@@ -302,10 +297,6 @@ private:
 #endif
     QAction *trashAct;
     QAction *clearCacheAct;
-#ifndef NO_DBUS
-    QAction *suspendAct;
-    QAction *hibernateAct;
-#endif
     // libdisks
 #ifndef NO_UDISKS
     Disks *disks;

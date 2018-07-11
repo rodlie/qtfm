@@ -46,9 +46,6 @@
 #include "applicationdialog.h"
 
 #include "common.h"
-#ifndef NO_DBUS
-#include "upower.h"
-#endif
 
 MainWindow::MainWindow()
 {
@@ -236,9 +233,6 @@ MainWindow::MainWindow()
     trashDir = Common::trashDir();
 
     QTimer::singleShot(0, this, SLOT(lateStart()));
-#ifndef NO_DBUS
-    QTimer::singleShot(100, this, SLOT(checkPower()));
-#endif
 }
 //---------------------------------------------------------------------------
 
@@ -1649,24 +1643,6 @@ void MainWindow::clearCache()
     settings->setValue("clearCache", true);
     QMessageBox::information(this, tr("Close window"), tr("Please close window to apply action."));
 }
-
-#ifndef NO_DBUS
-void MainWindow::checkPower()
-{
-    suspendAct->setEnabled(UPower::canSuspend());
-    hibernateAct->setEnabled(UPower::canHibernate());
-}
-
-void MainWindow::doSuspend()
-{
-    if (UPower::canSuspend()) { UPower::suspend(); }
-}
-
-void MainWindow::doHibernate()
-{
-    if (UPower::canHibernate()) { UPower::hibernate(); }
-}
-#endif
 
 void MainWindow::handlePathRequested(QString path)
 {
