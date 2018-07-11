@@ -10,18 +10,10 @@ Lightweight file manager using Qt.
  * Customizable key bindings
  * Drag & drop functionality
  * Tabs
- * Udisks device support
+ * Udisks support
  * System tray daemon
-   * Notify user when a device is added
-   * Notify user when a device has been removed
    * Mount/Unmount devices
    * Auto play CD/DVD
-
-## Packages
-
-QtFM is available in several distributions, check below if your distribution has the latest version:
-
-[![Packaging status](https://repology.org/badge/vertical-allrepos/qtfm.svg)](https://repology.org/metapackage/qtfm)
 
 ## Links
 
@@ -56,16 +48,22 @@ QtFM is available in several distributions, check below if your distribution has
 | Drag and Drop Ask Action    | [alt]       |
 
 All shortcuts can be modified.
- 
+
+## Packages
+
+QtFM is available in several distributions, check below if your distribution has the latest version:
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/qtfm.svg)](https://repology.org/metapackage/qtfm)
+
 ## Build
 
 Download the latest [release](https://github.com/rodlie/qtfm/releases), then make sure you have the required dependencies.
 
-* Requires [Qt](http://qt.io) 4 or 5 development files.
-* Requires [file](http://darwinsys.com/file/) development files **if using Qt 4**.
-* Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/).
-* Requires [adwaita-icon-theme](https://github.com/GNOME/adwaita-icon-theme), or [tango-icon-theme](http://tango.freedesktop.org) as a fallback icon theme.
-* Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/) at run-time.
+* Requires [Qt](http://qt.io) 4.8+ (5.6+ recommended)
+* Requires libmagic from [file](http://darwinsys.com/file/) **if using Qt 4**.
+* Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/)
+* Requires [adwaita-icon-theme](https://github.com/GNOME/adwaita-icon-theme)
+* Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/) at run-time
 
 Download and extract:
 ```
