@@ -30,7 +30,9 @@ LIBS += -L../libfm -lQtFM
 target.path = $${PREFIX}/bin
 target_desktop.path = $${XDGDIR}/autostart
 target_desktop.files = $${TARGET}.desktop
-INSTALLS += target target_desktop
+man.files += qtfm-tray.8
+man.path += $${MANDIR}/man8
+INSTALLS += target target_desktop man
 
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 

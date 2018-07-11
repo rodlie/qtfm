@@ -62,7 +62,9 @@ desktop.files += $${TARGET}.desktop
 desktop.path += $${PREFIX}/share/applications
 docs.path += $${DOCDIR}/$${TARGET}-$${VERSION}
 docs.files += ../LICENSE ../README.md ../AUTHORS
-INSTALLS += target desktop docs
+man.files += qtfm.8
+man.path += $${MANDIR}/man8
+INSTALLS += target desktop docs man
 
 !CONFIG(no_udisks) {
     exists(../libdisks/libdisks.pro) {
