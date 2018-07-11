@@ -85,9 +85,10 @@ Optional build options:
  * ``CONFIG+=no_tray`` : This will disable qtfm-tray
  * ``CONFIG+=no_appdock``: This will disable the application dock in QtFM
  * ``CONFIG+=no_dbus`` : This will disable D-Bus session features in QtFM
- * ``CONFIG+=release`` : Disabled debug output (recommended)
+ * ``CONFIG+=release`` : Disable debug output (recommended)
  * ``PREFIX=`` : Install prefix, where things are installed when running ``make install``
- * ``DOCDIR=`` : Location of docmentation (default is PREFIX/share/doc)
+ * ``DOCDIR=`` : Location for docmentation (default is PREFIX/share/doc)
+ * ``MANDIR=`` : Location for man pages (default is PREFIX/share/man)
  * ``XDGDIR=`` : Location of XDG (default is /etc/xdg or PREFIX/etc/xdg)
 
  You can disable additional features (udisks/tray/appdock) with ``CONFIG+=basic``
