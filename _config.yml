@@ -1,3 +1,6 @@
 theme: jekyll-theme-slate
 title: QtFM
 show_downloads: true
+github:
+  zip_url: https://github.com/rodlie/qtfm/archive/master.zip
+  tar_url: https://github.com/rodlie/qtfm/archive/master.tar.gz
