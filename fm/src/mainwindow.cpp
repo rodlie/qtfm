@@ -215,7 +215,7 @@ MainWindow::MainWindow()
     createMenus();
 
     setWindowIcon(QIcon::fromTheme("folder"));
-    setWindowTitle(tr("%1").arg(APP_NAME));
+    setWindowTitle(APP_NAME);
 
     // Create custom action manager
     customActManager = new CustomActionsManager(settings, actionList, this);
@@ -500,6 +500,10 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
 
   // path history
   pathHistory = settings->value("pathHistory", true).toBool();
+
+  // path in window title
+  showPathInWindowTitle = settings->value("windowTitlePath", true).toBool();
+  if (!showPathInWindowTitle) { setWindowTitle(APP_NAME); }
 }
 
 void MainWindow::firstRunBookmarks(bool isFirstRun)
@@ -606,8 +610,12 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
     if (!name.exists()) { return; }
 
     curIndex = name;
-    if (curIndex.fileName().isEmpty()) { setWindowTitle(curIndex.absolutePath()); }
-    else { setWindowTitle(curIndex.fileName()); }
+    if (showPathInWindowTitle) {
+        if (curIndex.fileName().isEmpty()) { setWindowTitle(curIndex.absolutePath()); }
+        else { setWindowTitle(curIndex.fileName()); }
+    } else {
+        setWindowTitle(APP_NAME);
+    }
 
     if (tree->hasFocus() && QApplication::mouseButtons() == Qt::MidButton) {
         listItemPressed(modelView->mapFromSource(modelList->index(name.filePath())));

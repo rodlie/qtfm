@@ -179,18 +179,17 @@ QWidget *SettingsDialog::createAppearanceSettings()
 #if QT_VERSION >= 0x050000
     checkDarkTheme = new QCheckBox(grpAppear);
 #endif
-
+    checkWindowTitlePath = new QCheckBox(grpAppear);
     checkFileColor = new QCheckBox(grpAppear);
-    layoutAppear->addRow(tr("Fallback Icon theme:"), cmbIconTheme);
+    showHomeButton = new QCheckBox(grpAppear);
+    showTerminalButton = new QCheckBox(grpAppear);
 
+    layoutAppear->addRow(tr("Fallback Icon theme:"), cmbIconTheme);
 #if QT_VERSION >= 0x050000
     layoutAppear->addRow(tr("Use \"Dark Mode\""), checkDarkTheme);
 #endif
-
     layoutAppear->addRow(tr("Colors on file names"), checkFileColor);
-
-    showHomeButton = new QCheckBox(grpAppear);
-    showTerminalButton = new QCheckBox(grpAppear);
+    layoutAppear->addRow(tr("Show path in window title"), checkWindowTitlePath);
     layoutAppear->addRow(tr("Show Home button"), showHomeButton);
     layoutAppear->addRow(tr("Show Terminal button"), showTerminalButton);
 
@@ -617,6 +616,7 @@ void SettingsDialog::readSettings() {
   checkAudioCD->setChecked(settingsPtr->value("autoPlayAudioCD", false).toBool());
   checkAutoMount->setChecked(settingsPtr->value("trayAutoMount", false).toBool());
   checkDVD->setChecked(settingsPtr->value("autoPlayDVD", false).toBool());
+  checkWindowTitlePath->setChecked(settingsPtr->value("windowTitlePath", true).toBool());
 
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
@@ -829,6 +829,7 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("autoPlayAudioCD", checkAudioCD->isChecked());
   settingsPtr->setValue("trayAutoMount", checkAutoMount->isChecked());
   settingsPtr->setValue("autoPlayDVD", checkDVD->isChecked());
+  settingsPtr->setValue("windowTitlePath", checkWindowTitlePath->isChecked());
 
   if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
       settingsPtr->setValue("clearCache", true);

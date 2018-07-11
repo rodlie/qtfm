@@ -93,6 +93,7 @@ protected:
   QCheckBox* checkAudioCD;
   QCheckBox* checkAutoMount;
   QCheckBox* checkDVD;
+  QCheckBox* checkWindowTitlePath;
 };
 
 #endif // SETTINGSDIALOG_H

@@ -312,6 +312,7 @@ private:
 #endif
 
     bool pathHistory;
+    bool showPathInWindowTitle;
 };
 
 //---------------------------------------------------------------------------------
