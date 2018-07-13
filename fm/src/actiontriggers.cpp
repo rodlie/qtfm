@@ -743,7 +743,11 @@ void MainWindow::toggleIcons() {
   if (iconAct->isChecked()) {
     currentView = 1;
     list->setViewMode(QListView::IconMode);
-    list->setGridSize(QSize(zoom + 32, zoom + 32));
+    int padding = 10;
+    if (zoom<48) { padding = 20; }
+    if (zoom<32) { padding = 40; }
+    if (zoom<24) { padding = 50; }
+    list->setGridSize(QSize(zoom*2+padding, zoom*2+padding));
     list->setIconSize(QSize(zoom, zoom));
     list->setFlow(QListView::LeftToRight);
 

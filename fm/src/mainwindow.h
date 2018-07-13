@@ -65,6 +65,41 @@ class QAction;
 class QMenu;
 QT_END_NAMESPACE
 
+
+#include <QItemDelegate>
+
+class Delegate : public QItemDelegate
+{
+public:
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
+        QSize iconsize = icon.actualSize(option.decorationSize);
+        QRect item = option.rect;
+        QRect txtRect(item.left(), item.top()+(iconsize.height()/2), item.width()-10, item.height()-10);
+        QSize txtsize = option.fontMetrics.boundingRect(txtRect, Qt::AlignCenter|Qt::TextWrapAnywhere, index.data().toString()).size();
+        return QSize(txtsize.width(),txtsize.height()+iconsize.height());
+    }
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
+        QSize iconsize = icon.actualSize(option.decorationSize);
+        QRect item = option.rect;
+        QRect iconRect(item.left()+(item.width()/2)-(iconsize.width()/2), item.top()+3, iconsize.width(), iconsize.height());
+        QRect txtRect(item.left(), item.top()+(iconsize.height()/2)+5, item.width(), item.height());
+
+        if (option.state & QStyle::State_Selected) {
+            painter->fillRect(option.rect, option.palette.highlight());
+            painter->setPen(option.palette.highlightedText().color());
+        } else {
+            painter->setPen(option.palette.text().color());
+        }
+
+        painter->drawPixmap(iconRect, icon.pixmap(iconsize.width(),iconsize.height()));
+        painter->drawText(txtRect, Qt::AlignCenter|Qt::TextWrapAnywhere, index.data().toString());
+    }
+};
+
 //---------------------------------------------------------------------------------
 
 /**

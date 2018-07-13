@@ -176,6 +176,8 @@ MainWindow::MainWindow()
     list->setWrapping(true);
     list->setWordWrap(true);
     list->setModel(modelView);
+    list->setItemDelegate(new Delegate());
+    list->setTextElideMode(Qt::ElideNone);
     listSelectionModel = list->selectionModel();
 
     detailTree->setRootIsDecorated(false);
