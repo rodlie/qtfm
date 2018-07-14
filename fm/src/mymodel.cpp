@@ -698,8 +698,7 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
 
   // Color of filename (depends on file type)
   if (role == Qt::ForegroundRole) {
-    if (Common::readSetting("fileColor").isValid() &&
-        !Common::readSetting("fileColor").toBool()) { return colors.windowText(); }
+    if (!Common::readSetting("fileColor").toBool()) { return colors.windowText(); }
     QFileInfo type(item->fileInfo());
     if (cutItems.contains(type.filePath())) {
       return colors.windowText();

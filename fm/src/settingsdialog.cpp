@@ -609,7 +609,7 @@ void SettingsDialog::readSettings() {
 #if QT_VERSION >= 0x050000
   checkDarkTheme->setChecked(settingsPtr->value("darkTheme", false).toBool());
 #endif
-  checkFileColor->setChecked(settingsPtr->value("fileColor", true).toBool());
+  checkFileColor->setChecked(settingsPtr->value("fileColor", false).toBool());
   checkPathHistory->setChecked(settingsPtr->value("pathHistory", true).toBool());
 
   checkTrayNotify->setChecked(settingsPtr->value("trayNotify", true).toBool());
