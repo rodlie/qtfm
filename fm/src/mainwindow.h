@@ -34,6 +34,7 @@
 #include <QComboBox>
 #include <QSignalMapper>
 #include <QToolBar>
+#include <QItemDelegate>
 
 #include "mymodel.h"
 #include "bookmarkmodel.h"
@@ -65,10 +66,8 @@ class QAction;
 class QMenu;
 QT_END_NAMESPACE
 
-
-#include <QItemDelegate>
-
-class Delegate : public QItemDelegate
+//---------------------------------------------------------------------------------
+class IconViewDelegate : public QItemDelegate
 {
 public:
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -76,9 +75,9 @@ public:
         QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
         QSize iconsize = icon.actualSize(option.decorationSize);
         QRect item = option.rect;
-        QRect txtRect(item.left(), item.top()+(iconsize.height()/2), item.width()-10, item.height()-10);
+        QRect txtRect(item.left(), item.top()+(iconsize.height()/2)+5, item.width()-5, item.height()-5);
         QSize txtsize = option.fontMetrics.boundingRect(txtRect, Qt::AlignCenter|Qt::TextWrapAnywhere, index.data().toString()).size();
-        return QSize(txtsize.width(),txtsize.height()+iconsize.height());
+        return QSize(txtsize.width()+10,txtsize.height()+iconsize.height()+10);
     }
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
     {
@@ -86,7 +85,7 @@ public:
         QSize iconsize = icon.actualSize(option.decorationSize);
         QRect item = option.rect;
         QRect iconRect(item.left()+(item.width()/2)-(iconsize.width()/2), item.top()+3, iconsize.width(), iconsize.height());
-        QRect txtRect(item.left(), item.top()+(iconsize.height()/2)+5, item.width(), item.height());
+        QRect txtRect(item.left(), item.top()+(iconsize.height()/2)+5, item.width()-5, item.height()-10);
 
         if (option.state & QStyle::State_Selected) {
             painter->fillRect(option.rect, option.palette.highlight());
@@ -99,7 +98,37 @@ public:
         painter->drawText(txtRect, Qt::AlignCenter|Qt::TextWrapAnywhere, index.data().toString());
     }
 };
+class IconListDelegate : public QItemDelegate
+{
+public:
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
+        QSize iconsize = icon.actualSize(option.decorationSize);
+        QRect item = option.rect;
+        QRect txtRect(item.left()+iconsize.width()+5, item.top(), item.width(), item.height());
+        QSize txtsize = option.fontMetrics.boundingRect(txtRect, Qt::AlignLeft|Qt::AlignVCenter, index.data().toString()).size();
+        return QSize(txtsize.width()+iconsize.width()+10,iconsize.height());
+    }
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
+        QSize iconsize = icon.actualSize(option.decorationSize);
+        QRect item = option.rect;
+        QRect iconRect(item.left(), item.top(), iconsize.width(), iconsize.height());
+        QRect txtRect(item.left()+iconsize.width()+5, item.top(), item.width(), item.height());
 
+        if (option.state & QStyle::State_Selected) {
+            painter->fillRect(option.rect, option.palette.highlight());
+            painter->setPen(option.palette.highlightedText().color());
+        } else {
+            painter->setPen(option.palette.text().color());
+        }
+
+        painter->drawPixmap(iconRect, icon.pixmap(iconsize.width(),iconsize.height()));
+        painter->drawText(txtRect, Qt::AlignLeft|Qt::AlignVCenter, index.data().toString());
+    }
+};
 //---------------------------------------------------------------------------------
 
 /**
@@ -348,6 +377,9 @@ private:
 
     bool pathHistory;
     bool showPathInWindowTitle;
+
+    IconViewDelegate *ivdelegate;
+    IconListDelegate *ildelegate;
 };
 
 //---------------------------------------------------------------------------------

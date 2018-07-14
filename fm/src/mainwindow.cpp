@@ -176,7 +176,8 @@ MainWindow::MainWindow()
     list->setWrapping(true);
     list->setWordWrap(true);
     list->setModel(modelView);
-    list->setItemDelegate(new Delegate());
+    ivdelegate = new IconViewDelegate();
+    ildelegate = new IconListDelegate();
     list->setTextElideMode(Qt::ElideNone);
     listSelectionModel = list->selectionModel();
 

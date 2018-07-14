@@ -743,6 +743,7 @@ void MainWindow::toggleIcons() {
   if (iconAct->isChecked()) {
     currentView = 1;
     list->setViewMode(QListView::IconMode);
+    list->setItemDelegate(ivdelegate);
     int padding = 10;
     if (zoom<48) { padding = 20; }
     if (zoom<32) { padding = 40; }
@@ -762,6 +763,7 @@ void MainWindow::toggleIcons() {
   } else {
     currentView = 0;
     list->setViewMode(QListView::ListMode);
+    list->setItemDelegate(ildelegate);
     list->setGridSize(QSize());
     list->setIconSize(QSize(zoomList, zoomList));
     list->setFlow(QListView::TopToBottom);
