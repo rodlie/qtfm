@@ -585,6 +585,7 @@ void MainWindow::zoomInAction()
     }
 
     status->showMessage(QString(tr("Zoom: %1")).arg(zoomLevel));
+    updateGrid();
 }
 
 //---------------------------------------------------------------------------

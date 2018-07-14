@@ -743,13 +743,13 @@ void MainWindow::toggleIcons() {
   if (iconAct->isChecked()) {
     currentView = 1;
     list->setViewMode(QListView::IconMode);
-    /*list->setItemDelegate(ivdelegate);
-    int padding = 10;
+    list->setItemDelegate(ivdelegate);
+    /*int padding = 10;
     if (zoom<48) { padding = 20; }
     if (zoom<32) { padding = 40; }
     if (zoom<24) { padding = 50; }
     list->setGridSize(QSize(zoom*2+padding, zoom*2+padding));*/
-    list->setGridSize(QSize(zoom+32, zoom+32));
+    list->setGridSize(QSize(zoom, zoom));
     list->setIconSize(QSize(zoom, zoom));
     list->setFlow(QListView::LeftToRight);
 
@@ -761,10 +761,11 @@ void MainWindow::toggleIcons() {
     list->setMouseTracking(true);
 
     if (tabs->count()) tabs->setType(1);
+    updateGrid();
   } else {
     currentView = 0;
     list->setViewMode(QListView::ListMode);
-    //list->setItemDelegate(ildelegate);
+    list->setItemDelegate(ildelegate);
     list->setGridSize(QSize());
     list->setIconSize(QSize(zoomList, zoomList));
     list->setFlow(QListView::TopToBottom);

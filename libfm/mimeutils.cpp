@@ -52,7 +52,7 @@ QString MimeUtils::getMimeType(const QString &path) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QMimeDatabase db;
     QMimeType type = db.mimeTypeForFile(path);
-    qDebug() << "mime type" << type.name() << path;
+    //qDebug() << "mime type" << type.name() << path;
     return type.name();
 #else
   magic_t cookie = magic_open(MAGIC_MIME);
@@ -60,7 +60,7 @@ QString MimeUtils::getMimeType(const QString &path) {
   QString temp = magic_file(cookie, path.toLocal8Bit());
   magic_close(cookie);
   QString mimeType = temp.left(temp.indexOf(";"));
-  qDebug()<< "mime type" << mimeType << path;
+  //qDebug()<< "mime type" << mimeType << path;
   return mimeType;
 #endif
 }

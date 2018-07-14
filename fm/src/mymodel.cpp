@@ -323,7 +323,7 @@ void myModel::addWatcher(myModelItem *item)
 {
     qDebug() << "addWatcher" << item->absoluteFilePath();
     while(item != rootItem) {
-        watchers.insert(inotify_add_watch(inotifyFD, item->absoluteFilePath().toLocal8Bit(), IN_CREATE | IN_MODIFY | IN_MOVE | IN_CREATE | IN_DELETE),item->absoluteFilePath()); //IN_ONESHOT | IN_ALL_EVENTS)
+        watchers.insert(inotify_add_watch(inotifyFD, item->absoluteFilePath().toLocal8Bit(), IN_CREATE | IN_MODIFY | IN_MOVE | IN_DELETE),item->absoluteFilePath()); //IN_ONESHOT | IN_ALL_EVENTS)
         item->watched = 1;
         item = item->parent();
     }
@@ -702,7 +702,7 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
         !Common::readSetting("fileColor").toBool()) { return colors.windowText(); }
     QFileInfo type(item->fileInfo());
     if (cutItems.contains(type.filePath())) {
-      return colors.mid();
+      return colors.windowText();
     } else if (type.isHidden()) {
       return colors.dark();
     } else if (type.isSymLink()) {

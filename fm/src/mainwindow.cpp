@@ -699,6 +699,7 @@ void MainWindow::dirLoaded()
     statusDate->setText(QString("%1").arg(total));
 
     if (thumbsAct->isChecked()) { QtConcurrent::run(modelList,&myModel::loadThumbs,items); }
+    updateGrid();
 }
 
 //---------------------------------------------------------------------------
@@ -1558,6 +1559,37 @@ void MainWindow::openInApp() {
     if (df.getExec().isEmpty()) { return; }
     mimeUtils->openInApp(df.getExec(), curIndex, df.isTerminal()?term:"");
   }
+}
+
+void MainWindow::updateGrid()
+{
+    if (!iconAct->isChecked()) { return; }
+    QFontMetrics fm = fontMetrics();
+    int textWidth = fm.averageCharWidth() * 13;
+    int textHeight = fm.lineSpacing() * 3;
+    QSize grid;
+    grid.setWidth(qMax(zoom, textWidth) + 4);
+    grid.setHeight(zoom+ textHeight + 4);
+
+    QModelIndexList items;
+    for (int x = 0; x < modelList->rowCount(modelList->index(pathEdit->currentText())); ++x) {
+        items.append(modelList->index(x,0,modelList->index(pathEdit->currentText())));
+    }
+    foreach (QModelIndex theItem,items) {
+        QString filename = modelList->fileName(theItem);
+        QRect txtRect(0, 0, grid.width(), grid.height());
+        QSize txtsize = fm.boundingRect(txtRect, Qt::AlignCenter|Qt::TextWrapAnywhere, filename).size();
+        int width = txtsize.width()+5;
+        if (width<zoom) { width = zoom+5; }
+        if (width>grid.width()) { grid.setWidth(width); }
+        if (txtsize.height()+zoom+5>grid.height()) { grid.setHeight(txtsize.height()+zoom+5); }
+        //qDebug() << filename << txtsize;
+    }
+
+    if (list->gridSize() != grid) {
+        qDebug() << "SET GRID" << grid;
+        list->setGridSize(grid);
+    }
 }
 
 //---------------------------------------------------------------------------
