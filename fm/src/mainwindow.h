@@ -91,7 +91,8 @@ public:
 
         if (option.state & QStyle::State_Selected) {
             QPainterPath path;
-            path.addRoundedRect(item, 5, 5);
+            QRect bg(item.left(), item.top(), item.width()-4, item.height());
+            path.addRoundedRect(bg, 5, 5);
             painter->setOpacity(0.3);
             painter->fillPath(path, option.palette.highlight());
             painter->setOpacity(1.0);
@@ -126,8 +127,9 @@ public:
         QRect txtRect(item.left()+iconsize.width()+5, item.top(), item.width(), item.height());
 
         if (option.state & QStyle::State_Selected) {
+            QRect bg(item.left(), item.top(), item.width(), item.height()-2);
             QPainterPath path;
-            path.addRoundedRect(item, 5, 5);
+            path.addRoundedRect(bg, 5, 5);
             painter->setOpacity(0.5);
             painter->fillPath(path, option.palette.highlight());
             painter->setOpacity(1.0);
