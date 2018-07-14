@@ -87,12 +87,12 @@ public:
         QSize iconsize = icon.actualSize(option.decorationSize);
         QRect item = option.rect;
         QRect iconRect(item.left()+(item.width()/2)-(iconsize.width()/2), item.top()+3, iconsize.width(), iconsize.height());
-        QRect txtRect(item.left(), item.top()+(iconsize.height())+5, item.width()-5, item.height()-10);
+        QRect txtRect(item.left(), item.top()+iconsize.height()+5, item.width()-5, item.height()-iconsize.height()-5);
 
         if (option.state & QStyle::State_Selected) {
             QPainterPath path;
-            QRect bg(item.left(), item.top(), item.width()-4, item.height());
-            path.addRoundedRect(bg, 5, 5);
+            //QRect bg(item.left(), item.top(), item.width()-4, item.height());
+            path.addRoundedRect(txtRect, 5, 5);
             painter->setOpacity(0.3);
             painter->fillPath(path, option.palette.highlight());
             painter->setOpacity(1.0);
@@ -124,12 +124,12 @@ public:
         QSize iconsize = icon.actualSize(option.decorationSize);
         QRect item = option.rect;
         QRect iconRect(item.left(), item.top(), iconsize.width(), iconsize.height());
-        QRect txtRect(item.left()+iconsize.width()+5, item.top(), item.width(), item.height());
+        QRect txtRect(item.left()+iconsize.width()+5, item.top(), item.width()-iconsize.width()-5, item.height()-2);
 
         if (option.state & QStyle::State_Selected) {
-            QRect bg(item.left(), item.top(), item.width(), item.height()-2);
+            //QRect bg(item.left(), item.top(), item.width(), item.height()-2);
             QPainterPath path;
-            path.addRoundedRect(bg, 5, 5);
+            path.addRoundedRect(txtRect, 5, 5);
             painter->setOpacity(0.5);
             painter->fillPath(path, option.palette.highlight());
             painter->setOpacity(1.0);
