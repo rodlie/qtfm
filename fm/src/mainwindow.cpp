@@ -178,7 +178,7 @@ MainWindow::MainWindow()
     list->setModel(modelView);
     ivdelegate = new IconViewDelegate();
     ildelegate = new IconListDelegate();
-    list->setTextElideMode(Qt::ElideNone);
+    //list->setTextElideMode(Qt::ElideNone);
     listSelectionModel = list->selectionModel();
 
     detailTree->setRootIsDecorated(false);
