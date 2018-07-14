@@ -178,7 +178,7 @@ MainWindow::MainWindow()
     list->setModel(modelView);
     ivdelegate = new IconViewDelegate();
     ildelegate = new IconListDelegate();
-    //list->setTextElideMode(Qt::ElideNone);
+    list->setTextElideMode(Qt::ElideNone);
     listSelectionModel = list->selectionModel();
 
     detailTree->setRootIsDecorated(false);
@@ -1579,10 +1579,10 @@ void MainWindow::updateGrid()
         QString filename = modelList->fileName(theItem);
         QRect txtRect(0, 0, grid.width(), grid.height());
         QSize txtsize = fm.boundingRect(txtRect, Qt::AlignCenter|Qt::TextWrapAnywhere, filename).size();
-        int width = txtsize.width()+5;
-        if (width<zoom) { width = zoom+5; }
+        int width = txtsize.width()+8;
+        if (width<zoom) { width = zoom+8; }
         if (width>grid.width()) { grid.setWidth(width); }
-        if (txtsize.height()+zoom+5>grid.height()) { grid.setHeight(txtsize.height()+zoom+5); }
+        if (txtsize.height()+zoom+8>grid.height()) { grid.setHeight(txtsize.height()+zoom+8); }
         //qDebug() << filename << txtsize;
     }
 
