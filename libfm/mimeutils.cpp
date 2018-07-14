@@ -134,12 +134,12 @@ void MimeUtils::openInApp(QString exe, const QFileInfo &file,
   // Replace parameters with file name. If there are no parameters simply append
   // file name to the end of argument list
   if (args.toLower().contains("%f")) {
-    args.replace("%f", file.filePath(), Qt::CaseInsensitive);
+    args.replace("%f", "\"" + file.filePath() + "\"", Qt::CaseInsensitive);
   } else if (args.toLower().contains("%u")) {
-    args.replace("%u", file.filePath(), Qt::CaseInsensitive);
+    args.replace("%u", "\"" + file.filePath() + "\"", Qt::CaseInsensitive);
   } else {
     args.append(args.isEmpty() ? "" : " ");
-    args.append(/*"\"" + */file.filePath()/* + "\""*/);
+    args.append("\"" + file.filePath() + "\"");
   }
 
   qDebug() << "qprocess start detached" << name << args;
