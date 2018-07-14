@@ -91,7 +91,8 @@ public:
             painter->fillRect(option.rect, option.palette.highlight());
             painter->setPen(option.palette.highlightedText().color());
         } else {
-            painter->setPen(option.palette.text().color());
+            QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
+            painter->setPen(txtBrush.color());
         }
 
         painter->drawPixmap(iconRect, icon.pixmap(iconsize.width(),iconsize.height()));
@@ -122,7 +123,8 @@ public:
             painter->fillRect(option.rect, option.palette.highlight());
             painter->setPen(option.palette.highlightedText().color());
         } else {
-            painter->setPen(option.palette.text().color());
+            QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
+            painter->setPen(txtBrush.color());
         }
 
         painter->drawPixmap(iconRect, icon.pixmap(iconsize.width(),iconsize.height()));
