@@ -14,4 +14,4 @@ CONFIG(basic) {
     SUBDIRS += tray
     tray.depends += libdisks libfm
 }
-OTHER_FILES += .travis.yml
+OTHER_FILES += .travis.yml qtfm.SlackBuild
