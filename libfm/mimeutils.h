@@ -17,6 +17,7 @@ public:
   explicit MimeUtils(QObject* parent = 0);
   virtual ~MimeUtils();
   void openInApp(QString exe, const QFileInfo &file, QString termCmd = QString());
+  void openFilesInApp(QString exe, const QStringList &files, QString termCmd);
   void openInApp(const QFileInfo &file, QString termCmd = QString());
   void setDefaultsFileName(const QString &fileName);
   void setDefault(const QString &mime, const QStringList &apps);
@@ -24,6 +25,7 @@ public:
   QStringList getMimeTypes() const;
   QString getMimeType(const QString &path);
   QString getDefaultsFileName() const;
+  QString getAppForMimeType(const QString &mime) const;
 public slots:
   void generateDefaults();
   void saveDefaults();

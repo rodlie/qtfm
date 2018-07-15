@@ -83,6 +83,7 @@ QStringList MimeUtils::getMimeTypes() const {
  * @param processOwner
  */
 void MimeUtils::openInApp(const QFileInfo &file, QString termCmd) {
+    qDebug() << "openInApp without app";
   QString mime = getMimeType(file.absoluteFilePath());
   QString app = defaults->value(mime).toString().split(";").first();
   if (app.isEmpty() && mime.startsWith("text/") && mime != "text/plain") {
@@ -160,6 +161,34 @@ void MimeUtils::openInApp(QString exe, const QFileInfo &file,
   qDebug() << "running:" << cmd;
   QProcess::startDetached(cmd);
 }
+
+void MimeUtils::openFilesInApp(QString exe, const QStringList &files, QString termCmd)
+{
+    // Separate application name from its arguments
+    QStringList split = exe.split(" ");
+    QString name = split.takeAt(0);
+    QString args = split.join(" ");
+
+    if (args.toLower().contains("%f")) {
+        args.replace("%f", "", Qt::CaseInsensitive);
+    } else if (args.toLower().contains("%u")) {
+        args.replace("%u", "", Qt::CaseInsensitive);
+    }
+    for (int i=0;i<files.size();++i) {
+        args.append("\"" + files.at(i) + "\" ");
+    }
+
+    // Start application
+    QString cmd = name;
+    if (termCmd.isEmpty()) {
+      cmd.append(" ");
+      cmd.append(args);
+    } else {
+      cmd = QString("%1 -e \"%2 %3\"").arg(termCmd).arg(name).arg(args);
+    }
+    qDebug() << "running:" << cmd;
+    QProcess::startDetached(cmd);
+}
 //---------------------------------------------------------------------------
 
 /**
@@ -177,7 +206,12 @@ void MimeUtils::setDefaultsFileName(const QString &fileName) {
  * @return name of file where defaults are stored
  */
 QString MimeUtils::getDefaultsFileName() const {
-  return defaultsFileName;
+    return defaultsFileName;
+}
+
+QString MimeUtils::getAppForMimeType(const QString &mime) const
+{
+    return defaults->value(mime).toString().split(";").first();
 }
 //---------------------------------------------------------------------------
 

@@ -248,6 +248,7 @@ signals:
 private slots:
     void readShortcuts();
     void selectApp();
+    void selectAppForFiles();
     void openInApp();
     void updateGrid();
     // libdisks

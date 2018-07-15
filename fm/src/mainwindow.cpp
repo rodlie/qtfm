@@ -1476,7 +1476,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
  */
 QMenu* MainWindow::createOpenWithMenu() {
 
-    //qDebug() << "open with";
+  qDebug() << "open with";
   // Add open with functionality ...
   QMenu *openMenu = new QMenu(tr("Open with"));
 
@@ -1484,7 +1484,7 @@ QMenu* MainWindow::createOpenWithMenu() {
   QAction *selectAppAct = new QAction(tr("Select..."), openMenu);
   selectAppAct->setStatusTip(tr("Select application for opening the file"));
   //selectAppAct->setIcon(actionIcons->at(18));
-  connect(selectAppAct, SIGNAL(triggered()), this, SLOT(selectApp()));
+  connect(selectAppAct, SIGNAL(triggered()), this, SLOT(selectAppForFiles()));
 
   // Load default applications for current mime
   QString mime = mimeUtils->getMimeType(curIndex.filePath());
@@ -1547,18 +1547,80 @@ void MainWindow::selectApp() {
     }
   }
 }
+
+void MainWindow::selectAppForFiles()
+{
+    // Selection
+    QModelIndexList items;
+    if (listSelectionModel->selectedRows(0).count()) {
+      items = listSelectionModel->selectedRows(0);
+    } else {
+      items = listSelectionModel->selectedIndexes();
+    }
+
+    // Files
+    QStringList files;
+    foreach (QModelIndex index, items) {
+      //executeFile(index, 0);
+      QModelIndex srcIndex = modelView->mapToSource(index);
+      files << modelList->filePath(srcIndex);
+    }
+
+    // Select application in the dialog
+    ApplicationDialog *dialog = new ApplicationDialog(this);
+    if (dialog->exec()) {
+      if (dialog->getCurrentLauncher().compare("") != 0) {
+        QString appName = dialog->getCurrentLauncher() + ".desktop";
+        QString desktop = Common::findApplication(qApp->applicationFilePath(), appName);
+        if (desktop.isEmpty()) { return; }
+        DesktopFile df = DesktopFile(desktop);
+        if (df.getExec().contains("%F") || df.getExec().contains("%U")) { // app suports multiple files
+            mimeUtils->openFilesInApp(df.getExec(), files, df.isTerminal()?term:"");
+        } else { // launch new instance for each file
+            for (int i=0;i<files.size();++i) {
+                QFileInfo fileInfo(files.at(i));
+                mimeUtils->openInApp(df.getExec(), fileInfo, df.isTerminal()?term:"");
+            }
+        }
+      }
+    }
+}
 //---------------------------------------------------------------------------
 
 /**
- * @brief Opens file in application
+ * @brief Opens files in application
  */
-void MainWindow::openInApp() {
-  QAction* action = dynamic_cast<QAction*>(sender());
-  if (action) {
+void MainWindow::openInApp()
+{
+    QAction* action = dynamic_cast<QAction*>(sender());
+    if (!action) { return; }
     DesktopFile df = DesktopFile(action->data().toString());
     if (df.getExec().isEmpty()) { return; }
-    mimeUtils->openInApp(df.getExec(), curIndex, df.isTerminal()?term:"");
-  }
+
+    // get selection
+    QModelIndexList items;
+    if (listSelectionModel->selectedRows(0).count()) {
+        items = listSelectionModel->selectedRows(0);
+    } else {
+        items = listSelectionModel->selectedIndexes();
+    }
+
+    // get files and mimes
+    QStringList fileList;
+    foreach (QModelIndex index, items) {
+        QModelIndex srcIndex = modelView->mapToSource(index);
+        QString filePath = modelList->filePath(srcIndex);
+        fileList << filePath;
+    }
+
+    if (df.getExec().contains("%F") || df.getExec().contains("%U")) { // app suports multiple files
+        mimeUtils->openFilesInApp(df.getExec(), fileList, df.isTerminal()?term:"");
+    } else { // launch new instance for each file
+        for (int i=0;i<fileList.size();++i) {
+            QFileInfo fileInfo(fileList.at(i));
+            mimeUtils->openInApp(df.getExec(), fileInfo, df.isTerminal()?term:"");
+        }
+    }
 }
 
 void MainWindow::updateGrid()

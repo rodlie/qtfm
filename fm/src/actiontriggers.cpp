@@ -51,21 +51,78 @@ void MainWindow::openFolderAction() {
 /**
  * @brief Opens file or files
  */
-void MainWindow::openFile() {
+void MainWindow::openFile()
+{
+    qDebug() << "openFile(s)";
 
-  // Selection
-  QModelIndexList items;
-  if (listSelectionModel->selectedRows(0).count()) {
-    items = listSelectionModel->selectedRows(0);
-  } else {
-    items = listSelectionModel->selectedIndexes();
-  }
+    // get selection
+    QModelIndexList items;
+    if (listSelectionModel->selectedRows(0).count()) {
+        items = listSelectionModel->selectedRows(0);
+    } else {
+        items = listSelectionModel->selectedIndexes();
+    }
 
-  // Executes each file of selection
-  foreach (QModelIndex index, items) {
-    executeFile(index, 0);
-  }
+    // get files and mimes
+    QMap<QString,QString> files;
+    QMap<QString,QString> mimes;
+    foreach (QModelIndex index, items) {
+        QModelIndex srcIndex = modelView->mapToSource(index);
+        QString filePath = modelList->filePath(srcIndex);
+        if (filePath.isEmpty()) { continue; }
+        QString mime = mimeUtils->getMimeType(filePath);
+        if (mime.isEmpty()) { continue; }
+        files[filePath] = mime;
+        mimes[mime] = "";
+    }
+    qDebug() << "selected files" << items.size() << files << mimes;
+
+    // get apps for mimes
+    QMapIterator<QString, QString> i_mimes(mimes);
+    while (i_mimes.hasNext()) {
+        i_mimes.next();
+        QString app = mimeUtils->getAppForMimeType(i_mimes.key());
+        if (app.isEmpty()) { continue; }
+        mimes[i_mimes.key()] = app;
+    }
+    qDebug() << "selected files apps" << mimes;
+
+    // match apps and files
+    QMap<QString,QStringList> launch;
+    QMapIterator<QString, QString> i_apps(mimes);
+    while (i_apps.hasNext()) {
+        i_apps.next();
+        QString app = i_apps.value();
+        QString mime = i_apps.key();
+        if (app.isEmpty()) { continue; }
+        QMapIterator<QString, QString> i_files(files);
+        while (i_files.hasNext()) {
+            i_files.next();
+            if (mime == i_files.value()) { launch[app] << i_files.key(); }
+        }
+    }
+    qDebug() << "launch" << launch;
+
+    // launch
+    QMapIterator<QString, QStringList> i_launch(launch);
+    while (i_launch.hasNext()) {
+        i_launch.next();
+        QString desktop = Common::findApplication(qApp->applicationFilePath(), i_launch.key());
+        if (desktop.isEmpty()) { continue; }
+        DesktopFile df = DesktopFile(desktop);
+        if (df.getExec().isEmpty()) { continue; }
+        QStringList fileList = i_launch.value();
+        if (df.getExec().contains("%F") || df.getExec().contains("%U")) { // app suports multiple files
+            mimeUtils->openFilesInApp(df.getExec(), fileList, df.isTerminal()?term:"");
+        } else { // launch new instance for each file
+            for (int i=0;i<i_launch.value().size();++i) {
+                QFileInfo fileInfo(fileList.at(i));
+                mimeUtils->openInApp(df.getExec(), fileInfo, df.isTerminal()?term:"");
+            }
+        }
+    }
 }
+
 //---------------------------------------------------------------------------
 
 /**
