@@ -607,7 +607,11 @@ void SettingsDialog::readSettings() {
   showHomeButton->setChecked(settingsPtr->value("home_button", true).toBool());
   showTerminalButton->setChecked(settingsPtr->value("terminal_button", true).toBool());
 #if QT_VERSION >= 0x050000
+#ifdef DEPLOY
+  checkDarkTheme->setChecked(settingsPtr->value("darkTheme", true).toBool());
+#else
   checkDarkTheme->setChecked(settingsPtr->value("darkTheme", false).toBool());
+#endif
 #endif
   checkFileColor->setChecked(settingsPtr->value("fileColor", false).toBool());
   checkPathHistory->setChecked(settingsPtr->value("pathHistory", true).toBool());

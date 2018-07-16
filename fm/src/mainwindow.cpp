@@ -92,9 +92,14 @@ MainWindow::MainWindow()
         Common::removeThumbsCache();
         settings->setValue("clearCache", false);
     }
+
     // Dark theme
 #if QT_VERSION >= 0x050000
+#ifdef DEPLOY
+    if (settings->value("darkTheme", true).toBool()) {
+#else
     if (settings->value("darkTheme").toBool()) {
+#endif
         qApp->setPalette(Common::darkTheme());
     }
 #endif
