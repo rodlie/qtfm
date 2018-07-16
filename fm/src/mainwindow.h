@@ -376,6 +376,7 @@ private:
     QAction *closeTabAct;
     QAction *tabsOnTopAct;
     QAction *aboutAct;
+    QAction *aboutQtAct;
 #ifndef NO_UDISKS
     QAction *mediaUnmountAct;
     QAction *mediaEjectAct;

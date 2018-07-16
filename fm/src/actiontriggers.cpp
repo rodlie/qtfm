@@ -984,6 +984,12 @@ void MainWindow::showAboutBox()
                               " (at your option) any later version."
                               "</p>"));
 #endif
+    box.setDetailedText(QString("Developers:\n\n"
+                                "Ole-André Rodlie (5.2018) <ole.andre.rodlie@gmail.com>\n\n"
+                                "Michal Rost (8.2012 - 5.2013) <rost.michal@gmail.com>\n\n"
+                                "Wittfella (5.2010 - 8.2012) <wittfella@qtfm.org>\n\n"
+                                "Artists:\n\n"
+                                "psikoz <https://github.com/psikoz>"));
     box.exec();
 }
 //---------------------------------------------------------------------------

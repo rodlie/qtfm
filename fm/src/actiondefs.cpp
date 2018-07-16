@@ -341,10 +341,15 @@ void MainWindow::createActions() {
   connect(focusListAct, SIGNAL(triggered()), this, SLOT(focusAction()));
   actionList->append(focusListAct);
 
-  aboutAct = new QAction(tr("About"), this);
-  aboutAct->setIcon(QIcon::fromTheme("user-home"));
+  aboutAct = new QAction(tr("About %1").arg(APP_NAME), this);
+  aboutAct->setIcon(QIcon::fromTheme("qtfm", QIcon(":/images/qtfm.png")));
   connect(aboutAct, SIGNAL(triggered()), this, SLOT(showAboutBox()));
   actionList->append(aboutAct);
+
+  aboutQtAct = new QAction(tr("About Qt"), this);
+  aboutQtAct->setIcon(QIcon::fromTheme("qt-logo"));
+  connect(aboutQtAct, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
+  actionList->append(aboutQtAct);
 
 #ifndef NO_UDISKS
   mediaUnmountAct = new QAction(tr("Safely Remove"), this);
@@ -524,6 +529,7 @@ void MainWindow::createMenus() {
   // ----------------------------------------------------------------------
   QMenu* helpMenu = new QMenu(tr("Help"));
   helpMenu->addAction(aboutAct);
+  helpMenu->addAction(aboutQtAct);
 
   // Place all menus on menu bar
   // ----------------------------------------------------------------------
