@@ -217,7 +217,7 @@ MainWindow::MainWindow()
     createToolBars();
     createMenus();
 
-    setWindowIcon(QIcon::fromTheme("folder"));
+    setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/images/qtfm.png")));
     setWindowTitle(APP_NAME);
 
     // Create custom action manager
@@ -969,7 +969,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
   if (currentDragMode == Common::DM_UNKNOWN) {
     QMessageBox box;
     box.setWindowTitle(tr("Select file action"));
-    box.setWindowIcon(QIcon::fromTheme("folder"));
+    box.setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/images/qtfm.png")));
     box.setIconPixmap(QIcon::fromTheme("dialog-information").pixmap(QSize(32, 32)));
     box.setText(tr("<h3>What do you want to do?</h3>"));
     if (!extraText.isEmpty()) {

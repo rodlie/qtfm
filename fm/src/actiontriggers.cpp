@@ -967,7 +967,7 @@ void MainWindow::showAboutBox()
     box.setStyleSheet("QLabel { padding:0;margin:0;min-width:300px; }");
 #endif
     box.setWindowTitle(tr("About %1").arg(APP_NAME));
-    box.setWindowIcon(QIcon::fromTheme("user-home"));
+    box.setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/images/qtfm.png")));
     box.setText(QString("<p style=\"text-align:center;\">"
                         "<img src=\":/images/qtfm.png\">"
                         "<h1>%1 %2</h1>"

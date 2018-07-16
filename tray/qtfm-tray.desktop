@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=QtFM Device Manager
 Comment=QtFM Device Manager
-Icon=drive-removable-media
+Icon=qtfm
 Exec=qtfm-tray
 Terminal=false
 Type=Application
