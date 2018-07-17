@@ -59,6 +59,7 @@ protected:
   QWidget* createShortcutSettings();
   QWidget* createMimeSettings();
   QWidget* createSystraySettings();
+  QWidget* createAdvSettings();
   MimeUtils* mimeUtilsPtr;
   QSettings* settingsPtr;
   QList<QAction*> *actionListPtr;

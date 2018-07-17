@@ -74,6 +74,7 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   selector->addItem(new QListWidgetItem(icon3, tr("Shortcuts"), selector));
   selector->addItem(new QListWidgetItem(icon4, tr("Mime Types"), selector));
   selector->addItem(new QListWidgetItem(icon4, tr("System Tray"), selector));
+  selector->addItem(new QListWidgetItem(icon4, tr("Advanced"), selector));
 
   stack->addWidget(createGeneralSettings());
   stack->addWidget(createAppearanceSettings());
@@ -81,6 +82,7 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   stack->addWidget(createShortcutSettings());
   stack->addWidget(createMimeSettings());
   stack->addWidget(createSystraySettings());
+  stack->addWidget(createAdvSettings());
 
   connect(selector,
           SIGNAL(currentRowChanged(int)),
@@ -154,29 +156,10 @@ QWidget *SettingsDialog::createGeneralSettings() {
   editTerm = new QLineEdit(grpTerm);
   layoutTerm->addRow(tr("Command: "), editTerm);
 
-  // Custom Copy X of
-  QGroupBox* grpCopyX = new QGroupBox(tr("Custom Copy of ..."), widget);
-  QFormLayout* layoutCopyX = new QFormLayout(grpCopyX);
-  editCopyX = new QLineEdit(grpCopyX);
-  editCopyTS = new QLineEdit(grpCopyX);
-  editCopyX->setToolTip(tr("Set a custom file name for 'Copy of ...'\n\n"
-                           "%1 = num copy\n"
-                           "%2 = orig filename (example.tar.gz)\n"
-                           "%3 = timestamp (yyyyMMddHHmmss, set custom in 'Timestamp')\n"
-                           "%4 = orig suffix (example.tar.gz=>tar.gz)\n"
-                           "%5 = orig basename (example.tar.gz=>example)\n\n"
-                           "Default is 'Copy (%1) of %2'"));
-  editCopyTS->setToolTip(tr("Set a custom timestamp to use as %3.\n\n"
-                            "See http://doc.qt.io/archives/qt-4.8/qdatetime.html#toString\n"
-                            "for more information."));
-  layoutCopyX->addRow(tr("Destination"), editCopyX);
-  layoutCopyX->addRow(tr("Timestamp"), editCopyTS);
-
   // Layout of widget
   layoutWidget->addWidget(grpBehav);
   layoutWidget->addWidget(grpConfirm);
   layoutWidget->addWidget(grpTerm);
-  layoutWidget->addWidget(grpCopyX);
   layoutWidget->addSpacerItem(new QSpacerItem(0,
                                               0,
                                               QSizePolicy::Fixed,
@@ -454,6 +437,35 @@ QWidget *SettingsDialog::createSystraySettings()
     layoutTray->addRow(tr("Auto play audio/video DVD's"), checkDVD);
 
     layoutWidget->addWidget(trayGroup);
+
+    return widget;
+}
+
+QWidget *SettingsDialog::createAdvSettings()
+{
+    // Widget and its layout
+    QWidget *widget = new QWidget();
+    QVBoxLayout* layoutWidget = new QVBoxLayout(widget);
+
+    // Custom Copy X of
+    QGroupBox* grpCopyX = new QGroupBox(tr("Custom Copy of ..."), widget);
+    QFormLayout* layoutCopyX = new QFormLayout(grpCopyX);
+    editCopyX = new QLineEdit(grpCopyX);
+    editCopyTS = new QLineEdit(grpCopyX);
+    editCopyX->setToolTip(tr("Set a custom file name for 'Copy of ...'\n\n"
+                             "%1 = num copy\n"
+                             "%2 = orig filename (example.tar.gz)\n"
+                             "%3 = timestamp (yyyyMMddHHmmss, set custom in 'Timestamp')\n"
+                             "%4 = orig suffix (example.tar.gz=>tar.gz)\n"
+                             "%5 = orig basename (example.tar.gz=>example)\n\n"
+                             "Default is 'Copy (%1) of %2'"));
+    editCopyTS->setToolTip(tr("Set a custom timestamp to use as %3.\n\n"
+                              "See http://doc.qt.io/archives/qt-4.8/qdatetime.html#toString\n"
+                              "for more information."));
+    layoutCopyX->addRow(tr("Destination"), editCopyX);
+    layoutCopyX->addRow(tr("Timestamp"), editCopyTS);
+
+    layoutWidget->addWidget(grpCopyX);
 
     return widget;
 }
