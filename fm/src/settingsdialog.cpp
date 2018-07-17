@@ -154,10 +154,24 @@ QWidget *SettingsDialog::createGeneralSettings() {
   editTerm = new QLineEdit(grpTerm);
   layoutTerm->addRow(tr("Command: "), editTerm);
 
+  // Custom Copy X of
+  QGroupBox* grpCopyX = new QGroupBox(tr("Custom Copy of ..."), widget);
+  QFormLayout* layoutCopyX = new QFormLayout(grpCopyX);
+  editCopyX = new QLineEdit(grpCopyX);
+  editCopyX->setToolTip(tr("Set a custom file name for 'Copy of ...'\n\n"
+                           "%1 = num copy\n"
+                           "%2 = orig filename (example.tar.gz)\n"
+                           "%3 = timestamp (yyyyMMddHHmmss)\n"
+                           "%4 = orig suffix (example.tar.gz=>tar.gz)\n"
+                           "%5 = orig basename (example.tar.gz=>example)\n\n"
+                           "Default is 'Copy (%1) of %2'"));
+  layoutCopyX->addRow(tr("File name"), editCopyX);
+
   // Layout of widget
   layoutWidget->addWidget(grpBehav);
   layoutWidget->addWidget(grpConfirm);
   layoutWidget->addWidget(grpTerm);
+  layoutWidget->addWidget(grpCopyX);
   layoutWidget->addSpacerItem(new QSpacerItem(0,
                                               0,
                                               QSizePolicy::Fixed,
@@ -597,6 +611,7 @@ void SettingsDialog::readSettings() {
   // Read general settings
   checkDelete->setChecked(settingsPtr->value("confirmDelete", true).toBool());
   editTerm->setText(settingsPtr->value("term", "xterm").toString());
+  editCopyX->setText(settingsPtr->value("copyXof", COPY_X_OF).toString());
 
   comboDAD->setCurrentIndex(settingsPtr->value("dad", 2).toInt());
   comboDADalt->setCurrentIndex(settingsPtr->value("dad_alt", 0).toInt());
@@ -819,6 +834,10 @@ bool SettingsDialog::saveSettings() {
   // General settings
   settingsPtr->setValue("confirmDelete", checkDelete->isChecked());
   settingsPtr->setValue("term", editTerm->text());
+  if (!editCopyX->text().contains("%")) {
+      editCopyX->setText(COPY_X_OF);
+  }
+  settingsPtr->setValue("copyXof", editCopyX->text());
 
   settingsPtr->setValue("dad", comboDAD->currentIndex());
   settingsPtr->setValue("dad_alt", comboDADalt->currentIndex());

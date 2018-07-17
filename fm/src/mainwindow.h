@@ -402,6 +402,9 @@ private:
 
     IconViewDelegate *ivdelegate;
     IconListDelegate *ildelegate;
+
+    // copy of original new filename
+    QString copyXof;
 };
 
 //---------------------------------------------------------------------------------

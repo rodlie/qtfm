@@ -512,6 +512,13 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
   // path in window title
   showPathInWindowTitle = settings->value("windowTitlePath", true).toBool();
   if (!showPathInWindowTitle) { setWindowTitle(APP_NAME); }
+
+  // 'copy of' filename
+  copyXof = settings->value("copyXof", COPY_X_OF).toString();
+  if (!copyXof.contains("%")) {
+      qDebug() << "COPYXOF is invalid! restore default" << COPY_X_OF;
+      copyXof = COPY_X_OF;
+  }
 }
 
 void MainWindow::firstRunBookmarks(bool isFirstRun)
