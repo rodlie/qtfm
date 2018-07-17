@@ -95,6 +95,7 @@ protected:
   QCheckBox* checkDVD;
   QCheckBox* checkWindowTitlePath;
   QLineEdit* editCopyX;
+  QLineEdit* editCopyTS;
 };
 
 #endif // SETTINGSDIALOG_H

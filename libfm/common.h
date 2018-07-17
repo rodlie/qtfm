@@ -30,6 +30,7 @@
 #define MIME_APPS "/.local/share/applications/mimeapps.list"
 
 #define COPY_X_OF "Copy (%1) of %2"
+#define COPY_X_TS "yyyyMMddHHmmss"
 
 class Common
 {

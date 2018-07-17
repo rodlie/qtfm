@@ -515,10 +515,7 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
 
   // 'copy of' filename
   copyXof = settings->value("copyXof", COPY_X_OF).toString();
-  if (!copyXof.contains("%")) {
-      qDebug() << "COPYXOF is invalid! restore default" << COPY_X_OF;
-      copyXof = COPY_X_OF;
-  }
+  copyXofTS = settings->value("copyXofTS", COPY_X_TS).toString();
 }
 
 void MainWindow::firstRunBookmarks(bool isFirstRun)

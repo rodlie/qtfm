@@ -405,6 +405,8 @@ private:
 
     // copy of original new filename
     QString copyXof;
+    // custom timestamp for copy of
+    QString copyXofTS;
 };
 
 //---------------------------------------------------------------------------------

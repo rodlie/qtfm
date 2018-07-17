@@ -521,23 +521,20 @@ bool MainWindow::pasteFiles(const QList<QUrl> &files, const QString &newPath,
     // Only do 'Copy(x) of' if same folder
     // %1 = num copy
     // %2 = orig filename (example.tar.gz)
-    // %3 = timestamp (yyyyMMddHHmmss)
+    // %3 = timestamp (yyyyMMddHHmmss, use 'copyXofTS' to override)
     // %4 = orig suffix (example.tar.gz=>tar.gz)
     // %5 = orig basename (example.tar.gz=>example)
     if (temp.path() == newPath) {
         int num = 1;
         while (QFile(destUrl).exists()) {
-            if (!copyXof.contains("%")) { copyXof = COPY_X_OF; }
             destName = copyXof;
-            qDebug() << "COPY XOF" << destName;
             if (destName.contains("%1")) { destName.replace("%1", QString::number(num)); }
             if (destName.contains("%2")) { destName.replace("%2", temp.fileName()); }
             if (destName.contains("%3")) {
-                destName.replace("%3", QDateTime::currentDateTime().toString("yyyyMMddHHmmss"));
+                destName.replace("%3", QDateTime::currentDateTime().toString(copyXofTS));
             }
             if (destName.contains("%4")) { destName.replace("%4", temp.completeSuffix()); }
             if (destName.contains("%5")) { destName.replace("%5", temp.baseName()); }
-            qDebug() << "COPY DEST" << destName;
             destUrl = newPath + QDir::separator() + destName;
             num++;
       }

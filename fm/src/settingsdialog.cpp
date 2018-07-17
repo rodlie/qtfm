@@ -158,14 +158,19 @@ QWidget *SettingsDialog::createGeneralSettings() {
   QGroupBox* grpCopyX = new QGroupBox(tr("Custom Copy of ..."), widget);
   QFormLayout* layoutCopyX = new QFormLayout(grpCopyX);
   editCopyX = new QLineEdit(grpCopyX);
+  editCopyTS = new QLineEdit(grpCopyX);
   editCopyX->setToolTip(tr("Set a custom file name for 'Copy of ...'\n\n"
                            "%1 = num copy\n"
                            "%2 = orig filename (example.tar.gz)\n"
-                           "%3 = timestamp (yyyyMMddHHmmss)\n"
+                           "%3 = timestamp (yyyyMMddHHmmss, set custom in 'Timestamp')\n"
                            "%4 = orig suffix (example.tar.gz=>tar.gz)\n"
                            "%5 = orig basename (example.tar.gz=>example)\n\n"
                            "Default is 'Copy (%1) of %2'"));
-  layoutCopyX->addRow(tr("File name"), editCopyX);
+  editCopyTS->setToolTip(tr("Set a custom timestamp to use as %3.\n\n"
+                            "See http://doc.qt.io/archives/qt-4.8/qdatetime.html#toString\n"
+                            "for more information."));
+  layoutCopyX->addRow(tr("Destination"), editCopyX);
+  layoutCopyX->addRow(tr("Timestamp"), editCopyTS);
 
   // Layout of widget
   layoutWidget->addWidget(grpBehav);
@@ -612,6 +617,7 @@ void SettingsDialog::readSettings() {
   checkDelete->setChecked(settingsPtr->value("confirmDelete", true).toBool());
   editTerm->setText(settingsPtr->value("term", "xterm").toString());
   editCopyX->setText(settingsPtr->value("copyXof", COPY_X_OF).toString());
+  editCopyTS->setText(settingsPtr->value("copyXofTS", COPY_X_TS).toString());
 
   comboDAD->setCurrentIndex(settingsPtr->value("dad", 2).toInt());
   comboDADalt->setCurrentIndex(settingsPtr->value("dad_alt", 0).toInt());
@@ -834,10 +840,8 @@ bool SettingsDialog::saveSettings() {
   // General settings
   settingsPtr->setValue("confirmDelete", checkDelete->isChecked());
   settingsPtr->setValue("term", editTerm->text());
-  if (!editCopyX->text().contains("%")) {
-      editCopyX->setText(COPY_X_OF);
-  }
   settingsPtr->setValue("copyXof", editCopyX->text());
+  settingsPtr->setValue("copyXofTS", editCopyTS->text());
 
   settingsPtr->setValue("dad", comboDAD->currentIndex());
   settingsPtr->setValue("dad_alt", comboDADalt->currentIndex());
