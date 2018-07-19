@@ -527,14 +527,23 @@ bool MainWindow::pasteFiles(const QList<QUrl> &files, const QString &newPath,
     if (temp.path() == newPath) {
         int num = 1;
         while (QFile(destUrl).exists()) {
+            QFileInfo fileInfo(destName);
             destName = copyXof;
-            if (destName.contains("%1")) { destName.replace("%1", QString::number(num)); }
-            if (destName.contains("%2")) { destName.replace("%2", temp.fileName()); }
+            if (destName.contains("%1")) {
+                destName.replace("%1", QString::number(num));
+            }
+            if (destName.contains("%2")) {
+                destName.replace("%2", fileInfo.fileName());
+            }
             if (destName.contains("%3")) {
                 destName.replace("%3", QDateTime::currentDateTime().toString(copyXofTS));
             }
-            if (destName.contains("%4")) { destName.replace("%4", temp.completeSuffix()); }
-            if (destName.contains("%5")) { destName.replace("%5", temp.baseName()); }
+            if (destName.contains("%4")) {
+                destName.replace("%4", fileInfo.completeSuffix());
+            }
+            if (destName.contains("%5")) {
+                destName.replace("%5", fileInfo.baseName());
+            }
             destUrl = newPath + QDir::separator() + destName;
             num++;
       }
