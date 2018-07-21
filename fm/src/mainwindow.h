@@ -75,31 +75,29 @@ public:
         QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
         QSize iconsize = icon.actualSize(option.decorationSize);
         QRect item = option.rect;
-        QRect txtRect(item.left(), item.top()+/*(*/iconsize.height()/*/2)*/+4, item.width()-4, item.height()-iconsize.height()-4);
+        QRect txtRect(item.left(), item.top()+iconsize.height(), item.width(), item.height()-iconsize.height());
         QSize txtsize = option.fontMetrics.boundingRect(txtRect, Qt::AlignCenter|Qt::TextWrapAnywhere, index.data().toString()).size();
         int width = txtsize.width();
         if (width<iconsize.width()) { width = iconsize.width(); }
-        return QSize(width+10,txtsize.height()+iconsize.height()+10);
+        return QSize(width/*+10*/,txtsize.height()+iconsize.height()/*+10*/);
     }
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
     {
         QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
         QSize iconsize = icon.actualSize(option.decorationSize);
         QRect item = option.rect;
-        QRect iconRect(item.left()+(item.width()/2)-(iconsize.width()/2), item.top()+3, iconsize.width(), iconsize.height());
-        QRect txtRect(item.left(), item.top()+iconsize.height()+4, item.width()-4, item.height()-iconsize.height()-4);
+        QRect iconRect(item.left()+(item.width()/2)-(iconsize.width()/2), item.top(), iconsize.width(), iconsize.height());
+        QRect txtRect(item.left(), item.top()+iconsize.height(), item.width(), item.height()-iconsize.height());
 
         if (option.state & QStyle::State_Selected) {
-            QPainterPath path;
-            QRect bg(item.left(), item.top()+iconsize.height()+4, item.width(), item.height()-iconsize.height()-4);
-#if QT_VERSION >= 0x050000
-            path.addRoundedRect(bg, 4, 4);
-#else
-            path.addRect(bg);
-#endif
-            painter->setOpacity(0.3);
-            painter->fillPath(path, option.palette.highlight());
-            painter->setOpacity(1.0);
+            if (option.state & QStyle::State_Active) {
+                QPainterPath path;
+                QRect bg(item.left(), item.top()+iconsize.height(), item.width(), item.height()-iconsize.height());
+                path.addRect(bg);
+                painter->setOpacity(0.3);
+                painter->fillPath(path, option.palette.highlight());
+                painter->setOpacity(1.0);
+            }
         }
 
         QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
@@ -108,7 +106,8 @@ public:
         if (option.state & QStyle::State_Selected) { painter->setOpacity(0.7); }
         painter->drawPixmap(iconRect, icon.pixmap(iconsize.width(),iconsize.height()));
         if (painter->opacity() != 1.0) { painter->setOpacity(1.0); }
-        painter->drawText(txtRect, Qt::AlignCenter/*| Qt::AlignTop*/|Qt::TextWrapAnywhere, index.data().toString());
+        if ((option.state & QStyle::State_Selected) && !(option.state & QStyle::State_Active)) { return; }
+        painter->drawText(txtRect, Qt::AlignCenter|Qt::AlignVCenter|Qt::TextWrapAnywhere, index.data().toString());
     }
 };
 class IconListDelegate : public QItemDelegate
