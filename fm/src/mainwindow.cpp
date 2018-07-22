@@ -1636,11 +1636,12 @@ void MainWindow::updateGrid()
 {
     if (!iconAct->isChecked()) { return; }
     QFontMetrics fm = fontMetrics();
-    int textWidth = fm.averageCharWidth() * 13;
+    int textWidth = fm.averageCharWidth() * 15;
+    int realTextWidth = fm.averageCharWidth() * 13;
     int textHeight = fm.lineSpacing() * 3;
     QSize grid;
-    grid.setWidth(qMax(zoom, textWidth) + 4);
-    grid.setHeight(zoom+ textHeight + 4);
+    grid.setWidth(qMax(zoom, textWidth));
+    grid.setHeight(zoom+textHeight);
 
     QModelIndexList items;
     for (int x = 0; x < modelList->rowCount(modelList->index(pathEdit->currentText())); ++x) {
@@ -1648,17 +1649,12 @@ void MainWindow::updateGrid()
     }
     foreach (QModelIndex theItem,items) {
         QString filename = modelList->fileName(theItem);
-        QRect txtRect(0, 0, grid.width(), grid.height());
-        QSize txtsize = fm.boundingRect(txtRect, Qt::AlignCenter|Qt::TextWrapAnywhere, filename).size();
-        int width = txtsize.width()+8;
-        if (width<zoom) { width = zoom+8; }
-        if (width>grid.width()) { grid.setWidth(width); }
-        if (txtsize.height()+zoom+8>grid.height()) { grid.setHeight(txtsize.height()+zoom+8); }
-        //qDebug() << filename << txtsize;
+        QRect item(0,0,realTextWidth,grid.height());
+        QSize txtsize = fm.boundingRect(item, Qt::AlignCenter|Qt::TextWrapAnywhere, filename).size();
+        int newHeight = txtsize.height()+zoom+5;
+        if (newHeight>grid.height()) { grid.setHeight(newHeight); }
     }
-
     if (list->gridSize() != grid) {
-        qDebug() << "SET GRID" << grid;
         list->setGridSize(grid);
     }
 }

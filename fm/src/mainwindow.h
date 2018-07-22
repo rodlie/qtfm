@@ -102,15 +102,13 @@ public:
     {
         QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
         QSize iconsize = icon.actualSize(option.decorationSize);
-        QRect item = option.rect;
-        QRect txtRect(item.left(), item.top()+iconsize.height(),
-                      item.width(), item.height()-iconsize.height());
+        int width = qMax(iconsize.width(), option.fontMetrics.averageCharWidth() * 13);
+        QRect txtRect(0, 0, width, option.rect.height());
         QSize txtsize = option.fontMetrics.boundingRect(txtRect,
                                                         Qt::AlignCenter|Qt::TextWrapAnywhere,
                                                         index.data().toString()).size();
-        int width = txtsize.width();
-        if (width<iconsize.width()) { width = iconsize.width(); }
-        return QSize(width+10,txtsize.height()+iconsize.height());
+        QSize size(width, txtsize.height()+iconsize.height());
+        return size;
     }
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
     {
@@ -119,8 +117,8 @@ public:
         QRect item = option.rect;
         QRect iconRect(item.left()+(item.width()/2)-(iconsize.width()/2),
                        item.top(), iconsize.width(), iconsize.height());
-        QRect txtRect(item.left()+5, item.top()+iconsize.height(),
-                      item.width()-10, item.height()-iconsize.height());
+        QRect txtRect(item.left(), item.top()+iconsize.height(),
+                      item.width(), item.height()-iconsize.height());
         QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
         bool isSelected = option.state & QStyle::State_Selected;
         bool isEditing = _isEditing && index==_index;
