@@ -402,7 +402,7 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
 #if QT_VERSION >= 0x050000
   // fix style
   setStyleSheet("QToolBar { padding: 0;border:none; }"
-                "QFrame { border:none; }"
+                //"QFrame { border:none; }"
                 /*"QListView::item,QListView::text,QListView::icon"
                 "{ border:0px;padding-top:5px;padding-left:5px; }"*/);
   addressToolBar->setContentsMargins(0,0,5,0);

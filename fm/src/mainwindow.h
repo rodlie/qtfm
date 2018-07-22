@@ -35,6 +35,7 @@
 #include <QSignalMapper>
 #include <QToolBar>
 #include <QItemDelegate>
+#include <QStyledItemDelegate>
 
 #include "mymodel.h"
 #include "bookmarkmodel.h"
@@ -67,47 +68,78 @@ class QMenu;
 QT_END_NAMESPACE
 
 //---------------------------------------------------------------------------------
-class IconViewDelegate : public QItemDelegate
+class IconViewDelegate : public QStyledItemDelegate
 {
+private: // workaround for QTBUG
+    mutable bool _isEditing;
+    mutable QModelIndex _index;
+protected: // workaround for QTBUG
+    bool eventFilter(QObject * object, QEvent * event)
+    {
+        QWidget *editor = qobject_cast<QWidget*>(object);
+        if(editor && event->type() == QEvent::KeyPress) {
+            if(static_cast<QKeyEvent *>(event)->key() == Qt::Key_Escape){
+                _isEditing = false;
+                _index = QModelIndex();
+            }
+        }
+        return QStyledItemDelegate::eventFilter(editor, event);
+    }
 public:
+    void setEditorData(QWidget * editor, const QModelIndex & index) const
+    { // workaround for QTBUG
+        _isEditing = true;
+        _index = index;
+        QStyledItemDelegate::setEditorData(editor, index);
+    }
+    void setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const
+    { // workaround for QTBUG
+        QStyledItemDelegate::setModelData(editor, model, index);
+        _isEditing = false;
+        _index = QModelIndex();
+    }
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
     {
         QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
         QSize iconsize = icon.actualSize(option.decorationSize);
         QRect item = option.rect;
-        QRect txtRect(item.left(), item.top()+iconsize.height(), item.width(), item.height()-iconsize.height());
-        QSize txtsize = option.fontMetrics.boundingRect(txtRect, Qt::AlignCenter|Qt::TextWrapAnywhere, index.data().toString()).size();
+        QRect txtRect(item.left(), item.top()+iconsize.height(),
+                      item.width(), item.height()-iconsize.height());
+        QSize txtsize = option.fontMetrics.boundingRect(txtRect,
+                                                        Qt::AlignCenter|Qt::TextWrapAnywhere,
+                                                        index.data().toString()).size();
         int width = txtsize.width();
         if (width<iconsize.width()) { width = iconsize.width(); }
-        return QSize(width/*+10*/,txtsize.height()+iconsize.height()/*+10*/);
+        return QSize(width+10,txtsize.height()+iconsize.height());
     }
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
     {
         QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
         QSize iconsize = icon.actualSize(option.decorationSize);
         QRect item = option.rect;
-        QRect iconRect(item.left()+(item.width()/2)-(iconsize.width()/2), item.top(), iconsize.width(), iconsize.height());
-        QRect txtRect(item.left(), item.top()+iconsize.height(), item.width(), item.height()-iconsize.height());
+        QRect iconRect(item.left()+(item.width()/2)-(iconsize.width()/2),
+                       item.top(), iconsize.width(), iconsize.height());
+        QRect txtRect(item.left()+5, item.top()+iconsize.height(),
+                      item.width()-10, item.height()-iconsize.height());
+        QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
+        bool isSelected = option.state & QStyle::State_Selected;
+        bool isEditing = _isEditing && index==_index;
 
-        if (option.state & QStyle::State_Selected) {
-            if (option.state & QStyle::State_Active) {
-                QPainterPath path;
-                QRect bg(item.left(), item.top()+iconsize.height(), item.width(), item.height()-iconsize.height());
-                path.addRect(bg);
-                painter->setOpacity(0.3);
-                painter->fillPath(path, option.palette.highlight());
-                painter->setOpacity(1.0);
-            }
+        if (isSelected && !isEditing) {
+            QPainterPath path;
+            path.addRect(txtRect);
+            painter->fillPath(path, option.palette.highlight());
         }
 
-        QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
-        painter->setPen(txtBrush.color());
-
-        if (option.state & QStyle::State_Selected) { painter->setOpacity(0.7); }
         painter->drawPixmap(iconRect, icon.pixmap(iconsize.width(),iconsize.height()));
-        if (painter->opacity() != 1.0) { painter->setOpacity(1.0); }
-        if ((option.state & QStyle::State_Selected) && !(option.state & QStyle::State_Active)) { return; }
-        painter->drawText(txtRect, Qt::AlignCenter|Qt::AlignVCenter|Qt::TextWrapAnywhere, index.data().toString());
+
+        if (isEditing) { return; }
+        if (isSelected) { painter->setPen(option.palette.highlightedText().color()); }
+        else { painter->setPen(txtBrush.color()); }
+
+        painter->drawText(txtRect,
+                          Qt::AlignCenter|Qt::AlignVCenter|Qt::TextWrapAnywhere,
+                          index.data().toString());
     }
 };
 class IconListDelegate : public QItemDelegate
