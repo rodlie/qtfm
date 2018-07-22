@@ -21,8 +21,9 @@
 ****************************************************************************/
 
 #include <QApplication>
-#include <QtMessageHandler>
 #include "mainwindow.h"
+
+#if QT_VERSION >= 0x050000
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -35,9 +36,11 @@ void msgHandler(QtMsgType type, const QMessageLogContext &context, const QString
     case QtDebugMsg:
         fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         break;
+#if QT_VERSION >= 0x050500
     case QtInfoMsg:
         fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         break;
+#endif
     case QtWarningMsg:
         fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         break;
@@ -49,6 +52,7 @@ void msgHandler(QtMsgType type, const QMessageLogContext &context, const QString
         abort();
     }
 }
+#endif
 
 /**
  * @brief main function
@@ -58,7 +62,9 @@ void msgHandler(QtMsgType type, const QMessageLogContext &context, const QString
  */
 int main(int argc, char *argv[]) {
 
+#if QT_VERSION >= 0x050000
   qInstallMessageHandler(msgHandler);
+#endif
   QApplication app(argc, argv);
   QApplication::setOrganizationName(APP);
   QApplication::setApplicationName("dracolinux");
