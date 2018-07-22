@@ -341,8 +341,6 @@ private:
     bookmarkmodel *modelBookmarks;
     QItemSelectionModel *treeSelectionModel;
     QItemSelectionModel *listSelectionModel;
-    QSocketNotifier *notify;
-
     QStringList mounts;
 
     QList<QIcon> *actionIcons;

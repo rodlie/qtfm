@@ -31,7 +31,6 @@
 #ifndef NO_DBUS
 #include <QDBusConnection>
 #endif
-#include <sys/vfs.h>
 #include <fcntl.h>
 
 #if QT_VERSION >= 0x050000

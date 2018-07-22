@@ -8,7 +8,11 @@
 #include <QDockWidget>
 #include <QStatusBar>
 #include <QToolBar>
+#ifdef __FreeBSD__
+#include <sys/mount.h>
+#else
 #include <sys/vfs.h>
+#endif
 #include <fcntl.h>
 
 /**

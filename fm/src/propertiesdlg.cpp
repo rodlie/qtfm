@@ -32,7 +32,11 @@
 #include "propertiesdlg.h"
 #include "icondlg.h"
 #include "mainwindow.h"
+#ifdef __FreeBSD__
+#include <sys/mount.h>
+#else
 #include <sys/vfs.h>
+#endif
 #include <sys/stat.h>
 
 /**
