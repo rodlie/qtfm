@@ -21,6 +21,7 @@
 ****************************************************************************/
 
 #include <QApplication>
+#include <QtMessageHandler>
 #include "mainwindow.h"
 #include <stdio.h>
 #include <stdlib.h>
