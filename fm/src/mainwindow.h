@@ -150,8 +150,11 @@ public:
         QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
         QSize iconsize = icon.actualSize(option.decorationSize);
         QRect item = option.rect;
-        QRect txtRect(item.left()+iconsize.width()+5, item.top(), item.width(), item.height());
-        QSize txtsize = option.fontMetrics.boundingRect(txtRect, Qt::AlignLeft|Qt::AlignVCenter, index.data().toString()).size();
+        QRect txtRect(item.left()+iconsize.width()+5,
+                      item.top(), item.width(), item.height());
+        QSize txtsize = option.fontMetrics.boundingRect(txtRect,
+                                                        Qt::AlignLeft|Qt::AlignVCenter,
+                                                        index.data().toString()).size();
         return QSize(txtsize.width()+iconsize.width()+10,iconsize.height());
     }
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -160,22 +163,21 @@ public:
         QSize iconsize = icon.actualSize(option.decorationSize);
         QRect item = option.rect;
         QRect iconRect(item.left(), item.top(), iconsize.width(), iconsize.height());
-        QRect txtRect(item.left()+iconsize.width()+5, item.top(), item.width()-iconsize.width()-5, item.height()-2);
+        QRect txtRect(item.left()+iconsize.width()+5,
+                      item.top(), item.width()-iconsize.width()-5, item.height()-2);
+        QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
 
         if (option.state & QStyle::State_Selected) {
-            //QRect bg(item.left(), item.top(), item.width(), item.height()-2);
             QPainterPath path;
-            path.addRoundedRect(txtRect, 5, 5);
-            painter->setOpacity(0.3);
+            path.addRect(txtRect);
             painter->fillPath(path, option.palette.highlight());
-            painter->setOpacity(1.0);
         }
-        QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
-        painter->setPen(txtBrush.color());
 
-        if (option.state & QStyle::State_Selected) { painter->setOpacity(0.7); }
+        if (option.state & QStyle::State_Selected) {
+            painter->setPen(option.palette.highlightedText().color());
+        } else { painter->setPen(txtBrush.color()); }
+
         painter->drawPixmap(iconRect, icon.pixmap(iconsize.width(),iconsize.height()));
-        if (painter->opacity() != 1.0) { painter->setOpacity(1.0); }
         painter->drawText(txtRect, Qt::AlignLeft|Qt::AlignVCenter, index.data().toString());
     }
 };
