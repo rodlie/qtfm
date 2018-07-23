@@ -1024,6 +1024,9 @@ void MainWindow::showEditDialog() {
   // Loads current icon theme
   QString oldTheme = settings->value("forceTheme").toString();
 
+  // save settings
+  writeSettings();
+
   // Creates settings dialog
   SettingsDialog *d = new SettingsDialog(actionList, settings, mimeUtils, this);
   if (d->exec()) {
