@@ -87,9 +87,9 @@ Now you just need to build it:
 
 Optional build options:
 
- * ``CONFIG+=no_udisks`` : This will disable udisks, note that qtfm-tray will not build with this option enabled.
+ * ``CONFIG+=no_udisks`` : This will disable udisks support in QtFM
  * ``CONFIG+=no_tray`` : This will disable qtfm-tray
- * ``CONFIG+=no_appdock``: This will disable the application dock in QtFM
+ * ``CONFIG+=no_appdock``: This will disable the application launcher in QtFM
  * ``CONFIG+=no_dbus`` : This will disable D-Bus session features in QtFM
  * ``CONFIG+=release`` : Disable debug output (recommended)
  * ``PREFIX=`` : Install prefix, where things are installed when running ``make install``
@@ -97,7 +97,7 @@ Optional build options:
  * ``MANDIR=`` : Location for man pages (default is PREFIX/share/man)
  * ``XDGDIR=`` : Location of XDG (default is /etc/xdg or PREFIX/etc/xdg)
 
- You can disable additional features (udisks/tray/appdock) with ``CONFIG+=basic``
+ You can disable additional features (udisks/tray/applauncher) with ``CONFIG+=basic``
 
 Doing a normal build:
 ```

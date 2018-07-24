@@ -28,9 +28,8 @@
 #include <QApplication>
 #include <QStatusBar>
 #include <QMenu>
-#ifndef NO_DBUS
 #include <QDBusConnection>
-#endif
+#include <QDBusError>
 #include <fcntl.h>
 
 #if QT_VERSION >= 0x050000
