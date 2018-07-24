@@ -124,6 +124,15 @@ make -jX
 make INSTALL_ROOT=/package_temp_path install
 ```
 
+## License
+
+ * QtFM is licenced under the GPL-2.0 License
+ * libdisks is licenced under a BSD 3-Clause License
+ * libfm is a mix of GPL-2.0 and BSD 3-Clause License (goal is BSD 3-Clause License)
+ * qtfm-tray is licenced under a BSD 3-Clause License (but depends on libfm that includes GPL-2.0 code)
+ 
+ All new source code will be BSD 3-Clause License, modifications to existing source code in fm/ will be GPL-2.0.
+ 
 ## Related
 
  * **[powerdwarf](https://github.com/rodlie/powerdwarf)** : Desktop Independent Power Manager.
