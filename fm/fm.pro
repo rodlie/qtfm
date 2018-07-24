@@ -114,10 +114,7 @@ INSTALLS += icon128 icon160 icon16 icon192 icon20 icon22 \
 }
 CONFIG(no_udisks): DEFINES += NO_UDISKS
 CONFIG(no_appdock): DEFINES += NO_APPDOCK
-CONFIG(no_dbus) {
-    DEFINES += NO_DBUS
-    QT -= dbus
-}
+CONFIG(no_dbus) : DEFINES += NO_DBUS
 
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
