@@ -1750,7 +1750,7 @@ void MainWindow::handlePathRequested(QString path)
     qDebug() << "handle service path requested" << path;
     if (path == pathEdit->currentText() || path.isEmpty()) { return; }
     if (path.contains("/.")) { modelList->setRootPath(path); }
-    pathEdit->setCurrentText(path);
+    pathEdit->setItemText(0, path);
     QTimer::singleShot(100, this, SLOT(slowPathEdit()));
 }
 
