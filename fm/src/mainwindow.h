@@ -107,7 +107,7 @@ public:
         QSize txtsize = option.fontMetrics.boundingRect(txtRect,
                                                         Qt::AlignCenter|Qt::TextWrapAnywhere,
                                                         index.data().toString()).size();
-        QSize size(width, txtsize.height()+iconsize.height()+8);
+        QSize size(width+8, txtsize.height()+iconsize.height()+8);
         return size;
     }
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -117,8 +117,8 @@ public:
         QRect item = option.rect;
         QRect iconRect(item.left()+(item.width()/2)-(iconsize.width()/2),
                        item.top()+4, iconsize.width(), iconsize.height());
-        QRect txtRect(item.left(), item.top()+iconsize.height()+4,
-                      item.width(), item.height()-iconsize.height()-4);
+        QRect txtRect(item.left()+4, item.top()+iconsize.height()+4,
+                      item.width()-8, item.height()-iconsize.height()-4);
         QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
         bool isSelected = option.state & QStyle::State_Selected;
         bool isEditing = _isEditing && index==_index;
