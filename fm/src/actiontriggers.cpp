@@ -987,7 +987,8 @@ void MainWindow::showAboutBox()
     box.setWindowTitle(tr("About %1").arg(APP_NAME));
     box.setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/fm/images/qtfm.png")));
     box.setIconPixmap(QPixmap::fromImage(QImage(":/fm/images/qtfm.png")));
-    box.setText(QString("<h1>%1 %2</h1>").arg(APP_NAME).arg(APP_VERSION));
+    box.setText(QString("<h1>%1 %2</h1>"
+                        "<p>Desktop Independent Linux/BSD File Manager</p>").arg(APP_NAME).arg(APP_VERSION));
     box.setInformativeText(QString("<p style=\"text-align:justify;font-size:small;\">"
                                    "This program is free software; you can redistribute it and/or modify"
                                    " it under the terms of the GNU General Public License as published by"
