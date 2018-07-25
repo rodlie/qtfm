@@ -24,6 +24,7 @@ SysTray::SysTray(QObject *parent)
     , showNotifications(true)
     , mimeUtilsPtr(0)
     , autoMount(false)
+    , timer(0)
 {
     // set icon theme
     Common::setupIconTheme(qApp->applicationFilePath());
@@ -51,6 +52,10 @@ SysTray::SysTray(QObject *parent)
 
     generateContextMenu();
     QTimer::singleShot(10000, this, SLOT(generateContextMenu())); // slow start to make sure udisks etc are running
+
+    timer = new QTimer(this);
+    timer->setInterval(300000);
+    connect(timer, SIGNAL(timeout()), this, SLOT(checkDevs()));
 }
 
 void SysTray::loadSettings()
@@ -161,7 +166,7 @@ void SysTray::handleDeviceError(QString path, QString error)
 void SysTray::handleDeviceMediaChanged(QString path, bool media)
 {
     if (!man->devices.contains(path)) { return; }
-    qDebug() << "handle device media changed" << path << media;
+    //qDebug() << "handle device media changed" << path << media;
     generateContextMenu();
     if (man->devices[path]->isOptical && media) {
         bool isData = man->devices[path]->opticalDataTracks>0?true:false;
@@ -272,4 +277,9 @@ void SysTray::handleShowHideDisktray()
     } else {
         if (!disktray->isVisible() && disktray->isSystemTrayAvailable()) { disktray->show(); }
     }
+}
+
+void SysTray::checkDevs()
+{
+    if (menu->actions().size()==0) { generateContextMenu(); }
 }
