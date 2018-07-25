@@ -123,10 +123,15 @@ public:
         bool isSelected = option.state & QStyle::State_Selected;
         bool isEditing = _isEditing && index==_index;
 
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->setRenderHint(QPainter::HighQualityAntialiasing);
+
         if (isSelected && !isEditing) {
             QPainterPath path;
-            path.addRect(txtRect);
+            path.addRoundRect(item, 15, 15);
+            painter->setOpacity(0.5);
             painter->fillPath(path, option.palette.highlight());
+            painter->setOpacity(1.0);
         }
 
         painter->drawPixmap(iconRect, icon.pixmap(iconsize.width(),iconsize.height()));
