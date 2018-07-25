@@ -52,11 +52,6 @@
 #include <disks.h>
 #endif
 
-// appdock
-#ifndef NO_APPDOCK
-#include "applicationdock.h"
-#endif
-
 // service
 #ifndef NO_DBUS
 #include "service.h"
@@ -434,10 +429,6 @@ private:
     Disks *disks;
 #endif
     QString trashDir;
-
-#ifndef NO_APPDOCK
-    ApplicationDock *appDock;
-#endif
 
 #ifndef NO_DBUS
     qtfm *service;

@@ -3,7 +3,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 include(../qtfm.pri)
 
 CONFIG(basic) {
-    CONFIG += no_udisks no_tray no_appdock no_dbus
+    CONFIG += no_udisks no_tray no_dbus
 }
 
 TARGET = $${QTFM_TARGET}
@@ -26,7 +26,6 @@ HEADERS += src/mainwindow.h \
     src/customactionsmanager.h \
     src/processdialog.h \
     src/applicationdialog.h
-!CONFIG(no_appdock): HEADERS += applicationdock.h
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/mymodel.cpp \
@@ -41,7 +40,6 @@ SOURCES += src/main.cpp \
     src/applicationdialog.cpp \
     src/actiondefs.cpp \
     src/actiontriggers.cpp
-!CONFIG(no_appdock): SOURCES += applicationdock.cpp
 
 OTHER_FILES += $${TARGET}.desktop
 RESOURCES += $${TARGET}.qrc
@@ -112,11 +110,9 @@ INSTALLS += icon128 icon160 icon16 icon192 icon20 icon22 \
         PKGCONFIG += Disks
     }
 }
-CONFIG(no_udisks): DEFINES += NO_UDISKS
-CONFIG(no_appdock): DEFINES += NO_APPDOCK
-CONFIG(no_dbus) : DEFINES += NO_DBUS
 
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
-
 CONFIG(deploy) : DEFINES += DEPLOY
+CONFIG(no_udisks): DEFINES += NO_UDISKS
+CONFIG(no_dbus) : DEFINES += NO_DBUS

@@ -209,13 +209,6 @@ MainWindow::MainWindow()
     tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(startPath)));
     tree->scrollTo(tree->currentIndex());
 
-    // applications dock
-#ifndef NO_APPDOCK
-    appDock = new ApplicationDock(this, Qt::SubWindow);
-    appDock->setObjectName("appDock");
-    addDockWidget(Qt::LeftDockWidgetArea, appDock);
-#endif
-
     createActions();
     createToolBars();
     createMenus();
@@ -411,9 +404,6 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
       qDebug() << "restore window state";
       if (!settings->value("windowState").isValid()) { // don't show dock tree/app as default
           dockTree->hide();
-#ifndef NO_APPDOCK
-          appDock->hide();
-#endif
       }
       restoreState(settings->value("windowState").toByteArray(), 1);
       restoreGeometry(settings->value("windowGeo").toByteArray());
@@ -1250,9 +1240,6 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
     popup->exec(event->globalPos());
     return;
   }
-#ifndef NO_APPDOCK
-  else if (focusWidget() == appDock->widget()) { return; }
-#endif
 
   // Continue with poups for folders and files
   QList<QAction*> actions;
