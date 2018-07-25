@@ -1,4 +1,4 @@
-<p align="left"><img src="share/icons/hicolor/scalable/apps/qtfm.svg" alt="QList" height="100px"></p>
+<p align="left"><img src="fm/hicolor/scalable/apps/qtfm.svg" alt="QList" height="100px"></p>
 
 [![GitHub release](https://img.shields.io/github/release/rodlie/qtfm.svg)](https://github.com/rodlie/qtfm/releases)
 [![Github commits (since latest release)](https://img.shields.io/github/commits-since/rodlie/qtfm/latest.svg)](https://github.com/rodlie/qtfm)
