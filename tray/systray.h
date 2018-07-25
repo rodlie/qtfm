@@ -11,7 +11,6 @@
 #include <QObject>
 #include <QSystemTrayIcon>
 #include <QMenu>
-#include <QTimer>
 #include "disks.h"
 #include "mimeutils.h"
 
@@ -28,7 +27,6 @@ private:
     bool showNotifications;
     MimeUtils* mimeUtilsPtr;
     bool autoMount;
-    QTimer *timer;
 
 private slots:
     void loadSettings();
@@ -43,7 +41,6 @@ private slots:
     void openMountpoint(QString mountpoint);
     void handleFoundNewDevice(QString path);
     void handleShowHideDisktray();
-    void checkDevs();
 };
 
 #endif // SYSTRAY_H
