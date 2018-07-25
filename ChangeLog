@@ -1,4 +1,4 @@
-6.1 31-July 2018
+6.1.0 31-July 2018
 - added system tray daemon (qtfm-tray), auto mount/play storage/optical
 - drag-and-drop: add settings for modifiers
 - inotify fixes
@@ -14,8 +14,19 @@
 - advanced settings
 - FreeBSD support
 - bookmarks drop fixes
+- mime fixes
 
-6.0 04-June 2018
+6.0.3 11-June 2018
+- fixed mount issue with optical in udisks
+
+6.0.2 08-June 2018
+- fixed another bookmark related bug
+
+6.0.1 07-June 2018
+- fixed broken bookmarks save
+- fixed segfault if udisks not running
+
+6.0.0 04-June 2018
 - support for removable devices (udisks)
 - basic trash support
 - several bug/ui/build/mime fixes
