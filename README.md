@@ -5,7 +5,7 @@
 [![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
 [![Github All Releases](https://img.shields.io/github/downloads/rodlie/qtfm/total.svg)](https://github.com/rodlie/qtfm/releases)
 
-![screenshot1](fm/screenshot.png)
+![screenshot1](share/images/screenshot.png)
 
 Lightweight file manager using Qt.
 
