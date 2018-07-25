@@ -1750,7 +1750,13 @@ void MainWindow::handlePathRequested(QString path)
     qDebug() << "handle service path requested" << path;
     if (path == pathEdit->currentText() || path.isEmpty()) { return; }
     if (path.contains("/.")) { modelList->setRootPath(path); }
-    tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(path)));
+    pathEdit->setCurrentText(path);
+    QTimer::singleShot(100, this, SLOT(slowPathEdit()));
+}
+
+void MainWindow::slowPathEdit()
+{
+    pathEditChanged(pathEdit->currentText());
     status->showMessage(getDriveInfo(curIndex.filePath()));
 }
 //---------------------------------------------------------------------------

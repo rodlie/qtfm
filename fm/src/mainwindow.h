@@ -308,6 +308,7 @@ private slots:
 #endif
     void clearCache();
     void handlePathRequested(QString path);
+    void slowPathEdit();
 private:
     void createActions();
     void createActionIcons();
