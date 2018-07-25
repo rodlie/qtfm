@@ -983,10 +983,10 @@ void MainWindow::toggleHidden() {
 void MainWindow::showAboutBox()
 {
     QMessageBox box;
-    QSpacerItem* horizontalSpacer = new QSpacerItem(300, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    QSpacerItem* horizontalSpacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
     box.setWindowTitle(tr("About %1").arg(APP_NAME));
-    box.setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/images/qtfm.png")));
-    box.setIconPixmap(QPixmap::fromImage(QImage(":/images/qtfm.png")));
+    box.setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/fm/images/qtfm.png")));
+    box.setIconPixmap(QPixmap::fromImage(QImage(":/fm/images/qtfm.png")));
     box.setText(QString("<h1>%1 %2</h1>").arg(APP_NAME).arg(APP_VERSION));
     box.setInformativeText(QString("<p style=\"text-align:justify;font-size:small;\">"
                                    "This program is free software; you can redistribute it and/or modify"
@@ -996,12 +996,19 @@ void MainWindow::showAboutBox()
                                    "<p style=\"font-weight:bold;\">"
                                    "<a href=\"https://qtfm.dracolinux.org\">"
                                    "https://qtfm.dracolinux.org</a></p>"));
-    box.setDetailedText(QString("Developers:\n\n"
-                                "Ole-Andre Rodlie (5.2018) <ole.andre.rodlie@gmail.com>\n\n"
-                                "Michal Rost (8.2012 - 5.2013) <rost.michal@gmail.com>\n\n"
-                                "Wittfella (5.2010 - 8.2012) <wittfella@qtfm.org>\n\n"
-                                "Artists:\n\n"
-                                "psikoz <https://github.com/psikoz>"));
+    QString details;
+    QFile authorsFile(":/AUTHORS");
+    if (authorsFile.open(QIODevice::Text|QIODevice::ReadOnly)) {
+        details.append(authorsFile.readAll());
+        authorsFile.close();
+    }
+    QFile changesFile(":/ChangeLog");
+    if (changesFile.open(QIODevice::Text|QIODevice::ReadOnly)) {
+        details.append("\n\nCHANGELOG\n\n");
+        details.append(changesFile.readAll());
+        changesFile.close();
+    }
+    if (!details.isEmpty()) { box.setDetailedText(details); }
     QGridLayout* layout = (QGridLayout*)box.layout();
     layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
     box.exec();

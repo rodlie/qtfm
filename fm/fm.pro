@@ -42,7 +42,7 @@ SOURCES += src/main.cpp \
     src/actiontriggers.cpp
 
 OTHER_FILES += $${TARGET}.desktop
-RESOURCES += $${TARGET}.qrc
+RESOURCES += ../$${TARGET}.qrc
 
 DEFINES += APP=\"\\\"$${TARGET}\\\"\"
 DEFINES += APP_NAME=\"\\\"$${TARGET_NAME}\\\"\"
