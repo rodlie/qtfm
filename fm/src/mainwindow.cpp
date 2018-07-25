@@ -55,6 +55,7 @@ MainWindow::MainWindow()
     connect(disks, SIGNAL(foundNewDevice(QString)), this, SLOT(handleMediaAdded(QString)));
     connect(disks, SIGNAL(removedDevice(QString)), this, SLOT(handleMediaRemoved(QString)));
     connect(disks, SIGNAL(mediaChanged(QString,bool)), this, SLOT(handleMediaChanged(QString,bool)));
+    connect(disks, SIGNAL(deviceErrorMessage(QString,QString)), this, SLOT(handleMediaError(QString,QString)));
 #endif
 
     // dbus service
@@ -1730,6 +1731,11 @@ void MainWindow::handleMediaEject()
     QString path = item->data(MEDIA_PATH).toString();
     if (path.isEmpty()) { return; }
     disks->devices[path]->eject();
+}
+
+void MainWindow::handleMediaError(QString path, QString error)
+{
+    QMessageBox::warning(this, path, error);
 }
 #endif
 

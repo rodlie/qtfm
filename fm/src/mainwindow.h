@@ -304,6 +304,7 @@ private slots:
     void handleMediaChanged(QString path, bool present);
     void handleMediaUnmount();
     void handleMediaEject();
+    void handleMediaError(QString path, QString error);
 #endif
     void clearCache();
     void handlePathRequested(QString path);
