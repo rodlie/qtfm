@@ -1649,7 +1649,7 @@ void MainWindow::updateGrid()
         QString filename = modelList->fileName(theItem);
         QRect item(0,0,realTextWidth,grid.height());
         QSize txtsize = fm.boundingRect(item, Qt::AlignCenter|Qt::TextWrapAnywhere, filename).size();
-        int newHeight = txtsize.height()+zoom+5;
+        int newHeight = txtsize.height()+zoom+5+8;
         if (newHeight>grid.height()) { grid.setHeight(newHeight); }
     }
     if (list->gridSize() != grid) {
