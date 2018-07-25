@@ -107,7 +107,7 @@ public:
         QSize txtsize = option.fontMetrics.boundingRect(txtRect,
                                                         Qt::AlignCenter|Qt::TextWrapAnywhere,
                                                         index.data().toString()).size();
-        QSize size(width+8, txtsize.height()+iconsize.height()+8);
+        QSize size(width+8, txtsize.height()+iconsize.height()+8+8);
         return size;
     }
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -116,19 +116,31 @@ public:
         QSize iconsize = icon.actualSize(option.decorationSize);
         QRect item = option.rect;
         QRect iconRect(item.left()+(item.width()/2)-(iconsize.width()/2),
-                       item.top()+4, iconsize.width(), iconsize.height());
-        QRect txtRect(item.left()+4, item.top()+iconsize.height()+4,
+                       item.top()+4+4, iconsize.width(), iconsize.height());
+        QRect txtRect(item.left()+4, item.top()+iconsize.height()+4+4,
                       item.width()-8, item.height()-iconsize.height()-4);
         QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
         bool isSelected = option.state & QStyle::State_Selected;
         bool isEditing = _isEditing && index==_index;
+
+        /*QStyleOptionViewItem opt = option;
+        initStyleOption(&opt,index);
+        opt.decorationAlignment |= Qt::AlignCenter;
+        opt.displayAlignment    |= Qt::AlignCenter;
+        opt.decorationPosition   = QStyleOptionViewItem::Top;
+        opt.features |= QStyleOptionViewItem::WrapText;
+        const QWidget *widget = opt.widget;
+        QStyle *style = widget ? widget->style() : QApplication::style();
+        style->drawControl(QStyle::CE_ItemViewItem,&opt,painter);*/
 
         painter->setRenderHint(QPainter::Antialiasing);
         painter->setRenderHint(QPainter::HighQualityAntialiasing);
 
         if (isSelected && !isEditing) {
             QPainterPath path;
-            path.addRoundRect(item, 15, 15);
+            QRect frame(item.left(),item.top()+4, item.width(), item.height()-4);
+            path.addRoundRect(frame, 15, 15);
+            //  path.addRect(frame);
             painter->setOpacity(0.5);
             painter->fillPath(path, option.palette.highlight());
             painter->setOpacity(1.0);

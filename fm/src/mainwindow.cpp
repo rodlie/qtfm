@@ -400,8 +400,8 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
 #if QT_VERSION >= 0x050000
   // fix style
   setStyleSheet("QToolBar { padding: 0;border:none; }"
-                //"QFrame { border:none; }"
-                /*"QListView::item,QListView::text,QListView::icon"
+                /*"QFrame { border:none; }"
+                "QListView::item,QListView::text,QListView::icon"
                 "{ border:0px;padding-top:5px;padding-left:5px; }"*/);
   addressToolBar->setContentsMargins(0,0,5,0);
 #endif
@@ -1634,7 +1634,7 @@ void MainWindow::updateGrid()
 {
     if (!iconAct->isChecked()) { return; }
     QFontMetrics fm = fontMetrics();
-    int textWidth = fm.averageCharWidth() * 15;
+    int textWidth = fm.averageCharWidth() * 17;
     int realTextWidth = fm.averageCharWidth() * 13;
     int textHeight = fm.lineSpacing() * 3;
     QSize grid;
@@ -1649,7 +1649,7 @@ void MainWindow::updateGrid()
         QString filename = modelList->fileName(theItem);
         QRect item(0,0,realTextWidth,grid.height());
         QSize txtsize = fm.boundingRect(item, Qt::AlignCenter|Qt::TextWrapAnywhere, filename).size();
-        int newHeight = txtsize.height()+zoom+5+8;
+        int newHeight = txtsize.height()+zoom+5+8+4;
         if (newHeight>grid.height()) { grid.setHeight(newHeight); }
     }
     if (list->gridSize() != grid) {
