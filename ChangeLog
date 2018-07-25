@@ -1,4 +1,21 @@
-6.0 04-Jun 2018
+6.1 31-July 2018
+- added system tray daemon (qtfm-tray), auto mount/play storage/optical
+- drag-and-drop: add settings for modifiers
+- inotify fixes
+- fixed refresh of thumbnails
+- added singleclick options in settings
+- several ui fixes/enhancements
+- added dbus session support
+- various fixes/changes in settings
+- various bug fixes
+- added new build options
+- added (icon) zoom support where missing
+- proper support for multiple files in external applications
+- advanced settings
+- FreeBSD support
+- bookmarks drop fixes
+
+6.0 04-June 2018
 - support for removable devices (udisks)
 - basic trash support
 - several bug/ui/build/mime fixes
