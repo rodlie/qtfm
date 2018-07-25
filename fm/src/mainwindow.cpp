@@ -675,7 +675,7 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
 //---------------------------------------------------------------------------
 void MainWindow::dirLoaded()
 {
-    qDebug() << "dirLoaded";
+    //qDebug() << "dirLoaded";
     if (backIndex.isValid()) {
         backIndex = QModelIndex();
         return;
