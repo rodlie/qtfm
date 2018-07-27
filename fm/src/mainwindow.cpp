@@ -47,6 +47,16 @@
 
 MainWindow::MainWindow()
 {
+    // setup icon theme search path
+    QStringList iconsPath = QIcon::themeSearchPaths();
+    QString iconsHomeLocal = QString("%1/.local/share/icons").arg(QDir::homePath());
+    QString iconsHome = QString("%1/.icons").arg(QDir::homePath());
+    if (QFile::exists(iconsHomeLocal) && !iconsPath.contains(iconsHomeLocal)) { iconsPath.prepend(iconsHomeLocal); }
+    if (QFile::exists(iconsHome) && !iconsPath.contains(iconsHome)) { iconsPath.prepend(iconsHome); }
+    iconsPath << QString("%1/../share/icons").arg(qApp->applicationDirPath());
+    QIcon::setThemeSearchPaths(iconsPath);
+    qDebug() << "using icon theme search path" << QIcon::themeSearchPaths();
+
     // libdisks
 #ifndef NO_UDISKS
     disks = new Disks();
