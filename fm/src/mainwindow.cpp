@@ -48,6 +48,7 @@
 MainWindow::MainWindow()
 {
     // setup icon theme search path
+#if QT_VERSION >= 0x050000
     QStringList iconsPath = QIcon::themeSearchPaths();
     QString iconsHomeLocal = QString("%1/.local/share/icons").arg(QDir::homePath());
     QString iconsHome = QString("%1/.icons").arg(QDir::homePath());
@@ -56,6 +57,7 @@ MainWindow::MainWindow()
     iconsPath << QString("%1/../share/icons").arg(qApp->applicationDirPath());
     QIcon::setThemeSearchPaths(iconsPath);
     qDebug() << "using icon theme search path" << QIcon::themeSearchPaths();
+#endif
 
     // libdisks
 #ifndef NO_UDISKS
