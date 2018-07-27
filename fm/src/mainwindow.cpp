@@ -1634,8 +1634,8 @@ void MainWindow::updateGrid()
 {
     if (!iconAct->isChecked()) { return; }
     QFontMetrics fm = fontMetrics();
-    int textWidth = fm.averageCharWidth() * 17;
-    int realTextWidth = fm.averageCharWidth() * 13;
+    int textWidth = fm.averageCharWidth() * 16;
+    int realTextWidth = fm.averageCharWidth() * 14;
     int textHeight = fm.lineSpacing() * 3;
     QSize grid;
     grid.setWidth(qMax(zoom, textWidth));
@@ -1648,8 +1648,9 @@ void MainWindow::updateGrid()
     foreach (QModelIndex theItem,items) {
         QString filename = modelList->fileName(theItem);
         QRect item(0,0,realTextWidth,grid.height());
-        QSize txtsize = fm.boundingRect(item, Qt::AlignCenter|Qt::TextWrapAnywhere, filename).size();
+        QSize txtsize = fm.boundingRect(item, Qt::AlignTop|Qt::AlignHCenter|Qt::TextWordWrap|Qt::TextWrapAnywhere, filename).size();
         int newHeight = txtsize.height()+zoom+5+8+4;
+        if  (txtsize.width()>grid.width()) { grid.setWidth(txtsize.width()); }
         if (newHeight>grid.height()) { grid.setHeight(newHeight); }
     }
     if (list->gridSize() != grid) {
