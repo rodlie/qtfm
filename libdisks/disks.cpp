@@ -139,6 +139,7 @@ void Disks::setupDBus()
 void Disks::scanDevices()
 {
     if (!dbus->isValid()) { return; }
+    qDebug() << "scanDevices";
     QStringList foundDevices = uDisks2::getDevices();
     for (int i=0;i<foundDevices.size();i++) {
         QString foundDevicePath = foundDevices.at(i);
@@ -197,7 +198,7 @@ void Disks::checkUDisks()
 {
     if (!QDBusConnection::systemBus().isConnected()) {
         setupDBus();
-        return;
+        //return;
     }
-    if (!dbus->isValid()) { scanDevices(); }
+    if (dbus->isValid()) { scanDevices(); }
 }
