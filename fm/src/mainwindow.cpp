@@ -1634,7 +1634,7 @@ void MainWindow::updateGrid()
 {
     if (!iconAct->isChecked()) { return; }
     QFontMetrics fm = fontMetrics();
-    int textWidth = fm.averageCharWidth() * 16;
+    int textWidth = fm.averageCharWidth() * 17;
     int realTextWidth = fm.averageCharWidth() * 14;
     int textHeight = fm.lineSpacing() * 3;
     QSize grid;

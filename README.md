@@ -25,7 +25,7 @@ Lightweight file manager using Qt.
  * [Releases](https://github.com/rodlie/qtfm/releases)
  * [Milestones](https://github.com/rodlie/qtfm/milestones)
  * [Issues](https://github.com/rodlie/qtfm/issues)
- 
+
 ## Default shortcuts
 
 | Action                      | Shortcut    |
@@ -46,8 +46,8 @@ Lightweight file manager using Qt.
 | Zoom Out                    | [ctrl+-]    |
 | Zoom In                     | [ctrl++]    |
 | Focus Path                  | [ctrl+l]    |
-| Toogle Icon View            | [F3]        |
-| Toogle Detail View          | [F4]        |
+| Toggle Icon View            | [F3]        |
+| Toggle Detail View          | [F4]        |
 | Drag and Drop Move Modifier | [shift]     |
 | Drag and Drop Copy Modifier | [ctrl]      |
 | Drag and Drop Ask Action    | [alt]       |
@@ -123,16 +123,16 @@ make INSTALL_ROOT=/package_temp_path install
 
 ## License
 
- * QtFM is licenced under the GPL-2.0 License
- * libdisks is licenced under a BSD 3-Clause License
+ * QtFM is licensed under the GPL-2.0 License
+ * libdisks is licensed under a BSD 3-Clause License
  * libfm is a mix of GPL-2.0 and BSD 3-Clause License (goal is BSD 3-Clause License)
- * qtfm-tray is licenced under a BSD 3-Clause License (but depends on libfm that includes GPL-2.0 code)
- 
+ * qtfm-tray is licensed under a BSD 3-Clause License (but depends on libfm that includes GPL-2.0 code)
+
  All new source code will be BSD 3-Clause License, modifications to existing source code in fm/ will be GPL-2.0.
- 
+
 ## Related
 
  * **[powerdwarf](https://github.com/rodlie/powerdwarf)** : Desktop Independent Power Manager.
- * **[Openbox](http://openbox.org/wiki/Main_Page)** : Openbox is a highly configurable, next generation window manager with extensive standards support. 
+ * **[Openbox](http://openbox.org/wiki/Main_Page)** : Openbox is a highly configurable, next generation window manager with extensive standards support.
  * **[tint2](https://gitlab.com/o9000/tint2)** : A lightweight panel/taskbar for Linux and BSD.
  * **[qterminal](https://github.com/lxqt/qterminal)** : A lightweight Qt-based terminal emulator.
