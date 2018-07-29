@@ -273,7 +273,7 @@ void MainWindow::lateStart() {
   detailTree->setSelectionMode(QAbstractItemView::ExtendedSelection);
   detailTree->setDragDropMode(QAbstractItemView::DragDrop);
   detailTree->setDefaultDropAction(Qt::MoveAction);
-  detailTree->setDropIndicatorShown(false);
+  detailTree->setDropIndicatorShown(true);
   detailTree->setEditTriggers(QAbstractItemView::EditKeyPressed |
                               QAbstractItemView::SelectedClicked);
 
