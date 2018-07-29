@@ -258,14 +258,14 @@ void MainWindow::lateStart() {
 
   // Configure bookmarks list
   bookmarksList->setDragDropMode(QAbstractItemView::DragDrop);
-  bookmarksList->setDropIndicatorShown(false);
+  bookmarksList->setDropIndicatorShown(true);
   bookmarksList->setDefaultDropAction(Qt::MoveAction);
   bookmarksList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
   // Configure tree view
   tree->setDragDropMode(QAbstractItemView::DragDrop);
   tree->setDefaultDropAction(Qt::MoveAction);
-  tree->setDropIndicatorShown(false);
+  tree->setDropIndicatorShown(true);
   tree->setEditTriggers(QAbstractItemView::EditKeyPressed |
                         QAbstractItemView::SelectedClicked);
 
