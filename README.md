@@ -16,7 +16,7 @@ Lightweight file manager using Qt.
  * Drag & drop functionality
  * Tabs
  * Udisks support
- * System tray daemon
+ * [System tray daemon](tray/README.md)
    * Mount/Unmount devices
    * Auto play CD/DVD
 
