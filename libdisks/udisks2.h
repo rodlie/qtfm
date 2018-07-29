@@ -124,7 +124,7 @@ public:
             }
         }
         mtab.close();
-        qDebug() << "optical mountpoint" << mountpoint;
+        //qDebug() << "optical mountpoint" << mountpoint;
         return mountpoint;
     }
     static QString getMountPoint(QString path)
@@ -143,7 +143,7 @@ public:
         }
         foreach (QByteArray point, argList) { mountpoints.append(point); }
         mountpoint = mountpoints.join("");
-        qDebug() << "mountpoint for path" << path << mountpoint;
+        //qDebug() << "mountpoint for path" << path << mountpoint;
         return mountpoint;
     }
     static QString getDeviceName(QString path)

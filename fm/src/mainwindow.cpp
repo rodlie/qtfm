@@ -47,6 +47,18 @@
 
 MainWindow::MainWindow()
 {
+    // setup icon theme search path
+#if QT_VERSION >= 0x050000
+    QStringList iconsPath = QIcon::themeSearchPaths();
+    QString iconsHomeLocal = QString("%1/.local/share/icons").arg(QDir::homePath());
+    QString iconsHome = QString("%1/.icons").arg(QDir::homePath());
+    if (QFile::exists(iconsHomeLocal) && !iconsPath.contains(iconsHomeLocal)) { iconsPath.prepend(iconsHomeLocal); }
+    if (QFile::exists(iconsHome) && !iconsPath.contains(iconsHome)) { iconsPath.prepend(iconsHome); }
+    iconsPath << QString("%1/../share/icons").arg(qApp->applicationDirPath());
+    QIcon::setThemeSearchPaths(iconsPath);
+    qDebug() << "using icon theme search path" << QIcon::themeSearchPaths();
+#endif
+
     // libdisks
 #ifndef NO_UDISKS
     disks = new Disks();
@@ -55,6 +67,7 @@ MainWindow::MainWindow()
     connect(disks, SIGNAL(foundNewDevice(QString)), this, SLOT(handleMediaAdded(QString)));
     connect(disks, SIGNAL(removedDevice(QString)), this, SLOT(handleMediaRemoved(QString)));
     connect(disks, SIGNAL(mediaChanged(QString,bool)), this, SLOT(handleMediaChanged(QString,bool)));
+    connect(disks, SIGNAL(deviceErrorMessage(QString,QString)), this, SLOT(handleMediaError(QString,QString)));
 #endif
 
     // dbus service
@@ -209,18 +222,11 @@ MainWindow::MainWindow()
     tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(startPath)));
     tree->scrollTo(tree->currentIndex());
 
-    // applications dock
-#ifndef NO_APPDOCK
-    appDock = new ApplicationDock(this, Qt::SubWindow);
-    appDock->setObjectName("appDock");
-    addDockWidget(Qt::LeftDockWidgetArea, appDock);
-#endif
-
     createActions();
     createToolBars();
     createMenus();
 
-    setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/images/qtfm.png")));
+    setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/fm/images/qtfm.png")));
     setWindowTitle(APP_NAME);
 
     // Create custom action manager
@@ -252,14 +258,14 @@ void MainWindow::lateStart() {
 
   // Configure bookmarks list
   bookmarksList->setDragDropMode(QAbstractItemView::DragDrop);
-  bookmarksList->setDropIndicatorShown(false);
+  bookmarksList->setDropIndicatorShown(true);
   bookmarksList->setDefaultDropAction(Qt::MoveAction);
   bookmarksList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
   // Configure tree view
   tree->setDragDropMode(QAbstractItemView::DragDrop);
   tree->setDefaultDropAction(Qt::MoveAction);
-  tree->setDropIndicatorShown(false);
+  tree->setDropIndicatorShown(true);
   tree->setEditTriggers(QAbstractItemView::EditKeyPressed |
                         QAbstractItemView::SelectedClicked);
 
@@ -267,7 +273,7 @@ void MainWindow::lateStart() {
   detailTree->setSelectionMode(QAbstractItemView::ExtendedSelection);
   detailTree->setDragDropMode(QAbstractItemView::DragDrop);
   detailTree->setDefaultDropAction(Qt::MoveAction);
-  detailTree->setDropIndicatorShown(false);
+  detailTree->setDropIndicatorShown(true);
   detailTree->setEditTriggers(QAbstractItemView::EditKeyPressed |
                               QAbstractItemView::SelectedClicked);
 
@@ -400,8 +406,8 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
 #if QT_VERSION >= 0x050000
   // fix style
   setStyleSheet("QToolBar { padding: 0;border:none; }"
-                //"QFrame { border:none; }"
-                /*"QListView::item,QListView::text,QListView::icon"
+                /*"QFrame { border:none; }"
+                "QListView::item,QListView::text,QListView::icon"
                 "{ border:0px;padding-top:5px;padding-left:5px; }"*/);
   addressToolBar->setContentsMargins(0,0,5,0);
 #endif
@@ -411,9 +417,6 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
       qDebug() << "restore window state";
       if (!settings->value("windowState").isValid()) { // don't show dock tree/app as default
           dockTree->hide();
-#ifndef NO_APPDOCK
-          appDock->hide();
-#endif
       }
       restoreState(settings->value("windowState").toByteArray(), 1);
       restoreGeometry(settings->value("windowGeo").toByteArray());
@@ -675,7 +678,7 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
 //---------------------------------------------------------------------------
 void MainWindow::dirLoaded()
 {
-    qDebug() << "dirLoaded";
+    //qDebug() << "dirLoaded";
     if (backIndex.isValid()) {
         backIndex = QModelIndex();
         return;
@@ -976,7 +979,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
   if (currentDragMode == Common::DM_UNKNOWN) {
     QMessageBox box;
     box.setWindowTitle(tr("Select file action"));
-    box.setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/images/qtfm.png")));
+    box.setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/fm/images/qtfm.png")));
     box.setIconPixmap(QIcon::fromTheme("dialog-information").pixmap(QSize(32, 32)));
     box.setText(tr("<h3>What do you want to do?</h3>"));
     if (!extraText.isEmpty()) {
@@ -1250,9 +1253,6 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
     popup->exec(event->globalPos());
     return;
   }
-#ifndef NO_APPDOCK
-  else if (focusWidget() == appDock->widget()) { return; }
-#endif
 
   // Continue with poups for folders and files
   QList<QAction*> actions;
@@ -1634,8 +1634,8 @@ void MainWindow::updateGrid()
 {
     if (!iconAct->isChecked()) { return; }
     QFontMetrics fm = fontMetrics();
-    int textWidth = fm.averageCharWidth() * 15;
-    int realTextWidth = fm.averageCharWidth() * 13;
+    int textWidth = fm.averageCharWidth() * 17;
+    int realTextWidth = fm.averageCharWidth() * 14;
     int textHeight = fm.lineSpacing() * 3;
     QSize grid;
     grid.setWidth(qMax(zoom, textWidth));
@@ -1648,8 +1648,9 @@ void MainWindow::updateGrid()
     foreach (QModelIndex theItem,items) {
         QString filename = modelList->fileName(theItem);
         QRect item(0,0,realTextWidth,grid.height());
-        QSize txtsize = fm.boundingRect(item, Qt::AlignCenter|Qt::TextWrapAnywhere, filename).size();
-        int newHeight = txtsize.height()+zoom+5;
+        QSize txtsize = fm.boundingRect(item, Qt::AlignTop|Qt::AlignHCenter|Qt::TextWordWrap|Qt::TextWrapAnywhere, filename).size();
+        int newHeight = txtsize.height()+zoom+5+8+4;
+        if  (txtsize.width()>grid.width()) { grid.setWidth(txtsize.width()); }
         if (newHeight>grid.height()) { grid.setHeight(newHeight); }
     }
     if (list->gridSize() != grid) {
@@ -1744,6 +1745,11 @@ void MainWindow::handleMediaEject()
     if (path.isEmpty()) { return; }
     disks->devices[path]->eject();
 }
+
+void MainWindow::handleMediaError(QString path, QString error)
+{
+    QMessageBox::warning(this, path, error);
+}
 #endif
 
 void MainWindow::clearCache()
@@ -1757,7 +1763,13 @@ void MainWindow::handlePathRequested(QString path)
     qDebug() << "handle service path requested" << path;
     if (path == pathEdit->currentText() || path.isEmpty()) { return; }
     if (path.contains("/.")) { modelList->setRootPath(path); }
-    tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(path)));
+    pathEdit->setItemText(0, path);
+    QTimer::singleShot(100, this, SLOT(slowPathEdit()));
+}
+
+void MainWindow::slowPathEdit()
+{
+    pathEditChanged(pathEdit->currentText());
     status->showMessage(getDriveInfo(curIndex.filePath()));
 }
 //---------------------------------------------------------------------------

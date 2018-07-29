@@ -15,6 +15,7 @@ TEMPLATE = app
 SOURCES += main.cpp systray.cpp
 HEADERS += systray.h
 RESOURCES += tray.qrc
+OTHER_FILES += README.md
 
 exists(../libdisks/libdisks.pro) {
     INCLUDEPATH += ../libdisks
@@ -35,4 +36,3 @@ man.path += $${MANDIR}/man8
 INSTALLS += target target_desktop man
 
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
-

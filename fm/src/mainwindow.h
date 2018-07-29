@@ -52,11 +52,6 @@
 #include <disks.h>
 #endif
 
-// appdock
-#ifndef NO_APPDOCK
-#include "applicationdock.h"
-#endif
-
 // service
 #ifndef NO_DBUS
 #include "service.h"
@@ -102,12 +97,13 @@ public:
     {
         QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
         QSize iconsize = icon.actualSize(option.decorationSize);
-        int width = qMax(iconsize.width(), option.fontMetrics.averageCharWidth() * 13);
+        int width = qMax(iconsize.width(), option.fontMetrics.averageCharWidth() * 14);
         QRect txtRect(0, 0, width, option.rect.height());
         QSize txtsize = option.fontMetrics.boundingRect(txtRect,
-                                                        Qt::AlignCenter|Qt::TextWrapAnywhere,
+                                                        Qt::AlignTop|Qt::AlignHCenter|Qt::TextWordWrap|Qt::TextWrapAnywhere,
                                                         index.data().toString()).size();
-        QSize size(width, txtsize.height()+iconsize.height());
+        if (txtsize.width()>width) { width = txtsize.width(); }
+        QSize size(width+8, txtsize.height()+iconsize.height()+8+8);
         return size;
     }
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -116,17 +112,34 @@ public:
         QSize iconsize = icon.actualSize(option.decorationSize);
         QRect item = option.rect;
         QRect iconRect(item.left()+(item.width()/2)-(iconsize.width()/2),
-                       item.top(), iconsize.width(), iconsize.height());
-        QRect txtRect(item.left(), item.top()+iconsize.height(),
-                      item.width(), item.height()-iconsize.height());
+                       item.top()+4+4, iconsize.width(), iconsize.height());
+        QRect txtRect(item.left()+4, item.top()+iconsize.height()+4+4+4,
+                      item.width()-8, item.height()-iconsize.height()-4);
         QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
         bool isSelected = option.state & QStyle::State_Selected;
         bool isEditing = _isEditing && index==_index;
 
+        /*QStyleOptionViewItem opt = option;
+        initStyleOption(&opt,index);
+        opt.decorationAlignment |= Qt::AlignCenter;
+        opt.displayAlignment    |= Qt::AlignCenter;
+        opt.decorationPosition   = QStyleOptionViewItem::Top;
+        opt.features |= QStyleOptionViewItem::WrapText;
+        const QWidget *widget = opt.widget;
+        QStyle *style = widget ? widget->style() : QApplication::style();
+        style->drawControl(QStyle::CE_ItemViewItem,&opt,painter);*/
+
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->setRenderHint(QPainter::HighQualityAntialiasing);
+
         if (isSelected && !isEditing) {
             QPainterPath path;
-            path.addRect(txtRect);
+            QRect frame(item.left(),item.top()+4, item.width(), item.height()-4);
+            path.addRoundRect(frame, 15, 15);
+            //  path.addRect(frame);
+            painter->setOpacity(0.7);
             painter->fillPath(path, option.palette.highlight());
+            painter->setOpacity(1.0);
         }
 
         painter->drawPixmap(iconRect, icon.pixmap(iconsize.width(),iconsize.height()));
@@ -136,7 +149,7 @@ public:
         else { painter->setPen(txtBrush.color()); }
 
         painter->drawText(txtRect,
-                          Qt::AlignCenter|Qt::AlignVCenter|Qt::TextWrapAnywhere,
+                          Qt::AlignTop|Qt::AlignHCenter|Qt::TextWordWrap|Qt::TextWrapAnywhere,
                           index.data().toString());
     }
 };
@@ -168,7 +181,9 @@ public:
         if (option.state & QStyle::State_Selected) {
             QPainterPath path;
             path.addRect(txtRect);
+            painter->setOpacity(0.7);
             painter->fillPath(path, option.palette.highlight());
+            painter->setOpacity(1.0);
         }
 
         if (option.state & QStyle::State_Selected) {
@@ -292,9 +307,11 @@ private slots:
     void handleMediaChanged(QString path, bool present);
     void handleMediaUnmount();
     void handleMediaEject();
+    void handleMediaError(QString path, QString error);
 #endif
     void clearCache();
     void handlePathRequested(QString path);
+    void slowPathEdit();
 private:
     void createActions();
     void createActionIcons();
@@ -417,10 +434,6 @@ private:
     Disks *disks;
 #endif
     QString trashDir;
-
-#ifndef NO_APPDOCK
-    ApplicationDock *appDock;
-#endif
 
 #ifndef NO_DBUS
     qtfm *service;

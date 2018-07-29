@@ -49,6 +49,7 @@ SysTray::SysTray(QObject *parent)
     // load settings
     loadSettings();
 
+    generateContextMenu();
     QTimer::singleShot(10000, this, SLOT(generateContextMenu())); // slow start to make sure udisks etc are running
 }
 
@@ -228,7 +229,7 @@ void SysTray::handleDeviceMountpointChanged(QString path, QString mountpoint)
     if (mountpoint.isEmpty()) {
         if (!man->devices[path]->isOptical) {
             // TODO
-            showMessage(QObject::tr("%1 removed").arg(man->devices[path]->name), QObject::tr("It's now safe to remove %1 from your computer.").arg(man->devices[path]->name));
+            showMessage(QObject::tr("%1 removed").arg(man->devices[path]->name), QObject::tr("%1 was safely removed.").arg(man->devices[path]->name));
         }
     } else { openMountpoint(mountpoint); }
 }
