@@ -1,4 +1,4 @@
-6.1.0 31-July 2018
+6.1.0 04-August 2018
 - added system tray daemon (qtfm-tray), auto mount/play storage/optical
 - drag-and-drop: add settings for modifiers
 - inotify fixes
