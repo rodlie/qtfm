@@ -1,6 +1,6 @@
 # qtfm-tray
 
-A system tray daemon used to manage storage/optical devices and actions releated to that.
+A system tray daemon used to manage storage/optical devices and actions related to that.
 
 ## Features
 
@@ -10,7 +10,7 @@ A system tray daemon used to manage storage/optical devices and actions releated
 
 ## Roadmap
 
-In the future this daemon can be used to cache/speed up varios things in QtFM. Support for more actions and devices is also possible.
+In the future this daemon can be used to cache/speed up various things in QtFM. Support for more actions and devices is also possible.
 
 ## Usage
 
