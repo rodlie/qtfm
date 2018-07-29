@@ -60,8 +60,8 @@ desktop.files += $${TARGET}.desktop
 desktop.path += $${PREFIX}/share/applications
 docs.path += $${DOCDIR}/$${TARGET}-$${VERSION}
 docs.files += ../LICENSE ../README.md ../AUTHORS ../ChangeLog
-man.files += qtfm.8
-man.path += $${MANDIR}/man8
+man.files += qtfm.1
+man.path += $${MANDIR}/man1
 INSTALLS += target desktop docs man
 
 icon128.files = hicolor/128x128/apps/qtfm.png
