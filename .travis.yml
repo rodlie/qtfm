@@ -7,7 +7,7 @@ before_install:
   - sudo apt-get update
 
 install:
-  - sudo apt-get install qt4-dev-tools qtbase5-dev libxss-dev libmagic-dev qt4-qmake qt5-qmake tree
+  - sudo apt-get install qt4-dev-tools qtbase5-dev libxss-dev libmagick++-dev libmagic-dev qt4-qmake qt5-qmake tree
   
 script:
   - export CWD=`pwd`
