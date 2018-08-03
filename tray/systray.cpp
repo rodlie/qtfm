@@ -196,7 +196,12 @@ void SysTray::handleDeviceMediaChanged(QString path, bool media)
             }
             QDir tsVideo(QString("%1/video_ts").arg(man->devices[path]->mountpoint));
             QDir tsAudio(QString("%1/audio_ts").arg(man->devices[path]->mountpoint));
-
+            if (!tsVideo.exists()) {
+                tsVideo.setPath(QString("%1/VIDEO_TS").arg(man->devices[path]->mountpoint));
+            }
+            if (!tsAudio.exists()) {
+                tsAudio.setPath(QString("%1/AUDIO_TS").arg(man->devices[path]->mountpoint));
+            }
             QString desktop;
             if (tsVideo.exists()) {
                 QStringList apps = mimeUtilsPtr->getDefault("x-content/video-dvd");
