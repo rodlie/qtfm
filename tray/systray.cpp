@@ -116,6 +116,7 @@ void SysTray::disktrayActivated(QSystemTrayIcon::ActivationReason reason)
     case QSystemTrayIcon::Context:
     case QSystemTrayIcon::Trigger:
         if (menu->actions().size()>0) { menu->popup(QCursor::pos()); }
+        break;
     default:;
     }
 }
@@ -188,7 +189,7 @@ void SysTray::handleDeviceMediaChanged(QString path, bool media)
             DesktopFile df(desktop);
             QString app = df.getExec().split(" ").takeFirst();
             if (app.isEmpty()) { return; }
-            QProcess::startDetached(QString("%1 cdda://%2").arg(app).arg(man->devices[path]->name));
+            QProcess::startDetached(QString("%1 cdda://%2").arg(app).arg(man->devices[path]->mountpoint));
         }
         // auto play DVD if enabled
         if (Common::readSetting("autoPlayDVD").toBool() && isData) {
