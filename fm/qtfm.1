@@ -1,10 +1,29 @@
-.TH qtfm 1 "11 July 2018" "6.1" "QtFM documentation"
+.TH qtfm 1 "01 August 2018" "6.1" "QtFM documentation"
 .SH NAME
 QtFM -\ desktop independent file manager
 .SH SYNOPSIS
-qtfm [file:///]
+.B qtfm
+.I file
+.B ...
 .SH DESCRIPTION
 Lightweight file manager using Qt.
+.SH FILES
+.I ~/.config/qtfm6/qtfm6.conf
+.RS
+Per user configuration file.
+.RE
+.I ~/.config/qtfm6/file.cache
+.RS
+Per user file/mime icon cache.
+.RE
+.I ~/.config/qtfm6/folder.cache
+.RS
+Per user folder icon cache. Currently not used.
+.RE
+.I ~/.config/qtfm6/thumbs.cache
+.RS
+Per user thumbnail icon cache.
+.RE
 .SH SEE ALSO
 qtfm-tray(1)
 .SH BUGS

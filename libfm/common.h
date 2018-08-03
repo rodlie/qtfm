@@ -440,22 +440,22 @@ public:
     static DragMode getDADaltMod()
     {
         QSettings settings(Common::configFile(), QSettings::IniFormat);
-        return int2dad(settings.value("dad_alt").toInt());
+        return int2dad(settings.value("dad_alt", DM_UNKNOWN).toInt());
     }
     static DragMode getDADctrlMod()
     {
         QSettings settings(Common::configFile(), QSettings::IniFormat);
-        return int2dad(settings.value("dad_ctrl").toInt());
+        return int2dad(settings.value("dad_ctrl", DM_COPY).toInt());
     }
     static DragMode getDADshiftMod()
     {
         QSettings settings(Common::configFile(), QSettings::IniFormat);
-        return int2dad(settings.value("dad_shift").toInt());
+        return int2dad(settings.value("dad_shift", DM_MOVE).toInt());
     }
     static DragMode getDefaultDragAndDrop()
     {
         QSettings settings(Common::configFile(), QSettings::IniFormat);
-        return int2dad(settings.value("dad").toInt());
+        return int2dad(settings.value("dad", DM_MOVE).toInt());
     }
     static QString getDeviceForDir(QString dir)
     {

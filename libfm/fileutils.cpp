@@ -211,6 +211,8 @@ QIcon FileUtils::searchMimeIcon(QString mime, const QIcon &defaultIcon) {
           } else {
               icon = QIcon::fromTheme("text-x-generic");
           }
+      } else if (mime.endsWith("-executable")) {
+          icon = QIcon::fromTheme("application-x-executable");
       } else {
           icon = QIcon::fromTheme("text-x-generic");
       }
