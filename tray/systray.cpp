@@ -172,15 +172,16 @@ void SysTray::handleDeviceMediaChanged(QString path, bool media)
         else if (isAudio) { opticalType = QObject::tr("audio"); }
         showMessage(QObject::tr("%1 has media").arg(man->devices[path]->name), QObject::tr("Detected %1 media in %2").arg(opticalType).arg(man->devices[path]->name));
 
+        bool openMedia = false;
         // auto mount if enabled
         if (Common::readSetting("trayAutoMount").toBool() && isData) {
             qDebug() << "auto mount optical";
             man->devices[path]->mount();
-            openMountpoint(man->devices[path]->mountpoint);
-            generateContextMenu();
+            openMedia = true;
         }
         // auto play CD if enabled
         if (Common::readSetting("autoPlayAudioCD").toBool() && isAudio) {
+            openMedia = false;
             QStringList apps = mimeUtilsPtr->getDefault("x-content/audio-cdda");
             QString desktop = Common::findApplication(qApp->applicationFilePath(), apps.at(0));
             if (desktop.isEmpty()) { return; }
@@ -194,6 +195,7 @@ void SysTray::handleDeviceMediaChanged(QString path, bool media)
             if (man->devices[path]->mountpoint.isEmpty()) {
                 man->devices[path]->mount();
             }
+            openMedia = false;
             QDir tsVideo(QString("%1/video_ts").arg(man->devices[path]->mountpoint));
             QDir tsAudio(QString("%1/audio_ts").arg(man->devices[path]->mountpoint));
             if (!tsVideo.exists()) {
@@ -223,6 +225,10 @@ void SysTray::handleDeviceMediaChanged(QString path, bool media)
                 QProcess::startDetached(QString("%1 dvd://%2").arg(app).arg(man->devices[path]->mountpoint));
             }
         }
+        if (openMedia) {
+            openMountpoint(man->devices[path]->mountpoint);
+        }
+        generateContextMenu();
     }
 }
 
