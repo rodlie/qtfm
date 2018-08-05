@@ -3,7 +3,6 @@
 [![GitHub release](https://img.shields.io/github/release/rodlie/qtfm.svg)](https://github.com/rodlie/qtfm/releases)
 [![Github commits (since latest release)](https://img.shields.io/github/commits-since/rodlie/qtfm/latest.svg)](https://github.com/rodlie/qtfm)
 [![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
-[![Github All Releases](https://img.shields.io/github/downloads/rodlie/qtfm/total.svg)](https://github.com/rodlie/qtfm/releases)
 
 ![screenshot1](fm/images/screenshot.png)
 
@@ -73,7 +72,7 @@ Download the latest [release](https://github.com/rodlie/qtfm/releases), then mak
 
 Download and extract:
 ```
-tar xvf qtfm-VERSION.tar.gz
+tar xvf qtfm-6.1.x.tar.gz
 cd qtfm-VERSION
 ```
 
@@ -81,6 +80,7 @@ Or use git:
 ```
 git clone https://github.com/rodlie/qtfm
 cd qtfm
+git checkout 6.1
 ```
 
 Now you just need to build it:
