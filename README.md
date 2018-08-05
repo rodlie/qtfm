@@ -65,6 +65,7 @@ Download the latest [release](https://github.com/rodlie/qtfm/releases), then mak
 
 * Requires [Qt](http://qt.io) 4.8+ (5.6+ recommended)
 * Requires libmagic from [file](http://darwinsys.com/file/) **if using Qt 4**.
+* Requires [ImageMagick](http://www.imagemagick.org) C++ library/headers (can be disabled)
 * Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/)
 * Requires [adwaita-icon-theme](https://github.com/GNOME/adwaita-icon-theme) or similar
 * Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD**
@@ -90,6 +91,9 @@ Optional build options:
  * ``CONFIG+=no_udisks`` : This will disable udisks support in QtFM
  * ``CONFIG+=no_tray`` : This will disable qtfm-tray
  * ``CONFIG+=no_dbus`` : This will disable D-Bus session features in QtFM
+ * ``CONFIG+=no_magick`` : This will disable thumbnail generation using ImageMagick
+   * ``CONFIG+=magick7`` : Enable support for ImageMagick 7
+   * ``MAGICK_PKG_CONFIG`` : Custom pkgconfig name for ``Magick++``
  * ``CONFIG+=release`` : Disable debug output (recommended)
  * ``PREFIX=`` : Install prefix, where things are installed when running ``make install``
  * ``DOCDIR=`` : Location for documentation (default is PREFIX/share/doc)
