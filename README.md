@@ -63,13 +63,16 @@ QtFM is available in several distributions:
 
 Download the latest [release](https://github.com/rodlie/qtfm/releases), then make sure you have the required dependencies.
 
+6.1:
 * Requires [Qt](http://qt.io) 4.8+ (5.6+ recommended)
 * Requires libmagic from [file](http://darwinsys.com/file/) **if using Qt 4**.
-* Requires [ImageMagick](http://www.imagemagick.org) C++ library/headers (can be disabled)
 * Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/)
 * Requires [adwaita-icon-theme](https://github.com/GNOME/adwaita-icon-theme) or similar
 * Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD**
 * Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/)/[bsdisks](https://www.freshports.org/sysutils/bsdisks/) at run-time
+
+6.2:
+* Requires [ImageMagick](http://www.imagemagick.org) C++ library/headers (can be disabled)
 
 Download and extract:
 ```
@@ -88,17 +91,20 @@ Now you just need to build it:
 
 Optional build options:
 
+6.1:
  * ``CONFIG+=no_udisks`` : This will disable udisks support in QtFM
  * ``CONFIG+=no_tray`` : This will disable qtfm-tray
  * ``CONFIG+=no_dbus`` : This will disable D-Bus session features in QtFM
- * ``CONFIG+=no_magick`` : This will disable thumbnail generation using ImageMagick
-   * ``CONFIG+=magick7`` : Enable support for ImageMagick 7
-   * ``MAGICK_PKG_CONFIG`` : Custom pkgconfig name for ``Magick++``
  * ``CONFIG+=release`` : Disable debug output (recommended)
  * ``PREFIX=`` : Install prefix, where things are installed when running ``make install``
  * ``DOCDIR=`` : Location for documentation (default is PREFIX/share/doc)
  * ``MANDIR=`` : Location for man pages (default is PREFIX/share/man)
  * ``XDGDIR=`` : Location of XDG (default is /etc/xdg or PREFIX/etc/xdg)
+
+6.2:
+ * ``CONFIG+=no_magick`` : This will disable thumbnail generation using ImageMagick
+ * ``CONFIG+=magick7`` : Enable support for ImageMagick 7
+ * ``MAGICK_PKG_CONFIG`` : Custom pkgconfig name for ``Magick++``
 
 Doing a normal build:
 ```
