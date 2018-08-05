@@ -104,6 +104,7 @@ Optional build options:
 6.2:
  * ``CONFIG+=no_magick`` : This will disable thumbnail generation using ImageMagick
  * ``CONFIG+=magick7`` : Enable support for ImageMagick 7
+ * ``CONFIG+=legacy_magick`` : Enable support for old versions of ImageMagick
  * ``MAGICK_PKG_CONFIG`` : Custom pkgconfig name for ``Magick++``
 
 Doing a normal build:

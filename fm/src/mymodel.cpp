@@ -595,6 +595,9 @@ void myModel::loadThumbs(QModelIndexList indexes) {
   // Types that should be thumbnailed
   QStringList files, types;
 #ifndef NO_MAGICK
+#ifdef LEGACY_MAGICK
+  types << "jpeg" << "jpg" << "png" << "svg" << "tif" << "tiff";
+#else
   QString magickDelegates = QString::fromStdString(MagickCore::GetMagickDelegates());
   if (magickDelegates.contains("jng")) { types << "jng"; }
   if (magickDelegates.contains("jp2")) { types << "jp2"; }
@@ -607,6 +610,7 @@ void myModel::loadThumbs(QModelIndexList indexes) {
   }
   if (magickDelegates.contains("tiff")) { types << "tif" << "tiff"; }
   if (magickDelegates.contains("wmf")) { types << "wmf"; }
+#endif
   types << "psd" << "xcf" << "miff" << "gif" << "ico" << "bmp" << "xpm" << "pdf";
   types << Common::videoFormats();
   // TODO: we should get supported formats from IM ...
