@@ -1,7 +1,7 @@
 QTFM_TARGET = qtfm
 QTFM_TARGET_NAME = "QtFM"
 QTFM_MAJOR = 6
-QTFM_MINOR = 1
+QTFM_MINOR = 2
 QTFM_PATCH = 0
 
 isEmpty(PREFIX) {
@@ -21,6 +21,7 @@ isEmpty(XDGDIR) {
 }
 CONFIG += staticlib
 CONFIG -= install_lib
+CONFIG += link_pkgconfig
 
 CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
 freebsd: LIBS += -linotify

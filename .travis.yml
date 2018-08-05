@@ -7,55 +7,55 @@ before_install:
   - sudo apt-get update
 
 install:
-  - sudo apt-get install qt4-dev-tools qtbase5-dev libxss-dev libmagic-dev qt4-qmake qt5-qmake tree
+  - sudo apt-get install qt4-dev-tools qtbase5-dev libxss-dev libmagick++-dev libmagic-dev qt4-qmake qt5-qmake tree
   
 script:
   - export CWD=`pwd`
   - mkdir $CWD/build1
   - cd $CWD/build1
-  - qmake -qt=qt5 CONFIG+=release PREFIX=/usr  ..
+  - qmake -qt=qt5 CONFIG+=release CONFIG+=legacy_magick PREFIX=/usr  ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg
   - mkdir $CWD/build2
   - cd $CWD/build2
-  - qmake -qt=qt4 CONFIG+=release PREFIX=/usr  ..
+  - qmake -qt=qt4 CONFIG+=release CONFIG+=legacy_magick PREFIX=/usr  ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg
   - mkdir $CWD/build3
   - cd $CWD/build3
-  - qmake -qt=qt5 CONFIG+=debug PREFIX=/usr  ..
+  - qmake -qt=qt5 CONFIG+=debug CONFIG+=legacy_magick PREFIX=/usr  ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg
   - mkdir $CWD/build4
   - cd $CWD/build4
-  - qmake -qt=qt4 CONFIG+=debug PREFIX=/usr  ..
+  - qmake -qt=qt4 CONFIG+=debug CONFIG+=legacy_magick PREFIX=/usr  ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg
   - mkdir $CWD/build5
   - cd $CWD/build5
-  - qmake -qt=qt5 CONFIG+=debug PREFIX=/usr CONFIG+=basic ..
+  - qmake -qt=qt5 CONFIG+=debug CONFIG+=legacy_magick PREFIX=/usr CONFIG+=basic ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg
   - mkdir $CWD/build6
   - cd $CWD/build6
-  - qmake -qt=qt4 CONFIG+=debug PREFIX=/usr CONFIG+=basic ..
+  - qmake -qt=qt4 CONFIG+=debug CONFIG+=legacy_magick PREFIX=/usr CONFIG+=basic ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg
   - mkdir $CWD/build7
   - cd $CWD/build7
-  - qmake -qt=qt5 CONFIG+=release PREFIX=/usr CONFIG+=basic ..
+  - qmake -qt=qt5 CONFIG+=release CONFIG+=legacy_magick PREFIX=/usr CONFIG+=basic ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg
   - mkdir $CWD/build8
   - cd $CWD/build8
-  - qmake -qt=qt4 CONFIG+=release PREFIX=/usr CONFIG+=basic ..
+  - qmake -qt=qt4 CONFIG+=release CONFIG+=legacy_magick PREFIX=/usr CONFIG+=basic ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg

@@ -23,6 +23,10 @@
 #include <QApplication>
 #include "mainwindow.h"
 
+#ifndef NO_MAGICK
+#include <Magick++.h>
+#endif
+
 #if QT_VERSION >= 0x050000
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,6 +68,9 @@ int main(int argc, char *argv[]) {
 
 #if QT_VERSION >= 0x050000
   qInstallMessageHandler(msgHandler);
+#endif
+#ifndef NO_MAGICK
+  Magick::InitializeMagick(NULL);
 #endif
   QApplication app(argc, argv);
   QApplication::setOrganizationName(APP);

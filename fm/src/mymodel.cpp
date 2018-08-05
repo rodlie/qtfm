@@ -26,6 +26,9 @@
 #include <sys/ioctl.h>
 #include <QApplication>
 #include <QMessageBox>
+#ifndef NO_MAGICK
+#include <Magick++.h>
+#endif
 
 /**
  * @brief Creates file system model
@@ -591,7 +594,30 @@ void myModel::loadThumbs(QModelIndexList indexes) {
 
   // Types that should be thumbnailed
   QStringList files, types;
-  types << "jpg" << "jpeg" << "png" << "bmp" << "ico" << "svg" << "gif";
+#ifndef NO_MAGICK
+#ifdef LEGACY_MAGICK
+  types << "jpeg" << "jpg" << "png" << "svg" << "tif" << "tiff";
+#else
+  QString magickDelegates = QString::fromStdString(MagickCore::GetMagickDelegates());
+  if (magickDelegates.contains("jng")) { types << "jng"; }
+  if (magickDelegates.contains("jp2")) { types << "jp2"; }
+  if (magickDelegates.contains("jpeg")) { types << "jpg" << "jpeg"; }
+  if (magickDelegates.contains("openexr")) { types << "exr"; }
+  if (magickDelegates.contains("png")) { types << "png"; }
+  if (magickDelegates.contains("svg")) {
+      types << "svg";
+      if (magickDelegates.contains("zlib")) { types << "svgz"; }
+  }
+  if (magickDelegates.contains("tiff")) { types << "tif" << "tiff"; }
+  if (magickDelegates.contains("wmf")) { types << "wmf"; }
+#endif
+  types << "psd" << "xcf" << "miff" << "gif" << "ico" << "bmp" << "xpm" << "pdf";
+  types << Common::videoFormats();
+  // TODO: we should get supported formats from IM ...
+#else
+  types << "jpg" << "jpeg" << "png" << "bmp" << "ico" << "svg" << "gif" << "tif" << "tiff" << "xpm";
+#endif
+
 
   // Remember files with valid suffix
   foreach (QModelIndex item, indexes) {
@@ -604,7 +630,7 @@ void myModel::loadThumbs(QModelIndexList indexes) {
   // Loads thumbnails from cache
   if (files.count()) {
     if (thumbs->count() == 0) {
-        qDebug() << "thumbs are empty, try to load cache ...";
+      qDebug() << "thumbs are empty, try to load cache ...";
       QFile fileIcons(QString("%1/thumbs.cache").arg(Common::configDir()));
       if (fileIcons.open(QIODevice::ReadOnly)) {
           qDebug() << "load thumbs from cache ...";
@@ -618,7 +644,9 @@ void myModel::loadThumbs(QModelIndexList indexes) {
     foreach (QString item, files) {
       if (!thumbs->contains(item) || (item.split("/").takeLast() == lastEventFilename && !lastEventFilename.isEmpty())) {
           qDebug() << "gen new thumb" << item;
-          thumbs->insert(item, getThumb(item));
+          QByteArray iconData = getThumb(item);
+          if (iconData.isEmpty()) { continue; }
+          thumbs->insert(item, iconData);
           emit thumbUpdate(index(item));
           if (item.split("/").takeLast() == lastEventFilename) {
               qDebug() << "save new thumb cache";
@@ -648,7 +676,57 @@ void myModel::loadThumbs(QModelIndexList indexes) {
  * @param item
  * @return thumbnail
  */
-QByteArray myModel::getThumb(QString item) {
+QByteArray myModel::getThumb(QString item)
+#ifndef NO_MAGICK
+{
+    QByteArray result;
+    qDebug() << "generate thumbnail for" << item;
+    try {
+        Magick::Image background(Magick::Geometry(128, 128), Magick::Color("black"));
+#ifdef MAGICK7
+        background.alpha(true);
+#else
+        background.matte(true);
+#endif
+        background.backgroundColor(background.pixelColor(0,0));
+        background.transparent(background.pixelColor(0,0));
+
+        Magick::Image thumb;
+        QString filename = item;
+        QStringList videos = Common::videoFormats();
+        QFileInfo fileinfo(filename);
+        if (videos.contains(fileinfo.suffix(), Qt::CaseInsensitive)) {
+            thumb.read(QString("%1[100]").arg(filename).toUtf8().data());
+        } else {
+            thumb.read(filename.toUtf8().data());
+        }
+        thumb.scale(Magick::Geometry(128, 128));
+        if (thumb.depth()>8) { thumb.depth(8); }
+        int offsetX = 0;
+        int offsetY = 0;
+        if (thumb.columns()<background.columns()) {
+            offsetX = (background.columns()-thumb.columns())/2;
+        }
+        if (thumb.rows()<background.rows()) {
+            offsetY = (background.rows()-thumb.rows())/2;
+        }
+        background.composite(thumb, offsetX, offsetY, MagickCore::OverCompositeOp);
+        background.magick("BMP");
+        Magick::Blob buffer;
+        background.write(&buffer);
+        result = QByteArray((char*)buffer.data(), buffer.length());
+    }
+    catch(Magick::Error &error_ ) {
+        qWarning() << error_.what();
+    }
+    catch(Magick::Warning &warn_ ) {
+        qWarning() << warn_.what();
+    }
+    return result;
+}
+#else
+{
+  qDebug() << "generate thumbnail for" << item;
 
   // Thumbnail image
   QImage theThumb, background;
@@ -684,6 +762,7 @@ QByteArray myModel::getThumb(QString item) {
   writer.write(background);
   return buffer.buffer();
 }
+#endif
 //---------------------------------------------------------------------------
 
 /**

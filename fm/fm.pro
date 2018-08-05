@@ -106,7 +106,6 @@ INSTALLS += icon128 icon160 icon16 icon192 icon20 icon22 \
         INCLUDEPATH += ../libdisks
         LIBS += -L../libdisks -lDisks
     } else {
-        CONFIG += link_pkgconfig
         PKGCONFIG += Disks
     }
 }
@@ -115,4 +114,14 @@ lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG(deploy) : DEFINES += DEPLOY
 CONFIG(no_udisks): DEFINES += NO_UDISKS
-CONFIG(no_dbus) : DEFINES += NO_DBUS
+CONFIG(no_dbus): DEFINES += NO_DBUS
+CONFIG(no_magick): DEFINES += NO_MAGICK
+!CONFIG(no_magick) {
+isEmpty(MAGICK_PKGCONFIG) {
+    PKGCONFIG += Magick++
+} else {
+    PKGCONFIG += $${MAGICK_PKGCONFIG}
+}
+}
+CONFIG(legacy_magick): DEFINES += LEGACY_MAGICK
+CONFIG(magick7): DEFINES += MAGICK7

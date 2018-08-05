@@ -518,6 +518,12 @@ public:
         palette.setColor(QPalette::Disabled, QPalette::ButtonText, Qt::darkGray);
         return palette;
     }
+    static QStringList videoFormats()
+    {
+        QStringList formats;
+        formats << "mpeg" << "vob" << "mov" << "avi" << "mkv" << "mp4" << "divx" << "flv";
+        return formats;
+    }
 };
 
 #endif // COMMON_H
