@@ -28,7 +28,6 @@
 #include <QMessageBox>
 #ifndef NO_MAGICK
 #include <Magick++.h>
-#include <magick/MagickCore.h>
 #endif
 
 /**
