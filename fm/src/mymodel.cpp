@@ -595,16 +595,21 @@ void myModel::loadThumbs(QModelIndexList indexes) {
   // Types that should be thumbnailed
   QStringList files, types;
 #ifndef NO_MAGICK
-  // TODO CHECK!
-  types << "psd" << "xcf" << "miff" << "gif" << "ico" << "bmp" << "xpm";
-  types << "jp2";
-  types << "png";
-  types << "jng";
-  types << "jpg" << "jpeg";
-  types << "svg";
-  types << "exr";
-  types << "wmf";
-  types << "pdf";
+  QString magickDelegates = QString::fromStdString(MagickCore::GetMagickDelegates());
+  if (magickDelegates.contains("jng")) { types << "jng"; }
+  if (magickDelegates.contains("jp2")) { types << "jp2"; }
+  if (magickDelegates.contains("jpeg")) { types << "jpg" << "jpeg"; }
+  if (magickDelegates.contains("openexr")) { types << "exr"; }
+  if (magickDelegates.contains("png")) { types << "png"; }
+  if (magickDelegates.contains("svg")) {
+      types << "svg";
+      if (magickDelegates.contains("zlib")) { types << "svgz"; }
+  }
+  if (magickDelegates.contains("tiff")) { types << "tif" << "tiff"; }
+  if (magickDelegates.contains("wmf")) { types << "wmf"; }
+  types << "psd" << "xcf" << "miff" << "gif" << "ico" << "bmp" << "xpm" << "pdf";
+  types << Common::videoFormats();
+  // TODO: we should get supported formats from IM ...
 #else
   types << "jpg" << "jpeg" << "png" << "bmp" << "ico" << "svg" << "gif" << "tif" << "tiff" << "xpm";
 #endif
@@ -621,7 +626,7 @@ void myModel::loadThumbs(QModelIndexList indexes) {
   // Loads thumbnails from cache
   if (files.count()) {
     if (thumbs->count() == 0) {
-        qDebug() << "thumbs are empty, try to load cache ...";
+      qDebug() << "thumbs are empty, try to load cache ...";
       QFile fileIcons(QString("%1/thumbs.cache").arg(Common::configDir()));
       if (fileIcons.open(QIODevice::ReadOnly)) {
           qDebug() << "load thumbs from cache ...";
@@ -684,7 +689,13 @@ QByteArray myModel::getThumb(QString item)
 
         Magick::Image thumb;
         QString filename = item;
-        thumb.read(filename.toUtf8().data());
+        QStringList videos = Common::videoFormats();
+        QFileInfo fileinfo(filename);
+        if (videos.contains(fileinfo.suffix(), Qt::CaseInsensitive)) {
+            thumb.read(QString("%1[100]").arg(filename).toUtf8().data());
+        } else {
+            thumb.read(filename.toUtf8().data());
+        }
         thumb.scale(Magick::Geometry(128, 128));
         if (thumb.depth()>8) { thumb.depth(8); }
         int offsetX = 0;

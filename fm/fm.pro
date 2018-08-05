@@ -116,5 +116,11 @@ CONFIG(deploy) : DEFINES += DEPLOY
 CONFIG(no_udisks): DEFINES += NO_UDISKS
 CONFIG(no_dbus): DEFINES += NO_DBUS
 CONFIG(no_magick): DEFINES += NO_MAGICK
-!CONFIG(no_magick): PKGCONFIG += Magick++
+!CONFIG(no_magick) {
+isEmpty(MAGICK_PKGCONFIG) {
+    PKGCONFIG += Magick++
+} else {
+    PKGCONFIG += $${MAGICK_PKGCONFIG}
+}
+}
 CONFIG(magick7): DEFINES += MAGICK7
