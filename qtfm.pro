@@ -14,4 +14,4 @@ CONFIG(basic) {
     tray.depends += libdisks libfm
 }
 
-lessThan(QT_MAJOR_VERSION, 5): warning("Qt4 is deprecated, please consider upgrading to Qt5 if possible.")
+lessThan(QT_MAJOR_VERSION, 5): error("Qt4 is not supported anymore.")

@@ -72,7 +72,12 @@ Download the latest [release](https://github.com/rodlie/qtfm/releases), then mak
 * Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/)/[bsdisks](https://www.freshports.org/sysutils/bsdisks/) at run-time
 
 6.2:
-* Requires [ImageMagick](http://www.imagemagick.org) C++ library/headers (can be disabled)
+* Requires [Qt](http://qt.io) 5.0+ (5.6+ recommended)
+* Requires [ImageMagick](http://www.imagemagick.org) C++ library
+* Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD/NetBSD**
+* Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/)/[bsdisks](https://www.freshports.org/sysutils/bsdisks/) at run-time
+* Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/)
+* Requires [adwaita-icon-theme](https://github.com/GNOME/adwaita-icon-theme) or similar
 
 Download and extract:
 ```
