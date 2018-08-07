@@ -8,7 +8,7 @@
 #include <QDockWidget>
 #include <QStatusBar>
 #include <QToolBar>
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__NetBSD__)
 #include <sys/mount.h>
 #else
 #include <sys/vfs.h>
@@ -488,14 +488,26 @@ bool MainWindow::pasteFiles(const QList<QUrl> &files, const QString &newPath,
   qint64 total = FileUtils::totalSize(files);
 
   // Check available space on destination before we start
+
+#ifdef __NetBSD__
+  struct statvfs info;
+  statvfs(newPath.toLocal8Bit(), &info);
+#else
   struct statfs info;
   statfs(newPath.toLocal8Bit(), &info);
+#endif
+
   if ((qint64) info.f_bavail * info.f_bsize < total) {
 
     // If it is a cut/move on the same device it doesn't matter
     if (cutList.count()) {
       qint64 driveSize = (qint64) info.f_bavail*info.f_bsize;
+
+#ifdef __NetBSD__
+      statvfs(files.at(0).path().toLocal8Bit(),&info);
+#else
       statfs(files.at(0).path().toLocal8Bit(),&info);
+#endif
 
       // Same device?
       if ((qint64) info.f_bavail*info.f_bsize != driveSize) {
