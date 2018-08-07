@@ -5,8 +5,7 @@
 # See the LICENSE file for full details
 #
 
-QT += core gui dbus
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core gui dbus widgets
 include(../qtfm.pri)
 
 TARGET = qtfm-tray
@@ -34,5 +33,3 @@ target_desktop.files = $${TARGET}.desktop
 man.files += qtfm-tray.1
 man.path += $${MANDIR}/man1
 INSTALLS += target target_desktop man
-
-lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic

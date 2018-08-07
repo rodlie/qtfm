@@ -1,5 +1,4 @@
-QT += core dbus gui
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core dbus gui widgets
 
 TARGET = QtFM
 VERSION = 1.0.0
@@ -26,5 +25,3 @@ HEADERS += \
 exists(../qtfm.pri) {
     include(../qtfm.pri)
 }
-
-lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic

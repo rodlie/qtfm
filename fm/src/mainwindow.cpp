@@ -30,12 +30,8 @@
 #include <QMenu>
 #include <QDBusConnection>
 #include <QDBusError>
-#include <fcntl.h>
-
-#if QT_VERSION >= 0x050000
 #include <QtConcurrent/QtConcurrent>
-#else
-#endif
+#include <fcntl.h>
 
 #include "mainwindow.h"
 #include "mymodel.h"
@@ -48,7 +44,6 @@
 MainWindow::MainWindow()
 {
     // setup icon theme search path
-#if QT_VERSION >= 0x050000
     QStringList iconsPath = QIcon::themeSearchPaths();
     QString iconsHomeLocal = QString("%1/.local/share/icons").arg(QDir::homePath());
     QString iconsHome = QString("%1/.icons").arg(QDir::homePath());
@@ -57,7 +52,6 @@ MainWindow::MainWindow()
     iconsPath << QString("%1/../share/icons").arg(qApp->applicationDirPath());
     QIcon::setThemeSearchPaths(iconsPath);
     qDebug() << "using icon theme search path" << QIcon::themeSearchPaths();
-#endif
 
     // libdisks
 #ifndef NO_UDISKS
@@ -88,11 +82,9 @@ MainWindow::MainWindow()
 
     if(args.count() > 1) {
         startPath = args.at(1);
-#if QT_VERSION >= 0x040800
         if(QUrl(startPath).isLocalFile()) {
             startPath = QUrl(args.at(1)).toLocalFile();
         }
-#endif
     }
 
     settings = new QSettings(Common::configFile(), QSettings::IniFormat);
@@ -105,7 +97,6 @@ MainWindow::MainWindow()
     }
 
     // Dark theme
-#if QT_VERSION >= 0x050000
 #ifdef DEPLOY
     if (settings->value("darkTheme", true).toBool()) {
 #else
@@ -113,7 +104,6 @@ MainWindow::MainWindow()
 #endif
         qApp->setPalette(Common::darkTheme());
     }
-#endif
 
     // set icon theme
     Common::setupIconTheme(qApp->applicationFilePath());
@@ -403,14 +393,12 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
         settings->setValue("firstRun", false);
     }
 
-#if QT_VERSION >= 0x050000
   // fix style
   setStyleSheet("QToolBar { padding: 0;border:none; }"
                 /*"QFrame { border:none; }"
                 "QListView::item,QListView::text,QListView::icon"
                 "{ border:0px;padding-top:5px;padding-left:5px; }"*/);
   addressToolBar->setContentsMargins(0,0,5,0);
-#endif
 
   // Restore window state
   if (wState) {

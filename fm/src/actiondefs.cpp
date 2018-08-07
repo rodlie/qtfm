@@ -347,9 +347,7 @@ void MainWindow::createActions() {
   actionList->append(aboutAct);
 
   aboutQtAct = new QAction(tr("About Qt"), this);
-#if QT_VERSION >= 0x050000
   aboutQtAct->setIcon(QIcon::fromTheme("qt-logo"));
-#endif
   connect(aboutQtAct, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
   actionList->append(aboutQtAct);
 

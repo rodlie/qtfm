@@ -178,18 +178,14 @@ QWidget *SettingsDialog::createAppearanceSettings()
     QFormLayout* layoutAppear = new QFormLayout(grpAppear);
     cmbIconTheme = new QComboBox(grpAppear);
 
-#if QT_VERSION >= 0x050000
     checkDarkTheme = new QCheckBox(grpAppear);
-#endif
     checkWindowTitlePath = new QCheckBox(grpAppear);
     checkFileColor = new QCheckBox(grpAppear);
     showHomeButton = new QCheckBox(grpAppear);
     showTerminalButton = new QCheckBox(grpAppear);
 
     layoutAppear->addRow(tr("Fallback Icon theme:"), cmbIconTheme);
-#if QT_VERSION >= 0x050000
     layoutAppear->addRow(tr("Use \"Dark Mode\""), checkDarkTheme);
-#endif
     layoutAppear->addRow(tr("Colors on file names"), checkFileColor);
     layoutAppear->addRow(tr("Show path in window title"), checkWindowTitlePath);
     layoutAppear->addRow(tr("Show Home button"), showHomeButton);
@@ -639,12 +635,10 @@ void SettingsDialog::readSettings() {
   comboSingleClick->setCurrentIndex(settingsPtr->value("singleClick", 0).toInt());
   showHomeButton->setChecked(settingsPtr->value("home_button", true).toBool());
   showTerminalButton->setChecked(settingsPtr->value("terminal_button", true).toBool());
-#if QT_VERSION >= 0x050000
 #ifdef DEPLOY
   checkDarkTheme->setChecked(settingsPtr->value("darkTheme", true).toBool());
 #else
   checkDarkTheme->setChecked(settingsPtr->value("darkTheme", false).toBool());
-#endif
 #endif
   checkFileColor->setChecked(settingsPtr->value("fileColor", false).toBool());
   checkPathHistory->setChecked(settingsPtr->value("pathHistory", true).toBool());
@@ -658,11 +652,7 @@ void SettingsDialog::readSettings() {
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
   tmp = settingsPtr->value("defMimeAppsFile", tmp).toString();
-#if QT_VERSION >= 0x050000
   cmbDefaultMimeApps->setCurrentText(tmp);
-#else
-  cmbDefaultMimeApps->setEditText(tmp);
-#endif
   mimeUtilsPtr->setDefaultsFileName(cmbDefaultMimeApps->currentText());
 
   // Load icon themes
@@ -875,12 +865,10 @@ bool SettingsDialog::saveSettings() {
       QMessageBox::warning(this, tr("Restart to apply settings"), tr("You must restart application to apply theme settings"));
   }
 
-#if QT_VERSION >= 0x050000
   if (checkDarkTheme->isChecked() != settingsPtr->value("darkTheme").toBool()) {
       QMessageBox::warning(this, tr("Restart to apply settings"), tr("You must restart application to apply theme settings"));
   }
   settingsPtr->setValue("darkTheme", checkDarkTheme->isChecked());
-#endif
   settingsPtr->setValue("fileColor", checkFileColor->isChecked());
   settingsPtr->setValue("pathHistory", checkPathHistory->isChecked());
   settingsPtr->setValue("fallbackTheme", cmbIconTheme->currentText());

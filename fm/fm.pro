@@ -1,5 +1,4 @@
-QT+= core gui dbus
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT+= core gui dbus widgets
 include(../qtfm.pri)
 
 CONFIG(basic) {
@@ -110,7 +109,6 @@ INSTALLS += icon128 icon160 icon16 icon192 icon20 icon22 \
     }
 }
 
-lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG(deploy) : DEFINES += DEPLOY
 CONFIG(no_udisks): DEFINES += NO_UDISKS

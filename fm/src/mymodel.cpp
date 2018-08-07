@@ -826,7 +826,6 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
       case 4 : {
         if (item->mPermissions.isNull()) {
           QString str;
-#if QT_VERSION >= 0x050000
           QFile::Permissions perms = item->fileInfo().permissions();
           str.append(perms.testFlag(QFileDevice::ReadOwner) ? "r" : "-" );
           str.append(perms.testFlag(QFileDevice::WriteOwner) ? "w" : "-" );
@@ -837,18 +836,6 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
           str.append(perms.testFlag(QFileDevice::ReadOther) ? "r" : "-" );
           str.append(perms.testFlag(QFileDevice::WriteOther) ? "w" : "-" );
           str.append(perms.testFlag(QFileDevice::ExeOther) ? "x" : "-" );
-#else
-          QFlags<QFile::Permissions> perms = item->fileInfo().permissions();
-          str.append(perms.testFlag(QFile::ReadOwner) ? "r" : "-" );
-          str.append(perms.testFlag(QFile::WriteOwner) ? "w" : "-" );
-          str.append(perms.testFlag(QFile::ExeOwner) ? "x" : "-" );
-          str.append(perms.testFlag(QFile::ReadGroup) ? "r" : "-" );
-          str.append(perms.testFlag(QFile::WriteGroup) ? "w" : "-" );
-          str.append(perms.testFlag(QFile::ExeGroup) ? "x" : "-" );
-          str.append(perms.testFlag(QFile::ReadOther) ? "r" : "-" );
-          str.append(perms.testFlag(QFile::WriteOther) ? "w" : "-" );
-          str.append(perms.testFlag(QFile::ExeOther) ? "x" : "-" );
-#endif
           str.append(" " + item->fileInfo().owner() + " " +
                      item->fileInfo().group());
           item->mPermissions = str;
