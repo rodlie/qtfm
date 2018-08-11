@@ -70,8 +70,8 @@ int main(int argc, char *argv[]) {
 #endif
   QApplication app(argc, argv);
   QApplication::setOrganizationName(APP);
-  QApplication::setApplicationName("dracolinux");
-  QApplication::setOrganizationDomain("org");
+  QApplication::setApplicationName(APP);
+  QApplication::setOrganizationDomain("eu");
 
   // Initialize resources
   //Q_INIT_RESOURCE(resources);

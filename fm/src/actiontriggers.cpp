@@ -1007,8 +1007,8 @@ void MainWindow::showAboutBox()
                                    " the Free Software Foundation; either version 2 of the License, or"
                                    " (at your option) any later version.</p>"
                                    "<p style=\"font-weight:bold;\">"
-                                   "<a href=\"https://qtfm.dracolinux.org\">"
-                                   "https://qtfm.dracolinux.org</a></p>"));
+                                   "<a href=\"https://qtfm.eu\">"
+                                   "https://qtfm.eu</a></p>"));
     QString details;
     QFile authorsFile(":/AUTHORS");
     if (authorsFile.open(QIODevice::Text|QIODevice::ReadOnly)) {
