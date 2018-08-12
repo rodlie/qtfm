@@ -178,63 +178,65 @@ bool bookmarkmodel::dropMimeData(const QMimeData * data,Qt::DropAction action,in
     QStringList cutList;
     QString parentPath = parent.data(BOOKMARK_PATH).toString();
 
+    // Holding ctrl is copy, holding shift is move, holding alt is ask
+    Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
+    Common::DragMode mode = Common::getDefaultDragAndDrop();
+    if (mods == Qt::ControlModifier) {
+      mode = Common::getDADctrlMod();
+    } else if (mods == Qt::ShiftModifier) {
+      mode = Common::getDADshiftMod();
+    } else if (mods == Qt::AltModifier) {
+      mode = Common::getDADaltMod();
+    }
+    QString extraDialogText;
+    // check if src/dst differ
+    foreach(QUrl path, files) {
+        if (parent.column() == -1) { continue; }
+        QFileInfo file(path.toLocalFile());
+        // get original path
+        QStringList getOldPath = file.absoluteFilePath().split("/", QString::SkipEmptyParts);
+        QString oldPath;
+        for (int i=0;i<getOldPath.size()-1;++i) { oldPath.append(QString("/%1").arg(getOldPath.at(i))); }
+        QString oldDevice = Common::getDeviceForDir(oldPath);
+        QString newDevice = Common::getDeviceForDir(parentPath);
+        if (oldDevice != newDevice) {
+            extraDialogText = QString(tr("Source and destination is on a different storage."));
+            mode = Common::DM_UNKNOWN;
+            break;
+        }
+    }
+    // If drag mode is unknown then ask what to do
+    if (mode == Common::DM_UNKNOWN) {
+      QMessageBox box;
+      box.setWindowTitle(tr("Select file action"));
+      box.setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/fm/images/qtfm.png")));
+      box.setIconPixmap(QIcon::fromTheme("dialog-information").pixmap(QSize(32, 32)));
+      box.setText(tr("<h3>What do you want to do?</h3>"));
+      if (!extraDialogText.isEmpty()) {
+          box.setText(QString("%1<p>%2</p>").arg(box.text()).arg(extraDialogText));
+      }
+      QAbstractButton *move = box.addButton(tr("Move here"), QMessageBox::ActionRole);
+      QAbstractButton *copy = box.addButton(tr("Copy here"), QMessageBox::ActionRole);
+      QAbstractButton *canc = box.addButton(QMessageBox::Cancel);
+      move->setIcon(QIcon::fromTheme("edit-cut"));
+      copy->setIcon(QIcon::fromTheme("edit-copy"));
+      canc->setIcon(QIcon::fromTheme("edit-delete"));
+      box.exec();
+      if (box.clickedButton() == move) {
+        mode = Common::DM_MOVE;
+      } else if (box.clickedButton() == copy) {
+        mode = Common::DM_COPY;
+      } else if (box.clickedButton() == canc) {
+        return false;
+      }
+    }
     foreach(QUrl path, files) {
         QFileInfo file(path.toLocalFile());
-
         //drag to bookmark window, add a new bookmark
         if(parent.column() == -1) {
             if(file.isDir()) this->addBookmark(file.fileName(),file.filePath(),0,"");
             return false;
         } else {
-            // Holding ctrl is copy, holding shift is move, holding alt is ask
-            Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
-            Common::DragMode mode = Common::getDefaultDragAndDrop();
-            if (mods == Qt::ControlModifier) {
-              mode = Common::getDADctrlMod();
-            } else if (mods == Qt::ShiftModifier) {
-              mode = Common::getDADshiftMod();
-            } else if (mods == Qt::AltModifier) {
-              mode = Common::getDADaltMod();
-            }
-
-            // get original path
-            QStringList getOldPath = file.absoluteFilePath().split("/", QString::SkipEmptyParts);
-            QString oldPath;
-            for (int i=0;i<getOldPath.size()-1;++i) { oldPath.append(QString("/%1").arg(getOldPath.at(i))); }
-            QString oldDevice = Common::getDeviceForDir(oldPath);
-            QString newDevice = Common::getDeviceForDir(parentPath);
-
-            QString extraText;
-            if (oldDevice != newDevice) {
-                extraText = QString(tr("Source and destination is on a different storage."));
-                mode = Common::DM_UNKNOWN;
-            }
-
-            // If drag mode is unknown then ask what to do
-            if (mode == Common::DM_UNKNOWN) {
-              QMessageBox box;
-              box.setWindowTitle(tr("Select file action"));
-              box.setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/fm/images/qtfm.png")));
-              box.setIconPixmap(QIcon::fromTheme("dialog-information").pixmap(QSize(32, 32)));
-              box.setText(tr("<h3>What do you want to do?</h3>"));
-              if (!extraText.isEmpty()) {
-                  box.setText(QString("%1<p>%2</p>").arg(box.text()).arg(extraText));
-              }
-              QAbstractButton *move = box.addButton(tr("Move here"), QMessageBox::ActionRole);
-              QAbstractButton *copy = box.addButton(tr("Copy here"), QMessageBox::ActionRole);
-              QAbstractButton *canc = box.addButton(QMessageBox::Cancel);
-              move->setIcon(QIcon::fromTheme("edit-cut"));
-              copy->setIcon(QIcon::fromTheme("edit-copy"));
-              canc->setIcon(QIcon::fromTheme("edit-delete"));
-              box.exec();
-              if (box.clickedButton() == move) {
-                mode = Common::DM_MOVE;
-              } else if (box.clickedButton() == copy) {
-                mode = Common::DM_COPY;
-              } else if (box.clickedButton() == canc) {
-                return false;
-              }
-            }
             if (mode == Common::DM_MOVE) { cutList.append(file.filePath()); }
         }
     }
