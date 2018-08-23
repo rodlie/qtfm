@@ -669,6 +669,7 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
     }
 
     listSelectionModel->blockSignals(0);
+    updateGrid();
     QTimer::singleShot(30,this,SLOT(dirLoaded()));
 }
 
@@ -706,7 +707,6 @@ void MainWindow::dirLoaded()
     statusDate->setText(QString("%1").arg(total));
 
     if (thumbsAct->isChecked()) { QtConcurrent::run(modelList,&myModel::loadThumbs,items); }
-    updateGrid();
 }
 
 //---------------------------------------------------------------------------
@@ -1629,7 +1629,8 @@ void MainWindow::openInApp()
 
 void MainWindow::updateGrid()
 {
-    if (!iconAct->isChecked()) { return; }
+    if (iconAct && !iconAct->isChecked()) { return; }
+    qDebug() << "updateGrid";
     QFontMetrics fm = fontMetrics();
     int textWidth = fm.averageCharWidth() * 17;
     int realTextWidth = fm.averageCharWidth() * 14;
