@@ -59,6 +59,8 @@
 #include "service.h"
 #endif
 
+#include "fm.h"
+
 QT_BEGIN_NAMESPACE
 class QAction;
 class QMenu;

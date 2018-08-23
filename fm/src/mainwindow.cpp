@@ -233,6 +233,16 @@ MainWindow::MainWindow()
 
     trashDir = Common::trashDir();
 
+
+    // TEST
+    QDockWidget *testDock = new QDockWidget(tr("TEST"), this, Qt::SubWindow);
+    FM *fm = new FM(realMime, mimeUtils, modelTree);
+    testDock->setWidget(fm);
+    this->addDockWidget(Qt::RightDockWidgetArea, testDock);
+    connect(treeSelectionModel, SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+            fm, SLOT(treeSelectionChanged(QModelIndex,QModelIndex)));
+
+    // late start
     QTimer::singleShot(0, this, SLOT(lateStart()));
 }
 //---------------------------------------------------------------------------

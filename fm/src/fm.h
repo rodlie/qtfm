@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QWidget>
 #include <QListView>
+#include <QItemSelectionModel>
+#include <QDebug>
 #include "mymodel.h"
 #include "mymodelitem.h"
 #include "mimeutils.h"
@@ -16,7 +18,9 @@ class FM : public QWidget
 public:
     explicit FM(bool realMime,
                 MimeUtils* mimeUtils,
+                QSortFilterProxyModel *parentTree = NULL,
                 QWidget *parent = NULL);
+    ~FM();
 private:
     bool realMimeTypes;
     MimeUtils *mimeUtilsPtr;
@@ -24,9 +28,18 @@ private:
     QListView *list;
     QSortFilterProxyModel *modelTree;
     QSortFilterProxyModel *modelView;
+    IconViewDelegate *ivdelegate;
+    IconListDelegate *ildelegate;
+    QItemSelectionModel *treeSelectionModel;
+    QItemSelectionModel *listSelectionModel;
+    QString currentPath;
 signals:
 
 public slots:
+    void treeSelectionChanged(QModelIndex current, QModelIndex previous);
+private slots:
+    void dirLoaded();
+    void updateGrid();
 };
 
 #endif // FM_H
