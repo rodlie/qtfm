@@ -16,9 +16,7 @@ HEADERS += \
     mimeutils.h \
     properties.h \
     common.h \
-    progressdlg.h \
-    delegates.h \
-    sortfilter.h
+    progressdlg.h
 !CONFIG(no_dbus) {
     HEADERS += service.h
     QT += dbus

@@ -1,6 +1,6 @@
 /****************************************************************************
-* This file is part of QtFM <https://qtfm.eu>
-* Copyright (C) 2010-2018
+* This file is part of qtFM, a simple, fast file manager.
+* Copyright (C) 2010,2011,2012 Wittfella
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,10 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 *
+* Contact e-mail: wittfella@qtfm.org
+*
 ****************************************************************************/
+
 
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
@@ -27,9 +30,12 @@
 #include <QListView>
 #include <QLabel>
 #include <QStackedWidget>
+#include <QSortFilterProxyModel>
 #include <QComboBox>
 #include <QSignalMapper>
 #include <QToolBar>
+#include <QItemDelegate>
+#include <QStyledItemDelegate>
 
 #include "mymodel.h"
 #include "bookmarkmodel.h"
@@ -40,13 +46,13 @@
 #include "fileutils.h"
 #include "mimeutils.h"
 #include "customactionsmanager.h"
-#include "delegates.h"
-#include "sortfilter.h"
 
+// libdisks
 #ifndef NO_UDISKS
 #include <disks.h>
 #endif
 
+// service
 #ifndef NO_DBUS
 #include "service.h"
 #endif
@@ -56,6 +62,145 @@ class QAction;
 class QMenu;
 QT_END_NAMESPACE
 
+//---------------------------------------------------------------------------------
+class IconViewDelegate : public QStyledItemDelegate
+{
+private: // workaround for QTBUG
+    mutable bool _isEditing;
+    mutable QModelIndex _index;
+protected: // workaround for QTBUG
+    bool eventFilter(QObject * object, QEvent * event)
+    {
+        QWidget *editor = qobject_cast<QWidget*>(object);
+        if(editor && event->type() == QEvent::KeyPress) {
+            if(static_cast<QKeyEvent *>(event)->key() == Qt::Key_Escape){
+                _isEditing = false;
+                _index = QModelIndex();
+            }
+        }
+        return QStyledItemDelegate::eventFilter(editor, event);
+    }
+public:
+    void setEditorData(QWidget * editor, const QModelIndex & index) const
+    { // workaround for QTBUG
+        _isEditing = true;
+        _index = index;
+        QStyledItemDelegate::setEditorData(editor, index);
+    }
+    void setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const
+    { // workaround for QTBUG
+        QStyledItemDelegate::setModelData(editor, model, index);
+        _isEditing = false;
+        _index = QModelIndex();
+    }
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
+        QSize iconsize = icon.actualSize(option.decorationSize);
+        int width = qMax(iconsize.width(), option.fontMetrics.averageCharWidth() * 14);
+        QRect txtRect(0, 0, width, option.rect.height());
+        QSize txtsize = option.fontMetrics.boundingRect(txtRect,
+                                                        Qt::AlignTop|Qt::AlignHCenter|Qt::TextWordWrap|Qt::TextWrapAnywhere,
+                                                        index.data().toString()).size();
+        if (txtsize.width()>width) { width = txtsize.width(); }
+        QSize size(width+8, txtsize.height()+iconsize.height()+8+8);
+        return size;
+    }
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
+        QSize iconsize = icon.actualSize(option.decorationSize);
+        QRect item = option.rect;
+        QRect iconRect(item.left()+(item.width()/2)-(iconsize.width()/2),
+                       item.top()+4+4, iconsize.width(), iconsize.height());
+        QRect txtRect(item.left()+4, item.top()+iconsize.height()+4+4+4,
+                      item.width()-8, item.height()-iconsize.height()-4);
+        QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
+        bool isSelected = option.state & QStyle::State_Selected;
+        bool isEditing = _isEditing && index==_index;
+
+        /*QStyleOptionViewItem opt = option;
+        initStyleOption(&opt,index);
+        opt.decorationAlignment |= Qt::AlignCenter;
+        opt.displayAlignment    |= Qt::AlignCenter;
+        opt.decorationPosition   = QStyleOptionViewItem::Top;
+        opt.features |= QStyleOptionViewItem::WrapText;
+        const QWidget *widget = opt.widget;
+        QStyle *style = widget ? widget->style() : QApplication::style();
+        style->drawControl(QStyle::CE_ItemViewItem,&opt,painter);*/
+
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->setRenderHint(QPainter::HighQualityAntialiasing);
+
+        if (isSelected && !isEditing) {
+            QPainterPath path;
+            QRect frame(item.left(),item.top()+4, item.width(), item.height()-4);
+            path.addRoundRect(frame, 15, 15);
+            //  path.addRect(frame);
+            painter->setOpacity(0.7);
+            painter->fillPath(path, option.palette.highlight());
+            painter->setOpacity(1.0);
+        }
+
+        painter->drawPixmap(iconRect, icon.pixmap(iconsize.width(),iconsize.height()));
+
+        if (isEditing) { return; }
+        if (isSelected) { painter->setPen(option.palette.highlightedText().color()); }
+        else { painter->setPen(txtBrush.color()); }
+
+        painter->drawText(txtRect,
+                          Qt::AlignTop|Qt::AlignHCenter|Qt::TextWordWrap|Qt::TextWrapAnywhere,
+                          index.data().toString());
+    }
+};
+class IconListDelegate : public QItemDelegate
+{
+public:
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
+        QSize iconsize = icon.actualSize(option.decorationSize);
+        QRect item = option.rect;
+        QRect txtRect(item.left()+iconsize.width()+5,
+                      item.top(), item.width(), item.height());
+        QSize txtsize = option.fontMetrics.boundingRect(txtRect,
+                                                        Qt::AlignLeft|Qt::AlignVCenter,
+                                                        index.data().toString()).size();
+        return QSize(txtsize.width()+iconsize.width()+10,iconsize.height());
+    }
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
+        QSize iconsize = icon.actualSize(option.decorationSize);
+        QRect item = option.rect;
+        QRect iconRect(item.left(), item.top(), iconsize.width(), iconsize.height());
+        QRect txtRect(item.left()+iconsize.width()+5,
+                      item.top(), item.width()-iconsize.width()-5, item.height()-2);
+        QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
+
+        if (option.state & QStyle::State_Selected) {
+            QPainterPath path;
+            path.addRect(txtRect);
+            painter->setOpacity(0.7);
+            painter->fillPath(path, option.palette.highlight());
+            painter->setOpacity(1.0);
+        }
+
+        if (option.state & QStyle::State_Selected) {
+            painter->setPen(option.palette.highlightedText().color());
+        } else { painter->setPen(txtBrush.color()); }
+
+        painter->drawPixmap(iconRect, icon.pixmap(iconsize.width(),iconsize.height()));
+        painter->drawText(txtRect, Qt::AlignLeft|Qt::AlignVCenter, index.data().toString());
+    }
+};
+//---------------------------------------------------------------------------------
+
+/**
+ * @class MainWindow
+ * @brief The main window class
+ * @author Wittefella
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -152,6 +297,7 @@ private slots:
     void selectAppForFiles();
     void openInApp();
     void updateGrid();
+    // libdisks
 #ifndef NO_UDISKS
     void populateMedia();
     void handleMediaMountpointChanged(QString path, QString mountpoint);
@@ -166,7 +312,6 @@ private slots:
     void clearCache();
     void handlePathRequested(QString path);
     void slowPathEdit();
-
 private:
     void createActions();
     void createActionIcons();
@@ -220,6 +365,8 @@ private:
     QList<QAction*> bookmarkActionList;
     CustomActionsManager* customActManager;
 
+    //QToolBar *editToolBar;
+    //QToolBar *viewToolBar;
     QToolBar *navToolBar;
     QToolBar *addressToolBar;
     QToolBar *menuToolBar;
@@ -276,25 +423,25 @@ private:
     QAction *tabsOnTopAct;
     QAction *aboutAct;
     QAction *aboutQtAct;
-    QAction *trashAct;
-    QAction *clearCacheAct;
-
 #ifndef NO_UDISKS
     QAction *mediaUnmountAct;
     QAction *mediaEjectAct;
+#endif
+    QAction *trashAct;
+    QAction *clearCacheAct;
+    // libdisks
+#ifndef NO_UDISKS
     Disks *disks;
 #endif
+    QString trashDir;
 
 #ifndef NO_DBUS
     qtfm *service;
 #endif
 
-    QString trashDir;
-
     bool pathHistory;
     bool showPathInWindowTitle;
 
-    // custom icon views
     IconViewDelegate *ivdelegate;
     IconListDelegate *ildelegate;
 
@@ -302,6 +449,38 @@ private:
     QString copyXof;
     // custom timestamp for copy of
     QString copyXofTS;
+};
+
+//---------------------------------------------------------------------------------
+// Subclass QSortFilterProxyModel and override 'filterAcceptsRow' to only show
+// directories in tree and not files.
+//---------------------------------------------------------------------------------
+class mainTreeFilterProxyModel : public QSortFilterProxyModel
+{
+protected:
+    virtual bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+};
+
+
+//---------------------------------------------------------------------------------
+// Subclass QSortFilterProxyModel and override 'lessThan' for sorting in list/details views
+//---------------------------------------------------------------------------------
+class viewsSortProxyModel : public QSortFilterProxyModel
+{
+protected:
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+    bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
+};
+
+
+//---------------------------------------------------------------------------------
+// Subclass QCompleter so we can use the SortFilterProxyModel above for the address bar.
+//---------------------------------------------------------------------------------
+class myCompleter : public QCompleter
+{
+public:
+    QString pathFromIndex(const QModelIndex& index) const;
+    QStringList splitPath(const QString& path) const;
 };
 
 //---------------------------------------------------------------------------------
