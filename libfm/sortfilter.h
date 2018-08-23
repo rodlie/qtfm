@@ -10,10 +10,10 @@ class mainTreeFilterProxyModel : public QSortFilterProxyModel
 protected:
     virtual bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const
     {
-        if (sourceModel() == nullptr) { return false; }
+        if (sourceModel() == NULL) { return false; }
         QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
         myModel* fileModel = qobject_cast<myModel*>(sourceModel());
-        if (fileModel == nullptr) { return false; }
+        if (fileModel == NULL) { return false; }
         if (fileModel->isDir(index0)) {
             if (this->filterRegExp().isEmpty() ||
                     fileModel->fileInfo(index0).isHidden() == 0) { return true; }

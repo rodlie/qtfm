@@ -6,9 +6,9 @@ FM::FM(bool realMime,
         QWidget *parent) : QWidget(parent)
   , realMimeTypes(realMime)
   , mimeUtilsPtr(mimeUtils)
-  , list(nullptr)
-  , modelTree(nullptr)
-  , modelView(nullptr)
+  , list(NULL)
+  , modelTree(NULL)
+  , modelView(NULL)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setSpacing(0);

@@ -16,7 +16,7 @@ class FM : public QWidget
 public:
     explicit FM(bool realMime,
                 MimeUtils* mimeUtils,
-                QWidget *parent = nullptr);
+                QWidget *parent = NULL);
 private:
     bool realMimeTypes;
     MimeUtils *mimeUtilsPtr;
