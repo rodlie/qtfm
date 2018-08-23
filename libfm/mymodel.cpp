@@ -19,7 +19,7 @@
 *
 ****************************************************************************/
 
-#include <mainwindow.h>
+//#include <mainwindow.h>
 #include "mymodel.h"
 #include <sys/inotify.h>
 #include <unistd.h>
@@ -29,6 +29,7 @@
 #ifndef NO_MAGICK
 #include <Magick++.h>
 #endif
+#include "fileutils.h"
 
 /**
  * @brief Creates file system model

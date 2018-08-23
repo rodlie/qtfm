@@ -15,30 +15,28 @@ INCLUDEPATH += . src ../libfm
 LIBS += -L../libfm -lQtFM
 
 HEADERS += src/mainwindow.h \
-    src/mymodel.h \
     src/bookmarkmodel.h \
     src/icondlg.h \
     src/propertiesdlg.h \
     src/tabbar.h \
-    src/mymodelitem.h \
     src/settingsdialog.h \
     src/customactionsmanager.h \
     src/processdialog.h \
-    src/applicationdialog.h
+    src/applicationdialog.h \
+    src/fm.h
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
-    src/mymodel.cpp \
     src/bookmarks.cpp \
     src/icondlg.cpp \
     src/propertiesdlg.cpp \
     src/tabbar.cpp \
-    src/mymodelitem.cpp \
     src/settingsdialog.cpp \
     src/customactionsmanager.cpp \
     src/processdialog.cpp \
     src/applicationdialog.cpp \
     src/actiondefs.cpp \
-    src/actiontriggers.cpp
+    src/actiontriggers.cpp \
+    src/fm.cpp
 
 OTHER_FILES += $${TARGET}.desktop
 RESOURCES += ../$${TARGET}.qrc
@@ -113,13 +111,3 @@ CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG(deploy) : DEFINES += DEPLOY
 CONFIG(no_udisks): DEFINES += NO_UDISKS
 CONFIG(no_dbus): DEFINES += NO_DBUS
-CONFIG(no_magick): DEFINES += NO_MAGICK
-!CONFIG(no_magick) {
-isEmpty(MAGICK_PKGCONFIG) {
-    PKGCONFIG += Magick++
-} else {
-    PKGCONFIG += $${MAGICK_PKGCONFIG}
-}
-}
-CONFIG(legacy_magick): DEFINES += LEGACY_MAGICK
-CONFIG(magick7): DEFINES += MAGICK7

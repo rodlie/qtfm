@@ -38,7 +38,6 @@
 #include "progressdlg.h"
 #include "fileutils.h"
 #include "applicationdialog.h"
-
 #include "common.h"
 
 MainWindow::MainWindow()
@@ -1833,7 +1832,7 @@ void MainWindow::clearCutItems()
 }
 
 //---------------------------------------------------------------------------------
-bool mainTreeFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+/*bool mainTreeFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     if (sourceModel() == NULL) { return false; }
     QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
@@ -1844,10 +1843,10 @@ bool mainTreeFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex
     }
 
     return false;
-}
+}*/
 
 //---------------------------------------------------------------------------------
-bool viewsSortProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+/*bool viewsSortProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     if (this->filterRegExp().isEmpty()) { return true; }
 
@@ -1856,10 +1855,10 @@ bool viewsSortProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sou
 
     if (fileModel->fileInfo(index0).isHidden()) { return false; }
     else { return true; }
-}
+}*/
 
 //---------------------------------------------------------------------------------
-bool viewsSortProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
+/*bool viewsSortProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     myModel* fsModel = dynamic_cast<myModel*>(sourceModel());
 
@@ -1878,19 +1877,19 @@ bool viewsSortProxyModel::lessThan(const QModelIndex &left, const QModelIndex &r
     }
 
     return QSortFilterProxyModel::lessThan(left,right);
-}
+}*/
 
 //---------------------------------------------------------------------------------
-QStringList myCompleter::splitPath(const QString& path) const
+/*QStringList myCompleter::splitPath(const QString& path) const
 {
     QStringList parts = path.split("/");
     parts[0] = "/";
 
     return parts;
-}
+}*/
 
 //---------------------------------------------------------------------------------
-QString myCompleter::pathFromIndex(const QModelIndex& index) const
+/*QString myCompleter::pathFromIndex(const QModelIndex& index) const
 {
     if (!index.isValid()) { return QString(); }
 
@@ -1906,4 +1905,4 @@ QString myCompleter::pathFromIndex(const QModelIndex& index) const
     list[0].clear() ; // the join below will provide the separator
 
     return list.join("/");
-}
+}*/

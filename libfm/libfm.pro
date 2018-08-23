@@ -1,7 +1,7 @@
 QT += core dbus gui widgets
 
 TARGET = QtFM
-VERSION = 1.0.0
+VERSION = 1.2.0
 
 TEMPLATE = lib
 SOURCES += \
@@ -9,14 +9,20 @@ SOURCES += \
     fileutils.cpp \
     mimeutils.cpp \
     properties.cpp \
-    progressdlg.cpp
+    progressdlg.cpp \
+    mymodelitem.cpp \
+    mymodel.cpp
 HEADERS += \
     desktopfile.h \
     fileutils.h \
     mimeutils.h \
     properties.h \
     common.h \
-    progressdlg.h
+    progressdlg.h \
+    mymodelitem.h \
+    mymodel.h \
+    delegates.h \
+    sortfilter.h
 !CONFIG(no_dbus) {
     HEADERS += service.h
     QT += dbus
