@@ -806,7 +806,7 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
         data = item->fileName();
         break;
       case 1 :
-        data = item->fileInfo().isDir() ? "" : formatSize(
+        data = item->fileInfo().isDir() ? "" : Common::formatSize(
                item->fileInfo().size());
         break;
       case 2 :

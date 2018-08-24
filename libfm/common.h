@@ -15,6 +15,16 @@
 #include <QSettings>
 #include <QPalette>
 
+#if defined(__FreeBSD__) || defined(__NetBSD__)
+#include <sys/mount.h>
+#else
+#include <sys/vfs.h>
+#endif
+#include <sys/stat.h>
+#ifdef __NetBSD__
+#include <sys/statvfs.h>
+#endif
+
 #ifndef APP
 #define APP "qtfm"
 #endif
@@ -429,9 +439,9 @@ public:
             return DM_MOVE;
         }
     }
-    static QVariant readSetting(QString key) {
+    static QVariant readSetting(QString key, QString fallback = QString()) {
         QSettings settings(Common::configFile(), QSettings::IniFormat);
-        return settings.value(key);
+        return settings.value(key, fallback);
     }
     static void writeSetting(QString key, QVariant value) {
         QSettings settings(Common::configFile(), QSettings::IniFormat);
@@ -523,6 +533,48 @@ public:
         QStringList formats;
         formats << "mpeg" << "vob" << "mov" << "avi" << "mkv" << "mp4" << "divx" << "flv";
         return formats;
+    }
+    static QStringList iconPaths(QString appPath)
+    {
+        QStringList iconsPath = QIcon::themeSearchPaths();
+        QString iconsHomeLocal = QString("%1/.local/share/icons").arg(QDir::homePath());
+        QString iconsHome = QString("%1/.icons").arg(QDir::homePath());
+        if (QFile::exists(iconsHomeLocal) && !iconsPath.contains(iconsHomeLocal)) { iconsPath.prepend(iconsHomeLocal); }
+        if (QFile::exists(iconsHome) && !iconsPath.contains(iconsHome)) { iconsPath.prepend(iconsHome); }
+        iconsPath << QString("%1/../share/icons").arg(appPath);
+        return  iconsPath;
+    }
+    static QString formatSize(qint64 num)
+    {
+        QString total;
+        const qint64 kb = 1024;
+        const qint64 mb = 1024 * kb;
+        const qint64 gb = 1024 * mb;
+        const qint64 tb = 1024 * gb;
+
+        if (num >= tb) { total = QString("%1TB").arg(QString::number(qreal(num) / tb, 'f', 2)); }
+        else if (num >= gb) { total = QString("%1GB").arg(QString::number(qreal(num) / gb, 'f', 2)); }
+        else if (num >= mb) { total = QString("%1MB").arg(QString::number(qreal(num) / mb, 'f', 1)); }
+        else if (num >= kb) { total = QString("%1KB").arg(QString::number(qreal(num) / kb,'f', 1)); }
+        else { total = QString("%1 bytes").arg(num); }
+
+        return total;
+    }
+    static QString getDriveInfo(QString path)
+    {
+    #ifdef __NetBSD__
+        struct statvfs info;
+        statvfs(path.toLocal8Bit(), &info);
+    #else
+        struct statfs info;
+        statfs(path.toLocal8Bit(), &info);
+    #endif
+
+        if(info.f_blocks == 0) return "";
+
+        return QString("%1  /  %2  (%3%)").arg(formatSize((qint64) (info.f_blocks - info.f_bavail)*info.f_bsize))
+                           .arg(formatSize((qint64) info.f_blocks*info.f_bsize))
+                           .arg((info.f_blocks - info.f_bavail)*100/info.f_blocks);
     }
 };
 

@@ -28,11 +28,11 @@ unix:!linux { LIBS += -linotify }
 
 CONFIG(no_magick): DEFINES += NO_MAGICK
 !CONFIG(no_magick) {
-isEmpty(MAGICK_PKGCONFIG) {
-    PKGCONFIG += Magick++
-} else {
-    PKGCONFIG += $${MAGICK_PKGCONFIG}
-}
+    isEmpty(MAGICK_PKGCONFIG) {
+        PKGCONFIG += Magick++
+    } else {
+        PKGCONFIG += $${MAGICK_PKGCONFIG}
+    }
 }
 CONFIG(legacy_magick): DEFINES += LEGACY_MAGICK
 CONFIG(magick7): DEFINES += MAGICK7

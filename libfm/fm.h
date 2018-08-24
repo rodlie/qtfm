@@ -18,6 +18,7 @@ class FM : public QWidget
 public:
     explicit FM(bool realMime,
                 MimeUtils* mimeUtils,
+                QString startPath = QDir::homePath(),
                 QWidget *parent = NULL);
     ~FM();
 private:

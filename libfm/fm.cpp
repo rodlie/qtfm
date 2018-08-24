@@ -3,6 +3,7 @@
 
 FM::FM(bool realMime,
        MimeUtils *mimeUtils,
+       QString startPath,
        QWidget *parent) : QWidget(parent)
   , realMimeTypes(realMime)
   , mimeUtilsPtr(mimeUtils)
@@ -49,11 +50,13 @@ FM::FM(bool realMime,
     listSelectionModel = list->selectionModel();
 
     layout->addWidget(list);
-    setPath(QDir::homePath()); // test
+
+    setPath(startPath);
 }
 
 FM::~FM()
 {
+    qDebug() << "bye, bye!";
 }
 
 void FM::setPath(QString path)
