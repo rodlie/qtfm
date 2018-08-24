@@ -107,10 +107,14 @@ Optional build options:
  * ``XDGDIR=`` : Location of XDG (default is /etc/xdg or PREFIX/etc/xdg)
 
 6.2:
+ * ``CONFIG+=staticlib`` : Don't build shared library
+ * ``CONFIG-=install_lib`` : Don't install library
+ * ``LIBSUFFIX=`` : PREFIX/usr suffix, use ``LIBSUFFIX=64`` on 64-bit.
+ * ``CONFIG+=no_desktop`` : Don't build misc desktop applications
  * ``CONFIG+=no_magick`` : This will disable thumbnail generation using ImageMagick
  * ``CONFIG+=magick7`` : Enable support for ImageMagick 7
  * ``CONFIG+=legacy_magick`` : Enable support for old versions of ImageMagick
- * ``MAGICK_PKG_CONFIG`` : Custom pkgconfig name for ``Magick++``
+ * ``MAGICK_PKG_CONFIG=`` : Custom pkgconfig name for ``Magick++``
 
 Doing a normal build:
 ```
@@ -132,7 +136,7 @@ Example:
 
 ```
 mkdir build && cd build
-qmake CONFIG+=release PREFIX=/usr ..
+qmake CONFIG+=release PREFIX=/usr LIBSUFFIX=64 ..
 make -jX
 make INSTALL_ROOT=/package_temp_path install
 ```
@@ -140,11 +144,9 @@ make INSTALL_ROOT=/package_temp_path install
 ## License
 
  * QtFM is licensed under the GPL-2.0 License
- * libdisks is licensed under a BSD 3-Clause License
  * libfm is a mix of GPL-2.0 and BSD 3-Clause License (goal is BSD 3-Clause License)
- * qtfm-tray is licensed under a BSD 3-Clause License (but depends on libfm that includes GPL-2.0 code)
+ * Additional applications are licensed under a BSD 3-Clause License
 
- All new source code will be BSD 3-Clause License, modifications to existing source code in fm/ will be GPL-2.0.
 
 ## Related
 

@@ -25,13 +25,13 @@ script:
   - tree pkg
   - mkdir $CWD/build5
   - cd $CWD/build5
-  - qmake -qt=qt5 CONFIG+=debug CONFIG+=legacy_magick PREFIX=/usr CONFIG+=basic ..
+  - qmake -qt=qt5 CONFIG+=debug CONFIG+=legacy_magick PREFIX=/usr CONFIG+=basic CONFIG+=no_desktop ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg
   - mkdir $CWD/build7
   - cd $CWD/build7
-  - qmake -qt=qt5 CONFIG+=release CONFIG+=legacy_magick PREFIX=/usr CONFIG+=basic ..
+  - qmake -qt=qt5 CONFIG+=release CONFIG+=legacy_magick PREFIX=/usr CONFIG+=basic CONFIG+=no_desktop ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg
