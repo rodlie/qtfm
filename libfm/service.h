@@ -22,10 +22,7 @@ signals:
     void pathRequested(QString path);
 
 public slots:
-    void openPath(QString path)
-    {
-        emit pathRequested(path);
-    }
+    void openPath(QString path);
 };
 
 #endif // SERVICE_H

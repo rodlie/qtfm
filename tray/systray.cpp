@@ -12,7 +12,9 @@
 #include <QMenu>
 #include <QAction>
 #include <QDebug>
+#include <QDir>
 #include <QApplication>
+
 #include "common.h"
 #include "desktopfile.h"
 

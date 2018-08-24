@@ -29,6 +29,16 @@
 #include "icondlg.h"
 #include "mainwindow.h"
 
+#if defined(__FreeBSD__) || defined(__NetBSD__)
+#include <sys/mount.h>
+#else
+#include <sys/vfs.h>
+#endif
+#include <sys/stat.h>
+#ifdef __NetBSD__
+#include <sys/statvfs.h>
+#endif
+
 /**
  * @brief Creates properties dialog
  * @param paths

@@ -15,7 +15,12 @@ SOURCES += \
     mymodelitem.cpp \
     mymodel.cpp \
     fm.cpp \
-    disks.cpp
+    disks.cpp \
+    common.cpp \
+    delegates.cpp \
+    udisks2.cpp \
+    sortfilter.cpp \
+    service.cpp
 HEADERS += \
     desktopfile.h \
     fileutils.h \
