@@ -13,6 +13,11 @@ CONFIG(basic) {
     tray.depends += libfm
 }
 
+!CONFIG(no_desktop) {
+    SUBDIRS += desktop
+    desktop.depends += libfm
+}
+
 CONFIG(v7) {
     SUBDIRS += qtfm7
     qtfm7.depends += libfm
