@@ -18,7 +18,6 @@ class FM : public QWidget
 public:
     explicit FM(bool realMime,
                 MimeUtils* mimeUtils,
-                QSortFilterProxyModel *parentTree = NULL,
                 QWidget *parent = NULL);
     ~FM();
 private:
@@ -26,17 +25,17 @@ private:
     MimeUtils *mimeUtilsPtr;
     myModel *modelList;
     QListView *list;
-    QSortFilterProxyModel *modelTree;
     QSortFilterProxyModel *modelView;
-    IconViewDelegate *ivdelegate;
-    IconListDelegate *ildelegate;
-    QItemSelectionModel *treeSelectionModel;
+    IconViewDelegate *modelViewDelegate;
     QItemSelectionModel *listSelectionModel;
-    QString currentPath;
+    int zoom;
+
 signals:
 
 public slots:
-    void treeSelectionChanged(QModelIndex current, QModelIndex previous);
+    void setPath(QString path);
+    QString getPath();
+
 private slots:
     void dirLoaded();
     void updateGrid();

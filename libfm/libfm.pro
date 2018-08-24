@@ -11,7 +11,8 @@ SOURCES += \
     properties.cpp \
     progressdlg.cpp \
     mymodelitem.cpp \
-    mymodel.cpp
+    mymodel.cpp \
+    fm.cpp
 HEADERS += \
     desktopfile.h \
     fileutils.h \
@@ -22,7 +23,8 @@ HEADERS += \
     mymodelitem.h \
     mymodel.h \
     delegates.h \
-    sortfilter.h
+    sortfilter.h \
+    fm.h
 !CONFIG(no_dbus) {
     HEADERS += service.h
     QT += dbus

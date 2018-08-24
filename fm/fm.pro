@@ -22,8 +22,7 @@ HEADERS += src/mainwindow.h \
     src/settingsdialog.h \
     src/customactionsmanager.h \
     src/processdialog.h \
-    src/applicationdialog.h \
-    src/fm.h
+    src/applicationdialog.h
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/bookmarks.cpp \
@@ -35,8 +34,7 @@ SOURCES += src/main.cpp \
     src/processdialog.cpp \
     src/applicationdialog.cpp \
     src/actiondefs.cpp \
-    src/actiontriggers.cpp \
-    src/fm.cpp
+    src/actiontriggers.cpp
 
 OTHER_FILES += $${TARGET}.desktop
 RESOURCES += ../$${TARGET}.qrc
