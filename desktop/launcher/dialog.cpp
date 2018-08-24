@@ -45,6 +45,7 @@ Dialog::Dialog(QWidget *parent)
     , userInput(NULL)
     , appSuggestions(NULL)
 {
+    setupTheme();
     setAttribute(Qt::WA_QuitOnClose, true);
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_NoSystemBackground);
@@ -54,7 +55,6 @@ Dialog::Dialog(QWidget *parent)
     setWindowIcon(QIcon::fromTheme("qtfm",
                                    QIcon(":/fm/images/qtfm.png")));
     setMinimumWidth(350);
-    setupTheme();
 
     ih = new iconHandler();
     apps = FileUtils::getApplications();
