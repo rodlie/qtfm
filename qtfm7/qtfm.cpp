@@ -13,14 +13,18 @@ QtFM::QtFM(QWidget *parent)
     QIcon::setThemeSearchPaths(Common::iconPaths(qApp->applicationDirPath()));
     Common::setupIconTheme(qApp->applicationFilePath());
 
-    setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/fm/images/qtfm.png")));
+    setWindowIcon(QIcon::fromTheme("qtfm",
+                                   QIcon(":/fm/images/qtfm.png")));
     setWindowTitle("QtFM");
 
     mdi = new QMdiArea(this);
+    mdi->setViewMode(QMdiArea::TabbedView);
+
     setCentralWidget(mdi);
 
     mimes = new MimeUtils(this);
-    mimes->setDefaultsFileName(Common::readSetting("defMimeAppsFile", MIME_APPS).toString());
+    mimes->setDefaultsFileName(Common::readSetting("defMimeAppsFile",
+                                                   MIME_APPS).toString());
 
     parseArgs();
 }
@@ -35,8 +39,14 @@ void QtFM::newSubWindow(QString path)
     qDebug() << "newSubWindow" << path;
     QFileInfo info(path);
     if (!info.isDir()) { return; }
+
     QMdiSubWindow *subwindow = new QMdiSubWindow;
-    subwindow->setWidget(new FM(mime, mimes, path));
+    FM *fm = new FM(mime, mimes, path);
+
+    connect(fm, SIGNAL(newWindowTitle(QString)),
+            subwindow, SLOT(setWindowTitle(QString)));
+
+    subwindow->setWidget(fm);
     subwindow->setAttribute(Qt::WA_DeleteOnClose);
     subwindow->setWindowTitle(info.completeBaseName());
     subwindow->setWindowIcon(windowIcon());

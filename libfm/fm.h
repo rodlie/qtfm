@@ -32,6 +32,7 @@ private:
     int zoom;
 
 signals:
+    void newWindowTitle(const QString &title);
 
 public slots:
     void setPath(QString path);
