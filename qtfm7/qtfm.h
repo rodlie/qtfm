@@ -17,7 +17,6 @@ private:
     QMdiArea *mdi;
     MimeUtils *mimes;
     bool mime;
-    QString startPath;
 public slots:
     void newSubWindow(QString path);
 };
