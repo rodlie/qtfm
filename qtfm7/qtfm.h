@@ -19,6 +19,8 @@ private:
     bool mime;
 public slots:
     void newSubWindow(QString path);
+private slots:
+    void parseArgs();
 };
 
 #endif // QTFM_H
