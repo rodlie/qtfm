@@ -96,15 +96,6 @@ INSTALLS += icon128 icon160 icon16 icon192 icon20 icon22 \
             icon24 icon256 icon32 icon36 icon48 icon512 icon64 \
             icon72 icon96 iconSVG
 
-!CONFIG(no_udisks) {
-    exists(../libdisks/libdisks.pro) {
-        INCLUDEPATH += ../libdisks
-        LIBS += -L../libdisks -lDisks
-    } else {
-        PKGCONFIG += Disks
-    }
-}
-
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG(deploy) : DEFINES += DEPLOY
 CONFIG(no_udisks): DEFINES += NO_UDISKS

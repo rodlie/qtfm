@@ -66,6 +66,7 @@ void FM::setPath(QString path)
     if (modelList->setRootPath(path)) { modelView->invalidate(); }
     QModelIndex baseIndex = modelView->mapFromSource(modelList->index(path));
     list->setRootIndex(baseIndex);
+    emit newPath(path);
     updateGrid();
     dirLoaded();
 }
@@ -78,6 +79,7 @@ QString FM::getPath()
 void FM::dirLoaded()
 {
     qDebug() << "dirLoaded";
+    emit updatedDir(getPath());
 }
 
 void FM::updateGrid()

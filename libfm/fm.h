@@ -33,6 +33,8 @@ private:
 
 signals:
     void newWindowTitle(const QString &title);
+    void updatedDir(const QString &dir);
+    void newPath(const QString &path);
 
 public slots:
     void setPath(QString path);

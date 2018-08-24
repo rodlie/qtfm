@@ -9,6 +9,19 @@ QtFM::QtFM(QWidget *parent)
     , mdi(nullptr)
     , mimes(nullptr)
     , mime(true)
+    , mBar(nullptr)
+    , sBar(nullptr)
+    , navBar(nullptr)
+    , pathEdit(nullptr)
+    , fileMenu(nullptr)
+    , editMenu(nullptr)
+    , viewMenu(nullptr)
+    , tileAction(nullptr)
+    , tabViewAction(nullptr)
+    , backButton(nullptr)
+    , upButton(nullptr)
+    , homeButton(nullptr)
+    , tileButton(nullptr)
 {
     QIcon::setThemeSearchPaths(Common::iconPaths(qApp->applicationDirPath()));
     Common::setupIconTheme(qApp->applicationFilePath());
@@ -17,21 +30,75 @@ QtFM::QtFM(QWidget *parent)
                                    QIcon(":/fm/images/qtfm.png")));
     setWindowTitle("QtFM");
 
+    mBar = new QMenuBar(this);
+    sBar = new QStatusBar(this);
+
+    fileMenu = new QMenu(this);
+    fileMenu->setTitle(tr("File"));
+
+    editMenu = new QMenu(this);
+    editMenu->setTitle(tr("Edit"));
+
+    viewMenu = new QMenu(this);
+    viewMenu->setTitle(tr("View"));
+
+    navBar = new QToolBar(this);
+    navBar->setWindowTitle(tr("Navigation"));
+
+    pathEdit = new QComboBox(this);
+    pathEdit->setEditable(true);
+    pathEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
     mdi = new QMdiArea(this);
     mdi->setViewMode(QMdiArea::TabbedView);
+    mdi->setTabsClosable(true);
+    mdi->setTabsMovable(true);
 
+    backButton = new QPushButton(this);
+    backButton->setText(tr("Back"));
+
+    upButton = new QPushButton(this);
+    upButton->setText(tr("Up"));
+
+    homeButton = new QPushButton(this);
+    homeButton->setText(tr("Home"));
+
+    tileButton = new QPushButton(this);
+    tileButton->setText(tr("Tile"));
+
+    tileAction = new QAction(this);
+    tileAction->setText(tr("Tile Tabs"));
+    tileAction->setShortcut(QKeySequence(tr("Ctrl+S")));
+
+    viewMenu->addAction(tileAction);
+
+    mBar->addMenu(fileMenu);
+    mBar->addMenu(editMenu);
+    mBar->addMenu(viewMenu);
+
+    navBar->addWidget(backButton);
+    navBar->addWidget(upButton);
+    navBar->addWidget(homeButton);
+    navBar->addWidget(pathEdit);
+    navBar->addWidget(tileButton);
+
+    setMenuBar(mBar);
+    setStatusBar(sBar);
+    addToolBar(Qt::TopToolBarArea, navBar);
     setCentralWidget(mdi);
 
     mimes = new MimeUtils(this);
     mimes->setDefaultsFileName(Common::readSetting("defMimeAppsFile",
                                                    MIME_APPS).toString());
 
+    setupConnections();
+    loadSettings();
     parseArgs();
 }
 
 QtFM::~QtFM()
 {
-
+    writeSettings();
 }
 
 void QtFM::newSubWindow(QString path)
@@ -45,12 +112,16 @@ void QtFM::newSubWindow(QString path)
 
     connect(fm, SIGNAL(newWindowTitle(QString)),
             subwindow, SLOT(setWindowTitle(QString)));
+    connect(fm, SIGNAL(updatedDir(QString)),
+            this, SLOT(handleUpdatedDir(QString)));
+    connect(fm, SIGNAL(newPath(QString)),
+            this, SLOT(handleNewPath(QString)));
 
     subwindow->setWidget(fm);
     subwindow->setAttribute(Qt::WA_DeleteOnClose);
     subwindow->setWindowTitle(info.completeBaseName());
     subwindow->setWindowIcon(windowIcon());
-    mdi->addSubWindow(subwindow);
+    mdi->addSubWindow(subwindow);//->setWindowState(Qt::WindowMaximized);
 }
 
 void QtFM::parseArgs()
@@ -63,7 +134,32 @@ void QtFM::parseArgs()
     if (mdi->subWindowList().count() == 0) {
         newSubWindow(QDir::currentPath());
     }
-    if (mdi->subWindowList().count() > 1) {
-        mdi->tileSubWindows();
-    }
+}
+
+void QtFM::setupConnections()
+{
+    connect(tileButton, SIGNAL(released()),
+            mdi, SLOT(tileSubWindows()));
+    connect(tileAction, SIGNAL(triggered()),
+            mdi, SLOT(tileSubWindows()));
+}
+
+void QtFM::loadSettings()
+{
+    qDebug() << "load settings";
+}
+
+void QtFM::writeSettings()
+{
+    qDebug() << "write settings";
+}
+
+void QtFM::handleNewPath(QString path)
+{
+    qDebug() << "handle new path" << path;
+}
+
+void QtFM::handleUpdatedDir(QString path)
+{
+    qDebug() << "handle updated dir" << path;
 }

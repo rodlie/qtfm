@@ -16,14 +16,6 @@ HEADERS += systray.h
 RESOURCES += tray.qrc
 OTHER_FILES += README.md
 
-exists(../libdisks/libdisks.pro) {
-    INCLUDEPATH += ../libdisks
-    LIBS += -L../libdisks -lDisks
-} else {
-    CONFIG += link_pkgconfig
-    PKGCONFIG += Disks
-}
-
 INCLUDEPATH += ../libfm
 LIBS += -L../libfm -lQtFM
 
