@@ -1632,7 +1632,7 @@ void MainWindow::openInApp()
 
 void MainWindow::updateGrid()
 {
-    if (iconAct && !iconAct->isChecked()) { return; }
+    if (list->viewMode() != QListView::IconMode) { return; }
     qDebug() << "updateGrid";
     QFontMetrics fm = fontMetrics();
     int textWidth = fm.averageCharWidth() * 17;
