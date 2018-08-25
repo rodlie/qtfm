@@ -1,4 +1,4 @@
-6.1.1
+6.1.1 25-August 2018
 - fixed ask dialog in bookmarks when drag-and-drop
 - update listview grid earlier
 - tray: fix open mountpoint in qtfm (with spaces)
