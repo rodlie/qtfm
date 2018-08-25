@@ -3,6 +3,11 @@
 - NetBSD support
 - dropped support for Qt4
 
+6.1.1 25-August 2018
+- fixed ask dialog in bookmarks when drag-and-drop
+- update listview grid earlier
+- tray: fix open mountpoint in qtfm (with spaces)
+
 6.1.0 04-August 2018
 - added system tray daemon (qtfm-tray), auto mount/play storage/optical
 - drag-and-drop: add settings for modifiers
