@@ -258,7 +258,7 @@ void SysTray::openMountpoint(QString mountpoint)
     if (fmSession.isValid()) {
         fmSession.call("openPath", mountpoint);
     } else {
-        QProcess::startDetached(QString("qtfm %1").arg(mountpoint));
+        QProcess::startDetached(QString("qtfm \"%1\"").arg(mountpoint));
     }
 }
 
