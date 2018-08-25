@@ -20,7 +20,7 @@
 #endif
 #define FM_MAJOR 6
 
-#define FM_SERVICE "org.dracolinux.qtfm"
+#define FM_SERVICE "eu.qtfm.qtfm"
 #define FM_PATH "/qtfm"
 
 #define BOOKMARK_PATH Qt::UserRole+1
