@@ -1,7 +1,9 @@
-6.2.0
+6.2.0 TBA
 - use ImageMagick to generate thumbnails
+  - with the right (ImageMagick) delegates this takes care of images, videos and documents (PDF)
 - NetBSD support
 - dropped support for Qt4
+- moved most of the code into libQtFM
 
 6.1.1 25-August 2018
 - fixed ask dialog in bookmarks when drag-and-drop
