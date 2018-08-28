@@ -5,8 +5,7 @@
 # See the LICENSE file for full details
 #
 
-QT += core gui
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core gui widgets
 include(../../qtfm.pri)
 
 TARGET = qtfm-launcher
@@ -21,3 +20,7 @@ LIBS += -L../../libfm -lQtFM
 
 target.path = $${PREFIX}/bin
 INSTALLS += target
+
+CONFIG(staticlib) {
+    include (../../libfm/static.pri)
+}

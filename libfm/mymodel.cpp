@@ -26,9 +26,6 @@
 #include <sys/ioctl.h>
 #include <QApplication>
 #include <QMessageBox>
-#ifndef NO_MAGICK
-#include <Magick++.h>
-#endif
 #include "fileutils.h"
 
 /**
@@ -37,6 +34,11 @@
  * @param mimeUtils
  */
 myModel::myModel(bool realMime, MimeUtils *mimeUtils) {
+
+  // thumbs generator
+  thumbGenerator = new Thumbs();
+  connect(thumbGenerator, SIGNAL(generatedIcon(QString,QByteArray)),
+          this, SLOT(handleNewThumb(QString,QByteArray)));
 
   // Stores mime utils
   mimeUtilsPtr = mimeUtils;
@@ -100,6 +102,7 @@ myModel::myModel(bool realMime, MimeUtils *mimeUtils) {
 myModel::~myModel() {
   delete rootItem;
   delete iconFactory;
+  thumbGenerator->deleteLater();
 }
 //---------------------------------------------------------------------------
 
@@ -111,6 +114,29 @@ void myModel::clearIconCache() {
   mimeIcons->clear();
   QFile(QString("%1/folder.cache").arg(Common::configDir())).remove();
   QFile(QString("%1/file.cache").arg(Common::configDir())).remove();
+}
+//---------------------------------------------------------------------------
+
+void myModel::handleNewThumb(QString item, QByteArray icon)
+{
+    //qDebug() << "handle new thumb" << item << icon.size();
+    if (icon.isEmpty()) { return; }
+    thumbs->insert(item, icon);
+    emit thumbUpdate(index(item));
+
+    if (item.split("/").takeLast() == lastEventFilename) {
+        lastEventFilename.clear();
+        QFile fileIcons(QString("%1/thumbs.cache").arg(Common::configDir()));
+        if (fileIcons.size() > 10000000) { fileIcons.remove(); }
+        else {
+            if (fileIcons.open(QIODevice::WriteOnly)) {
+                QDataStream out(&fileIcons);
+                out.setDevice(&fileIcons);
+                out << *thumbs;
+                fileIcons.close();
+            }
+        }
+    }
 }
 //---------------------------------------------------------------------------
 
@@ -223,15 +249,14 @@ QString myModel::getMimeType(const QModelIndex &index)
 {
     qDebug() << "myModel getMimeType";
     myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
-    if(item->mMimeType.isNull()) {
-        if(realMimeTypes) { item->mMimeType = mimeUtilsPtr->getMimeType(item->absoluteFilePath()); }
+    if (item->mMimeType.isNull()) {
+        if (realMimeTypes) { item->mMimeType = mimeUtilsPtr->getMimeType(item->absoluteFilePath()); }
         else {
-            if(item->fileInfo().isDir()) item->mMimeType = "folder";
+            if (item->fileInfo().isDir()) item->mMimeType = "folder";
             else item->mMimeType = item->fileInfo().suffix();
-            if(item->mMimeType.isNull()) item->mMimeType = "file";
+            if (item->mMimeType.isNull()) item->mMimeType = "file";
         }
     }
-    //qDebug() << "item mime" << item->absoluteFilePath() << item->mMimeType;
     return item->mMimeType;
 }
 
@@ -245,7 +270,7 @@ void myModel::notifyChange()
 
     QByteArray buffer;
     buffer.resize(buffSize);
-    read(inotifyFD,buffer.data(),buffSize);
+    read(inotifyFD,buffer.data(), (size_t) buffSize);
     const char *at = buffer.data();
     const char * const end = at + buffSize;
 
@@ -593,79 +618,48 @@ void myModel::loadMimeTypes() const {
  */
 void myModel::loadThumbs(QModelIndexList indexes) {
 
-  // Types that should be thumbnailed
-  QStringList files, types;
-#ifndef NO_MAGICK
-#ifdef LEGACY_MAGICK
-  types << "jpeg" << "jpg" << "png" << "svg" << "tif" << "tiff";
-#else
-  QString magickDelegates = QString::fromStdString(MagickCore::GetMagickDelegates());
-  if (magickDelegates.contains("jng")) { types << "jng"; }
-  if (magickDelegates.contains("jp2")) { types << "jp2"; }
-  if (magickDelegates.contains("jpeg")) { types << "jpg" << "jpeg"; }
-  if (magickDelegates.contains("openexr")) { types << "exr"; }
-  if (magickDelegates.contains("png")) { types << "png"; }
-  if (magickDelegates.contains("svg")) {
-      types << "svg";
-      if (magickDelegates.contains("zlib")) { types << "svgz"; }
-  }
-  if (magickDelegates.contains("tiff")) { types << "tif" << "tiff"; }
-  if (magickDelegates.contains("wmf")) { types << "wmf"; }
-#endif
-  types << "psd" << "xcf" << "miff" << "gif" << "ico" << "bmp" << "xpm" << "pdf";
-  types << Common::videoFormats();
-  // TODO: we should get supported formats from IM ...
-#else
-  types << "jpg" << "jpeg" << "png" << "bmp" << "ico" << "svg" << "gif" << "tif" << "tiff" << "xpm";
-#endif
+  // Files that should be thumbnailed
+  QMap<QString, QString> files;
 
-
-  // Remember files with valid suffix
+  // Add files we want thumbnails from
+  // TODO: should be a setting!
   foreach (QModelIndex item, indexes) {
-    QString suffix = QFileInfo(fileName(item)).suffix();
-    if (types.contains(suffix, Qt::CaseInsensitive)) {
-      files.append(filePath(item));
-    }
+      QString mimetype = mimeUtilsPtr->getMimeType(fileName(item));
+      if (mimetype.startsWith("image/") ||
+          mimetype.startsWith("video/") ||
+          mimetype == "application/pdf")
+      {
+          files[filePath(item)] = mimetype;
+      }
   }
 
   // Loads thumbnails from cache
-  if (files.count()) {
+  if (files.count()>0) {
     if (thumbs->count() == 0) {
-      qDebug() << "thumbs are empty, try to load cache ...";
+      qDebug() << "try to load thumb cache ...";
       QFile fileIcons(QString("%1/thumbs.cache").arg(Common::configDir()));
       if (fileIcons.open(QIODevice::ReadOnly)) {
-          qDebug() << "load thumbs from cache ...";
           QDataStream out(&fileIcons);
           out >> *thumbs;
           fileIcons.close();
       }
       thumbCount = thumbs->count();
-      qDebug() << "thumbcount" << thumbCount;
     }
-    foreach (QString item, files) {
-      if (!thumbs->contains(item) || (item.split("/").takeLast() == lastEventFilename && !lastEventFilename.isEmpty())) {
-          qDebug() << "gen new thumb" << item;
-          QByteArray iconData = getThumb(item);
-          if (iconData.isEmpty()) { continue; }
-          thumbs->insert(item, iconData);
-          emit thumbUpdate(index(item));
-          if (item.split("/").takeLast() == lastEventFilename) {
-              qDebug() << "save new thumb cache";
-              lastEventFilename.clear();
-              QFile fileIcons(QString("%1/thumbs.cache").arg(Common::configDir()));
-              if(fileIcons.size() > 10000000) { fileIcons.remove(); }
-              else {
-                  if (fileIcons.open(QIODevice::WriteOnly)) {
-                      QDataStream out(&fileIcons);
-                      out.setDevice(&fileIcons);
-                      out << *thumbs;
-                      fileIcons.close();
-                  }
-              }
-          }
-      } else {
-          emit thumbUpdate(index(item));
-      }
+    // generate thumbs
+    QMapIterator<QString, QString> i(files);
+    while (i.hasNext()) {
+        i.next();
+        QString item = i.key();
+        if (!thumbs->contains(item)) {
+            qDebug() << "GENERATE thumb for" << item;
+            thumbGenerator->generateIcon(item, i.value());
+        } else if (item.split("/").takeLast() == lastEventFilename &&
+                   !lastEventFilename.isEmpty()) {
+            qDebug() << "UPDATE thumb for" << item;
+            thumbGenerator->generateIcon(item, i.value());
+        } else {
+            emit thumbUpdate(index(item));
+        }
     }
   }
 }
@@ -677,7 +671,7 @@ void myModel::loadThumbs(QModelIndexList indexes) {
  * @param item
  * @return thumbnail
  */
-QByteArray myModel::getThumb(QString item)
+/*QByteArray myModel::getThumb(QString item)
 #ifndef NO_MAGICK
 {
     QByteArray result;
@@ -763,7 +757,7 @@ QByteArray myModel::getThumb(QString item)
   writer.write(background);
   return buffer.buffer();
 }
-#endif
+#endif*/
 //---------------------------------------------------------------------------
 
 /**

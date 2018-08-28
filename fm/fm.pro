@@ -100,3 +100,7 @@ CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG(deploy) : DEFINES += DEPLOY
 CONFIG(no_udisks): DEFINES += NO_UDISKS
 CONFIG(no_dbus): DEFINES += NO_DBUS
+
+CONFIG(staticlib) {
+    include (../libfm/static.pri)
+}

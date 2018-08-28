@@ -3,8 +3,6 @@ QT += core dbus gui widgets
 TARGET = QtFM
 VERSION = 1.2.0
 
-CONFIG += install_lib
-
 TEMPLATE = lib
 SOURCES += \
     desktopfile.cpp \
@@ -20,7 +18,8 @@ SOURCES += \
     delegates.cpp \
     udisks2.cpp \
     sortfilter.cpp \
-    service.cpp
+    service.cpp \
+    thumbs.cpp
 HEADERS += \
     desktopfile.h \
     fileutils.h \
@@ -35,13 +34,22 @@ HEADERS += \
     fm.h \
     disks.h \
     udisks2.h \
-    service.h
+    service.h \
+    thumbs.h
 
 exists(../qtfm.pri) {
     include(../qtfm.pri)
 }
 
-CONFIG(install_lib) {
+CONFIG(magick7): DEFINES += MAGICK7
+isEmpty(MAGICK_PKGCONFIG) {
+    PKGCONFIG += Magick++
+} else {
+    PKGCONFIG += $${MAGICK_PKGCONFIG}
+}
+unix:!linux { LIBS += -linotify }
+
+!CONFIG(no_install_lib) {
     CONFIG += create_prl no_install_prl create_pc
     isEmpty(PREFIX) {
         PREFIX = /usr/local

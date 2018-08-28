@@ -25,3 +25,7 @@ target_desktop.files = $${TARGET}.desktop
 man.files += qtfm-tray.1
 man.path += $${MANDIR}/man1
 INSTALLS += target target_desktop man
+
+CONFIG(staticlib) {
+    include (../libfm/static.pri)
+}

@@ -108,12 +108,10 @@ Optional build options:
 
 6.2:
  * ``CONFIG+=staticlib`` : Don't build shared library
- * ``CONFIG-=install_lib`` : Don't install library
- * ``LIBSUFFIX=`` : PREFIX/usr suffix, use ``LIBSUFFIX=64`` on 64-bit.
+ * ``CONFIG+=no_install_lib`` : Don't install library
+ * ``LIBSUFFIX=`` : PREFIX/lib suffix, use ``LIBSUFFIX=64`` on 64-bit.
  * ``CONFIG+=no_desktop`` : Don't build misc desktop applications
- * ``CONFIG+=no_magick`` : This will disable thumbnail generation using ImageMagick
  * ``CONFIG+=magick7`` : Enable support for ImageMagick 7
- * ``CONFIG+=legacy_magick`` : Enable support for old versions of ImageMagick
  * ``MAGICK_PKG_CONFIG=`` : Custom pkgconfig name for ``Magick++``
 
 Doing a normal build:
@@ -138,7 +136,106 @@ Example:
 mkdir build && cd build
 qmake CONFIG+=release PREFIX=/usr LIBSUFFIX=64 ..
 make -jX
-make INSTALL_ROOT=/package_temp_path install
+make INSTALL_ROOT=pkg install
+```
+```
+pkg
+├── etc
+│   └── xdg
+│       └── autostart
+│           └── qtfm-tray.desktop
+└── usr
+    ├── bin
+    │   ├── qtfm
+    │   ├── qtfm-launcher
+    │   └── qtfm-tray
+    ├── include
+    │   └── qtfm
+    │       ├── common.h
+    │       ├── delegates.h
+    │       ├── desktopfile.h
+    │       ├── disks.h
+    │       ├── fileutils.h
+    │       ├── fm.h
+    │       ├── mimeutils.h
+    │       ├── mymodel.h
+    │       ├── mymodelitem.h
+    │       ├── progressdlg.h
+    │       ├── properties.h
+    │       ├── service.h
+    │       ├── sortfilter.h
+    │       ├── thumbs.h
+    │       └── udisks2.h
+    ├── lib64
+    │   ├── libQtFM.so -> libQtFM.so.1.2.0
+    │   ├── libQtFM.so.1 -> libQtFM.so.1.2.0
+    │   ├── libQtFM.so.1.2 -> libQtFM.so.1.2.0
+    │   ├── libQtFM.so.1.2.0
+    │   └── pkgconfig
+    │       └── QtFM.pc
+    └── share
+        ├── applications
+        │   └── qtfm.desktop
+        ├── doc
+        │   └── qtfm-6.2.0
+        │       ├── AUTHORS
+        │       ├── ChangeLog
+        │       ├── LICENSE
+        │       └── README.md
+        ├── icons
+        │   └── hicolor
+        │       ├── 128x128
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 160x160
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 16x16
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 192x192
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 20x20
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 22x22
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 24x24
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 256x256
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 32x32
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 36x36
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 48x48
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 512x512
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 64x64
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 72x72
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 96x96
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       └── scalable
+        │           └── apps
+        │               └── qtfm.svg
+        └── man
+            └── man1
+                ├── qtfm-tray.1
+                └── qtfm.1
 ```
 
 ## License

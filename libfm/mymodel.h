@@ -27,6 +27,7 @@
 #include "mimeutils.h"
 
 #include "common.h"
+#include "thumbs.h"
 
 QString formatSize(qint64);
 
@@ -71,7 +72,7 @@ public:
   QString filePath(const QModelIndex &index);
   QString getMimeType(const QModelIndex &index);
   QStringList mimeTypes() const;
-  QByteArray getThumb(QString item);
+  //QByteArray getThumb(QString item);
   QFileInfo fileInfo(const QModelIndex &index);
   Qt::DropActions supportedDropActions () const;
   QMimeData* mimeData(const QModelIndexList & indexes) const;
@@ -86,6 +87,8 @@ public slots:
   void addWatcher(myModelItem* path);
   void clearCutItems();
   void clearIconCache();
+private slots:
+  void handleNewThumb(QString item, QByteArray icon);
 signals:
   void dragDropPaste(const QMimeData *data, QString newPath,
                      Common::DragMode mode = Common::DM_UNKNOWN);
@@ -122,6 +125,7 @@ private:
   QTimer eventTimer;
   int lastEventID;
   QString lastEventFilename;
+  Thumbs *thumbGenerator;
 };
 
 #endif // MYMODEL_H

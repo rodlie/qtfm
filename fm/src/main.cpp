@@ -23,10 +23,6 @@
 #include <QApplication>
 #include "mainwindow.h"
 
-#ifndef NO_MAGICK
-#include <Magick++.h>
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -65,16 +61,10 @@ void msgHandler(QtMsgType type, const QMessageLogContext &context, const QString
 int main(int argc, char *argv[]) {
 
   qInstallMessageHandler(msgHandler);
-#ifndef NO_MAGICK
-  Magick::InitializeMagick(NULL);
-#endif
   QApplication app(argc, argv);
   QApplication::setOrganizationName(APP);
   QApplication::setApplicationName(APP);
   QApplication::setOrganizationDomain("eu");
-
-  // Initialize resources
-  //Q_INIT_RESOURCE(resources);
 
   // Translate application
   /*QTranslator qtTranslator;
