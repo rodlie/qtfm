@@ -5,6 +5,11 @@
 - dropped support for Qt4
 - moved most of the code into libQtFM
 
+6.1.2 TBA
+- added new default custom actions
+- fixed broken file type check on custom actions
+- fixed issue with /etc/mtab not being read properly on some systems
+
 6.1.1 25-August 2018
 - fixed ask dialog in bookmarks when drag-and-drop
 - update listview grid earlier
