@@ -478,8 +478,11 @@ QString Common::getDeviceForDir(QString dir)
     QTextStream ts(&mtab);
     QString root;
     QVector<QStringList> result;
-    while(!ts.atEnd()) {
-        QString line = ts.readLine();
+    QStringList entries = ts.readAll().split("\n", QString::SkipEmptyParts);
+
+    //while(!ts.atEnd()) {
+    for (int i=0;i<entries.length();++i) {
+        QString line = entries.at(i);//ts.readLine();
         QStringList info = line.split(" ", QString::SkipEmptyParts);
         if (info.size()>=2) {
             QString dev = info.at(0);
