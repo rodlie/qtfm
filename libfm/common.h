@@ -464,8 +464,9 @@ public:
         QTextStream ts(&mtab);
         QString root;
         QVector<QStringList> result;
-        while(!ts.atEnd()) {
-            QString line = ts.readLine();
+        QStringList entries = ts.readAll().split("\n", QString::SkipEmptyParts);
+        for (int i=0;i<entries.length();++i) {
+            QString line = entries.at(i);
             QStringList info = line.split(" ", QString::SkipEmptyParts);
             if (info.size()>=2) {
                 QString dev = info.at(0);

@@ -1,5 +1,6 @@
 6.1.2 TBA
 - fixed broken file type check on custom actions
+- fixed issue with /etc/mtab not being read properly
 
 6.1.1 25-August 2018
 - fixed ask dialog in bookmarks when drag-and-drop
