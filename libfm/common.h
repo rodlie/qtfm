@@ -1,3 +1,10 @@
+/*
+# Copyright (c) 2018, Ole-André Rodlie <ole.andre.rodlie@gmail.com> All rights reserved.
+#
+# Available under the 3-clause BSD license
+# See the LICENSE file for full details
+*/
+
 #ifndef COMMON_H
 #define COMMON_H
 
@@ -66,7 +73,6 @@ public:
     static DragMode getDefaultDragAndDrop();
     static QString getDeviceForDir(QString dir);
     static QPalette darkTheme();
-    static QStringList videoFormats();
     static QStringList iconPaths(QString appPath);
     static QString formatSize(qint64 num);
     static QString getDriveInfo(QString path);

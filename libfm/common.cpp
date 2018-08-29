@@ -1,3 +1,10 @@
+/*
+# Copyright (c) 2018, Ole-André Rodlie <ole.andre.rodlie@gmail.com> All rights reserved.
+#
+# Available under the 3-clause BSD license
+# See the LICENSE file for full details
+*/
+
 #include "common.h"
 
 #include <QDir>
@@ -535,13 +542,6 @@ QPalette Common::darkTheme()
     palette.setColor(QPalette::Disabled, QPalette::Text, Qt::darkGray);
     palette.setColor(QPalette::Disabled, QPalette::ButtonText, Qt::darkGray);
     return palette;
-}
-
-QStringList Common::videoFormats()
-{
-    QStringList formats;
-    formats << "mpeg" << "vob" << "mov" << "avi" << "mkv" << "mp4" << "divx" << "flv";
-    return formats;
 }
 
 QStringList Common::iconPaths(QString appPath)

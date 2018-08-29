@@ -1,3 +1,10 @@
+/*
+# Copyright (c) 2018, Ole-André Rodlie <ole.andre.rodlie@gmail.com> All rights reserved.
+#
+# Available under the 3-clause BSD license
+# See the LICENSE file for full details
+*/
+
 #include "thumbs.h"
 #include <Magick++.h>
 #include <QFile>
@@ -49,7 +56,9 @@ void Thumbs::procIcon(QString file, QString mimetype)
 
         Magick::Image thumb;
         QString filename = file;
-        QStringList videos = Common::videoFormats();
+        QStringList videos;
+        videos << "mpeg" << "vob" << "mov" << "avi" << "mkv" << "mp4" << "divx" << "flv";
+
         QFileInfo fileinfo(filename);
         if (videos.contains(fileinfo.suffix(), Qt::CaseInsensitive)) {
             thumb.read(QString("%1[100]").arg(filename).toUtf8().data());
