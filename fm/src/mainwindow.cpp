@@ -1274,7 +1274,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         while (i.hasNext()) {
           i.next();
           qDebug() << "custom action" << i.key() << i.key() << i.value();
-          if (curIndex.completeSuffix() == i.key()) { actions.append(i.value()); }
+          if (curIndex.completeSuffix().endsWith(i.key())) { actions.append(i.value()); }
         }
 
         // Add run action or open with default application action
@@ -1309,7 +1309,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         QHashIterator<QString, QMenu*> m(*customActManager->getMenus());
         while (m.hasNext()) {
           m.next();
-          if (curIndex.completeSuffix() == m.key()) { popup->addMenu(m.value()); }
+          if (curIndex.completeSuffix().endsWith(m.key())) { popup->addMenu(m.value()); }
         }
 
         // Add cut/copy/paste/rename actions
