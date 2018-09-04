@@ -38,6 +38,7 @@ protected slots:
   void addCustomAction();
   void delCustomAction();
   void infoCustomAction();
+  void clearCustomAction();
   void getIcon(QTreeWidgetItem *item,
                int column);
   void onActionChanged(QTreeWidgetItem *item,
@@ -85,6 +86,7 @@ protected:
   QToolButton *addButton;
   QToolButton *delButton;
   QToolButton *infoButton;
+  QToolButton *clearButton;
   QCheckBox* checkOutput;
   QTreeWidget* shortsWidget;
   QGroupBox* grpAssoc;

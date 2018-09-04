@@ -14,6 +14,7 @@
 #include <QDirIterator>
 #include <QSettings>
 #include <QPalette>
+#include <QVector>
 
 #ifndef APP
 #define APP "qtfm"
@@ -41,6 +42,7 @@ public:
       DM_MOVE,
       DM_LINK
     };
+<<<<<<< HEAD
     static QString configDir()
     {
         QString dir = QString("%1/.config/%2%3").arg(QDir::homePath()).arg(APP).arg(FM_MAJOR);
@@ -520,6 +522,22 @@ public:
         palette.setColor(QPalette::Disabled, QPalette::Text, Qt::darkGray);
         palette.setColor(QPalette::Disabled, QPalette::ButtonText, Qt::darkGray);
         return palette;
+    }
+    static QVector<QStringList> getDefaultActions()
+    {
+        QVector<QStringList> result;
+        result.append(QStringList()<< "tar.gz,tar.bz2,tar.xz,tar,tgz,tbz,tbz2,txz" << "Extract tar here ..." << "package-x-generic" << "tar xvf %f");
+        result.append(QStringList()<< "7z" << "Extract 7z here ..." << "package-x-generic" << "7za x %f");
+        result.append(QStringList()<< "rar" << "Extract rar here ..." << "package-x-generic" << "unrar x %f");
+        result.append(QStringList()<< "zip" << "Extract zip here ..." << "package-x-generic" << "unzip %f");
+        result.append(QStringList()<< "gz" << "Extract gz here ..." << "package-x-generic" << "gunzip --keep %f");
+        result.append(QStringList()<< "bz2" << "Extract bz2 here ..." << "package-x-generic" << "bunzip2 --keep %f");
+        result.append(QStringList()<< "xz" << "Extract xz here ..." << "package-x-generic" << "xz -d --keep %f");
+        result.append(QStringList()<< "*" << "Compress to tar.gz" << "package-x-generic" << "tar cvvzf %n.tar.gz %f");
+        result.append(QStringList()<< "*" << "Compress to tar.bz2" << "package-x-generic" << "tar cvvjf %n.tar.bz2 %f");
+        result.append(QStringList()<< "*" << "Compress to tar.xz" << "package-x-generic" << "tar cvvJf %n.tar.xz %f");
+        result.append(QStringList()<< "*" << "Compress to zip" << "package-x-generic" << "zip -r %n.zip %f");
+        return result;
     }
 };
 

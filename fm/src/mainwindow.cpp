@@ -576,41 +576,11 @@ void MainWindow::firstRunCustomActions(bool isFirstRun)
     settings->beginGroup("customActions");
     int childs = settings->childKeys().size();
     if (childs>0) { return; }
-    QStringList action1;
-    action1 << "tar.gz,tar.bz2,tar.xz,tar,tgz,tbz,tbz2,txz" << "Extract tar here ..." << "package-x-generic" << "tar xvf %f";
-    QStringList action2;
-    action2 << "7z" << "Extract 7z here ..." << "package-x-generic" << "7za x %f";
-    QStringList action3;
-    action3 << "rar" << "Extract rar here ..." << "package-x-generic" << "unrar x %f";
-    QStringList action4;
-    action4 << "zip" << "Extract zip here ..." << "package-x-generic" << "unzip %f";
-    QStringList action5;
-    action5 << "gz" << "Extract gz here ..." << "package-x-generic" << "gunzip --keep %f";
-    QStringList action6;
-    action6 << "bz2" << "Extract bz2 here ..." << "package-x-generic" << "bunzip2 --keep %f";
-    QStringList action7;
-    action7 << "xz" << "Extract xz here ..." << "package-x-generic" << "xz -d --keep %f";
 
-    QStringList action8;
-    action8 << "*" << "Compress to tar.gz" << "package-x-generic" << "tar cvvzf %n.tar.gz %f";
-    QStringList action9;
-    action9 << "*" << "Compress to tar.bz2" << "package-x-generic" << "tar cvvjf %n.tar.bz2 %f";
-    QStringList action10;
-    action10 << "*" << "Compress to tar.xz" << "package-x-generic" << "tar cvvJf %n.tar.xz %f";
-    QStringList action11;
-    action11 << "*" << "Compress to zip" << "package-x-generic" << "zip -r %n.zip %f";
-
-    settings->setValue(QString(1), action1);
-    settings->setValue(QString(2), action2);
-    settings->setValue(QString(3), action3);
-    settings->setValue(QString(4), action4);
-    settings->setValue(QString(5), action5);
-    settings->setValue(QString(6), action6);
-    settings->setValue(QString(7), action7);
-    settings->setValue(QString(8), action8);
-    settings->setValue(QString(9), action9);
-    settings->setValue(QString(10), action10);
-    settings->setValue(QString(11), action11);
+    QVector<QStringList> defActions = Common::getDefaultActions();
+    for (int i=0;i<defActions.size();++i) {
+        settings->setValue(QString(i), defActions.at(i));
+    }
 
     settings->endGroup();
     settings->sync();
