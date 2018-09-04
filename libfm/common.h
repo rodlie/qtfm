@@ -11,6 +11,7 @@
 #include <QObject>
 #include <QPalette>
 #include <QVariant>
+#include <QVector>
 
 #ifndef APP
 #define APP "qtfm"
@@ -76,6 +77,7 @@ public:
     static QStringList iconPaths(QString appPath);
     static QString formatSize(qint64 num);
     static QString getDriveInfo(QString path);
+    static QVector<QStringList> getDefaultActions();
 };
 
 #endif // COMMON_H

@@ -251,17 +251,27 @@ QWidget* SettingsDialog::createActionsSettings() {
   addButton = new QToolButton();
   delButton = new QToolButton();
   infoButton = new QToolButton();
+  clearButton = new QToolButton();
+
+  addButton->setToolTip(tr("Add new custom action"));
+  delButton->setToolTip(tr("Remove custom action"));
+  infoButton->setToolTip(tr("Usage information"));
+  clearButton->setToolTip(tr("Restore actions to default"));
+
   addButton->setIcon(QIcon::fromTheme("list-add"));
   delButton->setIcon(QIcon::fromTheme("list-remove"));
   infoButton->setIcon(QIcon::fromTheme("dialog-question",
                                        QIcon::fromTheme("help-browser")));
+  clearButton->setIcon(QIcon::fromTheme("edit-clear"));
 
   // Connect buttons
   connect(addButton, SIGNAL(clicked()), this, SLOT(addCustomAction()));
   connect(delButton, SIGNAL(clicked()), this, SLOT(delCustomAction()));
   connect(infoButton, SIGNAL(clicked()), this, SLOT(infoCustomAction()));
+  connect(clearButton, SIGNAL(clicked()), this, SLOT(clearCustomAction()));
 
   // Layouts
+  horizontalLayout->addWidget(clearButton);
   horizontalLayout->addWidget(infoButton);
   horizontalLayout->addWidget(addButton);
   horizontalLayout->addWidget(delButton);
@@ -1024,6 +1034,20 @@ void SettingsDialog::infoCustomAction() {
                     "<p>[] - tick checkbox to monitor output and errors.</p>");
 
   // Displays info
-  QMessageBox::question(this, tr("Usage"), info);
+  QMessageBox::information(this, tr("Usage"), info);
+}
+
+void SettingsDialog::clearCustomAction()
+{
+    actionsWidget->clear();
+    QVector<QStringList> defActions = Common::getDefaultActions();
+    for (int i=0;i<defActions.size();++i) {
+        QTreeWidgetItem *item = new QTreeWidgetItem(actionsWidget, defActions.at(i),0);
+        item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled
+                       | Qt::ItemIsDragEnabled | Qt::ItemIsUserCheckable);
+        item->setCheckState(3, Qt::Unchecked);
+        item->setIcon(2, QIcon::fromTheme(defActions.at(i).at(2)));
+    }
+    readShortcuts();
 }
 //---------------------------------------------------------------------------

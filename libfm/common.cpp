@@ -588,3 +588,20 @@ QString Common::getDriveInfo(QString path)
             .arg(formatSize((qint64) info.f_blocks*info.f_bsize))
             .arg((info.f_blocks - info.f_bavail)*100/info.f_blocks);
 }
+
+QVector<QStringList> Common::getDefaultActions()
+{
+    QVector<QStringList> result;
+    result.append(QStringList() << "tar.gz,tar.bz2,tar.xz,tar,tgz,tbz,tbz2,txz" << "Extract tar here ..." << "package-x-generic" << "tar xvf %f");
+    result.append(QStringList()<< "7z" << "Extract 7z here ..." << "package-x-generic" << "7za x %f");
+    result.append(QStringList()<< "rar" << "Extract rar here ..." << "package-x-generic" << "unrar x %f");
+    result.append(QStringList()<< "zip" << "Extract zip here ..." << "package-x-generic" << "unzip %f");
+    result.append(QStringList()<< "gz" << "Extract gz here ..." << "package-x-generic" << "gunzip --keep %f");
+    result.append(QStringList()<< "bz2" << "Extract bz2 here ..." << "package-x-generic" << "bunzip2 --keep %f");
+    result.append(QStringList()<< "xz" << "Extract xz here ..." << "package-x-generic" << "xz -d --keep %f");
+    result.append(QStringList()<< "*" << "Compress to tar.gz" << "package-x-generic" << "tar cvvzf %n.tar.gz %f");
+    result.append(QStringList()<< "*" << "Compress to tar.bz2" << "package-x-generic" << "tar cvvjf %n.tar.bz2 %f");
+    result.append(QStringList()<< "*" << "Compress to tar.xz" << "package-x-generic" << "tar cvvJf %n.tar.xz %f");
+    result.append(QStringList()<< "*" << "Compress to zip" << "package-x-generic" << "zip -r %n.zip %f");
+    return result;
+}
