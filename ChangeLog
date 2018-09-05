@@ -1,6 +1,9 @@
-6.1.2 TBA
+6.1.2 06-September 2018
+
 - fixed broken file type check on custom actions
-- fixed issue with /etc/mtab not being read properly
+- added new (default) custom actions
+- fixed issue with /etc/mtab not being read properly on some systems
+- settings: added restore custom actions to default option
 
 6.1.1 25-August 2018
 - fixed ask dialog in bookmarks when drag-and-drop
