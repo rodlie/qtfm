@@ -20,8 +20,6 @@ HEADERS += src/mainwindow.h \
     src/propertiesdlg.h \
     src/tabbar.h \
     src/settingsdialog.h \
-    src/customactionsmanager.h \
-    src/processdialog.h \
     src/applicationdialog.h
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
@@ -30,8 +28,6 @@ SOURCES += src/main.cpp \
     src/propertiesdlg.cpp \
     src/tabbar.cpp \
     src/settingsdialog.cpp \
-    src/customactionsmanager.cpp \
-    src/processdialog.cpp \
     src/applicationdialog.cpp \
     src/actiondefs.cpp \
     src/actiontriggers.cpp

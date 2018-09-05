@@ -4,6 +4,7 @@
 #include <QMenu>
 #include <QTimer>
 #include <QDebug>
+#include "common.h"
 
 /**
  * @brief Creates custom action manager

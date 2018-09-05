@@ -19,7 +19,9 @@ SOURCES += \
     udisks2.cpp \
     sortfilter.cpp \
     service.cpp \
-    thumbs.cpp
+    thumbs.cpp \
+    customactionsmanager.cpp \
+    processdialog.cpp
 HEADERS += \
     desktopfile.h \
     fileutils.h \
@@ -35,7 +37,9 @@ HEADERS += \
     disks.h \
     udisks2.h \
     service.h \
-    thumbs.h
+    thumbs.h \
+    customactionsmanager.h \
+    processdialog.h
 
 exists(../qtfm.pri) {
     include(../qtfm.pri)
