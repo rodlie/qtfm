@@ -7,7 +7,7 @@ fm.depends += libfm
 
 !CONFIG(no_utils) {
     SUBDIRS += utils
-    desktop.depends += libfm
+    utils.depends += libfm
 }
 
 CONFIG(v7) {
