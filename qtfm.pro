@@ -5,16 +5,8 @@ CONFIG -= ordered
 SUBDIRS += libfm fm
 fm.depends += libfm
 
-CONFIG(basic) {
-    CONFIG += no_udisks no_tray
-}
-!CONFIG(no_tray) {
-    SUBDIRS += tray
-    tray.depends += libfm
-}
-
-!CONFIG(no_desktop) {
-    SUBDIRS += desktop
+!CONFIG(no_utils) {
+    SUBDIRS += utils
     desktop.depends += libfm
 }
 

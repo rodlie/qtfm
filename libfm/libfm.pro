@@ -1,7 +1,8 @@
 QT += core dbus gui widgets
+include(../qtfm.pri)
 
 TARGET = QtFM
-VERSION = 1.2.0
+VERSION = 1.$${QTFM_MINOR}.$${QTFM_PATCH}
 
 TEMPLATE = lib
 SOURCES += \
@@ -48,10 +49,6 @@ HEADERS += \
     settingsdialog.h \
     icondlg.h \
     propertiesdlg.h
-
-exists(../qtfm.pri) {
-    include(../qtfm.pri)
-}
 
 CONFIG(magick7): DEFINES += MAGICK7
 isEmpty(MAGICK_PKGCONFIG) {

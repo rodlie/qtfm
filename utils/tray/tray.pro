@@ -6,7 +6,7 @@
 #
 
 QT += core gui dbus widgets
-include(../qtfm.pri)
+include(../../qtfm.pri)
 
 TARGET = qtfm-tray
 TEMPLATE = app
@@ -16,8 +16,8 @@ HEADERS += systray.h
 RESOURCES += tray.qrc
 OTHER_FILES += README.md
 
-INCLUDEPATH += ../libfm
-LIBS += -L../libfm -lQtFM
+INCLUDEPATH += ../../libfm
+LIBS += -L../../libfm -lQtFM
 
 target.path = $${PREFIX}/bin
 target_desktop.path = $${XDGDIR}/autostart
@@ -27,5 +27,5 @@ man.path += $${MANDIR}/man1
 INSTALLS += target target_desktop man
 
 CONFIG(staticlib) {
-    include (../libfm/static.pri)
+    include (../../libfm/static.pri)
 }

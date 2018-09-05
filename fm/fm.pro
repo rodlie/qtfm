@@ -10,8 +10,8 @@ TARGET_NAME = $${QTFM_TARGET_NAME}
 VERSION = $${QTFM_MAJOR}.$${QTFM_MINOR}.$${QTFM_PATCH}
 TEMPLATE = app
 
-DEPENDPATH += . src
-INCLUDEPATH += . src ../libfm
+DEPENDPATH += src ../libfm
+INCLUDEPATH += src ../libfm
 LIBS += -L../libfm -lQtFM
 
 HEADERS += src/mainwindow.h \
