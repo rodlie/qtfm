@@ -42,7 +42,6 @@ public:
       DM_MOVE,
       DM_LINK
     };
-<<<<<<< HEAD
     static QString configDir()
     {
         QString dir = QString("%1/.config/%2%3").arg(QDir::homePath()).arg(APP).arg(FM_MAJOR);
