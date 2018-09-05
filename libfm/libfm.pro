@@ -21,7 +21,11 @@ SOURCES += \
     service.cpp \
     thumbs.cpp \
     customactionsmanager.cpp \
-    processdialog.cpp
+    processdialog.cpp \
+    applicationdialog.cpp \
+    settingsdialog.cpp \
+    icondlg.cpp \
+    propertiesdlg.cpp
 HEADERS += \
     desktopfile.h \
     fileutils.h \
@@ -39,7 +43,11 @@ HEADERS += \
     service.h \
     thumbs.h \
     customactionsmanager.h \
-    processdialog.h
+    processdialog.h \
+    applicationdialog.h \
+    settingsdialog.h \
+    icondlg.h \
+    propertiesdlg.h
 
 exists(../qtfm.pri) {
     include(../qtfm.pri)

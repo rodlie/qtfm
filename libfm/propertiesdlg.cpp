@@ -27,7 +27,6 @@
 #include "common.h"
 #include "propertiesdlg.h"
 #include "icondlg.h"
-#include "mainwindow.h"
 
 #if defined(__FreeBSD__) || defined(__NetBSD__)
 #include <sys/mount.h>

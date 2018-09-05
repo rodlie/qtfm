@@ -16,19 +16,11 @@ LIBS += -L../libfm -lQtFM
 
 HEADERS += src/mainwindow.h \
     src/bookmarkmodel.h \
-    src/icondlg.h \
-    src/propertiesdlg.h \
-    src/tabbar.h \
-    src/settingsdialog.h \
-    src/applicationdialog.h
+    src/tabbar.h
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/bookmarks.cpp \
-    src/icondlg.cpp \
-    src/propertiesdlg.cpp \
     src/tabbar.cpp \
-    src/settingsdialog.cpp \
-    src/applicationdialog.cpp \
     src/actiondefs.cpp \
     src/actiontriggers.cpp
 
