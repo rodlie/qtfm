@@ -7,6 +7,7 @@
 
 #include "fm.h"
 #include <QVBoxLayout>
+#include <QApplication>
 
 FM::FM(bool realMime,
        MimeUtils *mimeUtils,
@@ -20,6 +21,7 @@ FM::FM(bool realMime,
   , modelViewDelegate(NULL)
   , listSelectionModel(NULL)
   , zoom(48)
+  , history(NULL)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setSpacing(0);
@@ -54,15 +56,20 @@ FM::FM(bool realMime,
     list->setEditTriggers(QAbstractItemView::EditKeyPressed |
                           QAbstractItemView::SelectedClicked);
 
+    connect(list, SIGNAL(clicked(QModelIndex))
+            ,this, SLOT(listDoubleClicked(QModelIndex)));
+
     listSelectionModel = list->selectionModel();
 
     layout->addWidget(list);
 
+    history = new QStringList();
     setPath(startPath);
 }
 
 FM::~FM()
 {
+    delete history;
     qDebug() << "bye, bye!";
 }
 
@@ -73,9 +80,11 @@ void FM::setPath(QString path)
     if (modelList->setRootPath(path)) { modelView->invalidate(); }
     QModelIndex baseIndex = modelView->mapFromSource(modelList->index(path));
     list->setRootIndex(baseIndex);
+    addHistory(path);
     emit newPath(path);
+    emit newWindowTitle(path.split("/", QString::SkipEmptyParts).takeLast());
     updateGrid();
-    dirLoaded();
+    //dirLoaded();
 }
 
 QString FM::getPath()
@@ -83,9 +92,15 @@ QString FM::getPath()
     return modelList->getRootPath();
 }
 
+QStringList *FM::getHistory()
+{
+    return history;
+}
+
+
 void FM::dirLoaded()
 {
-    qDebug() << "dirLoaded";
+    qDebug() << "dirLoaded" << getPath();
     emit updatedDir(getPath());
 }
 
@@ -115,4 +130,32 @@ void FM::updateGrid()
     if (list->gridSize() != grid) {
         list->setGridSize(grid);
     }
+}
+
+void FM::listDoubleClicked(QModelIndex current)
+{
+    Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
+    if (mods == Qt::ControlModifier || mods == Qt::ShiftModifier) {
+        return;
+    }
+    QModelIndex index = modelView->mapToSource(current);
+    if (modelList->isDir(index)) {
+        qDebug() << "move further down the rabbit hole...";
+        setPath(modelList->filePath(index));
+    } else {
+        qDebug() << "is file";
+    }
+}
+
+void FM::addHistory(QString path)
+{
+    if (path.isEmpty()) { return; }
+    qDebug() << "add to history" << path;
+    history->insert(0, path);
+}
+
+void FM::remHistory()
+{
+    qDebug() << "remove from history";
+    history->removeFirst();
 }

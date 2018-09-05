@@ -1,6 +1,5 @@
 #include "qtfm.h"
 #include "common.h"
-#include "fm.h"
 
 #include <QMdiSubWindow>
 
@@ -51,6 +50,7 @@ QtFM::QtFM(QWidget *parent)
 
     mdi = new QMdiArea(this);
     mdi->setViewMode(QMdiArea::TabbedView);
+    //mdi->setTabPosition(QTabWidget::South);
     mdi->setTabsClosable(true);
     mdi->setTabsMovable(true);
 
@@ -76,9 +76,9 @@ QtFM::QtFM(QWidget *parent)
     mBar->addMenu(editMenu);
     mBar->addMenu(viewMenu);
 
-    navBar->addWidget(backButton);
-    navBar->addWidget(upButton);
-    navBar->addWidget(homeButton);
+    //navBar->addWidget(backButton);
+    //navBar->addWidget(upButton);
+    //navBar->addWidget(homeButton);
     navBar->addWidget(pathEdit);
     navBar->addWidget(tileButton);
 
@@ -90,6 +90,10 @@ QtFM::QtFM(QWidget *parent)
     mimes = new MimeUtils(this);
     mimes->setDefaultsFileName(Common::readSetting("defMimeAppsFile",
                                                    MIME_APPS).toString());
+
+    backButton->hide();
+    upButton->hide();
+    homeButton->hide();
 
     setupConnections();
     loadSettings();
@@ -142,6 +146,8 @@ void QtFM::setupConnections()
             mdi, SLOT(tileSubWindows()));
     connect(tileAction, SIGNAL(triggered()),
             mdi, SLOT(tileSubWindows()));
+    connect(mdi, SIGNAL(subWindowActivated(QMdiSubWindow*)),
+            this, SLOT(handleTabActivated(QMdiSubWindow*)));
 }
 
 void QtFM::loadSettings()
@@ -156,10 +162,32 @@ void QtFM::writeSettings()
 
 void QtFM::handleNewPath(QString path)
 {
-    qDebug() << "handle new path" << path;
+    Q_UNUSED(path)
+    FM *fm = dynamic_cast<FM*>(sender());
+    if (!mdi->currentSubWindow() || !fm) { return; }
+    if (fm != dynamic_cast<FM*>(mdi->currentSubWindow()->widget())) { return; }
+    qDebug() << "update path for tab";
+    refreshPath(fm);
 }
 
 void QtFM::handleUpdatedDir(QString path)
 {
     qDebug() << "handle updated dir" << path;
+}
+
+void QtFM::handleTabActivated(QMdiSubWindow *tab)
+{
+    if (!tab) { return; }
+    FM *fm = dynamic_cast<FM*>(tab->widget());
+    if (!fm) { return; }
+    qDebug() << "handle tab activated" << fm->getPath();
+    refreshPath(fm);
+}
+
+void QtFM::refreshPath(FM *fm)
+{
+    if (!fm) { return; }
+    pathEdit->clear();
+    pathEdit->addItems(*fm->getHistory());
+    pathEdit->setCurrentIndex(0);
 }

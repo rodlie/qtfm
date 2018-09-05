@@ -11,6 +11,7 @@
 #include <QAction>
 
 #include "mimeutils.h"
+#include "fm.h"
 
 class QtFM : public QMainWindow
 {
@@ -52,6 +53,8 @@ private slots:
     void writeSettings();
     void handleNewPath(QString path);
     void handleUpdatedDir(QString path);
+    void handleTabActivated(QMdiSubWindow *tab);
+    void refreshPath(FM* fm);
 };
 
 #endif // QTFM_H

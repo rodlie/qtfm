@@ -12,6 +12,7 @@
 #include <QWidget>
 #include <QListView>
 #include <QItemSelectionModel>
+#include <QModelIndex>
 #include <QDebug>
 #include "mymodel.h"
 #include "mymodelitem.h"
@@ -37,6 +38,7 @@ private:
     IconViewDelegate *modelViewDelegate;
     QItemSelectionModel *listSelectionModel;
     int zoom;
+    QStringList* history;
 
 signals:
     void newWindowTitle(const QString &title);
@@ -46,10 +48,14 @@ signals:
 public slots:
     void setPath(QString path);
     QString getPath();
+    QStringList *getHistory();
 
 private slots:
     void dirLoaded();
     void updateGrid();
+    void listDoubleClicked(QModelIndex current);
+    void addHistory(QString path);
+    void remHistory();
 };
 
 #endif // FM_H
