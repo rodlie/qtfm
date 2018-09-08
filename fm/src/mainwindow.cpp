@@ -1664,7 +1664,9 @@ void MainWindow::populateMedia()
         device.next();
         if (mediaBookmarkExists(device.value()->path)>-1) { continue; }
         if ((device.value()->isOptical && !device.value()->hasMedia)
+#ifndef __FreeBSD__
                 || (!device.value()->isOptical && !device.value()->isRemovable)
+#endif
                 || (!device.value()->isOptical && !device.value()->hasPartition)) { continue; }
         modelBookmarks->addBookmark(QString("%1 (%2)").arg(device.value()->name).arg(device.value()->dev),
                                     device.value()->mountpoint,
