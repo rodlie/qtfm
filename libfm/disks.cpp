@@ -82,7 +82,7 @@ void Device::updateDeviceProperties()
 
     drive = uDisks2::getDrivePath(path);
     name = uDisks2::getDeviceName(drive);
-    if (name.isEmpty()) { name = QObject::tr("Removable"); }
+    if (name.isEmpty()) { name = QObject::tr("Storage"); }
 
     dev = path.split("/").takeLast();
     isRemovable = uDisks2::isRemovable(drive);
