@@ -26,4 +26,7 @@ HEADERS += \
 
 INCLUDEPATH += ../libfm
 LIBS += -L../libfm -lQtFM
+CONFIG(staticlib) {
+    include (../libfm/static.pri)
+}
 
