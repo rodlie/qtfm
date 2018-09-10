@@ -14,7 +14,7 @@
 
 Thumbs::Thumbs(QObject *parent) : QObject(parent)
 {
-    Magick::InitializeMagick(NULL);
+    Magick::InitializeMagick(Q_NULLPTR);
     moveToThread(&t);
     t.start();
 }

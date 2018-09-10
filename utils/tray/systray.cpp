@@ -139,7 +139,7 @@ void SysTray::showMessage(QString title, QString message)
 void SysTray::handleContextMenuAction()
 {
     QAction *action = qobject_cast<QAction*>(sender());
-    if (action==NULL) { return; }
+    if (action == Q_NULLPTR) { return; }
     QString path = action->data().toString();
     if (path.isEmpty()) { return; }
     if (!man->devices.contains(path)) { return; }

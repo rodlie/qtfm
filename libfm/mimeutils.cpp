@@ -88,7 +88,7 @@ void MimeUtils::openInApp(const QFileInfo &file, QString termCmd) {
   } else {
     QString title = tr("No default application");
     QString msg = tr("No default application for mime: %1!").arg(mime);
-    QMessageBox::warning(NULL, title, msg);
+    QMessageBox::warning(Q_NULLPTR, title, msg);
   }
 }
 //---------------------------------------------------------------------------

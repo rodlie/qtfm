@@ -17,7 +17,7 @@ class Thumbs : public QObject
 {
     Q_OBJECT
 public:
-    explicit Thumbs(QObject *parent = 0);
+    explicit Thumbs(QObject *parent = Q_NULLPTR);
     ~Thumbs();
 
 signals:

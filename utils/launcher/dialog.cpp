@@ -42,8 +42,8 @@ void iconHandler::findIcon(QString icon)
 
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
-    , userInput(NULL)
-    , appSuggestions(NULL)
+    , userInput(Q_NULLPTR)
+    , appSuggestions(Q_NULLPTR)
 {
     setupTheme();
     setAttribute(Qt::WA_QuitOnClose, true);

@@ -27,7 +27,7 @@ public:
     explicit FM(bool realMime,
                 MimeUtils* mimeUtils,
                 QString startPath = QDir::homePath(),
-                QWidget *parent = NULL);
+                QWidget *parent = Q_NULLPTR);
     ~FM();
 private:
     bool realMimeTypes;

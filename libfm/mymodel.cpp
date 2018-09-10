@@ -365,8 +365,8 @@ bool myModel::setRootPath(const QString& path)
 
     myModelItem *item = rootItem->matchPath(path.split(SEPARATOR));
 
-    if (item == NULL) {
-        QMessageBox::warning(NULL, tr("No such directory"), tr("Directory requested does not exists."));
+    if (item == Q_NULLPTR) {
+        QMessageBox::warning(Q_NULLPTR, tr("No such directory"), tr("Directory requested does not exists."));
         return false;
     }
 
@@ -418,7 +418,7 @@ void myModel::fetchMore (const QModelIndex & parent)
 //---------------------------------------------------------------------------------------
 void myModel::populateItem(myModelItem *item)
 {
-    if (item == NULL) { return; }
+    if (item == Q_NULLPTR) { return; }
     item->walked = 1;
 
     QDir dir(item->absoluteFilePath());
@@ -466,7 +466,7 @@ void myModel::update()
 void myModel::refreshItems()
 {
     myModelItem *item = rootItem->matchPath(currentRootPath.split(SEPARATOR));
-    if (item == NULL) { return; }
+    if (item == Q_NULLPTR) { return; }
     item->clearAll();
     populateItem(item);
 }

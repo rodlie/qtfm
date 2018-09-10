@@ -61,7 +61,7 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
   QVBoxLayout *layout = new QVBoxLayout(this);
   QGroupBox *fileFrame = new QGroupBox(this);
   QGroupBox *driveFrame = new QGroupBox(this);
-  QGroupBox * permissions = NULL;
+  QGroupBox * permissions = Q_NULLPTR;
 
   path = new QLabel;
   path->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
@@ -241,7 +241,7 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
   // Main layout
   layout->addWidget(fileFrame);
 
-  if ((files == 0 || folders == 0) && permissions!=NULL) { layout->addWidget(permissions); }
+  if ((files == 0 || folders == 0) && permissions!=Q_NULLPTR) { layout->addWidget(permissions); }
 
   layout->addWidget(driveFrame);
   layout->addWidget(buttons);

@@ -276,7 +276,7 @@ void MainWindow::lateStart() {
                         QAbstractItemView::SelectedClicked);
 
   // Clipboard configuration
-  progress = 0;
+  progress = Q_NULLPTR;
   clipboardChanged();
 
   // Completer configuration
@@ -1098,7 +1098,7 @@ int MainWindow::showReplaceMsgBox(const QFileInfo &f1, const QFileInfo &f2) {
        .arg(f2.filePath()).arg(f2.lastModified().toString()).arg(f2.size());
 
   // Show message
-  return QMessageBox::question(0, tr("Replace"), t, QMessageBox::Yes
+  return QMessageBox::question(Q_NULLPTR, tr("Replace"), t, QMessageBox::Yes
                                | QMessageBox::YesToAll | QMessageBox::No
                                | QMessageBox::NoToAll | QMessageBox::Cancel);
 }
@@ -1106,10 +1106,10 @@ int MainWindow::showReplaceMsgBox(const QFileInfo &f1, const QFileInfo &f2) {
 
 void MainWindow::progressFinished(int ret,QStringList newFiles)
 {
-    if (progress != 0) {
+    if (progress != Q_NULLPTR) {
         progress->close();
         delete progress;
-        progress = 0;
+        progress = Q_NULLPTR;
     }
 
     if (newFiles.count()) {
@@ -1696,7 +1696,7 @@ void MainWindow::handleMediaUnmount()
 {
     //qDebug() << "handle media unmount";
     QStandardItem *item = modelBookmarks->itemFromIndex(bookmarksList->currentIndex());
-    if (item == NULL) { return; }
+    if (item == Q_NULLPTR) { return; }
     QString path = item->data(MEDIA_PATH).toString();
     if (path.isEmpty()) { return; }
     disks->devices[path]->unmount();
@@ -1706,7 +1706,7 @@ void MainWindow::handleMediaEject()
 {
     //qDebug() << "handle media eject";
     QStandardItem *item = modelBookmarks->itemFromIndex(bookmarksList->currentIndex());
-    if (item == NULL) { return; }
+    if (item == Q_NULLPTR) { return; }
     QString path = item->data(MEDIA_PATH).toString();
     if (path.isEmpty()) { return; }
     disks->devices[path]->eject();

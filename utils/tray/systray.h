@@ -18,7 +18,7 @@ class SysTray : public QObject
 {
     Q_OBJECT
 public:
-    explicit SysTray(QObject *parent = NULL);
+    explicit SysTray(QObject *parent = Q_NULLPTR);
 
 private:
     QSystemTrayIcon *disktray;

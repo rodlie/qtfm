@@ -14,7 +14,7 @@
 class MimeUtils : public QObject {
   Q_OBJECT
 public:
-  explicit MimeUtils(QObject* parent = 0);
+  explicit MimeUtils(QObject* parent = Q_NULLPTR);
   virtual ~MimeUtils();
   void openInApp(QString exe, const QFileInfo &file, QString termCmd = QString());
   void openFilesInApp(QString exe, const QStringList &files, QString termCmd);

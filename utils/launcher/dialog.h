@@ -34,7 +34,7 @@ class iconHandler : public QObject
     Q_OBJECT
 
 public:
-    explicit iconHandler(QObject *parent = 0);
+    explicit iconHandler(QObject *parent = Q_NULLPTR);
     ~iconHandler();
 
 private:
@@ -55,7 +55,7 @@ class Dialog : public QDialog
     Q_OBJECT
 
 public:
-   explicit Dialog(QWidget *parent = NULL);
+   explicit Dialog(QWidget *parent = Q_NULLPTR);
    ~Dialog();
 
 private:

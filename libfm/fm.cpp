@@ -15,13 +15,13 @@ FM::FM(bool realMime,
        QWidget *parent) : QWidget(parent)
   , realMimeTypes(realMime)
   , mimeUtilsPtr(mimeUtils)
-  , modelList(NULL)
-  , list(NULL)
-  , modelView(NULL)
-  , modelViewDelegate(NULL)
-  , listSelectionModel(NULL)
+  , modelList(Q_NULLPTR)
+  , list(Q_NULLPTR)
+  , modelView(Q_NULLPTR)
+  , modelViewDelegate(Q_NULLPTR)
+  , listSelectionModel(Q_NULLPTR)
   , zoom(48)
-  , history(NULL)
+  , history(Q_NULLPTR)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setSpacing(0);

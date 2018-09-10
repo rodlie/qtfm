@@ -25,7 +25,7 @@ public:
   SettingsDialog(QList<QAction*> *actionList,
                  QSettings* settings,
                  MimeUtils *mimeUtils,
-                 QWidget *parent = 0);
+                 QWidget *parent = Q_NULLPTR);
 
 public slots:
   void accept();

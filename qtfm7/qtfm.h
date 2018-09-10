@@ -18,7 +18,7 @@ class QtFM : public QMainWindow
     Q_OBJECT
 
 public:
-    QtFM(QWidget *parent = nullptr);
+    QtFM(QWidget *parent = Q_NULLPTR);
     ~QtFM();
 
 private:
