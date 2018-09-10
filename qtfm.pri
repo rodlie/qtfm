@@ -20,8 +20,11 @@ isEmpty(XDGDIR) {
     XDGDIR = /etc/xdg
 }
 
-#CONFIG += staticlib
-#CONFIG -= install_lib
 CONFIG += link_pkgconfig
-
-CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
+CONFIG(release, debug|release) {
+    DEFINES += QT_NO_DEBUG_OUTPUT
+    !CONFIG(no_static) {
+        CONFIG += staticlib
+        CONFIG += no_install_lib
+    }
+}
