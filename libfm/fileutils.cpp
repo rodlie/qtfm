@@ -167,7 +167,6 @@ QString FileUtils::getRealSuffix(const QString &name) {
  * @return icon
  */
 QIcon FileUtils::searchMimeIcon(QString mime, const QIcon &defaultIcon) {
-  //qDebug() << "search mime icon" << mime << QIcon::themeName();
   QIcon icon = QIcon::fromTheme(mime.replace("/", "-"));
   if (icon.isNull()) {
       if (mime.startsWith("image")) {
@@ -183,8 +182,16 @@ QIcon FileUtils::searchMimeIcon(QString mime, const QIcon &defaultIcon) {
                  mime.contains("gz") ||
                  mime.contains("rar") ||
                  mime.contains("zip") ||
-                 mime.contains("apple-diskimage")) {
+                 mime.contains("rpm") ||
+                 mime.contains("deb")) {
           icon = QIcon::fromTheme("package-x-generic");
+      } else if (mime.endsWith("cd-image") ||
+                 mime.endsWith("apple-diskimage") ||
+                 mime.endsWith("disk-image") ||
+                 mime.endsWith("saturn-rom") ||
+                 mime.endsWith("wii-rom") ||
+                 mime.endsWith("gamecube-rom")) {
+          icon = QIcon::fromTheme("media-optical");
       } else if (mime.contains("office")) {
           if (mime.contains("document")) {
               icon = QIcon::fromTheme("x-office-document");
@@ -207,7 +214,7 @@ QIcon FileUtils::searchMimeIcon(QString mime, const QIcon &defaultIcon) {
               mime.contains("shell"))
           {
               icon = QIcon::fromTheme("text-x-script");
-          } else if(mime.contains("html")) {
+          } else if (mime.contains("html")) {
               icon = QIcon::fromTheme("text-html");
           } else {
               icon = QIcon::fromTheme("text-x-generic");
