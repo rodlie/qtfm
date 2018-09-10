@@ -182,7 +182,8 @@ QIcon FileUtils::searchMimeIcon(QString mime, const QIcon &defaultIcon) {
                  mime.contains("bz2") ||
                  mime.contains("gz") ||
                  mime.contains("rar") ||
-                 mime.contains("zip")) {
+                 mime.contains("zip") ||
+                 mime.contains("apple-diskimage")) {
           icon = QIcon::fromTheme("package-x-generic");
       } else if (mime.contains("office")) {
           if (mime.contains("document")) {
