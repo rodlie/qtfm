@@ -1,9 +1,9 @@
 6.2.0 TBA
-- use ImageMagick to generate thumbnails
-  - with the right (ImageMagick) delegates this takes care of images, videos and documents (PDF)
+- use ImageMagick to generate image thumbnails
 - NetBSD support
 - dropped support for Qt4
 - moved most of the code into libQtFM
+- use ffmpeg to generate video thumbnails
 
 6.1.2 10-September 2018
 - fixed broken file type check on custom actions

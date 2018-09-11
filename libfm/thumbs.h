@@ -28,7 +28,7 @@ public slots:
 
 private slots:
     void procIcon(QString file, QString mimetype);
-    void procFF(QString file);
+    QByteArray getVideoFrame(QString file, int videoFrame = 0, int videoSize = 128);
 
 private:
     QThread t;

@@ -7,7 +7,7 @@ before_install:
   - sudo apt-get update
 
 install:
-  - sudo apt-get install qtbase5-dev libmagick++-dev qt5-qmake tree
+  - sudo apt-get install qtbase5-dev libmagick++-dev qt5-qmake tree libavdevice-dev libswscale-dev
   
 script:
   - export CWD=`pwd`

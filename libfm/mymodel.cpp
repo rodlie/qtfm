@@ -626,8 +626,8 @@ void myModel::loadThumbs(QModelIndexList indexes) {
   foreach (QModelIndex item, indexes) {
       QString mimetype = mimeUtilsPtr->getMimeType(fileName(item));
       if (mimetype.startsWith("image/") ||
-          mimetype.startsWith("video/") ||
-          mimetype == "application/pdf")
+          mimetype.startsWith("video/") /*||
+          mimetype == "application/pdf"*/)
       {
           files[filePath(item)] = mimetype;
       }

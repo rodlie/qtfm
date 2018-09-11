@@ -50,6 +50,13 @@ void Thumbs::procIcon(QString file, QString mimetype)
     qDebug() << "procIcon" << file << mimetype;
 
     QByteArray result;
+    if (mimetype.startsWith("video/")) {
+        result = getVideoFrame(file);
+        if (result.length()>0) {
+            emit generatedIcon(file, result);
+            return;
+        }
+    }
     try {
         QString bgColor = "black";
         if (mimetype == "application/pdf") { bgColor = "white"; }
@@ -66,18 +73,8 @@ void Thumbs::procIcon(QString file, QString mimetype)
 
         Magick::Image thumb;
         QString filename = file;
-        QStringList videos;
-        videos << "mpeg" << "vob" << "mov" << "avi" << "mkv" << "mp4" << "divx" << "flv";
 
-        QFileInfo fileinfo(filename);
-        if (videos.contains(fileinfo.suffix(), Qt::CaseInsensitive)) {
-            //thumb.read(QString("%1[100]").arg(filename).toUtf8().data());
-            procFF(filename);
-            return;
-
-        } else {
-            thumb.read(filename.toUtf8().data());
-        }
+        thumb.read(filename.toUtf8().data());
         thumb.scale(Magick::Geometry(128, 128));
         if (thumb.depth()>8) { thumb.depth(8); }
         int offsetX = 0;
@@ -105,9 +102,11 @@ void Thumbs::procIcon(QString file, QString mimetype)
     }
 }
 
-void Thumbs::procFF(QString file)
+// TODO: FIX FFMPEG WARNINGS!!!!
+QByteArray Thumbs::getVideoFrame(QString file, int videoFrame, int videoSize)
 {
-    if (file.isEmpty()) { return; }
+    QByteArray result;
+    if (file.isEmpty()) { return result; }
 
     AVCodecContext  *pCodecCtx;
     AVFormatContext *pFormatCtx = avformat_alloc_context();
@@ -115,27 +114,27 @@ void Thumbs::procFF(QString file)
     AVFrame *pFrame, *pFrameRGB;
 
     if (avformat_open_input(&pFormatCtx,file.toUtf8().data(),
-                           Q_NULLPTR,Q_NULLPTR) != 0) { return; }
+                           Q_NULLPTR,Q_NULLPTR) != 0) { return result; }
     if (avformat_find_stream_info(pFormatCtx,
-                                  Q_NULLPTR) < 0) { return; }
+                                  Q_NULLPTR) < 0) { return result; }
 
     av_dump_format(pFormatCtx, 0, file.toUtf8().data(), 0);
-    int videoStream = 1;
+    int videoStream = -1;
 
     for (int i=0; i < (int)pFormatCtx->nb_streams; i++) {
-        if(pFormatCtx->streams[i]->codec->coder_type == AVMEDIA_TYPE_VIDEO) {
+        if(pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             videoStream = i;
             break;
         }
     }
+    if (videoStream == -1) { return result; }
 
-    if (videoStream == -1) { return; }
     pCodecCtx = pFormatCtx->streams[videoStream]->codec;
     pCodec =avcodec_find_decoder(pCodecCtx->codec_id);
-    if (pCodec == Q_NULLPTR) { return; }
+    if (pCodec == Q_NULLPTR) { return result; }
     if (avcodec_open2(pCodecCtx,
                      pCodec,
-                     Q_NULLPTR) < 0) { return; }
+                     Q_NULLPTR) < 0) { return result; }
 
     pFrame    = av_frame_alloc();
     pFrameRGB = av_frame_alloc();
@@ -187,21 +186,44 @@ void Thumbs::procFF(QString file)
                                                        Q_NULLPTR,
                                                        Q_NULLPTR);
                 sws_scale(img_convert_ctx,
-                          ((AVPicture*)pFrame)->data,
-                          ((AVPicture*)pFrame)->linesize,
+                          ((AVFrame*)pFrame)->data,
+                          ((AVFrame*)pFrame)->linesize,
                           0,
                           pCodecCtx->height,
-                          ((AVPicture *)pFrameRGB)->data,
-                          ((AVPicture *)pFrameRGB)->linesize);
+                          ((AVFrame*)pFrameRGB)->data,
+                          ((AVFrame*)pFrameRGB)->linesize);
 
                 try {
-                    qDebug() << "try to read result from ffmpeg" <<currentFrame;
-                    Magick::Image image((size_t)pFrame->width,
+                    //qDebug() << "try to read result from ffmpeg" <<currentFrame;
+                    Magick::Image background(Magick::Geometry(videoSize, videoSize),
+                                             Magick::Color("black"));
+#ifdef MAGICK7
+                    background.alpha(true);
+#else
+                    background.matte(true);
+#endif
+                    background.backgroundColor(background.pixelColor(0,0));
+                    background.transparent(background.pixelColor(0,0));
+
+                    Magick::Image thumb((size_t)pFrame->width,
                                         (size_t)pFrame->height,
                                         "BGR",
                                         Magick::CharPixel,
                                         pFrameRGB->data[0]);
-                    image.write("/tmp/fofo.jpg");
+                    thumb.scale(Magick::Geometry(videoSize, videoSize));
+                    int offsetX = 0;
+                    int offsetY = 0;
+                    if (thumb.columns()<background.columns()) {
+                        offsetX = (int)(background.columns()-thumb.columns())/2;
+                    }
+                    if (thumb.rows()<background.rows()) {
+                        offsetY = (int)(background.rows()-thumb.rows())/2;
+                    }
+                    background.composite(thumb, offsetX, offsetY, MagickCore::OverCompositeOp);
+                    background.magick("BMP");
+                    Magick::Blob buffer;
+                    background.write(&buffer);
+                    result = QByteArray((char*)buffer.data(), (int)buffer.length());
                 }
                 catch(Magick::Error &error_ ) {
                     qWarning() << error_.what();
@@ -210,7 +232,7 @@ void Thumbs::procFF(QString file)
                     qWarning() << warn_.what();
                 }
 
-                av_free_packet(&packet);
+                av_packet_unref(&packet);
                 sws_freeContext(img_convert_ctx);
                 break;
             }
@@ -218,9 +240,11 @@ void Thumbs::procFF(QString file)
         }
     }
 
-    av_free_packet(&packet);
+    av_packet_unref(&packet);
     avcodec_close(pCodecCtx);
     av_free(pFrame);
     av_free(pFrameRGB);
     avformat_close_input(&pFormatCtx);
+
+    return result;
 }

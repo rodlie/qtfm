@@ -4,3 +4,4 @@ isEmpty(MAGICK_PKGCONFIG) {
 } else {
     PKGCONFIG += $${MAGICK_PKGCONFIG}
 }
+PKGCONFIG += libavdevice libswscale
