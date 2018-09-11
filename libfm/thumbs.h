@@ -28,6 +28,7 @@ public slots:
 
 private slots:
     void procIcon(QString file, QString mimetype);
+    void procFF(QString file);
 
 private:
     QThread t;
