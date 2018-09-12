@@ -115,6 +115,12 @@ void myModel::clearIconCache() {
   QFile(QString("%1/folder.cache").arg(Common::configDir())).remove();
   QFile(QString("%1/file.cache").arg(Common::configDir())).remove();
 }
+
+void myModel::abortThumbs()
+{
+    qDebug() << "abort thumbs";
+    thumbGenerator->abort();
+}
 //---------------------------------------------------------------------------
 
 void myModel::handleNewThumb(QString item, QByteArray icon)
@@ -444,6 +450,7 @@ int myModel::rowCount(const QModelIndex &parent) const
 //---------------------------------------------------------------------------------
 void myModel::refresh()
 {
+    qDebug() << "mymodel refresh";
     myModelItem *item = rootItem->matchPath(QStringList("/"));
 
     //free all inotify watches

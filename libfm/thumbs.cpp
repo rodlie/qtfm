@@ -22,6 +22,7 @@ extern "C" {
 #endif
 
 Thumbs::Thumbs(QObject *parent) : QObject(parent)
+  , abortProc(false)
 {
     Magick::InitializeMagick(Q_NULLPTR);
 #ifndef NO_FFMPEG
@@ -29,6 +30,9 @@ Thumbs::Thumbs(QObject *parent) : QObject(parent)
     avdevice_register_all();
     avcodec_register_all();
     avformat_network_init();
+#ifdef QT_NO_DEBUG
+    av_log_set_level(AV_LOG_QUIET);
+#endif
 #endif
     moveToThread(&t);
     t.start();
@@ -47,15 +51,22 @@ void Thumbs::generateIcon(QString file, QString mimetype)
         qDebug() << "ignore" << file;
         return;
     }
+    if (abortProc) { abortProc = false; }
     QMetaObject::invokeMethod(this,"procIcon",
                               Q_ARG(QString, file),
                               Q_ARG(QString, mimetype));
 }
 
+void Thumbs::abort()
+{
+    qDebug() << "set abort flag";
+    abortProc = true;
+}
+
 
 void Thumbs::procIcon(QString file, QString mimetype)
 {
-    if (!QFile::exists(file)) { return; }
+    if (!QFile::exists(file) || abortProc) { return; }
     if (ignoreList.contains(file)) {
         qDebug() << "ignore" << file;
         return;
@@ -75,7 +86,8 @@ void Thumbs::procIcon(QString file, QString mimetype)
     try {
         QString bgColor = "black";
         if (mimetype == "application/pdf") { bgColor = "white"; }
-        Magick::Image background(Magick::Geometry(128, 128), Magick::Color(bgColor.toStdString()));
+        Magick::Image background(Magick::Geometry(128, 128),
+                                 Magick::Color(bgColor.toStdString()));
 #ifdef MAGICK7
         background.alpha(true);
 #else
@@ -90,7 +102,8 @@ void Thumbs::procIcon(QString file, QString mimetype)
         QString filename = file;
 
         if (mimetype.startsWith("audio/")) {
-            QByteArray rawPix = getVideoFrame(file, true /* get embedded image if any */);
+            QByteArray rawPix = getVideoFrame(file,
+                                              true /* get embedded image if any */);
             if (rawPix.length()>0) {
                 Magick::Blob tmp(rawPix.data(), (size_t)rawPix.length());
                 thumb.read(tmp);
@@ -110,7 +123,8 @@ void Thumbs::procIcon(QString file, QString mimetype)
         if (thumb.rows()<background.rows()) {
             offsetY = (int)(background.rows()-thumb.rows())/2;
         }
-        background.composite(thumb, offsetX, offsetY, MagickCore::OverCompositeOp);
+        background.composite(thumb, offsetX, offsetY,
+                             MagickCore::OverCompositeOp);
         background.magick("BMP");
         Magick::Blob buffer;
         background.write(&buffer);
@@ -132,7 +146,7 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
     qDebug() << "getVideoFrame" << file << getEmbedded << videoFrame << pixSize;
     QByteArray result;
 #ifndef NO_FFMPEG
-    if (file.isEmpty()) { return result; }
+    if (file.isEmpty() || abortProc) { return result; }
 
     AVCodecContext  *pCodecCtx;
     AVFormatContext *pFormatCtx = avformat_alloc_context();
@@ -151,6 +165,7 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
 
     qDebug() << "get video stream";
     for (int i=0; i < (int)pFormatCtx->nb_streams; i++) {
+        if (abortProc) { return result; }
         if(pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             videoStream = i;
             break;
@@ -222,12 +237,17 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
     if (videoFrame>=0) { maxFrame = videoFrame; }
 
     qDebug() << "we need to get frame" << maxFrame;
-    int64_t seekT = (int64_t(maxFrame) * pFormatCtx->streams[videoStream]->r_frame_rate.den * pFormatCtx->streams[videoStream]->time_base.den) / (int64_t(pFormatCtx->streams[videoStream]->r_frame_rate.num) * pFormatCtx->streams[videoStream]->time_base.num);
-    if (av_seek_frame(pFormatCtx, videoStream, seekT, AVSEEK_FLAG_FRAME/*|AVSEEK_FLAG_BACKWARD*/) >= 0) {
+    int64_t seekT = (int64_t(maxFrame) *
+                     pFormatCtx->streams[videoStream]->r_frame_rate.den *
+                     pFormatCtx->streams[videoStream]->time_base.den) /
+                     (int64_t(pFormatCtx->streams[videoStream]->r_frame_rate.num) *
+                     pFormatCtx->streams[videoStream]->time_base.num);
+    if (av_seek_frame(pFormatCtx, videoStream, seekT, AVSEEK_FLAG_FRAME) >= 0) {
               av_init_packet(&packet);
               currentFrame = maxFrame;
     }
     while((res = av_read_frame(pFormatCtx,&packet)>=0)) {
+        if (abortProc) { break; }
         qDebug() << "at current frame" << currentFrame;
         if (currentFrame>=maxFrame) { fetchFrame = true; }
         if (packet.stream_index == videoStream){

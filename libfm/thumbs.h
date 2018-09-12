@@ -28,6 +28,7 @@ signals:
 public slots:
     void generateIcon(QString file,
                       QString mimetype = QString());
+    void abort();
 
 private slots:
     void procIcon(QString file,
@@ -40,6 +41,7 @@ private slots:
 private:
     QThread t;
     QVector<QString> ignoreList;
+    bool abortProc;
 };
 
 #endif // THUMBS_H

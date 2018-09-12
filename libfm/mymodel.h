@@ -87,6 +87,7 @@ public slots:
   void addWatcher(myModelItem* path);
   void clearCutItems();
   void clearIconCache();
+  void abortThumbs();
 private slots:
   void handleNewThumb(QString item, QByteArray icon);
 signals:
