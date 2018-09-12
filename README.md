@@ -74,6 +74,7 @@ Download the latest [release](https://github.com/rodlie/qtfm/releases), then mak
 6.2:
 * Requires [Qt](http://qt.io) 5.0+ (5.6+ recommended)
 * Requires [ImageMagick](http://www.imagemagick.org) C++ library
+* Requires [FFmpeg](http://ffmpeg.org) 3+ libraries
 * Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD/NetBSD**
 * Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/)/[bsdisks](https://www.freshports.org/sysutils/bsdisks/) at run-time
 * Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/)
