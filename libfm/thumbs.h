@@ -21,14 +21,20 @@ public:
     ~Thumbs();
 
 signals:
-    void generatedIcon(QString file, QByteArray icon);
+    void generatedIcon(QString file,
+                       QByteArray icon);
 
 public slots:
-    void generateIcon(QString file, QString mimetype = QString());
+    void generateIcon(QString file,
+                      QString mimetype = QString());
 
 private slots:
-    void procIcon(QString file, QString mimetype);
-    QByteArray getVideoFrame(QString file, bool getEmbedded = false, int videoFrame = -1, int pixSize = 128);
+    void procIcon(QString file,
+                  QString mimetype);
+    QByteArray getVideoFrame(QString file,
+                             bool getEmbedded = false,
+                             int videoFrame = -1,
+                             int pixSize = 128);
 
 private:
     QThread t;

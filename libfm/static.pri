@@ -4,4 +4,8 @@ isEmpty(MAGICK_PKGCONFIG) {
 } else {
     PKGCONFIG += $${MAGICK_PKGCONFIG}
 }
-PKGCONFIG += libavdevice libswscale libavformat libavcodec libavutil
+!CONFIG(no_ffmpeg): PKGCONFIG += libavdevice \
+                                 libswscale \
+                                 libavformat \
+                                 libavcodec \
+                                 libavutil

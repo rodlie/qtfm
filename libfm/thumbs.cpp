@@ -12,21 +12,24 @@
 #include <QDebug>
 #include "common.h"
 
+#ifndef NO_FFMPEG
 extern "C" {
 #include <libavutil/avutil.h>
 #include <libavutil/imgutils.h>
 #include <libavdevice/avdevice.h>
 #include <libswscale/swscale.h>
 }
+#endif
 
 Thumbs::Thumbs(QObject *parent) : QObject(parent)
 {
     Magick::InitializeMagick(Q_NULLPTR);
+#ifndef NO_FFMPEG
     av_register_all();
     avdevice_register_all();
     avcodec_register_all();
     avformat_network_init();
-
+#endif
     moveToThread(&t);
     t.start();
 }
@@ -114,6 +117,7 @@ void Thumbs::procIcon(QString file, QString mimetype)
 QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame, int pixSize)
 {
     QByteArray result;
+#ifndef NO_FFMPEG
     if (file.isEmpty()) { return result; }
 
     AVCodecContext  *pCodecCtx;
@@ -154,9 +158,15 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
             if (pkt.size>0) {
                 QByteArray attachedPix = QByteArray(reinterpret_cast<const char*>(pkt.data),
                                                     pkt.size);
-                if (attachedPix.length()>0) { return attachedPix; }
+                if (attachedPix.length()>0) {
+                    avcodec_close(pCodecCtx);
+                    avformat_close_input(&pFormatCtx);
+                    return attachedPix;
+                }
             }
         }
+        avcodec_close(pCodecCtx);
+        avformat_close_input(&pFormatCtx);
         return  result;
     }
 
@@ -282,6 +292,11 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
     av_free(pFrame);
     av_free(pFrameRGB);
     avformat_close_input(&pFormatCtx);
-
+#else
+    Q_UNUSED(file)
+    Q_UNUSED(getEmbedded)
+    Q_UNUSED(videoFrame)
+    Q_UNUSED(pixSize)
+#endif
     return result;
 }

@@ -57,7 +57,13 @@ isEmpty(MAGICK_PKGCONFIG) {
     PKGCONFIG += $${MAGICK_PKGCONFIG}
 }
 unix:!linux { LIBS += -linotify }
-PKGCONFIG += libavdevice libswscale libavformat libavcodec libavutil
+
+!CONFIG(no_ffmpeg): PKGCONFIG += libavdevice \
+                                 libswscale \
+                                 libavformat \
+                                 libavcodec \
+                                 libavutil
+CONFIG(no_ffmpeg): DEFINES += NO_FFMPEG
 
 !CONFIG(no_install_lib) {
     CONFIG += create_prl no_install_prl create_pc
