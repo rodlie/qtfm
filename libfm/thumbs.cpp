@@ -56,6 +56,10 @@ void Thumbs::generateIcon(QString file, QString mimetype)
 void Thumbs::procIcon(QString file, QString mimetype)
 {
     if (!QFile::exists(file)) { return; }
+    if (ignoreList.contains(file)) {
+        qDebug() << "ignore" << file;
+        return;
+    }
     qDebug() << "procIcon" << file << mimetype;
 
     QByteArray result;
@@ -125,6 +129,7 @@ void Thumbs::procIcon(QString file, QString mimetype)
 
 QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame, int pixSize)
 {
+    qDebug() << "getVideoFrame" << file << getEmbedded << videoFrame << pixSize;
     QByteArray result;
 #ifndef NO_FFMPEG
     if (file.isEmpty()) { return result; }
@@ -134,6 +139,7 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
     AVCodec * pCodec;
     AVFrame *pFrame, *pFrameRGB;
 
+    qDebug() << "open media file";
     if (avformat_open_input(&pFormatCtx,file.toUtf8().data(),
                             Q_NULLPTR,
                             Q_NULLPTR) != 0) { return result; }
@@ -143,6 +149,7 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
     av_dump_format(pFormatCtx, 0, file.toUtf8().data(), 0);
     int videoStream = -1;
 
+    qDebug() << "get video stream";
     for (int i=0; i < (int)pFormatCtx->nb_streams; i++) {
         if(pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             videoStream = i;
@@ -151,6 +158,7 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
     }
     if (videoStream == -1) { return result; }
 
+    qDebug() << "find decoder";
     pCodec =avcodec_find_decoder(pFormatCtx->streams[videoStream]->codecpar->codec_id);
     pCodecCtx = avcodec_alloc_context3(Q_NULLPTR);
     if (pCodec == Q_NULLPTR || pCodecCtx == Q_NULLPTR) { return result; }
@@ -161,6 +169,7 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
                      pCodec,
                      Q_NULLPTR) < 0) { return result; }
 
+    qDebug() << "check for embedded?" << getEmbedded;
     if (getEmbedded) {
         if (pFormatCtx->streams[videoStream]->disposition == AV_DISPOSITION_ATTACHED_PIC) {
             AVPacket pkt = pFormatCtx->streams[videoStream]->attached_pic;
@@ -168,6 +177,7 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
                 QByteArray attachedPix = QByteArray(reinterpret_cast<const char*>(pkt.data),
                                                     pkt.size);
                 if (attachedPix.length()>0) {
+                    qDebug() << "got embedded picture";
                     avcodec_close(pCodecCtx);
                     avformat_close_input(&pFormatCtx);
                     return attachedPix;
@@ -179,6 +189,7 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
         return  result;
     }
 
+    qDebug() << "setup frame";
     pFrame    = av_frame_alloc();
     pFrameRGB = av_frame_alloc();
 
@@ -199,6 +210,7 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
                          pCodecCtx->height,
                          1);
 
+    qDebug() << "calculate frame to get";
     int res;
     int frameFinished;
     AVPacket packet;
@@ -209,7 +221,14 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
     int maxFrame = qRound((dur*fps)/2);
     if (videoFrame>=0) { maxFrame = videoFrame; }
 
+    qDebug() << "we need to get frame" << maxFrame;
+    int64_t seekT = (int64_t(maxFrame) * pFormatCtx->streams[videoStream]->r_frame_rate.den * pFormatCtx->streams[videoStream]->time_base.den) / (int64_t(pFormatCtx->streams[videoStream]->r_frame_rate.num) * pFormatCtx->streams[videoStream]->time_base.num);
+    if (av_seek_frame(pFormatCtx, videoStream, seekT, AVSEEK_FLAG_FRAME/*|AVSEEK_FLAG_BACKWARD*/) >= 0) {
+              av_init_packet(&packet);
+              currentFrame = maxFrame;
+    }
     while((res = av_read_frame(pFormatCtx,&packet)>=0)) {
+        qDebug() << "at current frame" << currentFrame;
         if (currentFrame>=maxFrame) { fetchFrame = true; }
         if (packet.stream_index == videoStream){
             if (!fetchFrame) {
@@ -217,6 +236,7 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
                 continue;
             }
 
+            qDebug() << "get frame" << currentFrame;
             int ret = avcodec_send_packet(pCodecCtx, &packet);
             if (ret<0) { continue; }
             ret = avcodec_receive_frame(pCodecCtx, pFrame);
@@ -224,6 +244,7 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
             else { continue; }
 
             if (frameFinished) {
+                qDebug() << "extract image from frame" << currentFrame;
                 struct SwsContext * img_convert_ctx;
                 img_convert_ctx = sws_getCachedContext(Q_NULLPTR,
                                                        pCodecCtx->width,
@@ -244,6 +265,7 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
                           ((AVFrame*)pFrameRGB)->data,
                           ((AVFrame*)pFrameRGB)->linesize);
 
+                qDebug() << "prepare thumbnail for" << file;
                 try {
                     Magick::Image background(Magick::Geometry((size_t)pixSize,
                                                               (size_t)pixSize),
@@ -280,6 +302,7 @@ QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame,
                     background.write(&buffer);
                     result = QByteArray((char*)buffer.data(),
                                         (int)buffer.length());
+                    qDebug() << "thumbnail is done" << file;
                 }
                 catch(Magick::Error &error_ ) {
                     qWarning() << error_.what();
