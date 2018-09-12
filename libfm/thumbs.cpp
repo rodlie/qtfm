@@ -13,6 +13,9 @@
 #include "common.h"
 
 extern "C" {
+#include <libavutil/avutil.h>
+#include <libavutil/imgutils.h>
+//#include <libavformat/avformat.h>
 #include <libavdevice/avdevice.h>
 #include <libswscale/swscale.h>
 }
@@ -114,7 +117,8 @@ QByteArray Thumbs::getVideoFrame(QString file, int videoFrame, int videoSize)
     AVFrame *pFrame, *pFrameRGB;
 
     if (avformat_open_input(&pFormatCtx,file.toUtf8().data(),
-                           Q_NULLPTR,Q_NULLPTR) != 0) { return result; }
+                            Q_NULLPTR,
+                            Q_NULLPTR) != 0) { return result; }
     if (avformat_find_stream_info(pFormatCtx,
                                   Q_NULLPTR) < 0) { return result; }
 
@@ -129,9 +133,12 @@ QByteArray Thumbs::getVideoFrame(QString file, int videoFrame, int videoSize)
     }
     if (videoStream == -1) { return result; }
 
-    pCodecCtx = pFormatCtx->streams[videoStream]->codec;
-    pCodec =avcodec_find_decoder(pCodecCtx->codec_id);
-    if (pCodec == Q_NULLPTR) { return result; }
+    pCodec =avcodec_find_decoder(pFormatCtx->streams[videoStream]->codecpar->codec_id);
+    pCodecCtx = avcodec_alloc_context3(Q_NULLPTR);
+    if (pCodec == Q_NULLPTR || pCodecCtx == Q_NULLPTR) { return result; }
+    if (avcodec_parameters_to_context(pCodecCtx,
+                                      pFormatCtx->streams[videoStream]->codecpar)<0)
+    { return result; }
     if (avcodec_open2(pCodecCtx,
                      pCodec,
                      Q_NULLPTR) < 0) { return result; }
@@ -143,14 +150,18 @@ QByteArray Thumbs::getVideoFrame(QString file, int videoFrame, int videoSize)
     int numBytes;
 
     AVPixelFormat  pFormat = AV_PIX_FMT_BGR24;
-    numBytes = avpicture_get_size(pFormat,
-                                  pCodecCtx->width,
-                                  pCodecCtx->height);
+    numBytes = av_image_get_buffer_size(pFormat,
+                                        pCodecCtx->width,
+                                        pCodecCtx->height,
+                                        16);
     buffer = (uint8_t *) av_malloc(numBytes*sizeof(uint8_t));
-    avpicture_fill((AVPicture*)pFrameRGB,buffer,
-                   pFormat,
-                   pCodecCtx->width,
-                   pCodecCtx->height);
+    av_image_fill_arrays(pFrameRGB->data,
+                         pFrameRGB->linesize,
+                         buffer,
+                         pFormat,
+                         pCodecCtx->width,
+                         pCodecCtx->height,
+                         1);
 
     int res;
     int frameFinished;
@@ -160,6 +171,7 @@ QByteArray Thumbs::getVideoFrame(QString file, int videoFrame, int videoSize)
     double fps = av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate);
     double dur = static_cast<double>(pFormatCtx->duration)/AV_TIME_BASE;
     int maxFrame = qRound((dur*fps)/2);
+    if (videoFrame>=0) { maxFrame = videoFrame; }
 
     while((res = av_read_frame(pFormatCtx,&packet)>=0)) {
         if (currentFrame>=maxFrame) { fetchFrame = true; }
@@ -194,8 +206,8 @@ QByteArray Thumbs::getVideoFrame(QString file, int videoFrame, int videoSize)
                           ((AVFrame*)pFrameRGB)->linesize);
 
                 try {
-                    //qDebug() << "try to read result from ffmpeg" <<currentFrame;
-                    Magick::Image background(Magick::Geometry(videoSize, videoSize),
+                    Magick::Image background(Magick::Geometry((size_t)videoSize,
+                                                              (size_t)videoSize),
                                              Magick::Color("black"));
 #ifdef MAGICK7
                     background.alpha(true);
@@ -210,7 +222,8 @@ QByteArray Thumbs::getVideoFrame(QString file, int videoFrame, int videoSize)
                                         "BGR",
                                         Magick::CharPixel,
                                         pFrameRGB->data[0]);
-                    thumb.scale(Magick::Geometry(videoSize, videoSize));
+                    thumb.scale(Magick::Geometry((size_t)videoSize,
+                                                 (size_t)videoSize));
                     int offsetX = 0;
                     int offsetY = 0;
                     if (thumb.columns()<background.columns()) {
@@ -219,11 +232,15 @@ QByteArray Thumbs::getVideoFrame(QString file, int videoFrame, int videoSize)
                     if (thumb.rows()<background.rows()) {
                         offsetY = (int)(background.rows()-thumb.rows())/2;
                     }
-                    background.composite(thumb, offsetX, offsetY, MagickCore::OverCompositeOp);
+                    background.composite(thumb,
+                                         offsetX,
+                                         offsetY,
+                                         MagickCore::OverCompositeOp);
                     background.magick("BMP");
                     Magick::Blob buffer;
                     background.write(&buffer);
-                    result = QByteArray((char*)buffer.data(), (int)buffer.length());
+                    result = QByteArray((char*)buffer.data(),
+                                        (int)buffer.length());
                 }
                 catch(Magick::Error &error_ ) {
                     qWarning() << error_.what();
