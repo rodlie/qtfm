@@ -56,8 +56,8 @@ void Thumbs::procIcon(QString file, QString mimetype)
         result = getVideoFrame(file);
         if (result.length()>0) {
             emit generatedIcon(file, result);
-            return;
         }
+        return;
     }
     try {
         QString bgColor = "black";
@@ -76,7 +76,14 @@ void Thumbs::procIcon(QString file, QString mimetype)
         Magick::Image thumb;
         QString filename = file;
 
-        thumb.read(filename.toUtf8().data());
+        if (mimetype.startsWith("audio/")) {
+            QByteArray rawPix = getVideoFrame(file, true /* get embedded image if any */);
+            if (rawPix.length()>0) {
+                Magick::Blob tmp(rawPix.data(), (size_t)rawPix.length());
+                thumb.read(tmp);
+            } else { return; }
+        } else { thumb.read(filename.toUtf8().data()); }
+
         thumb.scale(Magick::Geometry(128, 128));
         if (thumb.depth()>8) { thumb.depth(8); }
         int offsetX = 0;
@@ -104,8 +111,7 @@ void Thumbs::procIcon(QString file, QString mimetype)
     }
 }
 
-// TODO: FIX FFMPEG WARNINGS!!!!
-QByteArray Thumbs::getVideoFrame(QString file, int videoFrame, int videoSize)
+QByteArray Thumbs::getVideoFrame(QString file, bool getEmbedded, int videoFrame, int pixSize)
 {
     QByteArray result;
     if (file.isEmpty()) { return result; }
@@ -141,6 +147,18 @@ QByteArray Thumbs::getVideoFrame(QString file, int videoFrame, int videoSize)
     if (avcodec_open2(pCodecCtx,
                      pCodec,
                      Q_NULLPTR) < 0) { return result; }
+
+    if (getEmbedded) {
+        if (pFormatCtx->streams[videoStream]->disposition == AV_DISPOSITION_ATTACHED_PIC) {
+            AVPacket pkt = pFormatCtx->streams[videoStream]->attached_pic;
+            if (pkt.size>0) {
+                QByteArray attachedPix = QByteArray(reinterpret_cast<const char*>(pkt.data),
+                                                    pkt.size);
+                if (attachedPix.length()>0) { return attachedPix; }
+            }
+        }
+        return  result;
+    }
 
     pFrame    = av_frame_alloc();
     pFrameRGB = av_frame_alloc();
@@ -208,8 +226,8 @@ QByteArray Thumbs::getVideoFrame(QString file, int videoFrame, int videoSize)
                           ((AVFrame*)pFrameRGB)->linesize);
 
                 try {
-                    Magick::Image background(Magick::Geometry((size_t)videoSize,
-                                                              (size_t)videoSize),
+                    Magick::Image background(Magick::Geometry((size_t)pixSize,
+                                                              (size_t)pixSize),
                                              Magick::Color("black"));
 #ifdef MAGICK7
                     background.alpha(true);
@@ -224,8 +242,8 @@ QByteArray Thumbs::getVideoFrame(QString file, int videoFrame, int videoSize)
                                         "BGR",
                                         Magick::CharPixel,
                                         pFrameRGB->data[0]);
-                    thumb.scale(Magick::Geometry((size_t)videoSize,
-                                                 (size_t)videoSize));
+                    thumb.scale(Magick::Geometry((size_t)pixSize,
+                                                 (size_t)pixSize));
                     int offsetX = 0;
                     int offsetY = 0;
                     if (thumb.columns()<background.columns()) {

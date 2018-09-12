@@ -622,12 +622,13 @@ void myModel::loadThumbs(QModelIndexList indexes) {
   QMap<QString, QString> files;
 
   // Add files we want thumbnails from
-  // TODO: should be a setting!
+  // ImageMagick takes care of image/*
+  // FFmpeg takes care of video/* audio/*
   foreach (QModelIndex item, indexes) {
       QString mimetype = mimeUtilsPtr->getMimeType(fileName(item));
       if (mimetype.startsWith("image/") ||
-          mimetype.startsWith("video/") /*||
-          mimetype == "application/pdf"*/)
+          mimetype.startsWith("video/") ||
+          mimetype.startsWith("audio/"))
       {
           files[filePath(item)] = mimetype;
       }
