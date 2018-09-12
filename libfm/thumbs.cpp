@@ -15,7 +15,6 @@
 extern "C" {
 #include <libavutil/avutil.h>
 #include <libavutil/imgutils.h>
-//#include <libavformat/avformat.h>
 #include <libavdevice/avdevice.h>
 #include <libswscale/swscale.h>
 }
@@ -180,10 +179,13 @@ QByteArray Thumbs::getVideoFrame(QString file, int videoFrame, int videoSize)
                 currentFrame++;
                 continue;
             }
-            avcodec_decode_video2(pCodecCtx,
-                                  pFrame,
-                                  &frameFinished,
-                                  &packet);
+
+            int ret = avcodec_send_packet(pCodecCtx, &packet);
+            if (ret<0) { continue; }
+            ret = avcodec_receive_frame(pCodecCtx, pFrame);
+            if (ret>=0) { frameFinished = true; }
+            else { continue; }
+
             if (frameFinished) {
                 struct SwsContext * img_convert_ctx;
                 img_convert_ctx = sws_getCachedContext(Q_NULLPTR,

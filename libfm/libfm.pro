@@ -57,7 +57,7 @@ isEmpty(MAGICK_PKGCONFIG) {
     PKGCONFIG += $${MAGICK_PKGCONFIG}
 }
 unix:!linux { LIBS += -linotify }
-PKGCONFIG += libavdevice libswscale
+PKGCONFIG += libavdevice libswscale libavformat libavcodec libavutil
 
 !CONFIG(no_install_lib) {
     CONFIG += create_prl no_install_prl create_pc
