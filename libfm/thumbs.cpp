@@ -43,6 +43,10 @@ Thumbs::~Thumbs()
 void Thumbs::generateIcon(QString file, QString mimetype)
 {
     if (!QFile::exists(file)) { return; }
+    if (ignoreList.contains(file)) {
+        qDebug() << "ignore" << file;
+        return;
+    }
     QMetaObject::invokeMethod(this,"procIcon",
                               Q_ARG(QString, file),
                               Q_ARG(QString, mimetype));
@@ -59,6 +63,8 @@ void Thumbs::procIcon(QString file, QString mimetype)
         result = getVideoFrame(file);
         if (result.length()>0) {
             emit generatedIcon(file, result);
+        } else {
+            ignoreList.append(file);
         }
         return;
     }
@@ -84,7 +90,10 @@ void Thumbs::procIcon(QString file, QString mimetype)
             if (rawPix.length()>0) {
                 Magick::Blob tmp(rawPix.data(), (size_t)rawPix.length());
                 thumb.read(tmp);
-            } else { return; }
+            } else {
+                ignoreList.append(file);
+                return;
+            }
         } else { thumb.read(filename.toUtf8().data()); }
 
         thumb.scale(Magick::Geometry(128, 128));

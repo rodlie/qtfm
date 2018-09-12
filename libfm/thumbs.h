@@ -12,6 +12,7 @@
 #include <QThread>
 #include <QByteArray>
 #include <QString>
+#include <QVector>
 
 class Thumbs : public QObject
 {
@@ -38,6 +39,7 @@ private slots:
 
 private:
     QThread t;
+    QVector<QString> ignoreList;
 };
 
 #endif // THUMBS_H

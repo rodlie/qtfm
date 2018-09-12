@@ -11,19 +11,15 @@ install:
   
 script:
   - export CWD=`pwd`
-  - git clone https://github.com/FFmpeg/FFmpeg
-  - cd FFmpeg
-  - git checkout n3.4.4
-  - ./configure --prefix=/usr/local --enable-shared --disable-static && make -j2 && sudo make install
   - mkdir $CWD/build1
   - cd $CWD/build1
-  - qmake -qt=qt5 CONFIG+=release CONFIG+=legacy_magick CONFIG+=v7 PREFIX=/usr  ..
+  - qmake -qt=qt5 CONFIG+=no_ffmpeg CONFIG+=release CONFIG+=legacy_magick CONFIG+=v7 PREFIX=/usr  ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg
   - mkdir $CWD/build2
   - cd $CWD/build2
-  - qmake -qt=qt5 CONFIG+=debug CONFIG+=legacy_magick CONFIG+=v7 PREFIX=/usr  ..
+  - qmake -qt=qt5 CONFIG+=no_ffmpeg CONFIG+=debug CONFIG+=legacy_magick CONFIG+=v7 PREFIX=/usr  ..
   - make
   - make INSTALL_ROOT=`pwd`/pkg install
   - tree pkg
