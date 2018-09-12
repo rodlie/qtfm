@@ -14,7 +14,7 @@ script:
   - git clone https://github.com/FFmpeg/FFmpeg
   - cd FFmpeg
   - git checkout n3.4.4
-  - ./configure --prefix=/usr/local && make -j2 && sudo make install
+  - ./configure --prefix=/usr/local --enable-shared --disable-static && make -j2 && sudo make install
   - mkdir $CWD/build1
   - cd $CWD/build1
   - qmake -qt=qt5 CONFIG+=release CONFIG+=legacy_magick CONFIG+=v7 PREFIX=/usr  ..
