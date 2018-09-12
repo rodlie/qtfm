@@ -73,9 +73,19 @@ Download the latest [release](https://github.com/rodlie/qtfm/releases), then mak
 
 6.2:
 * Requires [Qt](http://qt.io) 5.0+ (5.6+ recommended)
-* Requires [ImageMagick](http://www.imagemagick.org) C++ library
-* Requires [FFmpeg](http://ffmpeg.org) 3+ libraries
-* Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD/NetBSD**
+  * libQt5Widgets
+  * libQt5Gui
+  * libQt5DBus
+  * libQt5Core
+* Requires [ImageMagick](http://www.imagemagick.org) 6.9/7.x C++ library
+  * Should also work with GraphicsMagick (not tested)
+* Optional [FFmpeg](http://ffmpeg.org) 3+
+  * libavdevice
+  * libswscale
+  * libavformat
+  * libavcodec
+  * libavutil
+* Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) on FreeBSD/NetBSD
 * Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/)/[bsdisks](https://www.freshports.org/sysutils/bsdisks/) at run-time
 * Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/)
 * Requires [adwaita-icon-theme](https://github.com/GNOME/adwaita-icon-theme) or similar
@@ -108,12 +118,10 @@ Optional build options:
  * ``XDGDIR=`` : Location of XDG (default is /etc/xdg or PREFIX/etc/xdg)
 
 6.2:
- * ``CONFIG+=staticlib`` : Don't build shared library
- * ``CONFIG+=no_install_lib`` : Don't install library
- * ``LIBSUFFIX=`` : PREFIX/lib suffix, use ``LIBSUFFIX=64`` on 64-bit.
- * ``CONFIG+=no_desktop`` : Don't build misc desktop applications
+ * ``CONFIG+=no_utils`` : Don't build misc desktop utilities (tray/launcher)
  * ``CONFIG+=magick7`` : Enable support for ImageMagick 7
- * ``MAGICK_PKG_CONFIG=`` : Custom pkgconfig name for ``Magick++``
+ * ``CONFIG+=no_ffmpeg`` : Disable support for FFmpeg
+ * ``MAGICK_PKG_CONFIG=`` : Custom ImageMagick pkgconfig name for ``Magick++``
 
 Doing a normal build:
 ```
@@ -135,108 +143,9 @@ Example:
 
 ```
 mkdir build && cd build
-qmake CONFIG+=release PREFIX=/usr LIBSUFFIX=64 ..
+qmake CONFIG+=release PREFIX=/usr ..
 make -jX
 make INSTALL_ROOT=pkg install
-```
-```
-pkg
-├── etc
-│   └── xdg
-│       └── autostart
-│           └── qtfm-tray.desktop
-└── usr
-    ├── bin
-    │   ├── qtfm
-    │   ├── qtfm-launcher
-    │   └── qtfm-tray
-    ├── include
-    │   └── qtfm
-    │       ├── common.h
-    │       ├── delegates.h
-    │       ├── desktopfile.h
-    │       ├── disks.h
-    │       ├── fileutils.h
-    │       ├── fm.h
-    │       ├── mimeutils.h
-    │       ├── mymodel.h
-    │       ├── mymodelitem.h
-    │       ├── progressdlg.h
-    │       ├── properties.h
-    │       ├── service.h
-    │       ├── sortfilter.h
-    │       ├── thumbs.h
-    │       └── udisks2.h
-    ├── lib64
-    │   ├── libQtFM.so -> libQtFM.so.1.2.0
-    │   ├── libQtFM.so.1 -> libQtFM.so.1.2.0
-    │   ├── libQtFM.so.1.2 -> libQtFM.so.1.2.0
-    │   ├── libQtFM.so.1.2.0
-    │   └── pkgconfig
-    │       └── QtFM.pc
-    └── share
-        ├── applications
-        │   └── qtfm.desktop
-        ├── doc
-        │   └── qtfm-6.2.0
-        │       ├── AUTHORS
-        │       ├── ChangeLog
-        │       ├── LICENSE
-        │       └── README.md
-        ├── icons
-        │   └── hicolor
-        │       ├── 128x128
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 160x160
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 16x16
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 192x192
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 20x20
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 22x22
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 24x24
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 256x256
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 32x32
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 36x36
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 48x48
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 512x512
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 64x64
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 72x72
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 96x96
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       └── scalable
-        │           └── apps
-        │               └── qtfm.svg
-        └── man
-            └── man1
-                ├── qtfm-tray.1
-                └── qtfm.1
 ```
 
 ## License
