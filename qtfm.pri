@@ -2,7 +2,7 @@ QTFM_TARGET = qtfm
 QTFM_TARGET_NAME = "QtFM"
 QTFM_MAJOR = 6
 QTFM_MINOR = 1
-QTFM_PATCH = 2
+QTFM_PATCH = 3
 
 isEmpty(PREFIX) {
     PREFIX = /usr/local
