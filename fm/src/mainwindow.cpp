@@ -692,6 +692,7 @@ void MainWindow::dirLoaded()
     statusDate->setText(QString("%1").arg(total));
 
     if (thumbsAct->isChecked()) { QtConcurrent::run(modelList,&myModel::loadThumbs,items); }
+    updateGrid();
 }
 
 //---------------------------------------------------------------------------
