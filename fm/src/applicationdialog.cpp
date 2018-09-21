@@ -12,8 +12,8 @@
  * @brief Constructor
  * @param parent
  */
-ApplicationDialog::ApplicationDialog(QWidget *parent) : QDialog(parent) {
-
+ApplicationDialog::ApplicationDialog(bool enable_launcher, QWidget *parent) :QDialog(parent)
+{
   // Title and size
   this->setWindowTitle(tr("Select application"));
   this->setMinimumSize(320, 320);
@@ -34,7 +34,9 @@ ApplicationDialog::ApplicationDialog(QWidget *parent) : QDialog(parent) {
   edtCommand = new QLineEdit(this);
   edtCommand->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QFormLayout* layoutCommand = new QFormLayout();
-  layoutCommand->addRow(tr("Launcher: "), edtCommand);
+  if (enable_launcher) {
+    layoutCommand->addRow(tr("Launcher: "), edtCommand);
+  }
 
   // Layout
   QVBoxLayout* layout = new QVBoxLayout(this);
@@ -63,6 +65,7 @@ ApplicationDialog::ApplicationDialog(QWidget *parent) : QDialog(parent) {
   QCompleter* completer = new QCompleter(this);
   completer->setModel(model);
   edtCommand->setCompleter(completer);
+  if (!enable_launcher) { edtCommand->hide(); }
 
   // Signals
   connect(appList,
