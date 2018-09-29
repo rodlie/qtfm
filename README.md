@@ -47,6 +47,7 @@ Lightweight file manager using Qt.
 | Focus Path                  | [ctrl+l]    |
 | Toggle Icon View            | [F3]        |
 | Toggle Detail View          | [F4]        |
+| Refresh View                | [F5]        |
 | Drag and Drop Move Modifier | [shift]     |
 | Drag and Drop Copy Modifier | [ctrl]      |
 | Drag and Drop Ask Action    | [alt]       |
