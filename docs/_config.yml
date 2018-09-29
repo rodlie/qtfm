@@ -1,6 +1,6 @@
 theme: jekyll-theme-minimal
 title: QtFM
-description: Desktop Independent Linux/BSD File Manager
+description: Lightweight Linux/BSD File Manager
 logo: https://github.com/rodlie/qtfm/raw/master/fm/hicolor/128x128/apps/qtfm.png
 show_downloads: true
 github:
