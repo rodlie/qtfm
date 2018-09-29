@@ -1500,6 +1500,12 @@ QMenu* MainWindow::createOpenWithMenu() {
   openMenu->addAction(selectAppAct);
   return openMenu;
 }
+
+void MainWindow::refresh()
+{
+    modelList->refresh();
+    pathEditChanged(pathEdit->currentText());
+}
 //---------------------------------------------------------------------------
 
 /**
