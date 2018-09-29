@@ -549,7 +549,7 @@ void SettingsDialog::updateMimeAssoc(QTreeWidgetItem* item) {
 void SettingsDialog::showAppDialog() {
 
   // Choose application
-  ApplicationDialog *dialog = new ApplicationDialog(this);
+  ApplicationDialog *dialog = new ApplicationDialog(false, this);
   if (dialog->exec()) {
 
     // If application name is empty, exit
