@@ -281,7 +281,7 @@ void MainWindow::createActions() {
   actionList->append(runAct);
 
   exitAct = new QAction(tr("Quit"), this);
-  exitAct->setStatusTip(tr("Quit %1 and stop the daemon").arg(APP_NAME));
+  exitAct->setStatusTip(tr("Quit %1").arg(APP_NAME));
   connect(exitAct, SIGNAL(triggered()), this, SLOT(exitAction()));
   exitAct->setIcon(actionIcons->at(20));
   actionList->append(exitAct);
@@ -314,6 +314,11 @@ void MainWindow::createActions() {
   /*escapeAct = new QAction(tr("Cancel"), this);
   connect(escapeAct, SIGNAL(triggered()), this, SLOT(refresh()));
   actionList->append(escapeAct);*/
+
+  refreshAct = new QAction(tr("Refresh"), this);
+  connect(refreshAct, SIGNAL(triggered()), this, SLOT(refresh()));
+  refreshAct->setIcon(actionIcons->at(19));
+  actionList->append(refreshAct);
 
   zoomInAct = new QAction(tr("Zoom in"), this);
   connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomInAction()));
@@ -404,6 +409,7 @@ void MainWindow::readShortcuts() {
     shortcuts.insert(exitAct->text(),"ctrl+q");
     shortcuts.insert(renameAct->text(),"f2");
     //shortcuts.insert(escapeAct->text(),"esc");
+    shortcuts.insert(refreshAct->text(), "f5");
     shortcuts.insert(zoomOutAct->text(),"ctrl+-");
     shortcuts.insert(zoomInAct->text(),"ctrl++");
     shortcuts.insert(focusAddressAct->text(), "ctrl+l");
@@ -526,6 +532,7 @@ void MainWindow::createMenus() {
   viewMenu->addAction(upAct);
   viewMenu->addAction(backAct);
   viewMenu->addAction(homeAct);
+  viewMenu->addAction(refreshAct);
 
   // Help menu
   // ----------------------------------------------------------------------

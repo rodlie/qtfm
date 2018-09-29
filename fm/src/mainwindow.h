@@ -312,6 +312,7 @@ private slots:
     void clearCache();
     void handlePathRequested(QString path);
     void slowPathEdit();
+    void refresh();
 private:
     void createActions();
     void createActionIcons();
@@ -410,6 +411,7 @@ private:
     QAction *folderPropertiesAct;
     QAction *lockLayoutAct;
     //QAction *escapeAct;
+    QAction *refreshAct;
     QAction *zoomInAct;
     QAction *zoomOutAct;
     QAction *focusAddressAct;
