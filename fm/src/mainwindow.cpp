@@ -661,12 +661,13 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
 //---------------------------------------------------------------------------
 void MainWindow::dirLoaded()
 {
-    //qDebug() << "dirLoaded";
+
     if (backIndex.isValid()) {
         backIndex = QModelIndex();
         return;
     }
 
+    qDebug() << "dirLoaded";
     qint64 bytes = 0;
     QModelIndexList items;
     bool includeHidden = hiddenAct->isChecked();
@@ -1505,6 +1506,11 @@ void MainWindow::refresh()
 {
     qDebug() << "refresh";
     modelList->refreshItems();
+    modelList->update();
+    QModelIndex baseIndex = modelView->mapFromSource(modelList->index(pathEdit->currentText()));
+    if (currentView == 2) { detailTree->setRootIndex(baseIndex); }
+    else { list->setRootIndex(baseIndex); }
+    dirLoaded();
 }
 //---------------------------------------------------------------------------
 
