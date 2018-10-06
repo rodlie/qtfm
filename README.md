@@ -1,10 +1,9 @@
+# QtFM
 <p align="left"><img src="fm/hicolor/scalable/apps/qtfm.svg" alt="QList" height="100px"></p>
 
 [![GitHub release](https://img.shields.io/github/release/rodlie/qtfm.svg)](https://github.com/rodlie/qtfm/releases)
 [![Github commits (since latest release)](https://img.shields.io/github/commits-since/rodlie/qtfm/latest.svg)](https://github.com/rodlie/qtfm)
 [![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
-
-![screenshot1](fm/images/screenshot.png)
 
 Lightweight file manager using Qt.
 
@@ -18,12 +17,6 @@ Lightweight file manager using Qt.
  * [System tray daemon](tray/README.md)
    * Mount/Unmount devices
    * Auto play CD/DVD
-
-## Links
-
- * [Releases](https://github.com/rodlie/qtfm/releases)
- * [Milestones](https://github.com/rodlie/qtfm/milestones)
- * [Issues](https://github.com/rodlie/qtfm/issues)
 
 ## Default shortcuts
 
