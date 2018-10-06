@@ -1503,8 +1503,8 @@ QMenu* MainWindow::createOpenWithMenu() {
 
 void MainWindow::refresh()
 {
-    modelList->refresh();
-    pathEditChanged(pathEdit->currentText());
+    qDebug() << "refresh";
+    modelList->refreshItems();
 }
 //---------------------------------------------------------------------------
 
