@@ -379,6 +379,12 @@ void MainWindow::createActions() {
  */
 void MainWindow::readShortcuts() {
 
+  // This is called within the writing of bookmarks and QT can't handle writing
+  // groups within groups cleanly. Save the current active group.
+  settings->sync();
+  QString startGroup = settings->group();
+  if ( startGroup != "" ) { settings->endGroup(); }
+
   // Loads shortcuts
   QHash<QString, QString> shortcuts;
   settings->beginGroup("customShortcuts");
@@ -456,6 +462,17 @@ void MainWindow::readShortcuts() {
       addAction(action);
     }
   }
+
+  // Restore the old group
+  if ( settings->group() == "" ) {
+    settings->beginGroup( startGroup );
+  }
+  else if ( settings->group() != startGroup ) {
+    settings->endGroup();
+    settings->sync();
+    settings->beginGroup( startGroup );
+  }
+
 }
 //---------------------------------------------------------------------------
 
