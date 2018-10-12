@@ -10,13 +10,14 @@
 #define SERVICE_H
 
 #include <QObject>
+#include <QString>
 
 class qtfm : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit qtfm(){}
+    qtfm(QObject *parent = 0) : QObject(parent){}
 
 signals:
     void pathRequested(QString path);
