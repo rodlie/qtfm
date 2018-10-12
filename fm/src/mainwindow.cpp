@@ -61,7 +61,7 @@ MainWindow::MainWindow()
 
     // libdisks
 #ifndef NO_UDISKS
-    disks = new Disks();
+    disks = new Disks(this);
     connect(disks, SIGNAL(updatedDevices()), this, SLOT(populateMedia()));
     connect(disks, SIGNAL(mountpointChanged(QString,QString)), this, SLOT(handleMediaMountpointChanged(QString,QString)));
     connect(disks, SIGNAL(foundNewDevice(QString)), this, SLOT(handleMediaAdded(QString)));
