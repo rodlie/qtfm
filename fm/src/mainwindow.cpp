@@ -74,7 +74,7 @@ MainWindow::MainWindow()
 #ifndef NO_DBUS
     if (QDBusConnection::sessionBus().isConnected()) {
         if (QDBusConnection::sessionBus().registerService(FM_SERVICE)) {
-            service = new qtfm();
+            service = new qtfm(this);
             connect(service, SIGNAL(pathRequested(QString)), this, SLOT(handlePathRequested(QString)));
             if (!QDBusConnection::sessionBus().registerObject(FM_PATH, service, QDBusConnection::ExportAllSlots)) {
                 qWarning() << QDBusConnection::sessionBus().lastError().message();
