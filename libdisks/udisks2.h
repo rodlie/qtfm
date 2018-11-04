@@ -206,6 +206,7 @@ public:
         QDBusMessage call = QDBusMessage::createMethodCall(DBUS_SERVICE, QString("%1/block_devices").arg(DBUS_PATH), DBUS_INTROSPECTABLE, "Introspect");
         QDBusPendingReply<QString> reply = QDBusConnection::systemBus().call(call);
         QList<QDBusObjectPath> devices;
+        if (reply.isError()) { return result; }
         QXmlStreamReader xml(reply.value());
         while (!xml.atEnd()) {
             xml.readNext();
