@@ -213,6 +213,7 @@ QModelIndex myModel::parent(const QModelIndex &index) const
 //---------------------------------------------------------------------------------------
 bool myModel::isDir(const QModelIndex &index)
 {
+    if (!index.isValid()) { return false; }
     myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
     if(item && item != rootItem) { return item->fileInfo().isDir(); }
     return false;
@@ -221,6 +222,7 @@ bool myModel::isDir(const QModelIndex &index)
 //---------------------------------------------------------------------------------------
 QFileInfo myModel::fileInfo(const QModelIndex &index)
 {
+    if (!index.isValid()) { return QFileInfo(); }
     myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
     if(item) { return item->fileInfo(); }
     return QFileInfo();
@@ -229,6 +231,7 @@ QFileInfo myModel::fileInfo(const QModelIndex &index)
 //---------------------------------------------------------------------------------------
 qint64 myModel::size(const QModelIndex &index)
 {
+    if (!index.isValid()) { return 0; }
     myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
     if(item) { return item->fileInfo().size(); }
     return 0;
@@ -237,14 +240,16 @@ qint64 myModel::size(const QModelIndex &index)
 //---------------------------------------------------------------------------------------
 QString myModel::fileName(const QModelIndex &index)
 {
+    if (!index.isValid()) { return QString(); }
     myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
     if(item) { return item->fileName(); }
-    return "";
+    return QString();
 }
 
 //---------------------------------------------------------------------------------------
 QString myModel::filePath(const QModelIndex &index)
 {
+    if (!index.isValid()) { return QString(); }
     myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
     if(item) { return item->absoluteFilePath(); }
     return QString();
@@ -253,6 +258,7 @@ QString myModel::filePath(const QModelIndex &index)
 //---------------------------------------------------------------------------------------
 QString myModel::getMimeType(const QModelIndex &index)
 {
+    if (!index.isValid()) { return QString(); }
     qDebug() << "myModel getMimeType";
     myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
     if (item->mMimeType.isNull()) {
@@ -457,7 +463,7 @@ void myModel::refresh()
     watchers.clear();
 
     beginResetModel();
-    item->clearAll();
+    if (item) { item->clearAll(); }
     endResetModel();
 }
 
@@ -465,6 +471,7 @@ void myModel::refresh()
 void myModel::update()
 {
     myModelItem *item = rootItem->matchPath(currentRootPath.split(SEPARATOR));
+    if (item == Q_NULLPTR) { return; }
     foreach(myModelItem *child, item->children()) { child->refreshFileInfo(); }
 }
 
@@ -876,6 +883,7 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
  */
 QVariant myModel::findIcon(myModelItem *item) const {
 
+  if (item == Q_NULLPTR) { return  QIcon(); }
   //qDebug() << "findicon" << item->absoluteFilePath();
   // If type of file is directory, return icon of directory
   QFileInfo type(item->fileInfo());
@@ -958,6 +966,8 @@ QVariant myModel::findIcon(myModelItem *item) const {
  * @return icon
  */
 QVariant myModel::findMimeIcon(myModelItem *item) const {
+
+  if (item == Q_NULLPTR) { return QIcon(); }
 
   // Retrieve mime and search cache for it
   QString mime = mimeUtilsPtr->getMimeType(item->absoluteFilePath());
