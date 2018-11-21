@@ -128,7 +128,7 @@ void myModel::handleNewThumb(QString item, QByteArray icon)
     //qDebug() << "handle new thumb" << item << icon.size();
     if (icon.isEmpty()) { return; }
     thumbs->insert(item, icon);
-    emit thumbUpdate(index(item));
+    emit thumbUpdate(/*index(item)*/);
 
     if (item.split("/").takeLast() == lastEventFilename) {
         lastEventFilename.clear();
@@ -671,10 +671,11 @@ void myModel::loadThumbs(QModelIndexList indexes) {
                    !lastEventFilename.isEmpty()) {
             qDebug() << "UPDATE thumb for" << item;
             thumbGenerator->generateIcon(item, i.value());
-        } else {
+        } /*else {
             emit thumbUpdate(index(item));
-        }
+        }*/
     }
+    emit thumbUpdate();
   }
 }
 
