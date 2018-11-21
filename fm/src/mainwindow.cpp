@@ -711,6 +711,7 @@ void MainWindow::dirLoaded()
 //---------------------------------------------------------------------------
 void MainWindow::thumbUpdate(QModelIndex index)
 {
+    if (!index.isValid()) { return; }
     qDebug() << "thumbUpdate";
     if (currentView == 2) { detailTree->update(modelView->mapFromSource(index)); }
     else { list->update(modelView->mapFromSource(index)); }
