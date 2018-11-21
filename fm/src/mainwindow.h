@@ -277,7 +277,7 @@ public slots:
     void openFolderAction();
     void exitAction();
     void dirLoaded();
-    void thumbUpdate(QModelIndex);
+    void thumbUpdate();
     void addressChanged(int,int);
     void loadSettings(bool wState = true, bool hState = true, bool tabState = true, bool thumbState = true);
     void firstRunBookmarks(bool isFirstRun);
@@ -312,7 +312,7 @@ private slots:
     void clearCache();
     void handlePathRequested(QString path);
     void slowPathEdit();
-    void refresh();
+    void refresh(bool modelRefresh = true, bool loadDir = true);
 private:
     void createActions();
     void createActionIcons();

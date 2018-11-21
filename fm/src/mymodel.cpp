@@ -623,7 +623,6 @@ void myModel::loadThumbs(QModelIndexList indexes) {
       if (!thumbs->contains(item) || (item.split("/").takeLast() == lastEventFilename && !lastEventFilename.isEmpty())) {
           qDebug() << "gen new thumb" << item;
           thumbs->insert(item, getThumb(item));
-          emit thumbUpdate(index(item));
           if (item.split("/").takeLast() == lastEventFilename) {
               qDebug() << "save new thumb cache";
               lastEventFilename.clear();
@@ -638,10 +637,9 @@ void myModel::loadThumbs(QModelIndexList indexes) {
                   }
               }
           }
-      } else {
-          emit thumbUpdate(index(item));
       }
     }
+    emit thumbUpdate();
   }
 }
 

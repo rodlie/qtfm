@@ -378,8 +378,8 @@ void MainWindow::lateStart() {
   connect(detailTree, SIGNAL(pressed(QModelIndex)),
           this, SLOT(listItemPressed(QModelIndex)));
 
-  connect(modelList, SIGNAL(thumbUpdate(QModelIndex)),
-          this, SLOT(thumbUpdate(QModelIndex)));
+  connect(modelList, SIGNAL(thumbUpdate()),
+          this, SLOT(thumbUpdate()));
 
   qApp->setKeyboardInputInterval(1000);
 
@@ -708,13 +708,9 @@ void MainWindow::dirLoaded()
     updateGrid();
 }
 
-//---------------------------------------------------------------------------
-void MainWindow::thumbUpdate(QModelIndex index)
+void MainWindow::thumbUpdate()
 {
-    if (!index.isValid()) { return; }
-    qDebug() << "thumbUpdate";
-    if (currentView == 2) { detailTree->update(modelView->mapFromSource(index)); }
-    else { list->update(modelView->mapFromSource(index)); }
+    refresh(false, false);
 }
 
 //---------------------------------------------------------------------------
@@ -1533,15 +1529,17 @@ QMenu* MainWindow::createOpenWithMenu() {
   return openMenu;
 }
 
-void MainWindow::refresh()
+void MainWindow::refresh(bool modelRefresh, bool loadDir)
 {
     qDebug() << "refresh";
-    modelList->refreshItems();
-    modelList->update();
+    if (modelRefresh) {
+        modelList->refreshItems();
+        modelList->update();
+    }
     QModelIndex baseIndex = modelView->mapFromSource(modelList->index(pathEdit->currentText()));
     if (currentView == 2) { detailTree->setRootIndex(baseIndex); }
     else { list->setRootIndex(baseIndex); }
-    dirLoaded();
+    if (loadDir) { dirLoaded(); }
 }
 //---------------------------------------------------------------------------
 
