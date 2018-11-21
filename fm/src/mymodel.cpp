@@ -341,14 +341,13 @@ bool myModel::setRootPath(const QString& path)
         return false;
     }
 
-    if(item->watched == 0) { addWatcher(item); }
-
-    if(item->walked == 0) {
+    if (!item->watched) { addWatcher(item); }
+    if (!item->walked || !item->watched) {
         populateItem(item);
         return false;
     } else {
         if(item->dirty) { //model is up to date, but view needs to be invalidated
-            item->dirty = 0;
+            item->dirty = false;
             return true;
         }
     }
