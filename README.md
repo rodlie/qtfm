@@ -151,7 +151,7 @@ make INSTALL_ROOT=pkg install
 
 ## Related
 
- * **[powerdwarf](https://github.com/rodlie/powerdwarf)** : Desktop Independent Power Manager.
+ * **[powerkit](https://github.com/rodlie/powerkit)** : Desktop Independent Power Manager.
  * **[Openbox](http://openbox.org/wiki/Main_Page)** : Openbox is a highly configurable, next generation window manager with extensive standards support.
  * **[tint2](https://gitlab.com/o9000/tint2)** : A lightweight panel/taskbar for Linux and BSD.
  * **[qterminal](https://github.com/lxqt/qterminal)** : A lightweight Qt-based terminal emulator.
