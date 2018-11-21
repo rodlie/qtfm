@@ -230,6 +230,7 @@ bool bookmarkmodel::dropMimeData(const QMimeData * data,Qt::DropAction action,in
         return false;
       }
     }
+
     foreach(QUrl path, files) {
         QFileInfo file(path.toLocalFile());
         //drag to bookmark window, add a new bookmark
@@ -237,7 +238,9 @@ bool bookmarkmodel::dropMimeData(const QMimeData * data,Qt::DropAction action,in
             if(file.isDir()) this->addBookmark(file.fileName(),file.filePath(),0,"");
             return false;
         } else {
-            if (mode == Common::DM_MOVE) { cutList.append(file.filePath()); }
+            if (mode == Common::DM_MOVE) {
+                if (file.absoluteDir() != parentPath) { cutList.append(file.filePath()); }
+            }
         }
     }
 

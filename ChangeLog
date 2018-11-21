@@ -1,5 +1,10 @@
-6.1.4 XX-October 2018
+6.1.4 23-November 2018
 - fix potential config corruption. Thanks to @slackuser0xae34 for the patch
+- fix segfault on thumbnail update (view may have changed since loading thumbnails)
+- don't cut file(s) if moving to same directory in bookmarks
+- verify reply from udisks (avoid crash)
+- populate view if not watched
+- fix refresh view
 
 6.1.3 07-October 2018
 - update grid on paste/remove

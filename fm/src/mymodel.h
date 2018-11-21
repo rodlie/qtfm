@@ -89,7 +89,7 @@ public slots:
 signals:
   void dragDropPaste(const QMimeData *data, QString newPath,
                      Common::DragMode mode = Common::DM_UNKNOWN);
-  void thumbUpdate(const QModelIndex index);
+  void thumbUpdate();
   void reloadDir();
 protected:
   QVariant data(const QModelIndex & index, int role) const;
