@@ -127,7 +127,7 @@ MainWindow::MainWindow()
     // Create filesystem model
     bool realMime = settings->value("realMimeTypes", true).toBool();
     modelList = new myModel(realMime, mimeUtils);
-    connect(modelList, SIGNAL(reloadDir()), this, SLOT(dirLoaded()));
+    connect(modelList, SIGNAL(reloadDir(QString)), this, SLOT(handleReloadDir(QString)));
 
     dockTree = new QDockWidget(tr("Tree"),this,Qt::SubWindow);
     dockTree->setObjectName("treeDock");
@@ -378,8 +378,8 @@ void MainWindow::lateStart() {
   connect(detailTree, SIGNAL(pressed(QModelIndex)),
           this, SLOT(listItemPressed(QModelIndex)));
 
-  connect(modelList, SIGNAL(thumbUpdate()),
-          this, SLOT(thumbUpdate()));
+  connect(modelList, SIGNAL(thumbUpdate(QString)),
+          this, SLOT(thumbUpdate(QString)));
 
   qApp->setKeyboardInputInterval(1000);
 
@@ -667,11 +667,12 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
 
     listSelectionModel->blockSignals(0);
     updateGrid();
+    qDebug() << "trigger dirloaded on tree selection changed";
     QTimer::singleShot(30,this,SLOT(dirLoaded()));
 }
 
 //---------------------------------------------------------------------------
-void MainWindow::dirLoaded()
+void MainWindow::dirLoaded(bool thumbs)
 {
 
     if (backIndex.isValid()) {
@@ -679,7 +680,7 @@ void MainWindow::dirLoaded()
         return;
     }
 
-    qDebug() << "dirLoaded";
+    qDebug() << "dirLoaded triggered, thumbs?" << thumbs;
     qint64 bytes = 0;
     QModelIndexList items;
     bool includeHidden = hiddenAct->isChecked();
@@ -704,12 +705,26 @@ void MainWindow::dirLoaded()
     statusSize->setText(QString("%1 items").arg(items.count()));
     statusDate->setText(QString("%1").arg(total));
 
-    if (thumbsAct->isChecked()) { QtConcurrent::run(modelList,&myModel::loadThumbs,items); }
+    if (thumbsAct->isChecked() && thumbs) { QtConcurrent::run(modelList,&myModel::loadThumbs,items); }
     updateGrid();
 }
 
-void MainWindow::thumbUpdate()
+void MainWindow::updateDir()
 {
+    dirLoaded(false /* dont refresh thumb*/);
+}
+
+void MainWindow::handleReloadDir(const QString &path)
+{
+    qDebug() << "handle reload dir" << path << modelList->getRootPath();
+    if (path != modelList->getRootPath()) { return; }
+    dirLoaded();
+}
+
+void MainWindow::thumbUpdate(const QString &path)
+{
+    qDebug() << "thumbupdate" << path << modelList->getRootPath();
+    if (path != modelList->getRootPath()) { return; }
     refresh(false, false);
 }
 
@@ -1539,7 +1554,10 @@ void MainWindow::refresh(bool modelRefresh, bool loadDir)
     QModelIndex baseIndex = modelView->mapFromSource(modelList->index(pathEdit->currentText()));
     if (currentView == 2) { detailTree->setRootIndex(baseIndex); }
     else { list->setRootIndex(baseIndex); }
-    if (loadDir) { dirLoaded(); }
+    if (loadDir) {
+        qDebug() << "trigger dirloaded from refresh";
+        dirLoaded();
+    }
 }
 //---------------------------------------------------------------------------
 
@@ -1840,6 +1858,7 @@ void MainWindow::actionMapper(QString cmd)
 //---------------------------------------------------------------------------------
 void MainWindow::clearCutItems()
 {
+    qDebug() << "clearCutItems";
     //this refreshes existing items, sizes etc but doesn't re-sort
     modelList->clearCutItems();
     modelList->update();
@@ -1848,8 +1867,9 @@ void MainWindow::clearCutItems()
 
     if (currentView == 2) { detailTree->setRootIndex(baseIndex); }
     else { list->setRootIndex(baseIndex); }
-    QTimer::singleShot(50,this,SLOT(dirLoaded()));
-    return;
+
+    qDebug() << "trigger updateDir from clearCutItems";
+    QTimer::singleShot(50,this,SLOT(updateDir()));
 }
 
 //---------------------------------------------------------------------------------

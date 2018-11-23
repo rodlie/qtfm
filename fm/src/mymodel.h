@@ -89,8 +89,8 @@ public slots:
 signals:
   void dragDropPaste(const QMimeData *data, QString newPath,
                      Common::DragMode mode = Common::DM_UNKNOWN);
-  void thumbUpdate();
-  void reloadDir();
+  void thumbUpdate(const QString &path);
+  void reloadDir(const QString &path);
 protected:
   QVariant data(const QModelIndex & index, int role) const;
   QVariant headerData(int section, Qt::Orientation orientation, int role) const;
@@ -104,6 +104,7 @@ private:
   bool realMimeTypes;
   bool showThumbs;
   int thumbCount;
+  bool lockNotify;
 
   QPalette colors;
   QStringList cutItems;
@@ -122,6 +123,9 @@ private:
   QTimer eventTimer;
   int lastEventID;
   QString lastEventFilename;
+
+private slots:
+  void unlockNotify();
 };
 
 #endif // MYMODEL_H

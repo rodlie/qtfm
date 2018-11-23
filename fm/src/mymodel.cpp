@@ -45,6 +45,7 @@ myModel::myModel(bool realMime, MimeUtils *mimeUtils) {
   thumbs = new QHash<QString,QByteArray>;
   icons = new QCache<QString,QIcon>;
   icons->setMaxCost(500);
+  lockNotify = false;
 
   // Loads cached mime icons
   QFile fileIcons(QString("%1/file.cache").arg(Common::configDir()));
@@ -272,7 +273,7 @@ void myModel::notifyChange()
     }
 
     notifier->setEnabled(1);
-    emit reloadDir();
+    //if (!lastEventFilename.isEmpty()) { emit reloadDir(); }
 }
 
 //---------------------------------------------------------------------------------------
@@ -286,19 +287,26 @@ void myModel::eventTimeout()
 void myModel::notifyProcess(int eventID, QString fileName)
 {
     qDebug() << "notifyProcess" << eventID << fileName;
-    if(watchers.contains(eventID)) {
+    if (lockNotify) {
+        qDebug() << "ignore notify";
+        return;
+    }
+    lockNotify = true;
+    QString folderChanged;
+    if (watchers.contains(eventID)) {
         myModelItem *parent = rootItem->matchPath(watchers.value(eventID).split(SEPARATOR));
-        if(parent) {
+        if (parent) {
             parent->dirty = 1;
             QDir dir(parent->absoluteFilePath());
+            folderChanged = dir.absolutePath();
             QFileInfoList all = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System);
             foreach(myModelItem * child, parent->children()) {
-                if(all.contains(child->fileInfo())) {
+                if (all.contains(child->fileInfo())) {
                     //just remove known items
                     all.removeOne(child->fileInfo());
                 } else {
-                    //must of been deleted, remove from model
-                    if(child->fileInfo().isDir()) {
+                    //must have been deleted, remove from model
+                    if (child->fileInfo().isDir()) {
                         int wd = watchers.key(child->absoluteFilePath());
                         inotify_rm_watch(inotifyFD,wd);
                         watchers.remove(wd);
@@ -321,7 +329,11 @@ void myModel::notifyProcess(int eventID, QString fileName)
     if (!fileName.isEmpty() && showThumbs) {
         lastEventFilename = fileName;
     }
-    emit reloadDir();
+    if (!folderChanged.isEmpty()) {
+        qDebug() << "folder modified" << folderChanged;
+        emit reloadDir(folderChanged);
+    }
+    QTimer::singleShot(500, this, SLOT(unlockNotify()));
 }
 
 //---------------------------------------------------------------------------------
@@ -607,6 +619,7 @@ void myModel::loadThumbs(QModelIndexList indexes) {
 
   // Loads thumbnails from cache
   if (files.count()) {
+    QFileInfo pathInfo (files.at(0));
     if (thumbs->count() == 0) {
         qDebug() << "thumbs are empty, try to load cache ...";
       QFile fileIcons(QString("%1/thumbs.cache").arg(Common::configDir()));
@@ -619,8 +632,11 @@ void myModel::loadThumbs(QModelIndexList indexes) {
       thumbCount = thumbs->count();
       qDebug() << "thumbcount" << thumbCount;
     }
+
     foreach (QString item, files) {
-      if (!thumbs->contains(item) || (item.split("/").takeLast() == lastEventFilename && !lastEventFilename.isEmpty())) {
+      if (!thumbs->contains(item) ||
+          (item.split("/").takeLast() == lastEventFilename && !lastEventFilename.isEmpty()))
+      {
           qDebug() << "gen new thumb" << item;
           thumbs->insert(item, getThumb(item));
           if (item.split("/").takeLast() == lastEventFilename) {
@@ -639,7 +655,7 @@ void myModel::loadThumbs(QModelIndexList indexes) {
           }
       }
     }
-    emit thumbUpdate();
+    emit thumbUpdate(pathInfo.absolutePath());
   }
 }
 
@@ -909,6 +925,12 @@ QVariant myModel::findMimeIcon(myModelItem *item) const {
   QIcon theIcon = FileUtils::searchMimeIcon(mime);
   mimeIcons->insert(mime, theIcon);
   return theIcon;
+}
+
+void myModel::unlockNotify()
+{
+    qDebug() << "unlock notify";
+    lockNotify = false;
 }
 //---------------------------------------------------------------------------
 
