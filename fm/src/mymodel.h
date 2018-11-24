@@ -86,6 +86,7 @@ public slots:
   void addWatcher(myModelItem* path);
   void clearCutItems();
   void clearIconCache();
+  void forceRefresh();
 signals:
   void dragDropPaste(const QMimeData *data, QString newPath,
                      Common::DragMode mode = Common::DM_UNKNOWN);
@@ -104,7 +105,6 @@ private:
   bool realMimeTypes;
   bool showThumbs;
   int thumbCount;
-  bool lockNotify;
 
   QPalette colors;
   QStringList cutItems;
@@ -123,9 +123,6 @@ private:
   QTimer eventTimer;
   int lastEventID;
   QString lastEventFilename;
-
-private slots:
-  void unlockNotify();
 };
 
 #endif // MYMODEL_H

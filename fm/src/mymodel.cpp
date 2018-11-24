@@ -45,7 +45,6 @@ myModel::myModel(bool realMime, MimeUtils *mimeUtils) {
   thumbs = new QHash<QString,QByteArray>;
   icons = new QCache<QString,QIcon>;
   icons->setMaxCost(500);
-  lockNotify = false;
 
   // Loads cached mime icons
   QFile fileIcons(QString("%1/file.cache").arg(Common::configDir()));
@@ -108,6 +107,13 @@ void myModel::clearIconCache() {
   mimeIcons->clear();
   QFile(QString("%1/folder.cache").arg(Common::configDir())).remove();
   QFile(QString("%1/file.cache").arg(Common::configDir())).remove();
+}
+
+void myModel::forceRefresh()
+{
+    qDebug() << "force refresh model view";
+    beginResetModel();
+    endResetModel();
 }
 //---------------------------------------------------------------------------
 
@@ -287,11 +293,6 @@ void myModel::eventTimeout()
 void myModel::notifyProcess(int eventID, QString fileName)
 {
     qDebug() << "notifyProcess" << eventID << fileName;
-    if (lockNotify) {
-        qDebug() << "ignore notify";
-        return;
-    }
-    lockNotify = true;
     QString folderChanged;
     if (watchers.contains(eventID)) {
         myModelItem *parent = rootItem->matchPath(watchers.value(eventID).split(SEPARATOR));
@@ -333,7 +334,6 @@ void myModel::notifyProcess(int eventID, QString fileName)
         qDebug() << "folder modified" << folderChanged;
         emit reloadDir(folderChanged);
     }
-    QTimer::singleShot(500, this, SLOT(unlockNotify()));
 }
 
 //---------------------------------------------------------------------------------
@@ -454,6 +454,7 @@ void myModel::refreshItems()
 {
     myModelItem *item = rootItem->matchPath(currentRootPath.split(SEPARATOR));
     if (item == NULL) { return; }
+    qDebug() << "refresh items";
     item->clearAll();
     populateItem(item);
 }
@@ -927,11 +928,6 @@ QVariant myModel::findMimeIcon(myModelItem *item) const {
   return theIcon;
 }
 
-void myModel::unlockNotify()
-{
-    qDebug() << "unlock notify";
-    lockNotify = false;
-}
 //---------------------------------------------------------------------------
 
 bool myModel::setData(const QModelIndex & index, const QVariant & value, int role)

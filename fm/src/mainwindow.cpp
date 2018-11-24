@@ -243,6 +243,7 @@ MainWindow::MainWindow()
     show();
 
     trashDir = Common::trashDir();
+    ignoreReload = false;
 
     QTimer::singleShot(0, this, SLOT(lateStart()));
 }
@@ -716,9 +717,15 @@ void MainWindow::updateDir()
 
 void MainWindow::handleReloadDir(const QString &path)
 {
+    if (ignoreReload) {
+        qDebug() << "ignore reload";
+        return;
+    }
+    ignoreReload = true;
     qDebug() << "handle reload dir" << path << modelList->getRootPath();
     if (path != modelList->getRootPath()) { return; }
     dirLoaded();
+    QTimer::singleShot(500, this, SLOT(enableReload()));
 }
 
 void MainWindow::thumbUpdate(const QString &path)
@@ -1549,7 +1556,7 @@ void MainWindow::refresh(bool modelRefresh, bool loadDir)
     qDebug() << "refresh";
     if (modelRefresh) {
         modelList->refreshItems();
-        modelList->update();
+        modelList->forceRefresh();
     }
     QModelIndex baseIndex = modelView->mapFromSource(modelList->index(pathEdit->currentText()));
     if (currentView == 2) { detailTree->setRootIndex(baseIndex); }
@@ -1558,6 +1565,12 @@ void MainWindow::refresh(bool modelRefresh, bool loadDir)
         qDebug() << "trigger dirloaded from refresh";
         dirLoaded();
     }
+}
+
+void MainWindow::enableReload()
+{
+    qDebug() << "enable reload";
+    ignoreReload = false;
 }
 //---------------------------------------------------------------------------
 

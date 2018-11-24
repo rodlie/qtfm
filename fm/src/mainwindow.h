@@ -315,6 +315,7 @@ private slots:
     void handlePathRequested(QString path);
     void slowPathEdit();
     void refresh(bool modelRefresh = true, bool loadDir = true);
+    void enableReload();
 private:
     void createActions();
     void createActionIcons();
@@ -453,6 +454,8 @@ private:
     QString copyXof;
     // custom timestamp for copy of
     QString copyXofTS;
+
+    bool ignoreReload;
 };
 
 //---------------------------------------------------------------------------------
