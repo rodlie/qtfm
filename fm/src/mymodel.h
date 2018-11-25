@@ -86,11 +86,12 @@ public slots:
   void addWatcher(myModelItem* path);
   void clearCutItems();
   void clearIconCache();
+  void forceRefresh();
 signals:
   void dragDropPaste(const QMimeData *data, QString newPath,
                      Common::DragMode mode = Common::DM_UNKNOWN);
-  void thumbUpdate();
-  void reloadDir();
+  void thumbUpdate(const QString &path);
+  void reloadDir(const QString &path);
 protected:
   QVariant data(const QModelIndex & index, int role) const;
   QVariant headerData(int section, Qt::Orientation orientation, int role) const;

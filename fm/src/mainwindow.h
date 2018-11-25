@@ -276,8 +276,10 @@ public slots:
     void focusAction();
     void openFolderAction();
     void exitAction();
-    void dirLoaded();
-    void thumbUpdate();
+    void dirLoaded(bool thumbs = true);
+    void updateDir();
+    void handleReloadDir(const QString &path);
+    void thumbUpdate(const QString &path);
     void addressChanged(int,int);
     void loadSettings(bool wState = true, bool hState = true, bool tabState = true, bool thumbState = true);
     void firstRunBookmarks(bool isFirstRun);
@@ -313,6 +315,7 @@ private slots:
     void handlePathRequested(QString path);
     void slowPathEdit();
     void refresh(bool modelRefresh = true, bool loadDir = true);
+    void enableReload();
 private:
     void createActions();
     void createActionIcons();
@@ -451,6 +454,8 @@ private:
     QString copyXof;
     // custom timestamp for copy of
     QString copyXofTS;
+
+    bool ignoreReload;
 };
 
 //---------------------------------------------------------------------------------
