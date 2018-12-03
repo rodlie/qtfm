@@ -1,3 +1,7 @@
+6.1.5 TBA
+- fix build if CONFIG+=no_dbus enabled
+- fixed broken multiple file copy/move instances
+
 6.1.4 26-November 2018
 - fix potential config corruption. Thanks to @slackuser0xae34 for the patch
 - fix segfault on thumbnail update (view may have changed since loading thumbnails)
