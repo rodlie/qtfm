@@ -59,6 +59,8 @@ myProgressDialog::myProgressDialog(QString title)
    //start the timer
    remainingTimer->start();
 
+   connect(button, SIGNAL(released()), this, SLOT(clearFilename()));
+
    QTimer::singleShot(1000,this,SLOT(setShowing()));
 }
 
@@ -73,7 +75,9 @@ void myProgressDialog::setShowing()
 void myProgressDialog::update(qint64 bytes, qint64 total, QString name)
 {
     //set file name
-    filename->setText(name);
+    realFilename = name;
+    filename->setText(name.split("/").takeLast());
+    filename->setToolTip(realFilename);
 
     //refresh the bar
     runningTotal += bytes;
@@ -100,6 +104,17 @@ void myProgressDialog::update(qint64 bytes, qint64 total, QString name)
     }
 
     return;
+}
+
+QString myProgressDialog::getFilename()
+{
+    return realFilename;
+}
+
+void myProgressDialog::clearFilename()
+{
+    realFilename.clear();
+    setResult(0);
 }
 
 

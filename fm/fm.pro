@@ -1,4 +1,4 @@
-QT+= core gui dbus
+QT+= core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 include(../qtfm.pri)
 
@@ -101,7 +101,7 @@ INSTALLS += icon128 icon160 icon16 icon192 icon20 icon22 \
             icon24 icon256 icon32 icon36 icon48 icon512 icon64 \
             icon72 icon96 iconSVG
 
-!CONFIG(no_udisks) {
+!CONFIG(no_udisks|no_dbus) {
     exists(../libdisks/libdisks.pro) {
         INCLUDEPATH += ../libdisks
         LIBS += -L../libdisks -lDisks
@@ -115,4 +115,8 @@ lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG(deploy) : DEFINES += DEPLOY
 CONFIG(no_udisks): DEFINES += NO_UDISKS
-CONFIG(no_dbus) : DEFINES += NO_DBUS
+CONFIG(no_dbus) {
+    DEFINES += NO_DBUS
+    DEFINES += NO_UDISKS
+}
+!CONFIG(no_dbus) : QT += dbus

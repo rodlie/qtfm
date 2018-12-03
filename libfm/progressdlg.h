@@ -26,6 +26,7 @@
 #include <QtGui>
 #include <QDialog>
 #include <QLabel>
+#include <QString>
 #include <QProgressBar>
 
 class myProgressDialog : public QDialog
@@ -38,8 +39,10 @@ public:
 public slots:
     void setShowing();
     void update(qint64 bytes, qint64 total, QString name);
+    QString getFilename();
 
 private:
+    QString realFilename;
     QLabel *filename;
     QLabel *transferInfo;
     QProgressBar *bar;
@@ -49,6 +52,9 @@ private:
 
     qint64 runningTotal;
     int oldSeconds;
+
+private slots:
+    void clearFilename();
 };
 
 

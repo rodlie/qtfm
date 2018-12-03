@@ -28,8 +28,10 @@
 #include <QApplication>
 #include <QStatusBar>
 #include <QMenu>
+#ifndef NO_DBUS
 #include <QDBusConnection>
 #include <QDBusError>
+#endif
 #include <fcntl.h>
 
 #if QT_VERSION >= 0x050000
@@ -1059,6 +1061,7 @@ void MainWindow::pasteLauncher(const QMimeData *data, const QString &newPath,
 void MainWindow::pasteLauncher(const QList<QUrl> &files, const QString &newPath,
                                const QStringList &cutList, bool link) {
 
+  qDebug() << "pasteLauncher" << files << newPath << cutList << link;
   // File no longer exists?
   if (!QFile(files.at(0).path()).exists()) {
     QString msg = tr("File '%1' no longer exists!").arg(files.at(0).path());
@@ -1123,9 +1126,20 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files, const QString &newPath,
   }
 
   // Copy/move files
+  for (int i=0;i<files.size();++i) {
+      QString queueFile = files.at(i).fileName();
+      queueFile.prepend(QString("%1/").arg(newPath));
+      if (!progressQueue.contains(queueFile)) {
+          qDebug() << "add to queue" << queueFile;
+          progressQueue.append(queueFile);
+      }
+  }
   QString title = cutList.count() == 0 ? tr("Copying...") : tr("Moving...");
-  progress = new myProgressDialog(title);
-  connect(this, SIGNAL(updateCopyProgress(qint64, qint64, QString)), progress, SLOT(update(qint64, qint64, QString)));
+  if (!progress) {
+      progress = new myProgressDialog(title);
+      connect(this, SIGNAL(updateCopyProgress(qint64, qint64, QString)), progress, SLOT(update(qint64, qint64, QString)));
+  }
+
   listSelectionModel->clear();
   QtConcurrent::run(this, &MainWindow::pasteFiles, files, newPath, cutList);
 }
@@ -1157,10 +1171,24 @@ int MainWindow::showReplaceMsgBox(const QFileInfo &f1, const QFileInfo &f2) {
 
 void MainWindow::progressFinished(int ret,QStringList newFiles)
 {
+    qDebug() << "progressFinished" << ret << newFiles;
+    qDebug() << "progressQueue" << progressQueue;
+    for (int i=0;i<newFiles.size();++i) {
+        if (progressQueue.contains(newFiles.at(i))) {
+            qDebug() << "remove from queue" << newFiles.at(i);
+            progressQueue.remove(progressQueue.indexOf(newFiles.at(i)));
+        }
+    }
+    qDebug() << "progressQueue" << progressQueue;
     if (progress != 0) {
-        progress->close();
-        delete progress;
-        progress = 0;
+        progress->setResult(0);
+        qDebug() << "progressDialog filename" << progress->getFilename();
+        if (newFiles.contains(progress->getFilename()) && progressQueue.isEmpty()) {
+            qDebug() << "progress should be closed";
+            progress->close();
+            delete progress;
+            progress = 0;
+        }
     }
 
     if (newFiles.count()) {

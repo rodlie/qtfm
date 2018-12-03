@@ -473,6 +473,7 @@ void MainWindow::renameFile() {
 bool MainWindow::pasteFiles(const QList<QUrl> &files, const QString &newPath,
                             const QStringList &cutList) {
 
+  qDebug() << "pasteFiles" << files << newPath << cutList;
   // Temporary variables
   bool ok = true;
   QStringList newFiles;
@@ -512,9 +513,12 @@ bool MainWindow::pasteFiles(const QList<QUrl> &files, const QString &newPath,
   for (int i = 0; i < files.count(); ++i) {
 
     // Canceled ?
-    if (progress->result() == 1) {
-      emit copyProgressFinished(0, newFiles);
-      return 1;
+    if (progress) {
+        qDebug() << "check for cancel!" << newFiles << progress->getFilename();
+        if (progress->result() == 1 && newFiles.contains(progress->getFilename())) {
+          emit copyProgressFinished(0, newFiles);
+          return 1;
+        }
     }
 
     // Destination file name and url
@@ -612,6 +616,7 @@ bool MainWindow::pasteFiles(const QList<QUrl> &files, const QString &newPath,
 bool MainWindow::copyFolder(const QString &srcFolder, const QString &dstFolder,
                             qint64 total, bool cut) {
 
+  qDebug() << "copyFolder" << srcFolder << dstFolder << total << cut;
   // Temporary variables
   QDir srcDir(srcFolder);
   QDir dstDir(QFileInfo(dstFolder).path());
@@ -639,7 +644,10 @@ bool MainWindow::copyFolder(const QString &srcFolder, const QString &dstFolder,
     if (!cutCopyFile(srcName, dstName, total, cut)) ok = false;
 
     // Cancelled
-    if (progress->result() == 1) return 0;
+    if (progress) {
+        qDebug() << "check for cancel!" << dstName << progress->getFilename();
+        if (progress->result() == 1 && dstName == progress->getFilename()) { return 0; }
+    }
   }
 
   // Get directories in source directory
@@ -648,11 +656,12 @@ bool MainWindow::copyFolder(const QString &srcFolder, const QString &dstFolder,
 
   // Copy each directory
   for (int i = 0; i < files.count(); i++) {
-    if (progress->result() == 1) {
-      return 0;
-    }
     QString srcName = srcDir.path() + QDir::separator() + files[i];
     QString dstName = dstDir.path() + QDir::separator() + files[i];
+    if (progress) {
+        qDebug() << "check for cancel!" << dstName << progress->getFilename();
+        if (progress->result() == 1 && dstName == progress->getFilename()) { return 0; }
+    }
     copyFolder(srcName, dstName, total, cut);
   }
 
@@ -675,6 +684,7 @@ bool MainWindow::copyFolder(const QString &srcFolder, const QString &dstFolder,
 bool MainWindow::cutCopyFile(const QString &src, QString dst, qint64 totalSize,
                              bool cut) {
 
+  qDebug() << "cutCopyFile" << src << dst << totalSize << cut;
   // Create files with given locations
   QFile srcFile(src);
   QFile dstFile(dst);
@@ -683,7 +693,7 @@ bool MainWindow::cutCopyFile(const QString &src, QString dst, qint64 totalSize,
   if (dstFile.exists()) return 1;
 
   // If destination location is too long make it shorter
-  if (dst.length() > 50) dst = "/.../" + dst.split(QDir::separator()).last();
+  //if (dst.length() > 50) dst = "/.../" + dst.split(QDir::separator()).last();
 
   // Open source and destination files
   srcFile.open(QFile::ReadOnly);
@@ -697,7 +707,10 @@ bool MainWindow::cutCopyFile(const QString &src, QString dst, qint64 totalSize,
 
   // Copy blocks
   while (!srcFile.atEnd()) {
-    if (progress->result() == 1) break; // cancelled
+    if (progress) {
+        qDebug() << "check for cancel!" << dst << progress->getFilename();
+        if (progress->result() == 1 && dst == progress->getFilename()) { break; /* cancelled */ }
+    }
     qint64 inBytes = srcFile.read(block, sizeof(block));
     dstFile.write(block, inBytes);
     interTotal += inBytes;
