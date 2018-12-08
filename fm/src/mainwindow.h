@@ -36,6 +36,7 @@
 #include <QToolBar>
 #include <QItemDelegate>
 #include <QStyledItemDelegate>
+#include <QVector>
 
 #include "mymodel.h"
 #include "bookmarkmodel.h"
@@ -456,6 +457,8 @@ private:
     QString copyXofTS;
 
     bool ignoreReload;
+
+    QVector<QString> progressQueue;
 };
 
 //---------------------------------------------------------------------------------

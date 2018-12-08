@@ -1,0 +1,8 @@
+theme: jekyll-theme-minimal
+title: QtFM
+description: Lightweight Linux/BSD File Manager
+logo: https://github.com/rodlie/qtfm/raw/master/fm/hicolor/256x256/apps/qtfm.png
+show_downloads: true
+github:
+  zip_url: https://github.com/rodlie/qtfm/archive/6.1.4.zip
+  tar_url: https://github.com/rodlie/qtfm/archive/6.1.4.tar.gz
