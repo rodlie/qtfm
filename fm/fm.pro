@@ -14,6 +14,7 @@ TEMPLATE = app
 DEPENDPATH += . src
 INCLUDEPATH += . src ../libfm
 LIBS += -L../libfm -lQtFM
+# -L/Users/tatsh/.local/lib -linotify
 
 HEADERS += src/mainwindow.h \
     src/mymodel.h \
