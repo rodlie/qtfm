@@ -14,7 +14,16 @@ TEMPLATE = app
 DEPENDPATH += . src
 INCLUDEPATH += . src ../libfm
 LIBS += -L../libfm -lQtFM
-# -L/Users/tatsh/.local/lib -linotify
+
+macx {
+    CONFIG += no_udisks no_dbus no_tray
+
+    # MacPorts
+    exists( /opt/local/include ) {
+        INCLUDEPATH += /opt/local/include
+        LIBS += -L/opt/local/lib -linotify
+    }
+}
 
 HEADERS += src/mainwindow.h \
     src/mymodel.h \
