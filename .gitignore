@@ -1,3 +1,10 @@
 build*
 *.pro.*
 *~
+moc_*.cpp
+moc_*.h
+/fm/qrc_qtfm.cpp
+Makefile
+.qmake.stash
+lib*.a
+qtfm.app/
