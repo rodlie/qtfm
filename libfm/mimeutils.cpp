@@ -11,7 +11,13 @@
 #include <magic.h>
 #endif
 
+#ifdef Q_OS_DARWIN
+#include <CoreFoundation/CoreFoundation.h>
+#include <CoreServices/CoreServices.h>
+#endif
+
 #include "common.h"
+
 
 /**
  * @brief Creates mime utils
@@ -100,9 +106,18 @@ void MimeUtils::openInApp(const QFileInfo &file, QString termCmd) {
     }
     openInApp(df.getExec(), file, termCmd);
   } else {
-    QString title = tr("No default application");
-    QString msg = tr("No default application for mime: %1!").arg(mime);
-    QMessageBox::warning(NULL, title, msg);
+#ifdef Q_OS_DARWIN
+      CFURLRef ref = CFURLCreateWithFileSystemPath(NULL,
+                                                   file.absoluteFilePath().toCFString(),
+                                                   kCFURLPOSIXPathStyle,
+                                                   file.isDir());
+      LSOpenCFURLRef(ref, NULL);
+#else
+
+     QString title = tr("No default application");
+     QString msg = tr("No default application for mime: %1!").arg(mime);
+     QMessageBox::warning(NULL, title, msg);
+#endif
   }
 }
 //---------------------------------------------------------------------------
