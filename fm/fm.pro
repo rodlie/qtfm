@@ -15,6 +15,16 @@ DEPENDPATH += . src
 INCLUDEPATH += . src ../libfm
 LIBS += -L../libfm -lQtFM
 
+macx {
+    CONFIG += no_udisks no_dbus no_tray
+
+    # MacPorts
+    exists( /opt/local/include ) {
+        INCLUDEPATH += /opt/local/include
+        LIBS += -L/opt/local/lib -linotify
+    }
+}
+
 HEADERS += src/mainwindow.h \
     src/mymodel.h \
     src/bookmarkmodel.h \

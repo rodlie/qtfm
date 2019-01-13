@@ -32,7 +32,7 @@
 #include "propertiesdlg.h"
 #include "icondlg.h"
 #include "mainwindow.h"
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__APPLE__)
 #include <sys/mount.h>
 #else
 #include <sys/vfs.h>
