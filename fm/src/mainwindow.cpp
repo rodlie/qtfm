@@ -1187,7 +1187,7 @@ void MainWindow::progressFinished(int ret,QStringList newFiles)
     if (progress != 0) {
         progress->setResult(0);
         qDebug() << "progressDialog filename" << progress->getFilename();
-        if (newFiles.contains(progress->getFilename()) && progressQueue.isEmpty()) {
+        if (progressQueue.isEmpty()) {
             qDebug() << "progress should be closed";
             progress->close();
             delete progress;
