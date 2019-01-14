@@ -2,6 +2,7 @@
 - close progress dialog on small files
 - support mouse back button
 - macOS support
+- NetBSD support
 
 6.1.5 09-December 2018
 - fix build if CONFIG+=no_dbus enabled
