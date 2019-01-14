@@ -102,7 +102,7 @@ if [ "${OS}" = "Linux" ]; then
     tree pkg
     cp -a pkg/usr qtfm-$TAG-Linux64
     strip -s qtfm-$TAG-Linux64/bin/qtfm
-    tar cvvzf qtfm-$TAG-Linux64.tgz qtfm-$TAG-Linux
+    tar cvvzf qtfm-$TAG-Linux64.tgz qtfm-$TAG-Linux64
     mv qtfm-$TAG-Linux64.tgz $DEPLOY/
 elif [ "${OS}" = "Darwin" ]; then
     echo "===> Building mac64 ..."
@@ -116,6 +116,6 @@ elif [ "${OS}" = "Darwin" ]; then
     strip -u -r fm/QtFM.app/Contents/MacOS/*
     mkdir release
     mv fm/QtFM.app release/
-    hdiutil create -volname "QtFM $TAG" -srcfolder release -ov -format UDBZ $DEPLOY/qtfm-$TAG.dmg
+    hdiutil create -volname "QtFM $TAG" -srcfolder release -ov -format UDBZ $DEPLOY/qtfm-$TAG-Darwin64.dmg
 fi
 ls -lah $DEPLOY
