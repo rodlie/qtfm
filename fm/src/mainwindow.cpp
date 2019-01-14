@@ -924,7 +924,11 @@ void MainWindow::listDoubleClicked(QModelIndex current) {
   if (mods == Qt::ControlModifier || mods == Qt::ShiftModifier) {
     return;
   }
+#ifdef Q_OS_MAC
+  if (modelList->isDir(modelView->mapToSource(current)) && !modelList->fileName(modelView->mapToSource(current)).endsWith(".app")) {
+#else
   if (modelList->isDir(modelView->mapToSource(current))) {
+#endif
     QModelIndex i = modelView->mapToSource(current);
     tree->setCurrentIndex(modelTree->mapFromSource(i));
   } else {
@@ -1348,7 +1352,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         }
 
         // Add run action or open with default application action
-        if (curIndex.isExecutable()) {
+        if (curIndex.isExecutable() || curIndex.isBundle()) {
           popup->addAction(runAct);
         } else {
           popup->addAction(openAct);

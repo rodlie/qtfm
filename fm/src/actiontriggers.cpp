@@ -28,7 +28,11 @@ void MainWindow::executeFile(QModelIndex index, bool run) {
   // Run or open
   if (run) {
     QProcess *myProcess = new QProcess(this);
+#ifdef Q_OS_MAC
+    myProcess->startDetached(QString("open %1").arg(modelList->filePath(srcIndex)));
+#else
     myProcess->startDetached(modelList->filePath(srcIndex));
+#endif
   } else {
     mimeUtils->openInApp(modelList->fileInfo(srcIndex), ""/*term*/);
   }
@@ -1004,7 +1008,7 @@ void MainWindow::showAboutBox()
     box.setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/fm/images/qtfm.png")));
     box.setIconPixmap(QPixmap::fromImage(QImage(":/fm/images/qtfm.png")));
     box.setText(QString("<h1>%1 %2</h1>"
-                        "<p>Desktop Independent Linux/BSD File Manager</p>").arg(APP_NAME).arg(APP_VERSION));
+                        "<p>Desktop Independent File Manager</p>").arg(APP_NAME).arg(APP_VERSION));
     box.setInformativeText(QString("<p style=\"text-align:justify;font-size:small;\">"
                                    "This program is free software; you can redistribute it and/or modify"
                                    " it under the terms of the GNU General Public License as published by"
