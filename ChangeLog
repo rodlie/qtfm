@@ -1,5 +1,6 @@
 6.1.6 TBA
 - close progress dialog on small files
+- support mouse back button
 
 6.1.5 09-December 2018
 - fix build if CONFIG+=no_dbus enabled

@@ -247,6 +247,8 @@ MainWindow::MainWindow()
     trashDir = Common::trashDir();
     ignoreReload = false;
 
+    qApp->installEventFilter(this);
+
     QTimer::singleShot(0, this, SLOT(lateStart()));
 }
 //---------------------------------------------------------------------------
@@ -1581,6 +1583,21 @@ QMenu* MainWindow::createOpenWithMenu() {
   }
   openMenu->addAction(selectAppAct);
   return openMenu;
+}
+
+bool MainWindow::eventFilter(QObject *o, QEvent *e)
+{
+    if (e->type() == QEvent::MouseButtonPress) {
+        QMouseEvent* me = static_cast<QMouseEvent*>(e);
+        qDebug() << "MOUSE BUTTON EVENT" << me->button();
+        switch (me->button()) {
+        case Qt::BackButton:
+            goBackDir();
+            break;
+        default:;
+        }
+    }
+    return QMainWindow::eventFilter(o, e);
 }
 
 void MainWindow::refresh(bool modelRefresh, bool loadDir)
