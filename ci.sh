@@ -94,8 +94,8 @@ if [ "${OS}" = "Linux" ]; then
     echo "===> Building linux64 ..."
     PKG_CONFIG_PATH="${SDK}/lib/pkgconfig:${PKG_CONFIG_PATH}"
     PATH=${SDK}/bin:/usr/bin:/bin
-    rm -rf build || true
-    mkdir build && cd build
+    mkdir $CWD/build9
+    cd $CWD/build9
     qmake CONFIG+=release CONFIG+=deploy PREFIX=/usr CONFIG+=no_tray CONFIG+=no_udisks CONFIG+=no_dbus ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
