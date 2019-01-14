@@ -1,61 +1,24 @@
+sudo: required
 language: cpp
 compiler: g++
-dist: trusty
-sudo: required
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+    - os: osx
+      osx_image: xcode8
 
-before_install:
-  - sudo apt-get update
-
-install:
-  - sudo apt-get install qt4-dev-tools qtbase5-dev libxss-dev libmagic-dev qt4-qmake qt5-qmake tree
-  
 script:
-  - export CWD=`pwd`
-  - mkdir $CWD/build1
-  - cd $CWD/build1
-  - qmake -qt=qt5 CONFIG+=release PREFIX=/usr  ..
-  - make
-  - make INSTALL_ROOT=`pwd`/pkg install
-  - tree pkg
-  - mkdir $CWD/build2
-  - cd $CWD/build2
-  - qmake -qt=qt4 CONFIG+=release PREFIX=/usr  ..
-  - make
-  - make INSTALL_ROOT=`pwd`/pkg install
-  - tree pkg
-  - mkdir $CWD/build3
-  - cd $CWD/build3
-  - qmake -qt=qt5 CONFIG+=debug PREFIX=/usr  ..
-  - make
-  - make INSTALL_ROOT=`pwd`/pkg install
-  - tree pkg
-  - mkdir $CWD/build4
-  - cd $CWD/build4
-  - qmake -qt=qt4 CONFIG+=debug PREFIX=/usr  ..
-  - make
-  - make INSTALL_ROOT=`pwd`/pkg install
-  - tree pkg
-  - mkdir $CWD/build5
-  - cd $CWD/build5
-  - qmake -qt=qt5 CONFIG+=debug PREFIX=/usr CONFIG+=basic ..
-  - make
-  - make INSTALL_ROOT=`pwd`/pkg install
-  - tree pkg
-  - mkdir $CWD/build6
-  - cd $CWD/build6
-  - qmake -qt=qt4 CONFIG+=debug PREFIX=/usr CONFIG+=basic ..
-  - make
-  - make INSTALL_ROOT=`pwd`/pkg install
-  - tree pkg
-  - mkdir $CWD/build7
-  - cd $CWD/build7
-  - qmake -qt=qt5 CONFIG+=release PREFIX=/usr CONFIG+=basic ..
-  - make
-  - make INSTALL_ROOT=`pwd`/pkg install
-  - tree pkg
-  - mkdir $CWD/build8
-  - cd $CWD/build8
-  - qmake -qt=qt4 CONFIG+=release PREFIX=/usr CONFIG+=basic ..
-  - make
-  - make INSTALL_ROOT=`pwd`/pkg install
-  - tree pkg
+  - sh ci.sh
+
+deploy:
+  provider: releases
+  api_key:
+    secure: H0ij5swOKXnIBVFQiZ6Dwexpn0qTrj4r8svoD/LG1PnQVoDZt8zITrE11YkjPNSAL6sf3K958KWsyLdyE4g7eic5cLbZRXgAz+fMQjPvX6SrtPMo2IRhEhVGMal6BzBpNlXmznwP0vkopMUs/tpW9l3BH+K8Z6+EaFt69tMd6Ty0I+iRteQAG8EyUGNV3o1NAgbJf18MBfWrGJkVfAT79GnV0Pjez/M+7AOc7ZdBc5pij3xkbgzzjzfa8lkErjinqIjSvuGgxFQXNP4e/FGkGPAiegpzTyUG8c/32jEwjcjz5Rcr/fMH4CfyIWMXJ2PQeuItdk7FX0ErB7yvV7BYVz4ucBf6LnJVbHPNt6TkXqHBLh4r5fKylvExDwBZqQwp3OUH5wtyB+d5yBnoERZwJqUiVocyZiTTHI4aqVk1BegKV2fVFoN5W3bNT4Kgt4O2Sg4hmcSunmhTh1Jzmt+Sz3Ov5MLbnUVGGIBNoqXrHHXvqqBnEQ9CUJinPCHh3CViTg1H5jI764YajVm0WWDL95N5bzrY9A0pS65oFgOrt82OXn2nlS7kLxCeehcFbWBs7/Wp/31VWAJ62fS2fNTfsGPRPv+4bEipgnzdOElZ0pTFAlgFYXuSIPoJS0ZcwixshAj17sz6LwFv6dOkK4UP0UXZe2fEdp53kjSeJWI+3CQ= 
+  file_glob: true
+  file: /opt/deploy/*
+  skip_cleanup: true
+  draft: true
+  on:
+    repo: rodlie/qtfm
+    tags: true

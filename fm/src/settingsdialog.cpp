@@ -72,16 +72,20 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   selector->addItem(new QListWidgetItem(icon5, tr("Appearance"), selector));
   selector->addItem(new QListWidgetItem(icon2, tr("Custom Actions"), selector));
   selector->addItem(new QListWidgetItem(icon3, tr("Shortcuts"), selector));
+#ifndef Q_OS_MAC
   selector->addItem(new QListWidgetItem(icon4, tr("Mime Types"), selector));
   selector->addItem(new QListWidgetItem(icon4, tr("System Tray"), selector));
+#endif
   selector->addItem(new QListWidgetItem(icon4, tr("Advanced"), selector));
 
   stack->addWidget(createGeneralSettings());
   stack->addWidget(createAppearanceSettings());
   stack->addWidget(createActionsSettings());
   stack->addWidget(createShortcutSettings());
+#ifndef Q_OS_MAC
   stack->addWidget(createMimeSettings());
   stack->addWidget(createSystraySettings());
+#endif
   stack->addWidget(createAdvSettings());
 
   connect(selector,
@@ -176,8 +180,9 @@ QWidget *SettingsDialog::createAppearanceSettings()
     // Appearance
     QGroupBox* grpAppear = new QGroupBox(tr("Appearance"), widget);
     QFormLayout* layoutAppear = new QFormLayout(grpAppear);
+#ifndef Q_OS_MAC
     cmbIconTheme = new QComboBox(grpAppear);
-
+#endif
 #if QT_VERSION >= 0x050000
     checkDarkTheme = new QCheckBox(grpAppear);
 #endif
@@ -186,7 +191,9 @@ QWidget *SettingsDialog::createAppearanceSettings()
     showHomeButton = new QCheckBox(grpAppear);
     showTerminalButton = new QCheckBox(grpAppear);
 
+#ifndef Q_OS_MAC
     layoutAppear->addRow(tr("Fallback Icon theme:"), cmbIconTheme);
+#endif
 #if QT_VERSION >= 0x050000
     layoutAppear->addRow(tr("Use \"Dark Mode\""), checkDarkTheme);
 #endif
@@ -637,7 +644,11 @@ void SettingsDialog::readSettings() {
 
   // Read general settings
   checkDelete->setChecked(settingsPtr->value("confirmDelete", true).toBool());
+#ifdef Q_OS_MAC
+  editTerm->setText(settingsPtr->value("term", "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal").toString());
+#else
   editTerm->setText(settingsPtr->value("term", "xterm").toString());
+#endif
   editCopyX->setText(settingsPtr->value("copyXof", COPY_X_OF).toString());
   editCopyTS->setText(settingsPtr->value("copyXofTS", COPY_X_TS).toString());
 
@@ -658,12 +669,13 @@ void SettingsDialog::readSettings() {
 #endif
   checkFileColor->setChecked(settingsPtr->value("fileColor", false).toBool());
   checkPathHistory->setChecked(settingsPtr->value("pathHistory", true).toBool());
+  checkWindowTitlePath->setChecked(settingsPtr->value("windowTitlePath", true).toBool());
 
+#ifndef Q_OS_MAC
   checkTrayNotify->setChecked(settingsPtr->value("trayNotify", true).toBool());
   checkAudioCD->setChecked(settingsPtr->value("autoPlayAudioCD", false).toBool());
   checkAutoMount->setChecked(settingsPtr->value("trayAutoMount", false).toBool());
   checkDVD->setChecked(settingsPtr->value("autoPlayDVD", false).toBool());
-  checkWindowTitlePath->setChecked(settingsPtr->value("windowTitlePath", true).toBool());
 
   // Load default mime appis location
   QString tmp = "/.local/share/applications/mimeapps.list";
@@ -681,6 +693,7 @@ void SettingsDialog::readSettings() {
   iconThemes << Common::getIconThemes(qApp->applicationFilePath());
   cmbIconTheme->addItems(iconThemes);
   cmbIconTheme->setCurrentIndex(iconThemes.indexOf(currentTheme));
+#endif
 
   // Read custom actions
   checkOutput->setChecked(settingsPtr->value("showActionOutput", true).toBool());
@@ -782,6 +795,10 @@ void SettingsDialog::readShortcuts() {
  */
 void SettingsDialog::loadMimes(int section) {
 
+#ifdef Q_OS_MAC
+    return;
+#endif
+
   // Mime progress section
   const int MIME_PROGRESS_SECTION = 4;
 
@@ -873,17 +890,21 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("singleClick", comboSingleClick->currentIndex());
   settingsPtr->setValue("home_button", showHomeButton->isChecked());
   settingsPtr->setValue("terminal_button", showTerminalButton->isChecked());
+  settingsPtr->setValue("windowTitlePath", checkWindowTitlePath->isChecked());
 
+#ifndef Q_OS_MAC
   settingsPtr->setValue("trayNotify", checkTrayNotify->isChecked());
   settingsPtr->setValue("autoPlayAudioCD", checkAudioCD->isChecked());
   settingsPtr->setValue("trayAutoMount", checkAutoMount->isChecked());
   settingsPtr->setValue("autoPlayDVD", checkDVD->isChecked());
-  settingsPtr->setValue("windowTitlePath", checkWindowTitlePath->isChecked());
+  settingsPtr->setValue("fallbackTheme", cmbIconTheme->currentText());
+  settingsPtr->setValue("defMimeAppsFile", cmbDefaultMimeApps->currentText());
 
   if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
       settingsPtr->setValue("clearCache", true);
       QMessageBox::warning(this, tr("Restart to apply settings"), tr("You must restart application to apply theme settings"));
   }
+#endif
 
 #if QT_VERSION >= 0x050000
   if (checkDarkTheme->isChecked() != settingsPtr->value("darkTheme").toBool()) {
@@ -893,8 +914,7 @@ bool SettingsDialog::saveSettings() {
 #endif
   settingsPtr->setValue("fileColor", checkFileColor->isChecked());
   settingsPtr->setValue("pathHistory", checkPathHistory->isChecked());
-  settingsPtr->setValue("fallbackTheme", cmbIconTheme->currentText());
-  settingsPtr->setValue("defMimeAppsFile", cmbDefaultMimeApps->currentText());
+
 
   // Custom actions
   settingsPtr->setValue("showActionOutput", checkOutput->isChecked());
@@ -934,6 +954,7 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->endGroup();
 
   // Mime types
+#ifndef Q_OS_MAC
   for (int i = 0; i < mimesWidget->topLevelItemCount(); ++i) {
     QTreeWidgetItem* category = mimesWidget->topLevelItem(i);
     QString categoryName = category->text(0) + "/";
@@ -950,6 +971,7 @@ bool SettingsDialog::saveSettings() {
     }
   }
   mimeUtilsPtr->saveDefaults();
+#endif
 
   // Check for shortcuts duplicates
   if (duplicates.count()) {

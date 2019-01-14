@@ -8,7 +8,7 @@
 #include <QDockWidget>
 #include <QStatusBar>
 #include <QToolBar>
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__APPLE__)
 #include <sys/mount.h>
 #else
 #include <sys/vfs.h>
@@ -28,7 +28,11 @@ void MainWindow::executeFile(QModelIndex index, bool run) {
   // Run or open
   if (run) {
     QProcess *myProcess = new QProcess(this);
+#ifdef Q_OS_MAC
+    myProcess->startDetached(QString("open %1").arg(modelList->filePath(srcIndex)));
+#else
     myProcess->startDetached(modelList->filePath(srcIndex));
+#endif
   } else {
     mimeUtils->openInApp(modelList->fileInfo(srcIndex), ""/*term*/);
   }
@@ -183,6 +187,9 @@ void MainWindow::terminalRun() {
     QString title = tr("Setting");
     QString label = tr("Set default terminal:");
     QString def = "xterm";
+#ifdef Q_OS_MAC
+    def = "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal";
+#endif
     term = QInputDialog::getText(this, title, label, QLineEdit::Normal, def);
     settings->setValue("term", term);
   }
@@ -489,15 +496,23 @@ bool MainWindow::pasteFiles(const QList<QUrl> &files, const QString &newPath,
   qint64 total = FileUtils::totalSize(files);
 
   // Check available space on destination before we start
+#ifdef __NetBSD__
+  struct statvfs info;
+  statvfs(newPath.toLocal8Bit(), &info);
+#else
   struct statfs info;
   statfs(newPath.toLocal8Bit(), &info);
+#endif
   if ((qint64) info.f_bavail * info.f_bsize < total) {
 
     // If it is a cut/move on the same device it doesn't matter
     if (cutList.count()) {
       qint64 driveSize = (qint64) info.f_bavail*info.f_bsize;
+#ifdef __NetBSD__
+      statvfs(files.at(0).path().toLocal8Bit(),&info);
+#else
       statfs(files.at(0).path().toLocal8Bit(),&info);
-
+#endif
       // Same device?
       if ((qint64) info.f_bavail*info.f_bsize != driveSize) {
         emit copyProgressFinished(2, newFiles);
@@ -1001,7 +1016,7 @@ void MainWindow::showAboutBox()
     box.setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/fm/images/qtfm.png")));
     box.setIconPixmap(QPixmap::fromImage(QImage(":/fm/images/qtfm.png")));
     box.setText(QString("<h1>%1 %2</h1>"
-                        "<p>Desktop Independent Linux/BSD File Manager</p>").arg(APP_NAME).arg(APP_VERSION));
+                        "<p>Desktop Independent File Manager</p>").arg(APP_NAME).arg(APP_VERSION));
     box.setInformativeText(QString("<p style=\"text-align:justify;font-size:small;\">"
                                    "This program is free software; you can redistribute it and/or modify"
                                    " it under the terms of the GNU General Public License as published by"

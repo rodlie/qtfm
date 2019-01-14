@@ -18,9 +18,11 @@ HEADERS += \
     properties.h \
     common.h \
     progressdlg.h
-!CONFIG(no_dbus) {
-    HEADERS += service.h
-    QT += dbus
+unix:!macx {
+    !CONFIG(no_dbus) {
+        HEADERS += service.h
+        QT += dbus
+    }
 }
 
 exists(../qtfm.pri) {
