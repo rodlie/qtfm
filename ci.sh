@@ -24,8 +24,10 @@ if [ "${SETUP}" = 1 ]; then
   if [ "${OS}" = "Linux" ]; then
     echo "Setup ubuntu ..."
     sudo apt-get update
-    sudo apt-get install qt4-dev-tools qtbase5-dev libxss-dev libmagic-dev qt4-qmake qt5-qmake tree
-    #echo "Extracting linux64 sdk ..."
+    sudo apt-get install qt4-dev-tools qtbase5-dev libxss-dev libmagic-dev qt4-qmake qt5-qmake tree dpkg
+    curl -L https://sourceforge.net/projects/qt-file-manager/files/sdk/qtfm-sdk-trusty-6.1.tar.bz2/download --output download.tar.bz2
+    tar xf download.tar.bz2 -C /opt
+    rm -f download.tar.bz2
   elif [ "${OS}" = "Darwin" ]; then
     curl -L https://sourceforge.net/projects/qt-file-manager/files/sdk/qtfm-mac-sdk-6.1.tar.bz2/download --output download.tar.bz2
     tar xf download.tar.bz2 -C /opt
@@ -41,7 +43,6 @@ if [ "${TRAVIS_TAG}" != "" ]; then
 fi
 
 if [ "${OS}" = "Linux" ]; then
-    export CWD=`pwd`
     mkdir $CWD/build1
     cd $CWD/build1
     qmake -qt=qt5 CONFIG+=release PREFIX=/usr  ..
@@ -90,6 +91,19 @@ if [ "${OS}" = "Linux" ]; then
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
+    echo "===> Building linux64 ..."
+    PKG_CONFIG_PATH="${SDK}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+    PATH=${SDK}/bin:/usr/bin:/bin
+    mkdir $CWD/build9
+    cd $CWD/build9
+    qmake CONFIG+=release CONFIG+=deploy PREFIX=/usr CONFIG+=no_tray CONFIG+=no_udisks CONFIG+=no_dbus ..
+    make
+    make INSTALL_ROOT=`pwd`/pkg install
+    tree pkg
+    cp -a pkg/usr qtfm-$TAG-Linux64
+    strip -s qtfm-$TAG-Linux64/bin/qtfm
+    tar cvvzf qtfm-$TAG-Linux64.tgz qtfm-$TAG-Linux64
+    mv qtfm-$TAG-Linux64.tgz $DEPLOY/
 elif [ "${OS}" = "Darwin" ]; then
     echo "===> Building mac64 ..."
     PKG_CONFIG=${SDK}/bin/pkg-config
@@ -102,5 +116,6 @@ elif [ "${OS}" = "Darwin" ]; then
     strip -u -r fm/QtFM.app/Contents/MacOS/*
     mkdir release
     mv fm/QtFM.app release/
-    hdiutil create -volname "QtFM $TAG" -srcfolder release -ov -format UDBZ $DEPLOY/qtfm-$TAG.dmg
+    hdiutil create -volname "QtFM $TAG" -srcfolder release -ov -format UDBZ $DEPLOY/qtfm-$TAG-Darwin64.dmg
 fi
+ls -lah $DEPLOY
