@@ -69,7 +69,7 @@ unix:!macx {
     hicolor.path = $${PREFIX}/share/icons
     INSTALLS += hicolor
 
-    !CONFIG(no_udisks|no_dbus) {
+    !CONFIG(no_udisks) {
         exists(../libdisks/libdisks.pro) {
             INCLUDEPATH += ../libdisks
             LIBS += -L../libdisks -lDisks

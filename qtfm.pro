@@ -4,15 +4,15 @@ SUBDIRS += libfm fm
 fm.depends += libfm
 
 unix:!macx {
-    SUBDIRS += libdisks
     CONFIG(basic) {
         CONFIG += no_udisks no_tray no_dbus
     }
     !CONFIG(no_udisks) {
+        SUBDIRS += libdisks
         fm.depends += libdisks
     }
     !CONFIG(no_tray) {
-        SUBDIRS += tray
+        SUBDIRS += tray libdisks
         tray.depends += libdisks libfm
     }
 }
