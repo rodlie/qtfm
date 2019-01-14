@@ -183,6 +183,9 @@ void MainWindow::terminalRun() {
     QString title = tr("Setting");
     QString label = tr("Set default terminal:");
     QString def = "xterm";
+#ifdef Q_OS_MAC
+    def = "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal";
+#endif
     term = QInputDialog::getText(this, title, label, QLineEdit::Normal, def);
     settings->setValue("term", term);
   }

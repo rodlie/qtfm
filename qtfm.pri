@@ -4,6 +4,11 @@ QTFM_MAJOR = 6
 QTFM_MINOR = 1
 QTFM_PATCH = 6
 
+QMAKE_TARGET_COMPANY = "QtFM"
+QMAKE_TARGET_PRODUCT = "QtFM"
+QMAKE_TARGET_DESCRIPTION = "QtFM"
+QMAKE_TARGET_COPYRIGHT = "Copyright QtFM developers"
+
 unix:!macx {
     isEmpty(PREFIX) {
         PREFIX = /usr/local
@@ -25,6 +30,7 @@ macx {
     QT_CONFIG -= no-pkg-config
     CONFIG += link_pkgconfig
     PKGCONFIG += libinotify
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 }
 
 CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT

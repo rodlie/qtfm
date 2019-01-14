@@ -45,7 +45,11 @@ SOURCES += src/main.cpp \
 
 OTHER_FILES += $${TARGET}.desktop
 RESOURCES += ../$${TARGET}.qrc
-macx: exists(bundle/adwaita.qrc): RESOURCES += bundle/adwaita.qrc
+macx {
+    RESOURCES += bundle/adwaita.qrc
+    ICON = images/QtFM.icns
+    QMAKE_INFO_PLIST = Info.plist
+}
 
 DEFINES += APP=\"\\\"$${TARGET}\\\"\"
 DEFINES += APP_NAME=\"\\\"$${TARGET_NAME}\\\"\"
