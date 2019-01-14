@@ -33,7 +33,7 @@ macx {
 
 CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
 freebsd: LIBS += -linotify
-netbsd {
+netbsd-g++ {
     CONFIG += link_pkgconfig
     PKGCONFIG += libinotify
 }
