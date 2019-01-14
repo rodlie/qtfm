@@ -12,9 +12,7 @@ QMAKE_TARGET_COPYRIGHT = "Copyright QtFM developers"
 unix:!macx {
     isEmpty(PREFIX) {
         PREFIX = /usr/local
-        isEmpty(XDGDIR) {
-            XDGDIR = $${PREFIX}/etc/xdg
-        }
+        isEmpty(XDGDIR): XDGDIR = $${PREFIX}/etc/xdg
     }
     isEmpty(DOCDIR): DOCDIR = $$PREFIX/share/doc
     isEmpty(MANDIR): MANDIR = $$PREFIX/share/man
@@ -35,3 +33,7 @@ macx {
 
 CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
 freebsd: LIBS += -linotify
+netbsd {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += libinotify
+}

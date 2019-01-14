@@ -32,12 +32,15 @@
 #include "propertiesdlg.h"
 #include "icondlg.h"
 #include "mainwindow.h"
-#if defined(__FreeBSD__) || defined(__APPLE__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__APPLE__)
 #include <sys/mount.h>
 #else
 #include <sys/vfs.h>
 #endif
 #include <sys/stat.h>
+#ifdef __NetBSD__
+#include <sys/statvfs.h>
+#endif
 
 /**
  * @brief Creates properties dialog
@@ -385,9 +388,13 @@ void PropertiesDialog::changeIcon()
 //---------------------------------------------------------------------------
 QString getDriveInfo(QString path)
 {
+#ifdef __NetBSD__
+    struct statvfs info;
+    statvfs(path.toLocal8Bit(), &info);
+#else
     struct statfs info;
     statfs(path.toLocal8Bit(), &info);
-
+#endif
     if(info.f_blocks == 0) return "";
 
     return QString("%1  /  %2  (%3%)").arg(formatSize((qint64) (info.f_blocks - info.f_bavail)*info.f_bsize))
