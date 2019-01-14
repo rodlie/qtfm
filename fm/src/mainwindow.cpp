@@ -47,6 +47,10 @@
 
 #include "common.h"
 
+#ifdef Q_OS_MAC
+#include <QStyleFactory>
+#endif
+
 MainWindow::MainWindow()
 {
     // setup icon theme search path
@@ -107,6 +111,7 @@ MainWindow::MainWindow()
     }
 
     // Dark theme
+#ifndef Q_OS_MAC
 #if QT_VERSION >= 0x050000
 #ifdef DEPLOY
     if (settings->value("darkTheme", true).toBool()) {
@@ -116,10 +121,13 @@ MainWindow::MainWindow()
         qApp->setPalette(Common::darkTheme());
     }
 #endif
+#endif
 
     // set icon theme
 #ifdef Q_OS_MAC
     QIcon::setThemeName("Adwaita");
+    qApp->setStyle(QStyleFactory::create("fusion"));
+    qApp->setPalette(Common::darkTheme());
 #else
     Common::setupIconTheme(qApp->applicationFilePath());
 #endif
