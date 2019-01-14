@@ -64,17 +64,17 @@ QtFM is available in several distributions:
 
 Download the latest [release](https://github.com/rodlie/qtfm/releases), then make sure you have the required dependencies.
 
-* Requires [Qt](http://qt.io) 4.8+ (5.6+ recommended)
+* Requires [Qt](http://qt.io) 4.8+ (5.6/5.9/5.12 recommended)
 * Requires libmagic from [file](http://darwinsys.com/file/) **if using Qt 4**.
 * Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/)
 * Requires [adwaita-icon-theme](https://github.com/GNOME/adwaita-icon-theme) or similar
 * Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD/NetBSD/macOS**
 * Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/)/[bsdisks](https://www.freshports.org/sysutils/bsdisks/) at run-time
-
+* Optional [ImageMagick](http://imagemagick.org) for improved thumbnail support
 Download and extract:
 ```
-tar xvf qtfm-6.1.x.tar.gz
-cd qtfm-VERSION
+tar xvf qtfm-6.x.x.tar.gz
+cd qtfm-6.x.x
 ```
 
 Or use git:
@@ -84,6 +84,9 @@ cd qtfm
 ```
 Optional build options:
 
+ * ``CONFIG+=with_magick`` : This will enable ImageMagick support
+   * ``MAGICK_PC=`` : Custom Magick++ pkg-config .pc file
+   * ``CONFIG+=magick7`` : Use ImageMagick 7
  * ``CONFIG+=no_udisks`` : This will disable udisks support in QtFM
  * ``CONFIG+=no_tray`` : This will disable qtfm-tray
  * ``CONFIG+=no_dbus`` : This will disable D-Bus session features in QtFM

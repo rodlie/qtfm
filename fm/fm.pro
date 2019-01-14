@@ -84,3 +84,12 @@ unix:!macx {
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG(deploy) : DEFINES += DEPLOY
+
+CONFIG(with_magick) {
+    DEFINES += WITH_MAGICK
+    CONFIG(magick7): DEFINES += MAGICK7
+    MAGICK_CONFIG = Magick++
+    !isEmpty(MAGICK_PC): MAGICK_CONFIG = $${MAGICK}
+    PKGCONFIG += $${MAGICK_CONFIG}
+    CONFIG(deploy): LIBS += `pkg-config --libs --static $${MAGICK_CONFIG}`
+}
