@@ -102,5 +102,5 @@ elif [ "${OS}" = "Darwin" ]; then
     strip -u -r fm/QtFM.app/Contents/MacOS/*
     mkdir release
     mv fm/QtFM.app release/
-    hdiutil create -volname "QtFM $TAG" -srcfolder release -ov -format UDBZ $CWD/deploy/qtfm-$TAG-Mac.dmg
+    hdiutil create -volname "QtFM $TAG" -srcfolder release -ov -format UDBZ $DEPLOY/qtfm-$TAG.dmg
 fi
