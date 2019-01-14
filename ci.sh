@@ -104,31 +104,3 @@ elif [ "${OS}" = "Darwin" ]; then
     mv fm/QtFM.app release/
     hdiutil create -volname "QtFM $TAG" -srcfolder release -ov -format UDBZ $CWD/deploy/qtfm-$TAG-Mac.dmg
 fi
-
-if [ "${OS}" = "Linux" ]; then
-    #LIN_CHECKSUM=`sha256sum qtfm-${TAG}-Linux.txz | awk '{print $1}'`
-    echo "===> Linux checksum ${LIN_CHECKSUM}"
-elif [ "${OS}" = "Darwin" ]; then
-    MAC_CHECKSUM=`shasum -a 256 $CWD/deploy/qtfm-${TAG}-Mac.dmg | awk '{print $1}'`
-    echo "===> Mac checksum ${MAC_CHECKSUM}"
-fi
-
-if [ "${TRAVIS_PULL_REQUEST}" != "false" ] && [ "${TRAVIS_PULL_REQUEST}" != "" ]; then
-    echo "===> Uploading archives to transfer.sh ..."
-    cd $CWD/deploy
-    if [ "${OS}" = "Linux" ]; then
-      #UPLOAD_LIN=`curl --upload-file ./qtfm-${TAG}-Linux.txz https://transfer.sh/qtfm-${TAG}-Linux.txz`
-      echo "===> Linux snapshot ${UPLOAD_LIN}"
-      #if [ "${UPLOAD_LIN}" != "" ]; then
-      #    COMMENT="**CI:** Linux build is available at ${UPLOAD_LIN} with SHA256 checksum ${LIN_CHECKSUM}."
-      #    curl -H "Authorization: token ${GITHUB_TOKEN}" -X POST -d "{\"body\": \"${COMMENT}\"}" "https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments"
-      #fi
-    elif [ "${OS}" = "Darwin" ]; then
-      UPLOAD_MAC=`curl --upload-file ./qtfm-${TAG}-Mac.dmg https://transfer.sh/qtfm-${TAG}-Mac.dmg`
-      echo "===> Mac snapshot ${UPLOAD_MAC}"
-      if [ "${UPLOAD_MAC}" != "" ]; then
-        COMMENT="**CI:** Mac build is available at ${UPLOAD_MAC} with SHA256 checksum ${MAC_CHECKSUM}."
-        curl -H "Authorization: token ${GITHUB_TOKEN}" -X POST -d "{\"body\": \"${COMMENT}\"}" "https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments"
-      fi
-    fi
-fi

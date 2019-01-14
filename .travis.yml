@@ -10,3 +10,15 @@ matrix:
 
 script:
   - sh ci.sh
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "k5ufsUnNHDpJgicbZGjDKTtY27VchkhBrpH9Qd8kfZcq7k0Xfzt1qsEHpsxz2CiW6Hw720nEBaxNgwbv1OtJcUSAC2u1+ZXFE4eVOYTqOrGRKIpBdyXRwjhBOgdD0omG4e3CSDbj1DIbDGKru8Whevgts89TXqtT3EWsr6UZMRYiWOVrAFf21mkbGntSWrRIi9uyVdzEPsXTMIUhMcqbeCXC7wsxBGLf7yAS/cHF9+4zvhFR04+dUwyy1ihHN8UAzUtbPu8H1pnUquSX4gPzORhYl1WLK3DQxHE5h+egnZ5hlctp5uY/aIN4EBAC+uYVmCGQ/oah84zy9vJBxEzRSP5W4lgYWoiZ9bVMfVEXft50CTalSfTUzR200Z/UgvekG16Iqr2UAoD2sLONpIZvrwfHcVAzsiuyZvPIda+vEUQAQREbhYYMbrE+/wUIV1+0YlX+9ZtjwlidyGKOWRbuPblfkoA+aSa7KzRcy4/GWWg85jK+gGZUOWzNZR7I6QTR2L6ljoOnnQkW5DBw2qmDCGcn0bfeQNfo4SCPUuwHWXc+of+uaZg7+bF15ODuySIjXuYYlkwLUhkyfbdtY4JxVCWZ5Yqnw336xqRwL9NAFkJxDtXyyZXCZCo/Ok1zhzAPTTHouaLdIY6lN1R2jXy6Rp5aepzkw/kpoClR3C/ky2Q="
+  file_glob: true
+  file: /opt/deploy/*
+  skip_cleanup: true
+  draft: true
+  on:
+    repo: rodlie/qtfm
+    tags: true
