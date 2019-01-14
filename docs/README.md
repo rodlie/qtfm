@@ -4,7 +4,7 @@
 [![Github commits (since latest release)](https://img.shields.io/github/commits-since/rodlie/qtfm/latest.svg)](https://github.com/rodlie/qtfm)
 [![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
 
-Lightweight file manager using Qt.
+Lightweight desktop independent Qt file manager for Linux, FreeBSD, NetBSD and macOS.
 
  * Desktop (theme/applications/mime) integration
  * Customizable interface
@@ -12,5 +12,5 @@ Lightweight file manager using Qt.
  * Customizable key bindings
  * Drag & drop functionality
  * Tabs
- * Udisks support
+ * Removable device support
  * System tray daemon
