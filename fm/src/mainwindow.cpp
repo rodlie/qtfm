@@ -47,6 +47,10 @@
 
 #include "common.h"
 
+#ifdef Q_OS_MAC
+#include <QStyleFactory>
+#endif
+
 MainWindow::MainWindow()
 {
     // setup icon theme search path
@@ -118,7 +122,12 @@ MainWindow::MainWindow()
 #endif
 
     // set icon theme
+#ifdef Q_OS_MAC
+    QIcon::setThemeName("Adwaita");
+    qApp->setStyle(QStyleFactory::create("fusion"));
+#else
     Common::setupIconTheme(qApp->applicationFilePath());
+#endif
 
     // Create mime utils
     mimeUtils = new MimeUtils(this);
@@ -208,6 +217,7 @@ MainWindow::MainWindow()
     pathEdit = new QComboBox();
     pathEdit->setEditable(true);
     pathEdit->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+    pathEdit->setMinimumWidth(100);
 
     status = statusBar();
     status->setSizeGripEnabled(true);
@@ -464,9 +474,9 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
   // Load zoom settings
   zoom = settings->value("zoom", 48).toInt();
   zoomTree = settings->value("zoomTree", 16).toInt();
-  zoomBook = settings->value("zoomBook", 16).toInt();
+  zoomBook = settings->value("zoomBook", 32).toInt();
   zoomList = settings->value("zoomList", 24).toInt();
-  zoomDetail = settings->value("zoomDetail", 16).toInt();
+  zoomDetail = settings->value("zoomDetail", 32).toInt();
   detailTree->setIconSize(QSize(zoomDetail, zoomDetail));
   tree->setIconSize(QSize(zoomTree, zoomTree));
   bookmarksList->setIconSize(QSize(zoomBook, zoomBook));
@@ -500,7 +510,9 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
   term = settings->value("term", "xterm").toString();
 
   // custom actions
+#ifndef Q_OS_MAC
   firstRunCustomActions(isFirstRun);
+#endif
 
   // Load information whether tabs can be shown on top
   if (tabState) {
@@ -529,6 +541,9 @@ void MainWindow::firstRunBookmarks(bool isFirstRun)
     if (!isFirstRun) { return; }
     //qDebug() << "first run, setup default bookmarks";
     modelBookmarks->addBookmark(tr("Computer"), "/", "", "computer", "", false, false);
+#ifdef Q_OS_MAC
+    modelBookmarks->addBookmark(tr("Applications"), "/Applications", "", "applications-other", "", false, false);
+#endif
     modelBookmarks->addBookmark(tr("Home"), QDir::homePath(), "", "user-home", "", false, false);
     modelBookmarks->addBookmark(tr("Desktop"), QString("%1/Desktop").arg(QDir::homePath()), "", "user-desktop", "", false, false);
     //modelBookmarks->addBookmark(tr("Documents"), QString("%1/Documents").arg(QDir::homePath()), "", "text-x-generic", "", false, false);
@@ -909,7 +924,11 @@ void MainWindow::listDoubleClicked(QModelIndex current) {
   if (mods == Qt::ControlModifier || mods == Qt::ShiftModifier) {
     return;
   }
+#ifdef Q_OS_MAC
+  if (modelList->isDir(modelView->mapToSource(current)) && !modelList->fileName(modelView->mapToSource(current)).endsWith(".app")) {
+#else
   if (modelList->isDir(modelView->mapToSource(current))) {
+#endif
     QModelIndex i = modelView->mapToSource(current);
     tree->setCurrentIndex(modelTree->mapFromSource(i));
   } else {
@@ -1333,7 +1352,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         }
 
         // Add run action or open with default application action
-        if (curIndex.isExecutable()) {
+        if (curIndex.isExecutable() || curIndex.isBundle()) {
           popup->addAction(runAct);
         } else {
           popup->addAction(openAct);
@@ -1348,8 +1367,9 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         }*/
 
         // Add open with menu
+#ifndef Q_OS_MAC
         popup->addMenu(createOpenWithMenu());
-
+#endif
         //if (popup->actions().count() == 0) popup->addAction(openAct);
 
         // Add custom actions that are associated only with this file type
