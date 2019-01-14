@@ -247,6 +247,8 @@ MainWindow::MainWindow()
     trashDir = Common::trashDir();
     ignoreReload = false;
 
+    qApp->installEventFilter(this);
+
     QTimer::singleShot(0, this, SLOT(lateStart()));
 }
 //---------------------------------------------------------------------------
@@ -1187,7 +1189,7 @@ void MainWindow::progressFinished(int ret,QStringList newFiles)
     if (progress != 0) {
         progress->setResult(0);
         qDebug() << "progressDialog filename" << progress->getFilename();
-        if (newFiles.contains(progress->getFilename()) && progressQueue.isEmpty()) {
+        if (progressQueue.isEmpty()) {
             qDebug() << "progress should be closed";
             progress->close();
             delete progress;
@@ -1581,6 +1583,25 @@ QMenu* MainWindow::createOpenWithMenu() {
   }
   openMenu->addAction(selectAppAct);
   return openMenu;
+}
+
+bool MainWindow::eventFilter(QObject *o, QEvent *e)
+{
+    if (e->type() == QEvent::MouseButtonPress) {
+        QMouseEvent* me = static_cast<QMouseEvent*>(e);
+        qDebug() << "MOUSE BUTTON EVENT" << me->button();
+        switch (me->button()) {
+#if QT_VERSION >= 0x050000
+        case Qt::BackButton:
+#else
+        case Qt::XButton1:
+#endif
+            goBackDir();
+            break;
+        default:;
+        }
+    }
+    return QMainWindow::eventFilter(o, e);
 }
 
 void MainWindow::refresh(bool modelRefresh, bool loadDir)

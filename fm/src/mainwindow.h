@@ -459,6 +459,9 @@ private:
     bool ignoreReload;
 
     QVector<QString> progressQueue;
+
+protected:
+    bool eventFilter(QObject *o, QEvent *e);
 };
 
 //---------------------------------------------------------------------------------
