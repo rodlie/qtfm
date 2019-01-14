@@ -68,7 +68,7 @@ Download the latest [release](https://github.com/rodlie/qtfm/releases), then mak
 * Requires libmagic from [file](http://darwinsys.com/file/) **if using Qt 4**.
 * Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/)
 * Requires [adwaita-icon-theme](https://github.com/GNOME/adwaita-icon-theme) or similar
-* Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD/macOS**
+* Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD/NetBSD/macOS**
 * Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/)/[bsdisks](https://www.freshports.org/sysutils/bsdisks/) at run-time
 
 Download and extract:
@@ -81,17 +81,12 @@ Or use git:
 ```
 git clone https://github.com/rodlie/qtfm
 cd qtfm
-git checkout 6.1
 ```
-
-Now you just need to build it:
-
 Optional build options:
 
  * ``CONFIG+=no_udisks`` : This will disable udisks support in QtFM
  * ``CONFIG+=no_tray`` : This will disable qtfm-tray
  * ``CONFIG+=no_dbus`` : This will disable D-Bus session features in QtFM
- * ``CONFIG+=release`` : Disable debug output (recommended)
  * ``PREFIX=`` : Install prefix, where things are installed when running ``make install``
  * ``DOCDIR=`` : Location for documentation (default is PREFIX/share/doc)
  * ``MANDIR=`` : Location for man pages (default is PREFIX/share/man)
@@ -100,7 +95,7 @@ Optional build options:
 Doing a normal build:
 ```
 mkdir build && cd build
-qmake CONFIG+=release ..
+qmake ..
 make
 ```
 
@@ -129,7 +124,7 @@ make INSTALL_ROOT=/package_temp_path install
  * libfm is a mix of GPL-2.0 and BSD 3-Clause License (goal is BSD 3-Clause License)
  * qtfm-tray is licensed under a BSD 3-Clause License (but depends on libfm that includes GPL-2.0 code)
 
- All new source code will be BSD 3-Clause License, modifications to existing source code in fm/ will be GPL-2.0.
+ All new source code will be BSD 3-Clause License.
 
 ## Related
 
