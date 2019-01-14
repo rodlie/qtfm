@@ -2,12 +2,6 @@ QT+= core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 include(../qtfm.pri)
 
-CONFIG(basic) {
-    CONFIG += no_udisks no_tray no_dbus
-}
-
-macx: DEFINES += NO_DBUS NO_UDISKS
-
 TARGET = $${QTFM_TARGET}
 TARGET_NAME = $${QTFM_TARGET_NAME}
 VERSION = $${QTFM_MAJOR}.$${QTFM_MINOR}.$${QTFM_PATCH}
@@ -46,6 +40,7 @@ SOURCES += src/main.cpp \
 OTHER_FILES += $${TARGET}.desktop
 RESOURCES += ../$${TARGET}.qrc
 macx {
+    DEFINES += NO_DBUS NO_UDISKS
     RESOURCES += bundle/adwaita.qrc
     ICON = images/QtFM.icns
     QMAKE_INFO_PLIST = Info.plist

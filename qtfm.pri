@@ -1,8 +1,8 @@
 QTFM_TARGET = qtfm
 QTFM_TARGET_NAME = "QtFM"
 QTFM_MAJOR = 6
-QTFM_MINOR = 1
-QTFM_PATCH = 6
+QTFM_MINOR = 2
+QTFM_PATCH = 0
 
 QMAKE_TARGET_COMPANY = "QtFM"
 QMAKE_TARGET_PRODUCT = "QtFM"
@@ -21,19 +21,16 @@ unix:!macx {
 
 CONFIG += staticlib
 CONFIG -= install_lib
+CONFIG += link_pkgconfig
 
 macx {
     QTFM_TARGET = QtFM
     LIBS += -framework CoreFoundation -framework CoreServices
     QT_CONFIG -= no-pkg-config
-    CONFIG += link_pkgconfig
     PKGCONFIG += libinotify
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 }
 
 CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
 freebsd: LIBS += -linotify
-netbsd-g++ {
-    CONFIG += link_pkgconfig
-    PKGCONFIG += libinotify
-}
+netbsd-g++: PKGCONFIG += libinotify
