@@ -22,5 +22,9 @@ isEmpty(XDGDIR) {
 CONFIG += staticlib
 CONFIG -= install_lib
 
+macx {
+    LIBS += -framework CoreFoundation -framework CoreServices
+}
+
 CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
 freebsd: LIBS += -linotify
