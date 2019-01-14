@@ -118,7 +118,11 @@ MainWindow::MainWindow()
 #endif
 
     // set icon theme
+#ifdef Q_OS_MAC
+    QIcon::setThemeName("Adwaita");
+#else
     Common::setupIconTheme(qApp->applicationFilePath());
+#endif
 
     // Create mime utils
     mimeUtils = new MimeUtils(this);
