@@ -2009,7 +2009,11 @@ bool viewsSortProxyModel::lessThan(const QModelIndex &left, const QModelIndex &r
 //---------------------------------------------------------------------------------
 QStringList myCompleter::splitPath(const QString& path) const
 {
-    QStringList parts = path.split("/");
+    QString temp = path;
+    if (temp.startsWith('~')){
+        temp.replace("~", QDir::homePath());
+    }
+    QStringList parts = temp.split("/");
     parts[0] = "/";
 
     return parts;
