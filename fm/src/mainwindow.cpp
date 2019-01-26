@@ -152,7 +152,7 @@ MainWindow::MainWindow()
     dockBookmarks->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     bookmarksList = new QListView(dockBookmarks);
     bookmarksList->setMinimumHeight(24); // Docks get the minimum size from their content widget
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050500
      bookmarksList->setFocusPolicy(Qt::FocusPolicy::NoFocus); // Avoid hijacking focus when Tab on Edit Path
 #endif
     dockBookmarks->setWidget(bookmarksList);
@@ -1624,7 +1624,7 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         default:;
         }
     }
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050500
       if (dynamic_cast<QListView*>(o) != NULL ){
         if (e->type()==QEvent::KeyPress) {
             QKeyEvent* key = static_cast<QKeyEvent*>(e);
