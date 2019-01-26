@@ -70,7 +70,8 @@ Download the latest [release](https://github.com/rodlie/qtfm/releases), then mak
 * Requires [adwaita-icon-theme](https://github.com/GNOME/adwaita-icon-theme) or similar
 * Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD/NetBSD/macOS**
 * Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/)/[bsdisks](https://www.freshports.org/sysutils/bsdisks/) at run-time
-* Optional [ImageMagick](http://imagemagick.org) for improved thumbnail support
+* Optional [ImageMagick (Magick++)](http://imagemagick.org) for improved thumbnail support
+
 Download and extract:
 ```
 tar xvf qtfm-6.x.x.tar.gz
