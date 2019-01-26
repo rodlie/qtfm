@@ -152,6 +152,7 @@ MainWindow::MainWindow()
     dockBookmarks->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     bookmarksList = new QListView(dockBookmarks);
     bookmarksList->setMinimumHeight(24); // Docks get the minimum size from their content widget
+    bookmarksList->setFocusPolicy(Qt::FocusPolicy::NoFocus); // Avoid hijaking foucs when Tab on Edit Path
     dockBookmarks->setWidget(bookmarksList);
     addDockWidget(Qt::LeftDockWidgetArea, dockBookmarks);
 
@@ -1487,7 +1488,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         isMedia = bookmarksList->currentIndex().data(MEDIA_MODEL).toBool();
         if (!isMedia) {
             popup->addAction(delBookmarkAct);
-            popup->addAction(editBookmarkAct);	//icon
+            popup->addAction(editBookmarkAct);  //icon
         } else {
             // media actions
 #ifndef NO_UDISKS
@@ -1503,7 +1504,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         }
       } else {
         bookmarksList->clearSelection();
-        popup->addAction(addSeparatorAct);	//seperator
+        popup->addAction(addSeparatorAct);  //seperator
         popup->addAction(wrapBookmarksAct);
       }
       popup->addSeparator();
@@ -1621,6 +1622,32 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         default:;
         }
     }
+
+      if (dynamic_cast<QListView*>(o) != nullptr ){
+        if (e->type()==QEvent::KeyPress) {
+            QKeyEvent* key = static_cast<QKeyEvent*>(e);
+            if ( (key->key()==Qt::Key_Tab) ) {
+                qDebug()<< "Tab pressed: path completion "<< o ;
+                QListView *completionList = dynamic_cast<QListView*>(o);
+                // Remove incomplete phrase and replace it with a current index
+                QModelIndex index = completionList->currentIndex();
+                QString itemText = index.data(Qt::DisplayRole).toString();
+                QString currentPath = pathEdit->lineEdit()->text();
+                QList<QString> tempList = currentPath.split('/');
+                tempList.takeLast();
+                tempList.push_back(itemText);
+                QString newPath = tempList.join('/');
+                pathEdit->lineEdit()->setText(newPath);
+                // Force update the Main View
+                emit pathEdit->activated(newPath);
+                // Enter Edit Mode right after the event system is ready
+                QTimer::singleShot(0, pathEdit->lineEdit(), SLOT(setFocus()));
+                // Add the trailing / for subsequent completions
+                pathEdit->lineEdit()->setText(newPath + QString("/"));
+            }
+        }
+    }
+
     return QMainWindow::eventFilter(o, e);
 }
 
