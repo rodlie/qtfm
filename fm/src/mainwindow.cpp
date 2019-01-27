@@ -123,8 +123,12 @@ MainWindow::MainWindow()
 
     // set icon theme
 #ifdef Q_OS_MAC
+#ifdef DEPLOY
     QIcon::setThemeName("Adwaita");
     qApp->setStyle(QStyleFactory::create("fusion"));
+#else
+    Common::setupIconTheme(qApp->applicationFilePath());
+#endif
 #else
     Common::setupIconTheme(qApp->applicationFilePath());
 #endif
