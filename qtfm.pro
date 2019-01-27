@@ -1,18 +1,12 @@
 TEMPLATE = subdirs
 CONFIG -= ordered
-SUBDIRS += libfm fm
+SUBDIRS += libfm libdisks fm
 fm.depends += libfm
 
 unix:!macx {
-    CONFIG(basic) {
-        CONFIG += no_udisks no_tray no_dbus
-    }
-    !CONFIG(no_udisks) {
-        SUBDIRS += libdisks
-        fm.depends += libdisks
-    }
+    !CONFIG(no_udisks): fm.depends += libdisks
     !CONFIG(no_tray) {
-        SUBDIRS += tray libdisks
+        SUBDIRS += tray
         tray.depends += libdisks libfm
     }
 }
