@@ -25,7 +25,7 @@ if [ "${SETUP}" = 1 ]; then
     echo "Setup ubuntu ..."
     sudo apt-get update
     sudo apt-get install qt4-dev-tools qtbase5-dev libxss-dev libmagic-dev qt4-qmake qt5-qmake tree dpkg
-    curl -L https://sourceforge.net/projects/qt-file-manager/files/sdk/qtfm-sdk-trusty-6.1.tar.bz2/download --output download.tar.bz2
+    curl -L https://sourceforge.net/projects/qt-file-manager/files/sdk/qtfm-sdk-trusty.tar.bz2/download --output download.tar.bz2
     tar xf download.tar.bz2 -C /opt
     rm -f download.tar.bz2
   elif [ "${OS}" = "Darwin" ]; then
