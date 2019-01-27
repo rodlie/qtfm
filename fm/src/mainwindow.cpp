@@ -152,6 +152,9 @@ MainWindow::MainWindow()
     dockBookmarks->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     bookmarksList = new QListView(dockBookmarks);
     bookmarksList->setMinimumHeight(24); // Docks get the minimum size from their content widget
+#if QT_VERSION >= 0x050500
+     bookmarksList->setFocusPolicy(Qt::FocusPolicy::NoFocus); // Avoid hijacking focus when Tab on Edit Path
+#endif
     dockBookmarks->setWidget(bookmarksList);
     addDockWidget(Qt::LeftDockWidgetArea, dockBookmarks);
 
@@ -1621,6 +1624,32 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         default:;
         }
     }
+#if QT_VERSION >= 0x050500
+      if (dynamic_cast<QListView*>(o) != NULL ){
+        if (e->type()==QEvent::KeyPress) {
+            QKeyEvent* key = static_cast<QKeyEvent*>(e);
+            if ( (key->key()==Qt::Key_Tab) ) {
+                qDebug()<< "Tab pressed: path completion "<< o ;
+                QListView *completionList = dynamic_cast<QListView*>(o);
+                // Remove incomplete phrase and replace it with a current index
+                QModelIndex index = completionList->currentIndex();
+                QString itemText = index.data(Qt::DisplayRole).toString();
+                QString currentPath = pathEdit->lineEdit()->text();
+                QList<QString> tempList = currentPath.split('/');
+                tempList.takeLast();
+                tempList.push_back(itemText);
+                QString newPath = tempList.join('/');
+                pathEdit->lineEdit()->setText(newPath);
+                // Force update the Main View
+                emit pathEdit->activated(newPath);
+                // Enter Edit Mode right after the event system is ready
+                QTimer::singleShot(0, pathEdit->lineEdit(), SLOT(setFocus()));
+                // Add the trailing / for subsequent completions
+                pathEdit->lineEdit()->setText(newPath + QString("/"));
+            }
+        }
+    }
+#endif
     return QMainWindow::eventFilter(o, e);
 }
 
