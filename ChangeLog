@@ -1,5 +1,6 @@
-6.1.6 XX-January 2019
+6.1.6 29-January 2019
 - progress dialog fix
+- path tab-completion. Thanks to @kubaroth for the patch
 - completer handles expansion of ~ path. Thanks to @kubaroth for the patch
 - support mouse back button
 - macOS support
