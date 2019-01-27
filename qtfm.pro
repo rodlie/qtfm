@@ -10,4 +10,6 @@ unix:!macx {
         tray.depends += libdisks libfm
     }
 }
+CONFIG(deploy): SUBDIRS -= libdisks
+
 lessThan(QT_MAJOR_VERSION, 5): warning("Qt4 is deprecated, please consider upgrading to Qt5 if possible.")
