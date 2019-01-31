@@ -1,8 +1,9 @@
 6.2.0 TBA
 - imagemagick support
 
-6.1.6 XX-January 2019
+6.1.6 31-January 2019
 - progress dialog fix
+- path tab-completion. Thanks to @kubaroth for the patch
 - completer handles expansion of ~ path. Thanks to @kubaroth for the patch
 - support mouse back button
 - macOS support
