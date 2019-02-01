@@ -31,7 +31,7 @@
 #include "common.h"
 #include "propertiesdlg.h"
 #include "icondlg.h"
-#include "mainwindow.h"
+
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__APPLE__)
 #include <sys/mount.h>
 #else
@@ -234,7 +234,7 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
   QGridLayout *layoutDrive = new QGridLayout(driveFrame);
   layoutDrive->addWidget(driveIcon,0,0);
   layoutDrive->addWidget(driveInfo,0,1,Qt::AlignRight);
-  driveInfo->setText(getDriveInfo(pathName));
+  driveInfo->setText(Common::getDriveInfo(pathName));
 
   // Buttons
   buttons = new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
@@ -302,7 +302,7 @@ void PropertiesDialog::recurseProperties(QString path)
 //---------------------------------------------------------------------------
 void PropertiesDialog::update()
 {
-    sizeInfo->setText(formatSize(totalSize));
+    sizeInfo->setText(Common::formatSize(totalSize));
     if(type != 2) containsInfo->setText(QString(tr("%1 Files, %2 folders")).arg(files).arg(folders));
 }
 
@@ -386,20 +386,6 @@ void PropertiesDialog::changeIcon()
 }
 
 //---------------------------------------------------------------------------
-QString getDriveInfo(QString path)
-{
-#ifdef __NetBSD__
-    struct statvfs info;
-    statvfs(path.toLocal8Bit(), &info);
-#else
-    struct statfs info;
-    statfs(path.toLocal8Bit(), &info);
-#endif
-    if(info.f_blocks == 0) return "";
 
-    return QString("%1  /  %2  (%3%)").arg(formatSize((qint64) (info.f_blocks - info.f_bavail)*info.f_bsize))
-                       .arg(formatSize((qint64) info.f_blocks*info.f_bsize))
-                       .arg((info.f_blocks - info.f_bavail)*100/info.f_blocks);
-}
 
 //---------------------------------------------------------------------------------

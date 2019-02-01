@@ -500,6 +500,5 @@ public:
 // Global functions.
 //---------------------------------------------------------------------------------
 QString formatSize(qint64);
-QString getDriveInfo(QString);
-QString gGetMimeType(QString);
+
 #endif

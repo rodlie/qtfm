@@ -6,18 +6,34 @@ VERSION = 1.0.0
 
 TEMPLATE = lib
 SOURCES += \
+    applicationdialog.cpp \
+    customactionsmanager.cpp \
     desktopfile.cpp \
     fileutils.cpp \
     mimeutils.cpp \
     properties.cpp \
-    progressdlg.cpp
+    processdialog.cpp \
+    progressdlg.cpp \
+    icondlg.cpp \
+    mymodel.cpp \
+    mymodelitem.cpp \
+    propertiesdlg.cpp
+
 HEADERS += \
+    applicationdialog.h \
+    customactionsmanager.h \
     desktopfile.h \
     fileutils.h \
     mimeutils.h \
     properties.h \
     common.h \
-    progressdlg.h
+    processdialog.h \
+    progressdlg.h \
+    icondlg.h \
+    mymodel.h \
+    mymodelitem.h \
+    propertiesdlg.h
+
 unix:!macx {
     !CONFIG(no_dbus) {
         HEADERS += service.h

@@ -11,34 +11,24 @@ DEPENDPATH += . src
 INCLUDEPATH += . src ../libfm
 LIBS += -L../libfm -lQtFM
 
-HEADERS += src/mainwindow.h \
-    src/mymodel.h \
+HEADERS += \
+    src/mainwindow.h \
     src/bookmarkmodel.h \
-    src/icondlg.h \
-    src/propertiesdlg.h \
     src/tabbar.h \
-    src/mymodelitem.h \
-    src/settingsdialog.h \
-    src/customactionsmanager.h \
-    src/processdialog.h \
-    src/applicationdialog.h
-SOURCES += src/main.cpp \
+    src/settingsdialog.h
+
+SOURCES += \
+    src/main.cpp \
     src/mainwindow.cpp \
-    src/mymodel.cpp \
     src/bookmarks.cpp \
-    src/icondlg.cpp \
-    src/propertiesdlg.cpp \
     src/tabbar.cpp \
-    src/mymodelitem.cpp \
     src/settingsdialog.cpp \
-    src/customactionsmanager.cpp \
-    src/processdialog.cpp \
-    src/applicationdialog.cpp \
     src/actiondefs.cpp \
     src/actiontriggers.cpp
 
 OTHER_FILES += $${TARGET}.desktop
 RESOURCES += ../$${TARGET}.qrc
+
 macx {
     DEFINES += NO_DBUS NO_UDISKS
     RESOURCES += bundle/adwaita.qrc

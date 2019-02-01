@@ -156,7 +156,7 @@ void MainWindow::bookmarkClicked(QModelIndex item)
     if(info.contains("/.")) modelList->setRootPath(info);       //hidden folders
 
     tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(item.data(BOOKMARK_PATH).toString())));
-    status->showMessage(getDriveInfo(curIndex.filePath()));
+    status->showMessage(Common::getDriveInfo(curIndex.filePath()));
 }
 
 //---------------------------------------------------------------------------------
