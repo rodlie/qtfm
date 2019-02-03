@@ -69,25 +69,25 @@ if [ "${OS}" = "Linux" ]; then
     tree pkg
     mkdir $CWD/build5
     cd $CWD/build5
-    qmake -qt=qt5 CONFIG+=debug PREFIX=/usr CONFIG+=basic ..
+    qmake -qt=qt5 CONFIG+=debug PREFIX=/usr CONFIG+=no_dbus ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
     mkdir $CWD/build6
     cd $CWD/build6
-    qmake -qt=qt4 CONFIG+=debug PREFIX=/usr CONFIG+=basic ..
+    qmake -qt=qt4 CONFIG+=debug PREFIX=/usr CONFIG+=no_dbus ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
     mkdir $CWD/build7
     cd $CWD/build7
-    qmake -qt=qt5 CONFIG+=release PREFIX=/usr CONFIG+=basic ..
+    qmake -qt=qt5 CONFIG+=release PREFIX=/usr CONFIG+=no_dbus CONFIG+=no_tray ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
     mkdir $CWD/build8
     cd $CWD/build8
-    qmake -qt=qt4 CONFIG+=release PREFIX=/usr CONFIG+=basic ..
+    qmake -qt=qt4 CONFIG+=release PREFIX=/usr CONFIG+=no_dbus CONFIG+=no_tray ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
@@ -96,7 +96,7 @@ if [ "${OS}" = "Linux" ]; then
     PATH=${SDK}/bin:/usr/bin:/bin
     mkdir $CWD/build9
     cd $CWD/build9
-    qmake CONFIG+=release CONFIG+=deploy PREFIX=/usr CONFIG+=no_tray CONFIG+=no_udisks CONFIG+=no_dbus ..
+    qmake CONFIG+=release CONFIG+=deploy PREFIX=/usr CONFIG+=no_tray CONFIG+=no_dbus ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
