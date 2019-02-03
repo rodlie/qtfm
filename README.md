@@ -64,8 +64,7 @@ QtFM is available in several distributions:
 
 Download the latest [release](https://github.com/rodlie/qtfm/releases), then make sure you have the required dependencies.
 
-* Requires [Qt](http://qt.io) 4.8+ (5.6/5.9/5.12 recommended)
-* Requires libmagic from [file](http://darwinsys.com/file/) **if using Qt 4**.
+* Requires [QtBase](http://qt.io) 5.2+ (5.6/5.9/5.12 recommended)
 * Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/)
 * Requires [adwaita-icon-theme](https://github.com/GNOME/adwaita-icon-theme) or similar
 * Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD/NetBSD/macOS**
@@ -104,7 +103,7 @@ qmake ..
 make
 ```
 
-You can run the binary ``fm/qtfm`` or install to ``/usr/local``:
+You can run the binary ``bin/qtfm`` or install to ``/usr/local``:
 ```
 sudo make install
 ```
@@ -117,7 +116,7 @@ Example:
 
 ```
 mkdir build && cd build
-qmake CONFIG+=release PREFIX=/usr ..
+qmake PREFIX=/usr LIBSUFFIX=64 ..
 make -jX
 make INSTALL_ROOT=/package_temp_path install
 ```
