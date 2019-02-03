@@ -68,7 +68,7 @@ myModel::myModel(bool realMime, MimeUtils *mimeUtils) {
   }
 
   // Create root item
-  rootItem = new myModelItem(QFileInfo("/"), new myModelItem(QFileInfo(), 0));
+  rootItem = new myModelItem(QFileInfo("/"), new myModelItem(QFileInfo(), Q_NULLPTR));
   currentRootPath = "/";
   QDir root("/");
   QFileInfoList drives = root.entryInfoList( QDir::AllEntries | QDir::Files
@@ -358,8 +358,8 @@ bool myModel::setRootPath(const QString& path)
 
     myModelItem *item = rootItem->matchPath(path.split(SEPARATOR));
 
-    if (item == NULL) {
-        QMessageBox::warning(NULL, tr("No such directory"), tr("Directory requested does not exists."));
+    if (item == Q_NULLPTR) {
+        QMessageBox::warning(Q_NULLPTR, tr("No such directory"), tr("Directory requested does not exists."));
         return false;
     }
 
@@ -408,7 +408,7 @@ void myModel::fetchMore (const QModelIndex & parent)
 //---------------------------------------------------------------------------------------
 void myModel::populateItem(myModelItem *item)
 {
-    if (item == NULL) { return; }
+    if (item == Q_NULLPTR) { return; }
     item->walked = 1;
 
     QDir dir(item->absoluteFilePath());
@@ -449,7 +449,7 @@ void myModel::refresh()
 void myModel::update()
 {
     myModelItem *item = rootItem->matchPath(currentRootPath.split(SEPARATOR));
-    if (item == NULL) { return; }
+    if (item == Q_NULLPTR) { return; }
     foreach(myModelItem *child, item->children()) { child->refreshFileInfo(); }
 }
 
@@ -457,7 +457,7 @@ void myModel::update()
 void myModel::refreshItems()
 {
     myModelItem *item = rootItem->matchPath(currentRootPath.split(SEPARATOR));
-    if (item == NULL) { return; }
+    if (item == Q_NULLPTR) { return; }
     qDebug() << "refresh items";
     item->clearAll();
     populateItem(item);
@@ -891,7 +891,7 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
  */
 QVariant myModel::findIcon(myModelItem *item) const {
 
-  if (item == NULL) { return  QIcon(); }
+  if (item == Q_NULLPTR) { return  QIcon(); }
 
   //qDebug() << "findicon" << item->absoluteFilePath();
   // If type of file is directory, return icon of directory
@@ -983,7 +983,7 @@ QVariant myModel::findIcon(myModelItem *item) const {
  */
 QVariant myModel::findMimeIcon(myModelItem *item) const {
 
-  if (item == NULL) { return QIcon(); }
+  if (item == Q_NULLPTR) { return QIcon(); }
 
   // Retrieve mime and search cache for it
   QString mime = mimeUtilsPtr->getMimeType(item->absoluteFilePath());
@@ -1131,7 +1131,7 @@ QVariant myModel::headerData(int section, Qt::Orientation orientation, int role)
 //---------------------------------------------------------------------------------------
 Qt::ItemFlags myModel::flags(const QModelIndex &index) const
 {
-    if(!index.isValid()) return 0;
+    if(!index.isValid()) return Q_NULLPTR;
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 

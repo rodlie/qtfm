@@ -17,7 +17,7 @@ class qtfm : public QObject
     Q_OBJECT
 
 public:
-    qtfm(QObject *parent = 0) : QObject(parent){}
+    qtfm(QObject *parent = Q_NULLPTR) : QObject(parent){}
 
 signals:
     void pathRequested(QString path);

@@ -1612,7 +1612,7 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         }
     }
 
-      if (dynamic_cast<QListView*>(o) != NULL ){
+      if (dynamic_cast<QListView*>(o) != Q_NULLPTR ){
         if (e->type()==QEvent::KeyPress) {
             QKeyEvent* key = static_cast<QKeyEvent*>(e);
             if ( (key->key()==Qt::Key_Tab) ) {
@@ -1857,7 +1857,7 @@ void MainWindow::handleMediaUnmount()
 {
     //qDebug() << "handle media unmount";
     QStandardItem *item = modelBookmarks->itemFromIndex(bookmarksList->currentIndex());
-    if (item == NULL) { return; }
+    if (item == Q_NULLPTR) { return; }
     QString path = item->data(MEDIA_PATH).toString();
     if (path.isEmpty()) { return; }
     disks->devices[path]->unmount();
@@ -1867,7 +1867,7 @@ void MainWindow::handleMediaEject()
 {
     //qDebug() << "handle media eject";
     QStandardItem *item = modelBookmarks->itemFromIndex(bookmarksList->currentIndex());
-    if (item == NULL) { return; }
+    if (item == Q_NULLPTR) { return; }
     QString path = item->data(MEDIA_PATH).toString();
     if (path.isEmpty()) { return; }
     disks->devices[path]->eject();

@@ -107,16 +107,16 @@ void MimeUtils::openInApp(const QFileInfo &file, QString termCmd) {
     openInApp(df.getExec(), file, termCmd);
   } else {
 #ifdef Q_OS_DARWIN
-      CFURLRef ref = CFURLCreateWithFileSystemPath(NULL,
+      CFURLRef ref = CFURLCreateWithFileSystemPath(Q_NULLPTR,
                                                    file.absoluteFilePath().toCFString(),
                                                    kCFURLPOSIXPathStyle,
                                                    file.isDir());
-      LSOpenCFURLRef(ref, NULL);
+      LSOpenCFURLRef(ref, Q_NULLPTR);
 #else
 
      QString title = tr("No default application");
      QString msg = tr("No default application for mime: %1!").arg(mime);
-     QMessageBox::warning(NULL, title, msg);
+     QMessageBox::warning(Q_NULLPTR, title, msg);
 #endif
   }
 }

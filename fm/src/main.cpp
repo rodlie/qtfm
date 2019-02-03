@@ -27,7 +27,6 @@
 #include <Magick++.h>
 #endif
 
-#if QT_VERSION >= 0x050000
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -56,7 +55,6 @@ void msgHandler(QtMsgType type, const QMessageLogContext &context, const QString
         abort();
     }
 }
-#endif
 
 /**
  * @brief main function
@@ -64,13 +62,13 @@ void msgHandler(QtMsgType type, const QMessageLogContext &context, const QString
  * @param argv command line arguments
  * @return 0/1
  */
+
 int main(int argc, char *argv[]) {
 
-#if QT_VERSION >= 0x050000
   qInstallMessageHandler(msgHandler);
-#endif
+
 #ifdef WITH_MAGICK
-  Magick::InitializeMagick(NULL);
+  Magick::InitializeMagick(Q_NULLPTR);
 #endif
   QApplication app(argc, argv);
   QApplication::setOrganizationName(APP);

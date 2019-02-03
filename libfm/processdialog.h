@@ -15,7 +15,7 @@ class ProcessDialog : public QDialog {
   Q_OBJECT
 public:
   explicit ProcessDialog(QProcess* proc, const QString &procName = "",
-                         QWidget *parent = 0);
+                         QWidget *parent = Q_NULLPTR);
 protected slots:
   void onProcFinished();
   void onProcStarted();
