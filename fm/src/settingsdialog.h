@@ -25,7 +25,7 @@ public:
   SettingsDialog(QList<QAction*> *actionList,
                  QSettings* settings,
                  MimeUtils *mimeUtils,
-                 QWidget *parent = 0);
+                 QWidget *parent = Q_NULLPTR);
 
 public slots:
   void accept();
@@ -52,6 +52,7 @@ protected slots:
   void moveAppAssocDown();
   void restartToApply(int triggered);
   void restartToApply(bool triggered);
+  void filterMimes(QString filter);
 
 protected:
   QWidget* createGeneralSettings();
@@ -77,9 +78,7 @@ protected:
   QComboBox* comboSingleClick;
   QCheckBox* showTerminalButton;
   QCheckBox* showHomeButton;
-#if QT_VERSION >= 0x050000
   QCheckBox* checkDarkTheme;
-#endif
   QCheckBox* checkFileColor;
   QCheckBox* checkPathHistory;
   QTreeWidget *actionsWidget;

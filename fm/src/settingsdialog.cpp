@@ -359,6 +359,13 @@ QWidget* SettingsDialog::createMimeSettings() {
   layoutAssoc->addWidget(btnUp, 2, 1);
   layoutAssoc->addWidget(btnDown, 3, 1);
 
+  // tree filter
+  QLineEdit *mimeSearch = new QLineEdit(grpMimes);
+  mimeSearch->setPlaceholderText(tr("Filter ..."));
+  mimeSearch->setClearButtonEnabled(true);
+  connect(mimeSearch, SIGNAL(textChanged(QString)), this, SLOT(filterMimes(QString)));
+  layoutMimes->addWidget(mimeSearch);
+
   // Tree widget with list of shortcuts
   mimesWidget = new QTreeWidget(grpMimes);
   mimesWidget->setAlternatingRowColors(true);
@@ -634,6 +641,27 @@ void SettingsDialog::restartToApply(int /*triggered*/)
 void SettingsDialog::restartToApply(bool /*triggered*/)
 {
     restartToApply(0);
+}
+
+void SettingsDialog::filterMimes(QString filter)
+{
+    qDebug() << "filter mimes" << filter;
+    mimesWidget->setUpdatesEnabled(false);
+    for (int i=0;i<mimesWidget->topLevelItemCount();++i) {
+        QTreeWidgetItem *topItem = mimesWidget->topLevelItem(i);
+        if (!topItem) { continue; }
+        for (int y=0;y<topItem->childCount();++y) {
+            QTreeWidgetItem *item = topItem->child(y);
+            if (!item) { continue; }
+            if (item->text(0).startsWith(filter) || filter.isEmpty()) {
+                item->setHidden(false);
+            } else { item->setHidden(true); }
+        }
+    }
+    if (filter.isEmpty()) { mimesWidget->collapseAll(); }
+    else { mimesWidget->expandAll(); }
+    mimesWidget->setUpdatesEnabled(true);
+    mimesWidget->update();
 }
 //---------------------------------------------------------------------------
 
