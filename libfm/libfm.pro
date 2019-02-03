@@ -33,7 +33,9 @@ HEADERS += \
     icondlg.h \
     mymodel.h \
     mymodelitem.h \
-    propertiesdlg.h
+    propertiesdlg.h \
+    iconview.h \
+    iconlist.h
 
 unix:!macx {
     !CONFIG(no_dbus) {
