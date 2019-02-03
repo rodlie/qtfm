@@ -66,7 +66,8 @@ public:
     static bool removeThumbsCache();
     static void setupIconTheme(QString appFilePath);
     static DragMode int2dad(int value);
-    static QVariant readSetting(QString key);
+    static QVariant readSetting(QString key,
+                                QString fallback = QString());
     static void writeSetting(QString key,
                              QVariant value);
     static DragMode getDADaltMod();
@@ -75,6 +76,7 @@ public:
     static DragMode getDefaultDragAndDrop();
     static QString getDeviceForDir(QString dir);
     static QPalette darkTheme();
+    static QStringList iconPaths(QString appPath);
     static QVector<QStringList> getDefaultActions();
     static QString formatSize(qint64 num);
     static QString getDriveInfo(QString path);

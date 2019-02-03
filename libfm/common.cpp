@@ -465,9 +465,9 @@ Common::DragMode Common::int2dad(int value)
     }
 }
 
-QVariant Common::readSetting(QString key) {
+QVariant Common::readSetting(QString key, QString fallback) {
     QSettings settings(Common::configFile(), QSettings::IniFormat);
-    return settings.value(key);
+    return settings.value(key, fallback);
 }
 
 void Common::writeSetting(QString key, QVariant value) {
@@ -561,6 +561,17 @@ QPalette Common::darkTheme()
     palette.setColor(QPalette::Disabled, QPalette::Text, Qt::darkGray);
     palette.setColor(QPalette::Disabled, QPalette::ButtonText, Qt::darkGray);
     return palette;
+}
+
+QStringList Common::iconPaths(QString appPath)
+{
+    QStringList iconsPath = QIcon::themeSearchPaths();
+    QString iconsHomeLocal = QString("%1/.local/share/icons").arg(QDir::homePath());
+    QString iconsHome = QString("%1/.icons").arg(QDir::homePath());
+    if (QFile::exists(iconsHomeLocal) && !iconsPath.contains(iconsHomeLocal)) { iconsPath.prepend(iconsHomeLocal); }
+    if (QFile::exists(iconsHome) && !iconsPath.contains(iconsHome)) { iconsPath.prepend(iconsHome); }
+    iconsPath << QString("%1/../share/icons").arg(appPath);
+    return  iconsPath;
 }
 
 QVector<QStringList> Common::getDefaultActions()

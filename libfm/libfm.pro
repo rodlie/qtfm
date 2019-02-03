@@ -21,7 +21,8 @@ SOURCES += \
     completer.cpp \
     sortmodel.cpp \
     iconview.cpp \
-    iconlist.cpp
+    iconlist.cpp \
+    fm.cpp
 
 HEADERS += \
     applicationdialog.h \
@@ -40,7 +41,8 @@ HEADERS += \
     iconview.h \
     iconlist.h \
     completer.h \
-    sortmodel.h
+    sortmodel.h \
+    fm.h
 
 include(../qtfm.pri)
 
