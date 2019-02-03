@@ -2,6 +2,8 @@
 - imagemagick support
 - support for Qt4 has now ended
 - moved most code to libfm
+- settings: use decimal keys in config
+- settings: support filter mime types
 
 6.1.6 31-January 2019
 - progress dialog fix
