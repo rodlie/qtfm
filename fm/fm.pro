@@ -8,38 +8,28 @@ VERSION = $${QTFM_MAJOR}.$${QTFM_MINOR}.$${QTFM_PATCH}
 TEMPLATE = app
 
 DEPENDPATH += . src
-INCLUDEPATH += . src ../libfm
-LIBS += -L../libfm -lQtFM
+INCLUDEPATH += . src $${top_srcdir}/libfm
 
-HEADERS += src/mainwindow.h \
-    src/mymodel.h \
+HEADERS += \
+    src/mainwindow.h \
     src/bookmarkmodel.h \
-    src/icondlg.h \
-    src/propertiesdlg.h \
     src/tabbar.h \
-    src/mymodelitem.h \
-    src/settingsdialog.h \
-    src/customactionsmanager.h \
-    src/processdialog.h \
-    src/applicationdialog.h
-SOURCES += src/main.cpp \
+    src/settingsdialog.h
+
+SOURCES += \
+    src/main.cpp \
     src/mainwindow.cpp \
-    src/mymodel.cpp \
     src/bookmarks.cpp \
-    src/icondlg.cpp \
-    src/propertiesdlg.cpp \
     src/tabbar.cpp \
-    src/mymodelitem.cpp \
     src/settingsdialog.cpp \
-    src/customactionsmanager.cpp \
-    src/processdialog.cpp \
-    src/applicationdialog.cpp \
     src/actiondefs.cpp \
     src/actiontriggers.cpp
 
 OTHER_FILES += $${TARGET}.desktop
 RESOURCES += ../$${TARGET}.qrc
+
 macx {
+    LIBS += -L$${top_builddir}/libfm -lQtFM
     DEFINES += NO_DBUS NO_UDISKS
     RESOURCES += bundle/adwaita.qrc
     ICON = images/QtFM.icns
@@ -51,6 +41,11 @@ DEFINES += APP_NAME=\"\\\"$${TARGET_NAME}\\\"\"
 DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\"
 
 unix:!macx {
+    DESTDIR = $${top_builddir}/bin
+    OBJECTS_DIR = $${DESTDIR}/.obj_fm
+    MOC_DIR = $${DESTDIR}/.moc_fm
+    RCC_DIR = $${DESTDIR}/.qrc_fm
+    LIBS += -L$${top_builddir}/lib$${LIBSUFFIX} -lQtFM
     target.path = $${PREFIX}/bin
     desktop.files += $${TARGET}.desktop
     desktop.path += $${PREFIX}/share/applications
@@ -64,32 +59,16 @@ unix:!macx {
     hicolor.path = $${PREFIX}/share/icons
     INSTALLS += hicolor
 
-    !CONFIG(no_udisks) {
-        exists(../libdisks/libdisks.pro) {
-            INCLUDEPATH += ../libdisks
-            LIBS += -L../libdisks -lDisks
-        } else {
-            CONFIG += link_pkgconfig
-            PKGCONFIG += Disks
-        }
-    }
-    CONFIG(no_udisks): DEFINES += NO_UDISKS
     CONFIG(no_dbus) {
         DEFINES += NO_DBUS
         DEFINES += NO_UDISKS
     }
     !CONFIG(no_dbus) : QT += dbus
+    !CONFIG(staticlib): QMAKE_RPATHDIR += $ORIGIN/../lib$${LIBSUFFIX}
 }
 
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG(deploy) : DEFINES += DEPLOY
 
-CONFIG(with_magick) {
-    DEFINES += WITH_MAGICK
-    CONFIG(magick7): DEFINES += MAGICK7
-    MAGICK_CONFIG = Magick++
-    !isEmpty(MAGICK_PC): MAGICK_CONFIG = $${MAGICK}
-    PKGCONFIG += $${MAGICK_CONFIG}
-    CONFIG(deploy): LIBS += `pkg-config --libs --static $${MAGICK_CONFIG}`
-}
+CONFIG(with_magick): include($${top_srcdir}/share/imagemagick.pri)

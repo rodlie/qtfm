@@ -28,8 +28,6 @@
 
 #include "common.h"
 
-QString formatSize(qint64);
-
 /**
  * @class myModel
  * @brief holding information about files in FS

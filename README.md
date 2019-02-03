@@ -88,13 +88,14 @@ Optional build options:
  * ``CONFIG+=with_magick`` : This will enable ImageMagick support
    * ``MAGICK_PC=`` : Custom Magick++ pkg-config .pc file
    * ``CONFIG+=magick7`` : Use ImageMagick 7
- * ``CONFIG+=no_udisks`` : This will disable udisks support in QtFM
  * ``CONFIG+=no_tray`` : This will disable qtfm-tray
- * ``CONFIG+=no_dbus`` : This will disable D-Bus session features in QtFM
+ * ``CONFIG+=no_dbus`` : This will disable D-Bus session and udisks features in (lib)QtFM
  * ``PREFIX=`` : Install prefix, where things are installed when running ``make install``
  * ``DOCDIR=`` : Location for documentation (default is PREFIX/share/doc)
  * ``MANDIR=`` : Location for man pages (default is PREFIX/share/man)
  * ``XDGDIR=`` : Location of XDG (default is /etc/xdg or PREFIX/etc/xdg)
+ * ``LIBDIR=`` : Library location (default is ``$PREFIX/lib$LIBSUFFIX``)
+ * ``CONFIG+=with_includes`` : Install library includes and pkg-config
 
 Doing a normal build:
 ```
@@ -123,12 +124,7 @@ make INSTALL_ROOT=/package_temp_path install
 
 ## License
 
- * QtFM is licensed under the GPL-2.0 License
- * libdisks is licensed under a BSD 3-Clause License
- * libfm is a mix of GPL-2.0 and BSD 3-Clause License (goal is BSD 3-Clause License)
- * qtfm-tray is licensed under a BSD 3-Clause License (but depends on libfm that includes GPL-2.0 code)
-
- All new source code will be BSD 3-Clause License.
+QtFM is licensed under the GPL-2.0 License.
 
 ## Related
 

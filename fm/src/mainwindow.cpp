@@ -274,7 +274,7 @@ MainWindow::MainWindow()
 void MainWindow::lateStart() {
 
   // Update status panel
-  status->showMessage(getDriveInfo(curIndex.filePath()));
+  status->showMessage(Common::getDriveInfo(curIndex.filePath()));
 
   // Configure bookmarks list
   bookmarksList->setDragDropMode(QAbstractItemView::DragDrop);
@@ -724,7 +724,7 @@ void MainWindow::dirLoaded(bool thumbs)
     QString total;
 
     if (!bytes) { total = ""; }
-    else { total = formatSize(bytes); }
+    else { total = Common::formatSize(bytes); }
 
     statusName->clear();
     statusSize->setText(QString("%1 items").arg(items.count()));
@@ -796,7 +796,7 @@ void MainWindow::listSelectionChanged(const QItemSelection selected, const QItem
     QString total,name;
 
     if (!bytes) { total = ""; }
-    else { total = formatSize(bytes); }
+    else { total = Common::formatSize(bytes); }
 
     if (items.count() == 1) {
         QFileInfo file(modelList->filePath(modelView->mapToSource(items.at(0))));
@@ -816,22 +816,7 @@ void MainWindow::listSelectionChanged(const QItemSelection selected, const QItem
 }
 
 //---------------------------------------------------------------------------
-QString formatSize(qint64 num)
-{
-    QString total;
-    const qint64 kb = 1024;
-    const qint64 mb = 1024 * kb;
-    const qint64 gb = 1024 * mb;
-    const qint64 tb = 1024 * gb;
 
-    if (num >= tb) { total = QString("%1TB").arg(QString::number(qreal(num) / tb, 'f', 2)); }
-    else if (num >= gb) { total = QString("%1GB").arg(QString::number(qreal(num) / gb, 'f', 2)); }
-    else if (num >= mb) { total = QString("%1MB").arg(QString::number(qreal(num) / mb, 'f', 1)); }
-    else if (num >= kb) { total = QString("%1KB").arg(QString::number(qreal(num) / kb,'f', 1)); }
-    else { total = QString("%1 bytes").arg(num); }
-
-    return total;
-}
 
 //---------------------------------------------------------------------------
 void MainWindow::listItemClicked(QModelIndex current)
@@ -1912,7 +1897,7 @@ void MainWindow::handlePathRequested(QString path)
 void MainWindow::slowPathEdit()
 {
     pathEditChanged(pathEdit->currentText());
-    status->showMessage(getDriveInfo(curIndex.filePath()));
+    status->showMessage(Common::getDriveInfo(curIndex.filePath()));
 }
 //---------------------------------------------------------------------------
 
@@ -1988,82 +1973,6 @@ void MainWindow::clearCutItems()
     QTimer::singleShot(50,this,SLOT(updateDir()));
 }
 
-//---------------------------------------------------------------------------------
-bool mainTreeFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
-{
-    if (sourceModel() == NULL) { return false; }
-    QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
-    myModel* fileModel = qobject_cast<myModel*>(sourceModel());
-    if (fileModel == NULL) { return false; }
-    if (fileModel->isDir(index0)) {
-        if (this->filterRegExp().isEmpty() || fileModel->fileInfo(index0).isHidden() == 0) { return true; }
-    }
 
-    return false;
-}
 
-//---------------------------------------------------------------------------------
-bool viewsSortProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
-{
-    if (this->filterRegExp().isEmpty()) { return true; }
 
-    QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
-    myModel* fileModel = qobject_cast<myModel*>(sourceModel());
-
-    if (fileModel->fileInfo(index0).isHidden()) { return false; }
-    else { return true; }
-}
-
-//---------------------------------------------------------------------------------
-bool viewsSortProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
-{
-    myModel* fsModel = dynamic_cast<myModel*>(sourceModel());
-
-    if ((fsModel->isDir(left) && !fsModel->isDir(right))) {
-        return sortOrder() == Qt::AscendingOrder;
-    } else if(!fsModel->isDir(left) && fsModel->isDir(right)) {
-        return sortOrder() == Qt::DescendingOrder;
-    }
-
-    if(left.column() == 1) { // size
-        if (fsModel->size(left) > fsModel->size(right)) { return true; }
-        else { return false; }
-    } else if (left.column() == 3) { // date
-        if (fsModel->fileInfo(left).lastModified() > fsModel->fileInfo(right).lastModified()) { return true; }
-        else { return false; }
-    }
-
-    return QSortFilterProxyModel::lessThan(left,right);
-}
-
-//---------------------------------------------------------------------------------
-QStringList myCompleter::splitPath(const QString& path) const
-{
-    QString temp = path;
-    if (temp.startsWith('~')){
-        temp.replace("~", QDir::homePath());
-    }
-    QStringList parts = temp.split("/");
-    parts[0] = "/";
-
-    return parts;
-}
-
-//---------------------------------------------------------------------------------
-QString myCompleter::pathFromIndex(const QModelIndex& index) const
-{
-    if (!index.isValid()) { return QString(); }
-
-    QModelIndex idx = index;
-    QStringList list;
-    do {
-        QString t = model()->data(idx, Qt::EditRole).toString();
-        list.prepend(t);
-        QModelIndex parent = idx.parent();
-        idx = parent.sibling(parent.row(), index.column());
-    } while (idx.isValid());
-
-    list[0].clear() ; // the join below will provide the separator
-
-    return list.join("/");
-}

@@ -24,7 +24,7 @@ if [ "${SETUP}" = 1 ]; then
   if [ "${OS}" = "Linux" ]; then
     echo "Setup ubuntu ..."
     sudo apt-get update
-    sudo apt-get install qt4-dev-tools qtbase5-dev libxss-dev libmagic-dev qt4-qmake qt5-qmake tree dpkg
+    sudo apt-get install qtbase5-dev qt5-qmake tree
     curl -L https://sourceforge.net/projects/qt-file-manager/files/sdk/qtfm-sdk-trusty-6.1.tar.bz2/download --output download.tar.bz2
     tar xf download.tar.bz2 -C /opt
     rm -f download.tar.bz2
@@ -49,54 +49,31 @@ if [ "${OS}" = "Linux" ]; then
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
-    mkdir $CWD/build2
-    cd $CWD/build2
-    qmake -qt=qt4 CONFIG+=release PREFIX=/usr  ..
-    make
-    make INSTALL_ROOT=`pwd`/pkg install
-    tree pkg
     mkdir $CWD/build3
     cd $CWD/build3
     qmake -qt=qt5 CONFIG+=debug PREFIX=/usr  ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
-    mkdir $CWD/build4
-    cd $CWD/build4
-    qmake -qt=qt4 CONFIG+=debug PREFIX=/usr  ..
-    make
-    make INSTALL_ROOT=`pwd`/pkg install
-    tree pkg
     mkdir $CWD/build5
     cd $CWD/build5
-    qmake -qt=qt5 CONFIG+=debug PREFIX=/usr CONFIG+=basic ..
-    make
-    make INSTALL_ROOT=`pwd`/pkg install
-    tree pkg
-    mkdir $CWD/build6
-    cd $CWD/build6
-    qmake -qt=qt4 CONFIG+=debug PREFIX=/usr CONFIG+=basic ..
+    qmake -qt=qt5 CONFIG+=debug PREFIX=/usr CONFIG+=no_dbus ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
     mkdir $CWD/build7
     cd $CWD/build7
-    qmake -qt=qt5 CONFIG+=release PREFIX=/usr CONFIG+=basic ..
+    qmake -qt=qt5 CONFIG+=release PREFIX=/usr CONFIG+=no_dbus CONFIG+=no_tray ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
-    mkdir $CWD/build8
-    cd $CWD/build8
-    qmake -qt=qt4 CONFIG+=release PREFIX=/usr CONFIG+=basic ..
-    make
-    make INSTALL_ROOT=`pwd`/pkg install
-    tree pkg
+
     echo "===> Building linux64 ..."
     PKG_CONFIG_PATH="${SDK}/lib/pkgconfig:${PKG_CONFIG_PATH}"
     PATH=${SDK}/bin:/usr/bin:/bin
     mkdir $CWD/build9
     cd $CWD/build9
-    qmake CONFIG+=release CONFIG+=deploy PREFIX=/usr CONFIG+=no_tray CONFIG+=no_udisks CONFIG+=no_dbus ..
+    qmake CONFIG+=release CONFIG+=deploy PREFIX=/usr CONFIG+=staticlib CONFIG+=no_tray CONFIG+=no_dbus ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
