@@ -928,7 +928,7 @@ bool SettingsDialog::saveSettings() {
       cmd.prepend("|");
     }
     temp << item->text(0) << item->text(1) << item->text(2) << cmd;
-    settingsPtr->setValue(QString(i),temp);
+    settingsPtr->setValue(QString(QString::number(i,10)), temp);
   }
   settingsPtr->endGroup();
   settingsPtr->setValue("customHeader", actionsWidget->header()->saveState());
@@ -948,7 +948,8 @@ bool SettingsDialog::saveSettings() {
       shortcuts.append(item->text(1));
       QStringList temp;
       temp << item->text(0) << item->text(1);
-      settingsPtr->setValue(QString(shortcuts.count()), temp);
+      QString number = QString("%1").arg(shortcuts.count(), 4, 10, QChar('0'));
+      settingsPtr->setValue(number, temp);
     }
   }
   settingsPtr->endGroup();

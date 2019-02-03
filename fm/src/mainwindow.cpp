@@ -573,7 +573,8 @@ void MainWindow::writeBookmarks()
            << modelBookmarks->item(i)->data(BOOKMARK_PATH).toString()
            << modelBookmarks->item(i)->data(BOOKMARKS_AUTO).toString()
            << modelBookmarks->item(i)->data(BOOKMARK_ICON).toString();
-      settings->setValue(QString(i),temp);
+      QString number = QString("%1").arg(i, 4, 10, QChar('0'));
+      settings->setValue(number, temp);
     }
     settings->endGroup();
 }
