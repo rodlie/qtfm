@@ -653,7 +653,7 @@ void SettingsDialog::filterMimes(QString filter)
         for (int y=0;y<topItem->childCount();++y) {
             QTreeWidgetItem *item = topItem->child(y);
             if (!item) { continue; }
-            if (item->text(0).startsWith(filter) || filter.isEmpty()) {
+            if (item->text(0).contains(filter) || filter.isEmpty()) {
                 item->setHidden(false);
             } else { item->setHidden(true); }
         }
