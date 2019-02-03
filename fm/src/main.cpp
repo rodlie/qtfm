@@ -34,7 +34,8 @@ void msgHandler(QtMsgType type, const QMessageLogContext &context, const QString
 {
     QByteArray localMsg = msg.toLocal8Bit();
     if (localMsg.contains("link outline hasn't been detected!") ||
-        localMsg.contains("iCCP: known incorrect sRGB profile")) { return; }
+        localMsg.contains("iCCP: known incorrect sRGB profile") ||
+        localMsg.contains("XDG_RUNTIME_DIR")) { return; }
     switch (type) {
     case QtDebugMsg:
         fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
