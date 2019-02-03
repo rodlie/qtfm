@@ -611,31 +611,19 @@ void myModel::loadMimeTypes() const {
 void myModel::loadThumbs(QModelIndexList indexes) {
 
   // Types that should be thumbnailed
-  QStringList files, types;
-#ifdef WITH_MAGICK
-  QString magickDelegates = QString::fromStdString(MagickCore::GetMagickDelegates());
-  if (magickDelegates.contains("jng")) { types << "jng"; }
-  if (magickDelegates.contains("jp2")) { types << "jp2"; }
-  if (magickDelegates.contains("jpeg")) { types << "jpg" << "jpeg"; }
-  if (magickDelegates.contains("openexr")) { types << "exr"; }
-  if (magickDelegates.contains("png")) { types << "png"; }
-  if (magickDelegates.contains("svg")) {
-      types << "svg";
-      if (magickDelegates.contains("zlib")) { types << "svgz"; }
-  }
-  if (magickDelegates.contains("tiff")) { types << "tif" << "tiff"; }
-  if (magickDelegates.contains("wmf")) { types << "wmf"; }
-  types << "psd" << "xcf" << "miff" << "gif" << "ico" << "bmp" << "xpm" << "pdf";
-#else
-  types << "jpg" << "jpeg" << "png" << "bmp" << "ico" << "svg" << "gif" << "tif" << "tiff" << "xpm";
-#endif
+  QStringList files;
 
-  // Remember files with valid suffix
+  // Remember files with valid mime
   foreach (QModelIndex item, indexes) {
-    QString suffix = QFileInfo(fileName(item)).suffix();
-    if (types.contains(suffix, Qt::CaseInsensitive)) {
-      files.append(filePath(item));
-    }
+    QString filename = filePath(item);
+    QString mimetype = mimeUtilsPtr->getMimeType(filename);
+    //qDebug() << "mime for file" << filename << mimetype;
+    if (mimetype.startsWith(QString("image"))
+#ifdef WITH_MAGICK
+        || mimetype == QString("application/pdf")
+#endif
+        )
+    { files.append(filename); }
   }
 
   // Loads thumbnails from cache
