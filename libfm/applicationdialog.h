@@ -4,20 +4,31 @@
 #include "desktopfile.h"
 
 #include <QDialog>
-#include <QTreeWidget>
+#include <QTreeWidgetItem>
+#include <QMap>
+#include <QStringList>
+#include <QLineEdit>
+#include <QIcon>
 
-class ApplicationDialog : public QDialog {
+class ApplicationDialog : public QDialog
+{
   Q_OBJECT
+
 public:
-  explicit ApplicationDialog(bool enable_launcher = true, QWidget *parent = 0);
+  explicit ApplicationDialog(bool enable_launcher = true,
+                             QWidget *parent = Q_NULLPTR);
   QString getCurrentLauncher() const;
+
 private slots:
   void populate();
+
 protected slots:
-  void updateCommand(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+  void updateCommand(QTreeWidgetItem* current,
+                     QTreeWidgetItem* previous);
+
 protected:
-  QTreeWidget* appList;
-  QLineEdit* edtCommand;
+  QTreeWidget *appList;
+  QLineEdit *edtCommand;
   DesktopFile result;
   QIcon defaultIcon;
   QMap<QString, QStringList> catNames;
