@@ -41,6 +41,10 @@ DEFINES += APP_NAME=\"\\\"$${TARGET_NAME}\\\"\"
 DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\"
 
 unix:!macx {
+    DESTDIR = $${top_builddir}/bin
+    OBJECTS_DIR = $${DESTDIR}/.obj_fm
+    MOC_DIR = $${DESTDIR}/.moc_fm
+    RCC_DIR = $${DESTDIR}/.qrc_fm
     LIBS += -L$${top_builddir}/lib$${LIBSUFFIX} -lQtFM
     target.path = $${PREFIX}/bin
     desktop.files += $${TARGET}.desktop
@@ -62,11 +66,6 @@ unix:!macx {
     !CONFIG(no_dbus) : QT += dbus
     !CONFIG(staticlib): QMAKE_RPATHDIR += $ORIGIN/../lib$${LIBSUFFIX}
 }
-
-DESTDIR = $${top_builddir}/bin
-OBJECTS_DIR = $${DESTDIR}/.obj_fm
-MOC_DIR = $${DESTDIR}/.moc_fm
-RCC_DIR = $${DESTDIR}/.qrc_fm
 
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
