@@ -44,12 +44,9 @@ HEADERS += \
 
 include(../qtfm.pri)
 
-DESTDIR = $${top_builddir}/lib$${LIBSUFFIX}
-OBJECTS_DIR = $${DESTDIR}/.obj_libfm
-MOC_DIR = $${DESTDIR}/.moc_libfm
-RCC_DIR = $${DESTDIR}/.qrc_libfm
-
+macx: DESTDIR = $${top_builddir}/libfm
 unix:!macx {
+    DESTDIR = $${top_builddir}/lib$${LIBSUFFIX}
     !CONFIG(no_dbus) {
         SOURCES += disks.cpp udisks2.cpp
         HEADERS += disks.h udisks2.h service.h
@@ -71,5 +68,9 @@ unix:!macx {
     INSTALLS += target target_docs
     CONFIG(with_includes): INSTALLS += target_inc
 }
+
+OBJECTS_DIR = $${DESTDIR}/.obj_libfm
+MOC_DIR = $${DESTDIR}/.moc_libfm
+RCC_DIR = $${DESTDIR}/.qrc_libfm
 
 CONFIG(with_magick): include($${top_srcdir}/share/imagemagick.pri)

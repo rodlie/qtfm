@@ -9,7 +9,6 @@ TEMPLATE = app
 
 DEPENDPATH += . src
 INCLUDEPATH += . src $${top_srcdir}/libfm
-LIBS += -L$${top_builddir}/lib$${LIBSUFFIX} -lQtFM
 
 HEADERS += \
     src/mainwindow.h \
@@ -30,6 +29,7 @@ OTHER_FILES += $${TARGET}.desktop
 RESOURCES += ../$${TARGET}.qrc
 
 macx {
+    LIBS += -L$${top_builddir}/libfm -lQtFM
     DEFINES += NO_DBUS NO_UDISKS
     RESOURCES += bundle/adwaita.qrc
     ICON = images/QtFM.icns
@@ -41,6 +41,7 @@ DEFINES += APP_NAME=\"\\\"$${TARGET_NAME}\\\"\"
 DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\"
 
 unix:!macx {
+    LIBS += -L$${top_builddir}/lib$${LIBSUFFIX} -lQtFM
     target.path = $${PREFIX}/bin
     desktop.files += $${TARGET}.desktop
     desktop.path += $${PREFIX}/share/applications
