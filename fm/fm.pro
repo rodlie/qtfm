@@ -54,16 +54,6 @@ unix:!macx {
     hicolor.path = $${PREFIX}/share/icons
     INSTALLS += hicolor
 
-    !CONFIG(no_udisks) {
-        exists(../libdisks/libdisks.pro) {
-            INCLUDEPATH += ../libdisks
-            LIBS += -L../libdisks -lDisks
-        } else {
-            CONFIG += link_pkgconfig
-            PKGCONFIG += Disks
-        }
-    }
-    CONFIG(no_udisks): DEFINES += NO_UDISKS
     CONFIG(no_dbus) {
         DEFINES += NO_DBUS
         DEFINES += NO_UDISKS

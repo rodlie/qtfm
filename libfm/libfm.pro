@@ -2,9 +2,9 @@ QT += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = QtFM
-VERSION = 1.0.0
-
+VERSION = 1.2.0
 TEMPLATE = lib
+
 SOURCES += \
     applicationdialog.cpp \
     customactionsmanager.cpp \
@@ -37,7 +37,8 @@ HEADERS += \
 
 unix:!macx {
     !CONFIG(no_dbus) {
-        HEADERS += service.h
+        SOURCES += disks.cpp udisks2.cpp
+        HEADERS += disks.h udisks2.h service.h
         QT += dbus
     }
 }
