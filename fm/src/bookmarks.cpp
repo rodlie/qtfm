@@ -235,7 +235,7 @@ bool bookmarkmodel::dropMimeData(const QMimeData * data,Qt::DropAction action,in
         QFileInfo file(path.toLocalFile());
         //drag to bookmark window, add a new bookmark
         if(parent.column() == -1) {
-            if(file.isDir()) this->addBookmark(file.fileName(),file.filePath(),0,"");
+            if(file.isDir()) this->addBookmark(file.fileName(),file.filePath(), Q_NULLPTR, "");
             return false;
         } else {
             if (mode == Common::DM_MOVE) {
@@ -249,5 +249,3 @@ bool bookmarkmodel::dropMimeData(const QMimeData * data,Qt::DropAction action,in
 }
 
 #endif
-
-

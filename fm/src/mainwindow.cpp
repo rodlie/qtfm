@@ -34,10 +34,7 @@
 #endif
 #include <fcntl.h>
 
-#if QT_VERSION >= 0x050000
 #include <QtConcurrent/QtConcurrent>
-#else
-#endif
 
 #include "mainwindow.h"
 #include "mymodel.h"
@@ -54,7 +51,6 @@
 MainWindow::MainWindow()
 {
     // setup icon theme search path
-#if QT_VERSION >= 0x050000
     QStringList iconsPath = QIcon::themeSearchPaths();
     QString iconsHomeLocal = QString("%1/.local/share/icons").arg(QDir::homePath());
     QString iconsHome = QString("%1/.icons").arg(QDir::homePath());
@@ -63,7 +59,6 @@ MainWindow::MainWindow()
     iconsPath << QString("%1/../share/icons").arg(qApp->applicationDirPath());
     QIcon::setThemeSearchPaths(iconsPath);
     qDebug() << "using icon theme search path" << QIcon::themeSearchPaths();
-#endif
 
     // libdisks
 #ifndef NO_UDISKS
@@ -94,11 +89,9 @@ MainWindow::MainWindow()
 
     if(args.count() > 1) {
         startPath = args.at(1);
-#if QT_VERSION >= 0x040800
         if(QUrl(startPath).isLocalFile()) {
             startPath = QUrl(args.at(1)).toLocalFile();
         }
-#endif
     }
 
     settings = new QSettings(Common::configFile(), QSettings::IniFormat);
@@ -111,7 +104,6 @@ MainWindow::MainWindow()
     }
 
     // Dark theme
-#if QT_VERSION >= 0x050000
 #ifdef DEPLOY
     if (settings->value("darkTheme", true).toBool()) {
 #else
@@ -119,7 +111,6 @@ MainWindow::MainWindow()
 #endif
         qApp->setPalette(Common::darkTheme());
     }
-#endif
 
     // set icon theme
 #ifdef Q_OS_MAC
@@ -306,7 +297,7 @@ void MainWindow::lateStart() {
                         QAbstractItemView::SelectedClicked);
 
   // Clipboard configuration
-  progress = 0;
+  progress = Q_NULLPTR;
   clipboardChanged();
 
   // Completer configuration
@@ -423,14 +414,12 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
         settings->setValue("firstRun", false);
     }
 
-#if QT_VERSION >= 0x050000
   // fix style
   setStyleSheet("QToolBar { padding: 0;border:none; }"
                 /*"QFrame { border:none; }"
                 "QListView::item,QListView::text,QListView::icon"
                 "{ border:0px;padding-top:5px;padding-left:5px; }"*/);
   addressToolBar->setContentsMargins(0,0,5,0);
-#endif
 
   // Restore window state
   if (wState) {
@@ -1138,11 +1127,7 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files, const QString &newPath,
 
   // Copy/move files
   for (int i=0;i<files.size();++i) {
-#if QT_VERSION >= 0x050000
       QString queueFile = files.at(i).fileName();
-#else
-      QString queueFile = files.at(i).toLocalFile().split("/").takeLast();
-#endif
       queueFile.prepend(QString("%1/").arg(newPath));
       if (!progressQueue.contains(queueFile)) {
           qDebug() << "add to queue" << queueFile;
@@ -1178,7 +1163,7 @@ int MainWindow::showReplaceMsgBox(const QFileInfo &f1, const QFileInfo &f2) {
        .arg(f2.filePath()).arg(f2.lastModified().toString()).arg(f2.size());
 
   // Show message
-  return QMessageBox::question(0, tr("Replace"), t, QMessageBox::Yes
+  return QMessageBox::question(Q_NULLPTR, tr("Replace"), t, QMessageBox::Yes
                                | QMessageBox::YesToAll | QMessageBox::No
                                | QMessageBox::NoToAll | QMessageBox::Cancel);
 }
@@ -1195,14 +1180,14 @@ void MainWindow::progressFinished(int ret,QStringList newFiles)
         }
     }
     qDebug() << "progressQueue" << progressQueue;
-    if (progress != 0) {
+    if (progress != Q_NULLPTR) {
         progress->setResult(0);
         qDebug() << "progressDialog filename" << progress->getFilename();
         if (progressQueue.isEmpty()) {
             qDebug() << "progress should be closed";
             progress->close();
             delete progress;
-            progress = 0;
+            progress = Q_NULLPTR;
         }
     }
 
@@ -1601,11 +1586,7 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         QMouseEvent* me = static_cast<QMouseEvent*>(e);
         qDebug() << "MOUSE BUTTON EVENT" << me->button();
         switch (me->button()) {
-#if QT_VERSION >= 0x050000
         case Qt::BackButton:
-#else
-        case Qt::XButton1:
-#endif
             goBackDir();
             break;
         default:;
@@ -1667,7 +1648,7 @@ void MainWindow::enableReload()
  */
 void MainWindow::selectApp() {
   // Select application in the dialog
-  ApplicationDialog *dialog = new ApplicationDialog(this);
+  ApplicationDialog *dialog = new ApplicationDialog(true, this);
   if (dialog->exec()) {
     if (dialog->getCurrentLauncher().compare("") != 0) {
       QString appName = dialog->getCurrentLauncher() + ".desktop";
@@ -1698,7 +1679,7 @@ void MainWindow::selectAppForFiles()
     }
 
     // Select application in the dialog
-    ApplicationDialog *dialog = new ApplicationDialog(this);
+    ApplicationDialog *dialog = new ApplicationDialog(true, this);
     if (dialog->exec()) {
       if (dialog->getCurrentLauncher().compare("") != 0) {
         QString appName = dialog->getCurrentLauncher() + ".desktop";
@@ -1972,7 +1953,3 @@ void MainWindow::clearCutItems()
     qDebug() << "trigger updateDir from clearCutItems";
     QTimer::singleShot(50,this,SLOT(updateDir()));
 }
-
-
-
-

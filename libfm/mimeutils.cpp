@@ -4,12 +4,8 @@
 #include <QProcess>
 #include <QDebug>
 #include <QMessageBox>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QMimeDatabase>
 #include <QMimeType>
-#else
-#include <magic.h>
-#endif
 
 #ifdef Q_OS_DARWIN
 #include <CoreFoundation/CoreFoundation.h>
@@ -24,7 +20,7 @@
  * @param parent
  */
 MimeUtils::MimeUtils(QObject *parent) : QObject(parent) {
-  defaultsFileName = "/.local/share/applications/mimeapps.list";
+  defaultsFileName = MIME_APPS;
   defaults = new Properties();
   loadDefaults();
 }
@@ -55,20 +51,10 @@ MimeUtils::~MimeUtils() {
  * @return mime type
  */
 QString MimeUtils::getMimeType(const QString &path) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QMimeDatabase db;
     QMimeType type = db.mimeTypeForFile(path);
     //qDebug() << "mime type" << type.name() << path;
     return type.name();
-#else
-  magic_t cookie = magic_open(MAGIC_MIME);
-  magic_load(cookie, 0);
-  QString temp = magic_file(cookie, path.toLocal8Bit());
-  magic_close(cookie);
-  QString mimeType = temp.left(temp.indexOf(";"));
-  //qDebug()<< "mime type" << mimeType << path;
-  return mimeType;
-#endif
 }
 //---------------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-QT += widgets
+QT += widgets concurrent
 
 TARGET = QtFM
 VERSION = 1.2.0

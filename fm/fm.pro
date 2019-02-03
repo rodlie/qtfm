@@ -1,4 +1,4 @@
-QT+= widgets
+QT+= widgets concurrent
 include(../qtfm.pri)
 
 TARGET = $${QTFM_TARGET}
