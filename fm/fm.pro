@@ -8,8 +8,8 @@ VERSION = $${QTFM_MAJOR}.$${QTFM_MINOR}.$${QTFM_PATCH}
 TEMPLATE = app
 
 DEPENDPATH += . src
-INCLUDEPATH += . src ../libfm
-LIBS += -L../libfm -lQtFM
+INCLUDEPATH += . src $${top_srcdir}/libfm
+LIBS += -L$${top_builddir}/lib$${LIBSUFFIX} -lQtFM
 
 HEADERS += \
     src/mainwindow.h \
@@ -59,17 +59,16 @@ unix:!macx {
         DEFINES += NO_UDISKS
     }
     !CONFIG(no_dbus) : QT += dbus
+    !CONFIG(staticlib): QMAKE_RPATHDIR += $ORIGIN/../lib$${LIBSUFFIX}
 }
+
+DESTDIR = $${top_builddir}/bin
+OBJECTS_DIR = $${DESTDIR}/.obj_fm
+MOC_DIR = $${DESTDIR}/.moc_fm
+RCC_DIR = $${DESTDIR}/.qrc_fm
 
 lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG(deploy) : DEFINES += DEPLOY
 
-CONFIG(with_magick) {
-    DEFINES += WITH_MAGICK
-    CONFIG(magick7): DEFINES += MAGICK7
-    MAGICK_CONFIG = Magick++
-    !isEmpty(MAGICK_PC): MAGICK_CONFIG = $${MAGICK}
-    PKGCONFIG += $${MAGICK_CONFIG}
-    CONFIG(deploy): LIBS += `pkg-config --libs --static $${MAGICK_CONFIG}`
-}
+CONFIG(with_magick): include($${top_srcdir}/share/imagemagick.pri)

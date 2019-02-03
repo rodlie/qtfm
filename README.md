@@ -94,6 +94,8 @@ Optional build options:
  * ``DOCDIR=`` : Location for documentation (default is PREFIX/share/doc)
  * ``MANDIR=`` : Location for man pages (default is PREFIX/share/man)
  * ``XDGDIR=`` : Location of XDG (default is /etc/xdg or PREFIX/etc/xdg)
+ * ``LIBDIR=`` : Library location (default is ``$PREFIX/lib$LIBSUFFIX``)
+ * ``CONFIG+=with_includes`` : Install library includes and pkg-config
 
 Doing a normal build:
 ```

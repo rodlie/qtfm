@@ -5,8 +5,7 @@
 # See the LICENSE file for full details
 #
 
-QT += core gui dbus
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += dbus widgets
 include(../qtfm.pri)
 
 TARGET = qtfm-tray
@@ -17,14 +16,19 @@ HEADERS += systray.h
 RESOURCES += tray.qrc
 OTHER_FILES += README.md
 
-INCLUDEPATH += ../libfm
-LIBS += -L../libfm -lQtFM
+INCLUDEPATH += $${top_srcdir}/libfm
+LIBS += -L$${top_builddir}/lib$${LIBSUFFIX} -lQtFM
+
+DESTDIR = $${top_builddir}/bin
+OBJECTS_DIR = $${DESTDIR}/.obj_tray
+MOC_DIR = $${DESTDIR}/.moc_tray
+RCC_DIR = $${DESTDIR}/.qrc_tray
 
 target.path = $${PREFIX}/bin
-target_desktop.path = $${XDGDIR}/autostart
-target_desktop.files = $${TARGET}.desktop
+desktop.path = $${XDGDIR}/autostart
+desktop.files = $${TARGET}.desktop
 man.files += qtfm-tray.1
 man.path += $${MANDIR}/man1
-INSTALLS += target target_desktop man
+INSTALLS += target desktop man
 
-lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
+!CONFIG(staticlib): QMAKE_RPATHDIR += $ORIGIN/../lib$${LIBSUFFIX}

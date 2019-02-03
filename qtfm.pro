@@ -11,5 +11,3 @@ unix:!macx {
         }
     }
 }
-
-lessThan(QT_MAJOR_VERSION, 5): warning("Qt4 is deprecated, please consider upgrading to Qt5 if possible.")

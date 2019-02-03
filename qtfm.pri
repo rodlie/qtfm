@@ -14,13 +14,12 @@ unix:!macx {
         PREFIX = /usr/local
         isEmpty(XDGDIR): XDGDIR = $${PREFIX}/etc/xdg
     }
+    isEmpty(LIBDIR): LIBDIR = $$PREFIX/lib$${LIBSUFFIX}
     isEmpty(DOCDIR): DOCDIR = $$PREFIX/share/doc
     isEmpty(MANDIR): MANDIR = $$PREFIX/share/man
     isEmpty(XDGDIR): XDGDIR = /etc/xdg
 }
 
-CONFIG += staticlib
-CONFIG -= install_lib
 CONFIG += link_pkgconfig
 
 macx {
@@ -29,8 +28,11 @@ macx {
     QT_CONFIG -= no-pkg-config
     PKGCONFIG += libinotify
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
+    CONFIG += staticlib
 }
 
 CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
 freebsd: LIBS += -linotify
 netbsd-g++: PKGCONFIG += libinotify
+
+lessThan(QT_MAJOR_VERSION, 5): error("Qt4 is not supported anymore.")
