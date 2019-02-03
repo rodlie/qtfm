@@ -1,10 +1,3 @@
-/*
-# Copyright (c) 2018, Ole-André Rodlie <ole.andre.rodlie@gmail.com> All rights reserved.
-#
-# Available under the 3-clause BSD license
-# See the LICENSE file for full details
-*/
-
 #include "systray.h"
 #include <QIcon>
 #include <QProcess>
@@ -20,11 +13,11 @@
 
 SysTray::SysTray(QObject *parent)
     : QObject(parent)
-    , disktray(0)
-    , menu(0)
-    , man(0)
+    , disktray(Q_NULLPTR)
+    , menu(Q_NULLPTR)
+    , man(Q_NULLPTR)
     , showNotifications(true)
-    , mimeUtilsPtr(0)
+    , mimeUtilsPtr(Q_NULLPTR)
     , autoMount(false)
 {
     // set icon theme
@@ -32,18 +25,41 @@ SysTray::SysTray(QObject *parent)
 
     menu = new QMenu();
 
-    disktray = new QSystemTrayIcon(QIcon::fromTheme("drive-removable-media", QIcon(":/icons/drive-removable-media.png")), this);
+    disktray = new QSystemTrayIcon(QIcon::fromTheme("drive-removable-media",
+                                                    QIcon(":/icons/drive-removable-media.png")),
+                                   this);
     disktray->setToolTip(tr("Removable Devices"));
 
-    connect(disktray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(disktrayActivated(QSystemTrayIcon::ActivationReason)));
-    connect(disktray, SIGNAL(messageClicked()), this, SLOT(handleDisktrayMessageClicked()));
+    connect(disktray,
+            SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this,
+            SLOT(disktrayActivated(QSystemTrayIcon::ActivationReason)));
+    connect(disktray,
+            SIGNAL(messageClicked()),
+            this,
+            SLOT(handleDisktrayMessageClicked()));
 
     man = new Disks(this);
-    connect(man, SIGNAL(updatedDevices()), this, SLOT(generateContextMenu()));
-    connect(man, SIGNAL(deviceErrorMessage(QString,QString)), this, SLOT(handleDeviceError(QString,QString)));
-    connect(man, SIGNAL(mediaChanged(QString,bool)), this, SLOT(handleDeviceMediaChanged(QString,bool)));
-    connect(man, SIGNAL(mountpointChanged(QString,QString)), this, SLOT(handleDeviceMountpointChanged(QString,QString)));
-    connect(man, SIGNAL(foundNewDevice(QString)), this, SLOT(handleFoundNewDevice(QString)));
+    connect(man,
+            SIGNAL(updatedDevices()),
+            this,
+            SLOT(generateContextMenu()));
+    connect(man,
+            SIGNAL(deviceErrorMessage(QString, QString)),
+            this,
+            SLOT(handleDeviceError(QString, QString)));
+    connect(man,
+            SIGNAL(mediaChanged(QString, bool)),
+            this,
+            SLOT(handleDeviceMediaChanged(QString, bool)));
+    connect(man,
+            SIGNAL(mountpointChanged(QString, QString)),
+            this,
+            SLOT(handleDeviceMountpointChanged(QString, QString)));
+    connect(man,
+            SIGNAL(foundNewDevice(QString)),
+            this,
+            SLOT(handleFoundNewDevice(QString)));
 
     // Create mime utils
     mimeUtilsPtr = new MimeUtils(this);
@@ -52,7 +68,9 @@ SysTray::SysTray(QObject *parent)
     loadSettings();
 
     generateContextMenu();
-    QTimer::singleShot(10000, this, SLOT(generateContextMenu())); // slow start to make sure udisks etc are running
+    QTimer::singleShot(10000,
+                       this,
+                       SLOT(generateContextMenu())); // slow start to make sure udisks etc are running
 }
 
 void SysTray::loadSettings()
@@ -83,8 +101,6 @@ void SysTray::generateContextMenu()
     while (device.hasNext()) {
         device.next();
 
-        //qDebug() << device.value()->name << device.value()->isOptical << device.value()->hasMedia << device.value()->isRemovable << device.value()->hasPartition;
-
         if ((device.value()->isOptical &&
              !device.value()->hasMedia) ||
              (!device.value()->isOptical && !device.value()->isRemovable) ||
@@ -95,9 +111,14 @@ void SysTray::generateContextMenu()
 
         QAction *deviceAction = new QAction(this);
         deviceAction->setData(device.key());
-        deviceAction->setText(QString("%1 (%2)").arg(device.value()->name).arg(device.value()->dev));
+        deviceAction->setText(QString("%1 (%2)")
+                              .arg(device.value()->name)
+                              .arg(device.value()->dev));
 
-        connect(deviceAction, SIGNAL(triggered(bool)), this, SLOT(handleContextMenuAction()));
+        connect(deviceAction,
+                SIGNAL(triggered(bool)),
+                this,
+                SLOT(handleContextMenuAction()));
         menu->addAction(deviceAction);
 
         if (device.value()->mountpoint.isEmpty()) {
@@ -128,18 +149,21 @@ void SysTray::handleDisktrayMessageClicked()
     handleShowHideDisktray();
 }
 
-void SysTray::showMessage(QString title, QString message)
+void SysTray::showMessage(QString title,
+                          QString message)
 {
     if (!disktray->isSystemTrayAvailable() || !showNotifications) { return; }
     if (!disktray->isVisible()) { disktray->show(); }
     disktray->showMessage(title, message);
-    QTimer::singleShot(10000, this, SLOT(handleShowHideDisktray()));
+    QTimer::singleShot(10000,
+                       this,
+                       SLOT(handleShowHideDisktray()));
 }
 
 void SysTray::handleContextMenuAction()
 {
     QAction *action = qobject_cast<QAction*>(sender());
-    if (action==NULL) { return; }
+    if (action==Q_NULLPTR) { return; }
     QString path = action->data().toString();
     if (path.isEmpty()) { return; }
     if (!man->devices.contains(path)) { return; }
@@ -155,13 +179,16 @@ void SysTray::handleContextMenuAction()
     generateContextMenu();
 }
 
-void SysTray::handleDeviceError(QString path, QString error)
+void SysTray::handleDeviceError(QString path,
+                                QString error)
 {
     if (!man->devices.contains(path)) { return; }
-    showMessage(QObject::tr("Error for device %1").arg(man->devices[path]->name), error);
+    showMessage(QObject::tr("Error for device %1").arg(man->devices[path]->name),
+                error);
 }
 
-void SysTray::handleDeviceMediaChanged(QString path, bool media)
+void SysTray::handleDeviceMediaChanged(QString path,
+                                       bool media)
 {
     if (!man->devices.contains(path)) { return; }
     qDebug() << "handle device media changed" << path << media;
@@ -173,7 +200,8 @@ void SysTray::handleDeviceMediaChanged(QString path, bool media)
         if (isData&&isAudio) { opticalType = QObject::tr("data+audio"); }
         else if (isData) { opticalType = QObject::tr("data"); }
         else if (isAudio) { opticalType = QObject::tr("audio"); }
-        showMessage(QObject::tr("%1 has media").arg(man->devices[path]->name), QObject::tr("Detected %1 media in %2").arg(opticalType).arg(man->devices[path]->name));
+        showMessage(QObject::tr("%1 has media").arg(man->devices[path]->name),
+                    QObject::tr("Detected %1 media in %2").arg(opticalType).arg(man->devices[path]->name));
 
         bool openMedia = false;
         // auto mount if enabled
@@ -235,7 +263,8 @@ void SysTray::handleDeviceMediaChanged(QString path, bool media)
     }
 }
 
-void SysTray::handleDeviceMountpointChanged(QString path, QString mountpoint)
+void SysTray::handleDeviceMountpointChanged(QString path,
+                                            QString mountpoint)
 {
     if (!man->devices.contains(path)) { return; }
     generateContextMenu();
@@ -243,7 +272,8 @@ void SysTray::handleDeviceMountpointChanged(QString path, QString mountpoint)
     if (mountpoint.isEmpty()) {
         if (!man->devices[path]->isOptical) {
             // TODO
-            showMessage(QObject::tr("%1 removed").arg(man->devices[path]->name), QObject::tr("%1 was safely removed.").arg(man->devices[path]->name));
+            showMessage(QObject::tr("%1 removed").arg(man->devices[path]->name),
+                        QObject::tr("%1 was safely removed.").arg(man->devices[path]->name));
         }
     } else { openMountpoint(mountpoint); }
 }

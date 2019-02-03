@@ -1,5 +1,4 @@
-QT+= core gui
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT+= widgets
 include(../qtfm.pri)
 
 TARGET = $${QTFM_TARGET}
@@ -66,9 +65,5 @@ unix:!macx {
     !CONFIG(no_dbus) : QT += dbus
     !CONFIG(staticlib): QMAKE_RPATHDIR += $ORIGIN/../lib$${LIBSUFFIX}
 }
-
-lessThan(QT_MAJOR_VERSION, 5): LIBS += -lmagic
-CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
-CONFIG(deploy) : DEFINES += DEPLOY
 
 CONFIG(with_magick): include($${top_srcdir}/share/imagemagick.pri)
