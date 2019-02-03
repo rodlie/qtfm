@@ -13,6 +13,8 @@
 #include <QAction>
 #include <QDebug>
 #include <QApplication>
+#include <QDir>
+
 #include "common.h"
 #include "desktopfile.h"
 

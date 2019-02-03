@@ -17,7 +17,8 @@ SOURCES += \
     icondlg.cpp \
     mymodel.cpp \
     mymodelitem.cpp \
-    propertiesdlg.cpp
+    propertiesdlg.cpp \
+    common.cpp
 
 HEADERS += \
     applicationdialog.h \
