@@ -1,7 +1,9 @@
+include($${top_srcdir}/share/qtfm.pri)
+
 QT += widgets concurrent
 
 TARGET = QtFM
-VERSION = 1.2.0
+VERSION = $${QTFM_MAJOR}.$${QTFM_MINOR}.$${QTFM_PATCH}
 TEMPLATE = lib
 
 SOURCES += \
@@ -22,7 +24,8 @@ SOURCES += \
     sortmodel.cpp \
     iconview.cpp \
     iconlist.cpp \
-    fm.cpp
+    fm.cpp \
+    bookmarkmodel.cpp
 
 HEADERS += \
     applicationdialog.h \
@@ -42,24 +45,35 @@ HEADERS += \
     iconlist.h \
     completer.h \
     sortmodel.h \
-    fm.h
-
-include(../qtfm.pri)
+    fm.h \
+    bookmarkmodel.h
 
 unix:!macx {
     DESTDIR = $${top_builddir}/lib$${LIBSUFFIX}
     OBJECTS_DIR = $${DESTDIR}/.obj_libfm
     MOC_DIR = $${DESTDIR}/.moc_libfm
     RCC_DIR = $${DESTDIR}/.qrc_libfm
+
     !CONFIG(no_dbus) {
-        SOURCES += disks.cpp udisks2.cpp
-        HEADERS += disks.h udisks2.h service.h
+        SOURCES += \
+                disks.cpp \
+                udisks2.cpp
+        HEADERS += \
+                disks.h \
+                udisks2.h \
+                service.h
         QT += dbus
     }
     CONFIG(with_includes): CONFIG += create_prl no_install_prl create_pc
+
     target.path = $${LIBDIR}
-    target_docs.path = $${DOCDIR}/qtfm-$${QTFM_MAJOR}.$${QTFM_MINOR}.$${QTFM_PATCH}
-    target_docs.files = ../LICENSE ../README.md ../AUTHORS ../ChangeLog
+    docs.path = $${DOCDIR}/$${QTFM_TARGET}-$${VERSION}
+    docs.files += \
+                $${top_srcdir}/LICENSE \
+                $${top_srcdir}/README.md \
+                $${top_srcdir}/AUTHORS \
+                $${top_srcdir}/ChangeLog
+
     CONFIG(with_includes) {
         target_inc.path = $${PREFIX}/include/lib$${TARGET}
         target_inc.files = $${HEADERS}
@@ -69,7 +83,8 @@ unix:!macx {
         QMAKE_PKGCONFIG_INCDIR = $$target_inc.path
         QMAKE_PKGCONFIG_DESTDIR = pkgconfig
     }
-    INSTALLS += target target_docs
+
+    INSTALLS += target docs
     CONFIG(with_includes): INSTALLS += target_inc
 }
 

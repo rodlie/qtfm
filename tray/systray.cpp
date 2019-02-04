@@ -1,4 +1,28 @@
+/*
+ * This file is part of QtFM <https://qtfm.eu>
+ *
+ * Copyright (C) 2013-2019 QtFM developers (see AUTHORS)
+ * Copyright (C) 2010-2012 Wittfella <wittfella@qtfm.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
 #include "systray.h"
+#include "common.h"
+#include "desktopfile.h"
+
 #include <QIcon>
 #include <QProcess>
 #include <QTimer>
@@ -7,9 +31,6 @@
 #include <QDebug>
 #include <QApplication>
 #include <QDir>
-
-#include "common.h"
-#include "desktopfile.h"
 
 SysTray::SysTray(QObject *parent)
     : QObject(parent)
@@ -122,11 +143,15 @@ void SysTray::generateContextMenu()
         menu->addAction(deviceAction);
 
         if (device.value()->mountpoint.isEmpty()) {
-            deviceAction->setIcon(QIcon::fromTheme(device.value()->isOptical?"drive-optical":"drive-removable-media", QIcon(device.value()->isOptical?":/icons/drive-optical.png":":/icons/drive-removable-media.png")));
+            deviceAction->setIcon(QIcon::fromTheme(device.value()->isOptical?"drive-optical":"drive-removable-media",
+                                                   QIcon(device.value()->isOptical?":/icons/drive-optical.png":":/icons/drive-removable-media.png")));
             bool hasAudio = device.value()->opticalAudioTracks>0?true:false;
             bool hasData = device.value()->opticalDataTracks>0?true:false;
-            if (device.value()->isBlankDisc||(hasAudio&&!hasData)) { deviceAction->setIcon(QIcon::fromTheme("media-eject", QIcon(":/icons/media-eject.png"))); }
-        } else { deviceAction->setIcon(QIcon::fromTheme("media-eject", QIcon(":/icons/media-eject.png"))); }
+            if (device.value()->isBlankDisc ||
+                (hasAudio && !hasData)) { deviceAction->setIcon(QIcon::fromTheme("media-eject",
+                                                                                 QIcon(":/icons/media-eject.png"))); }
+        } else { deviceAction->setIcon(QIcon::fromTheme("media-eject",
+                                                        QIcon(":/icons/media-eject.png"))); }
     }
 
     //qDebug() << menu->actions();
@@ -201,7 +226,9 @@ void SysTray::handleDeviceMediaChanged(QString path,
         else if (isData) { opticalType = QObject::tr("data"); }
         else if (isAudio) { opticalType = QObject::tr("audio"); }
         showMessage(QObject::tr("%1 has media").arg(man->devices[path]->name),
-                    QObject::tr("Detected %1 media in %2").arg(opticalType).arg(man->devices[path]->name));
+                    QObject::tr("Detected %1 media in %2")
+                    .arg(opticalType)
+                    .arg(man->devices[path]->name));
 
         bool openMedia = false;
         // auto mount if enabled
@@ -219,7 +246,9 @@ void SysTray::handleDeviceMediaChanged(QString path,
             DesktopFile df(desktop);
             QString app = df.getExec().split(" ").takeFirst();
             if (app.isEmpty()) { return; }
-            QProcess::startDetached(QString("%1 cdda://%2").arg(app).arg(man->devices[path]->mountpoint));
+            QProcess::startDetached(QString("%1 cdda://%2")
+                                    .arg(app)
+                                    .arg(man->devices[path]->mountpoint));
         }
         // auto play DVD if enabled
         if (Common::readSetting("autoPlayDVD").toBool() && isData) {
@@ -227,23 +256,29 @@ void SysTray::handleDeviceMediaChanged(QString path,
                 man->devices[path]->mount();
             }
             openMedia = false;
-            QDir tsVideo(QString("%1/video_ts").arg(man->devices[path]->mountpoint));
-            QDir tsAudio(QString("%1/audio_ts").arg(man->devices[path]->mountpoint));
+            QDir tsVideo(QString("%1/video_ts")
+                         .arg(man->devices[path]->mountpoint));
+            QDir tsAudio(QString("%1/audio_ts")
+                         .arg(man->devices[path]->mountpoint));
             if (!tsVideo.exists()) {
-                tsVideo.setPath(QString("%1/VIDEO_TS").arg(man->devices[path]->mountpoint));
+                tsVideo.setPath(QString("%1/VIDEO_TS")
+                                .arg(man->devices[path]->mountpoint));
             }
             if (!tsAudio.exists()) {
-                tsAudio.setPath(QString("%1/AUDIO_TS").arg(man->devices[path]->mountpoint));
+                tsAudio.setPath(QString("%1/AUDIO_TS")
+                                .arg(man->devices[path]->mountpoint));
             }
             QString desktop;
             if (tsVideo.exists()) {
                 QStringList apps = mimeUtilsPtr->getDefault("x-content/video-dvd");
                 qDebug() << "video dvd apps" << apps;
-                desktop = Common::findApplication(qApp->applicationFilePath(), apps.at(0));
+                desktop = Common::findApplication(qApp->applicationFilePath(),
+                                                  apps.at(0));
             } else if (!tsVideo.exists() && tsAudio.exists()) {
                 QStringList apps = mimeUtilsPtr->getDefault("x-content/audio-dvd");
                 qDebug() << "audio dvd apps" << apps;
-                desktop = Common::findApplication(qApp->applicationFilePath(), apps.at(0));
+                desktop = Common::findApplication(qApp->applicationFilePath(),
+                                                  apps.at(0));
             }
             if (desktop.isEmpty()) { return; }
             DesktopFile df(desktop);
@@ -251,9 +286,12 @@ void SysTray::handleDeviceMediaChanged(QString path,
             if (app.isEmpty()) { return; }
             if (app.endsWith("mplayer")) {
                 // workaround for mplayer
-                QProcess::startDetached(QString("%1 dvd:// -dvd-device /dev/%2").arg(app).arg(path.split("/").takeLast()));
+                QProcess::startDetached(QString("%1 dvd:// -dvd-device /dev/%2")
+                                        .arg(app)
+                                        .arg(path.split("/").takeLast()));
             } else {
-                QProcess::startDetached(QString("%1 dvd://%2").arg(app).arg(man->devices[path]->mountpoint));
+                QProcess::startDetached(QString("%1 dvd://%2")
+                                        .arg(app).arg(man->devices[path]->mountpoint));
             }
         }
         if (openMedia) {
@@ -300,8 +338,8 @@ void SysTray::handleFoundNewDevice(QString path)
     if (man->devices[path]->isOptical) { return; }
     loadSettings();
 
-    showMessage(QString("Found %1").arg(man->devices[path]->name),
-                QString("Found a new device (%1)").arg(man->devices[path]->dev));
+    showMessage(QObject::tr("Found %1").arg(man->devices[path]->name),
+                QObject::tr("Found a new device (%1)").arg(man->devices[path]->dev));
 
     // auto mount if enabled
     if (!autoMount) { return; }
@@ -316,4 +354,9 @@ void SysTray::handleShowHideDisktray()
     } else {
         if (!disktray->isVisible() && disktray->isSystemTrayAvailable()) { disktray->show(); }
     }
+}
+
+void SysTray::generateAppsCache()
+{
+    qDebug() << "generate applications cache ...";
 }

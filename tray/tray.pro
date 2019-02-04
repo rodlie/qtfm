@@ -1,5 +1,6 @@
-QT += dbus widgets
-include(../qtfm.pri)
+include($${top_srcdir}/share/qtfm.pri)
+
+QT += dbus widgets concurrent
 
 TARGET = qtfm-tray
 TEMPLATE = app
@@ -7,7 +8,6 @@ TEMPLATE = app
 SOURCES += main.cpp systray.cpp
 HEADERS += systray.h
 RESOURCES += tray.qrc
-OTHER_FILES += README.md
 
 INCLUDEPATH += $${top_srcdir}/libfm
 LIBS += -L$${top_builddir}/lib$${LIBSUFFIX} -lQtFM

@@ -4,20 +4,21 @@
 [![Github commits (since latest release)](https://img.shields.io/github/commits-since/rodlie/qtfm/latest.svg)](https://github.com/rodlie/qtfm)
 [![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
 
-![screenshot1](fm/images/screenshot.png)
+![screenshot1](docs/screenshot.png)
 
 Lightweight file manager using Qt.
 
- * Desktop (theme/applications/mime) integration
- * Customizable interface
- * Powerful custom command system
- * Customizable key bindings
- * Drag & drop functionality
- * Tabs
- * Udisks support
- * [System tray daemon](tray/README.md)
-   * Mount/Unmount devices
-   * Auto play CD/DVD
+  * Desktop (theme/applications/mime) integration
+  * Customizable interface
+  * Powerful custom command system
+  * Customizable key bindings
+  * Drag & drop functionality
+  * Tabs
+  * Udisks support
+  * System tray daemon (qtfm-tray, see man for more info)
+    * Show available storage/optical devices in system tray
+    * Auto mount storage/optical devices when added (not default)
+    * Auto play audio CD and video/audio DVD (not default)
 
 ## Links
 

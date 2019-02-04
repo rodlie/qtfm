@@ -1,7 +1,5 @@
 #include "mainwindow.h"
-//#include "aboutdialog.h"
 #include "settingsdialog.h"
-
 #include <QApplication>
 #include <QInputDialog>
 #include <QMessageBox>
@@ -120,7 +118,7 @@ void MainWindow::openFile()
         DesktopFile df = DesktopFile(desktop);
         if (df.getExec().isEmpty()) { continue; }
         QStringList fileList = i_launch.value();
-        if (df.getExec().contains("%F") || df.getExec().contains("%U")) { // app suports multiple files
+        if (df.getExec().contains("%F") || df.getExec().contains("%U")) { // app supports multiple files
             mimeUtils->openFilesInApp(df.getExec(), fileList, df.isTerminal()?term:"");
         } else { // launch new instance for each file
             for (int i=0;i<i_launch.value().size();++i) {
@@ -210,7 +208,7 @@ void MainWindow::newDir() {
   // Check whether current directory is writeable
   QModelIndex newDir;
   if (!QFileInfo(pathEdit->itemText(0)).isWritable()) {
-    status->showMessage(tr("Read only...cannot create folder"));
+    status->showMessage(tr("The current directory is not writable, unable to create new folder."));
     return;
   }
 
@@ -234,7 +232,7 @@ void MainWindow::newFile() {
   // Check whether current directory is writeable
   QModelIndex fileIndex;
   if (!QFileInfo(pathEdit->itemText(0)).isWritable()) {
-    status->showMessage(tr("Read only...cannot create file"));
+    status->showMessage(tr("The current directory is not writable, unable to create new file."));
     return;
   }
 
@@ -280,7 +278,7 @@ void MainWindow::deleteFile() {
   // Display confirmation message box
   if (settings->value("confirmDelete").isNull()) {
     QString title = tr("Delete confirmation");
-    QString msg = tr("Do you want to confirm all delete operations?");
+    QString msg = tr("Confirm all delete operations?");
     QMessageBox::StandardButtons btns = QMessageBox::Yes | QMessageBox::No;
     if (QMessageBox::question(this, title, msg, btns) == QMessageBox::Yes) {
       confirm = 1;
@@ -320,8 +318,7 @@ void MainWindow::deleteFile() {
   // Display error message if deletion failed
   if(!ok) {
     QString title = tr("Failed");
-    QString msg = tr("Failed to delete some items... Do you have the right "
-                     "permissions?");
+    QString msg = tr("Some files where not deleted. You may not have the proper permissions or maybe the file system is read-only.");
     QMessageBox::warning(this, title, msg);
   }
 
@@ -371,8 +368,7 @@ void MainWindow::trashFile()
     }
     if(!ok) {
       QString title = tr("Failed");
-      QString msg = tr("Could not move some items...do you have the right "
-                       "permissions?");
+      QString msg = tr("Some files where not moved. You may not have the proper permissions or maybe the file system is read-only.");
       QMessageBox::warning(this, title, msg);
     }
 }

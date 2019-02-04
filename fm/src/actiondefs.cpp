@@ -352,9 +352,7 @@ void MainWindow::createActions() {
   actionList->append(aboutAct);
 
   aboutQtAct = new QAction(tr("About Qt"), this);
-#if QT_VERSION >= 0x050000
   aboutQtAct->setIcon(QIcon::fromTheme("qt-logo"));
-#endif
   connect(aboutQtAct, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
   actionList->append(aboutQtAct);
 
@@ -708,7 +706,7 @@ void MainWindow::addressChanged(int old, int now)
         QApplication::clipboard()->blockSignals(1);
         QApplication::clipboard()->clear(QClipboard::Selection);        //don't paste stuff
 
-        pathEdit->setCompleter(0);
+        pathEdit->setCompleter(Q_NULLPTR);
         tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(temp.left(pos))));
 
         QTimer::singleShot(500,this,SLOT(focusAction()));

@@ -1,5 +1,5 @@
 QT += widgets
-include($${top_srcdir}/qtfm.pri)
+include($${top_srcdir}/share/qtfm.pri)
 
 QTFM_MAJOR = 7
 QTFM_MINOR = 0

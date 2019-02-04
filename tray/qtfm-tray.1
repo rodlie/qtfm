@@ -1,10 +1,49 @@
-.TH qtfm-tray 1 "01 August 2018" "6.1" "QtFM documentation"
+.TH qtfm-tray 1 "05 February 2019" "6.2" "QtFM documentation"
 .SH NAME
 QtFM -\ desktop independent file manager
 .SH SYNOPSIS
 qtfm-tray
 .SH DESCRIPTION
-System tray daemon for QtFM.
+A system tray daemon for QtFM used to manage removable devices and actions related to that.
+
+.IP
+Show available devices in system tray
+.IP
+Auto mount devices when added (not default)
+.IP
+Auto play audio CD and video/audio DVD (not default)
+
+.PP
+.B USAGE
+.PP
+qtfm-tray is an user session daemon and should be started during the X11 startup session. If your desktop environment or window manager supports XDG auto start then qtfm-tray should automatically start, if not you will need to add qtfm-tray to your startup file (check the documentation included with your desktop environment or window manager).
+
+.IP
+In Fluxbox add
+.I qtfm-tray &
+to the
+.I ~/.fluxbox/startup
+file.
+
+.IP
+In Openbox add
+.I qtfm-tray &
+to the
+.I ~/.config/openbox/autostart
+file.
+
+.PP
+Settings can be modified in
+.I QtFM (Edit=>Settings=>System Tray).
+Auto play depends on mime types
+.I audio-cdda, audio-dvd
+and
+.I video-dvd
+in the
+.I x-content
+mime category in
+.I QtFM (Edit=>Settings=>Mime Types).
+
 .SH FILES
 .I ~/.config/qtfm6/qtfm6.conf
 .RS
