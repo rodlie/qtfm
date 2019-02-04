@@ -390,7 +390,7 @@ QWidget* SettingsDialog::createMimeSettings() {
   layoutWidget->addWidget(grpDMime);
 
   // Load application list
-  QStringList apps = FileUtils::getApplicationNames();
+  /*QStringList apps = FileUtils::getApplicationNames();
   apps.replaceInStrings(".desktop", "");
   apps.sort();
 
@@ -410,12 +410,12 @@ QWidget* SettingsDialog::createMimeSettings() {
       QStringList searchIcons = iconFiles.filter(app);
       if (searchIcons.count() > 0) {
         //qDebug() << "found icon" << searchIcons.at(0);
-        icons.append(QIcon(/*"/usr/share/pixmaps/" + */searchIcons.at(0)));
+        icons.append(QIcon(searchIcons.at(0)));
       } else {
         icons.append(defaultIcon);
       }
     }
-  }
+  }*/
 
   // Connect
   connect(mimesWidget,
