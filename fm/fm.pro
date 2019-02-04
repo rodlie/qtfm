@@ -51,7 +51,7 @@ unix:!macx {
     man.path += $${MANDIR}/man1
     INSTALLS += target desktop man
 
-    hicolor.files = hicolor
+    hicolor.files = $${top_srcdir}/share/hicolor
     hicolor.path = $${PREFIX}/share/icons
     INSTALLS += hicolor
 
