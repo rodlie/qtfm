@@ -19,6 +19,7 @@ Lightweight file manager using Qt.
     * Show available storage/optical devices in system tray
     * Auto mount storage/optical devices when added (not default)
     * Auto play audio CD and video/audio DVD (not default)
+  * Application launcher (qtfm-launcher) for Openbox and similar
 
 ## Links
 
@@ -90,12 +91,13 @@ Optional build options:
    * ``CONFIG+=magick7`` : Use ImageMagick 7
  * ``CONFIG+=no_tray`` : This will disable qtfm-tray
  * ``CONFIG+=no_dbus`` : This will disable D-Bus session and udisks features in (lib)QtFM
+ * ``CONFIG+=no_launcher`` : Disable qtfm-launcher (freedesktop application launcher)
+ * ``CONFIG+=with_includes`` : Install library includes and pkg-config
  * ``PREFIX=`` : Install prefix, where things are installed when running ``make install``
  * ``DOCDIR=`` : Location for documentation (default is PREFIX/share/doc)
  * ``MANDIR=`` : Location for man pages (default is PREFIX/share/man)
  * ``XDGDIR=`` : Location of XDG (default is /etc/xdg or PREFIX/etc/xdg)
  * ``LIBDIR=`` : Library location (default is ``$PREFIX/lib$LIBSUFFIX``)
- * ``CONFIG+=with_includes`` : Install library includes and pkg-config
 
 Doing a normal build:
 ```
@@ -117,7 +119,7 @@ Example:
 
 ```
 mkdir build && cd build
-qmake PREFIX=/usr LIBSUFFIX=64 ..
+qmake PREFIX=/usr LIBSUFFIX=64 CONFIG+=with_magick ..
 make -jX
 make INSTALL_ROOT=/package_temp_path install
 ```

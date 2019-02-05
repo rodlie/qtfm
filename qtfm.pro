@@ -15,4 +15,8 @@ unix:!macx {
             tray.depends += libfm
         }
     }
+    !CONFIG(no_launcher) {
+        SUBDIRS += launcher
+        launcher.depends += libfm
+    }
 }

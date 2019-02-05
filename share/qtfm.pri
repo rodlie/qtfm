@@ -20,6 +20,8 @@ unix:!macx {
     isEmpty(XDGDIR): XDGDIR = /etc/xdg
 }
 
+QT += widgets
+
 CONFIG += link_pkgconfig
 
 macx {
