@@ -33,8 +33,8 @@ macx {
     LIBS += -L$${top_builddir}/libfm -lQtFM
     DEFINES += NO_DBUS NO_UDISKS
     RESOURCES += bundle/adwaita.qrc
-    ICON = images/QtFM.icns
-    QMAKE_INFO_PLIST = Info.plist
+    ICON = $${top_srcdir}/share/images/QtFM.icns
+    QMAKE_INFO_PLIST = $${top_srcdir}/share/Info.plist
 }
 
 unix:!macx {
