@@ -26,7 +26,7 @@ QtFM::QtFM(QWidget *parent)
     Common::setupIconTheme(qApp->applicationFilePath());
 
     setWindowIcon(QIcon::fromTheme("qtfm",
-                                   QIcon(":/fm/images/qtfm.png")));
+                                   QIcon(":/images/qtfm.png")));
     setWindowTitle("QtFM");
 
     mBar = new QMenuBar(this);

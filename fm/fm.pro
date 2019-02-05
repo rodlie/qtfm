@@ -27,7 +27,7 @@ SOURCES += \
     src/actiondefs.cpp \
     src/actiontriggers.cpp
 
-RESOURCES += $${top_srcdir}/$${TARGET}.qrc
+RESOURCES += $${top_srcdir}/share/$${TARGET}.qrc
 
 macx {
     LIBS += -L$${top_builddir}/libfm -lQtFM

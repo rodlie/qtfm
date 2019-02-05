@@ -47,7 +47,7 @@ void bookmarkmodel::addBookmark(QString name,
 {
     if (path.isEmpty() && !isMedia) { //add seperator
         QStandardItem *item = new QStandardItem(QIcon::fromTheme(icon), "");
-        item->setData(QBrush(QPixmap(":/fm/images/sep.png")),
+        item->setData(QBrush(QPixmap(":/images/sep.png")),
                       Qt::BackgroundRole);
         QFlags<Qt::ItemFlag> flags = item->flags();
         flags ^= Qt::ItemIsEditable; //not editable
@@ -136,7 +136,7 @@ bool bookmarkmodel::dropMimeData(const QMimeData * data,
         QMessageBox box;
         box.setWindowTitle(tr("Select file action"));
         box.setWindowIcon(QIcon::fromTheme("qtfm",
-                                           QIcon(":/fm/images/qtfm.png")));
+                                           QIcon(":/images/qtfm.png")));
         box.setIconPixmap(QIcon::fromTheme("dialog-information").pixmap(QSize(32, 32)));
         box.setText(QString("<h3>%1</h3>")
                     .arg(tr("What do you want to do?")));
