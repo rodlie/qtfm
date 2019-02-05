@@ -1,3 +1,24 @@
+/*
+ * This file is part of QtFM <https://qtfm.eu>
+ *
+ * Copyright (C) 2013-2019 QtFM developers (see AUTHORS)
+ * Copyright (C) 2010-2012 Wittfella <wittfella@qtfm.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
 #include "dialog.h"
 #include <QtConcurrent/qtconcurrentrun.h>
 
@@ -33,8 +54,9 @@ Dialog::Dialog(QWidget *parent)
     containerLayout->setSpacing(0);
 
     userInput = new QLineEdit(this);
+    userInput->setPlaceholderText(tr("Find application ..."));
+
     appSuggestions = new QListWidget(this);
-    //appSuggestions->setMinimumHeight(100);
     appSuggestions->setAlternatingRowColors(false);
     appSuggestions->hide();
 
@@ -78,7 +100,10 @@ void Dialog::handleUserInput(QString input)
         {
             QListWidgetItem *appItem = new QListWidgetItem(appSuggestions);
             appItem->setText(app.getName());
-            appItem->setData(LIST_EXE, app.getExec().replace("%u", "", Qt::CaseInsensitive).replace("%f", "", Qt::CaseInsensitive));
+            appItem->setData(LIST_EXE,
+                             app.getExec()
+                             .replace("%u", "", Qt::CaseInsensitive)
+                             .replace("%f", "", Qt::CaseInsensitive));
             appItem->setData(LIST_ICON, app.getIcon());
             appItem->setData(LIST_TERM, app.isTerminal());
             if (iconCache->contains(app.getIcon())) {
@@ -94,7 +119,8 @@ void Dialog::handleUserInput(QString input)
     }
     QStringList additionalApps = Common::findApplications(input);
     for (int i=0;i<additionalApps.size();++i) {
-        if (appExists(additionalApps.at(i)) || appExists(additionalApps.at(i).split("/").takeLast())) { continue; }
+        if (appExists(additionalApps.at(i)) ||
+            appExists(additionalApps.at(i).split("/").takeLast())) { continue; }
         QListWidgetItem *appItem = new QListWidgetItem(appSuggestions);
         appItem->setText(additionalApps.at(i).split("/").takeLast());
         appItem->setData(LIST_EXE, additionalApps.at(i));
@@ -197,9 +223,7 @@ void Dialog::setupTheme()
 QString Dialog::getTerminal()
 {
     QSettings settings(Common::configFile(), QSettings::IniFormat);
-    QString term = settings.value("term",
-                                  "xterm").toString();
-    return term;
+    return settings.value("term", "xterm").toString();
 }
 
 void Dialog::doCenter(bool horiz)
@@ -210,7 +234,10 @@ void Dialog::doCenter(bool horiz)
     int newWidth = (screenWidth/2)-(width()/2);
     int newHeight = (screenHeight/2)-(height()/2);
     if (horiz) { newHeight = screenHeight/height(); }
-    setGeometry(newWidth, newHeight,width(),height());
+    setGeometry(newWidth,
+                newHeight,
+                width(),
+                height());
 }
 
 void Dialog::readIconCache()
