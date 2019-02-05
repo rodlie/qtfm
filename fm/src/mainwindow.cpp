@@ -28,6 +28,7 @@
 #include <QApplication>
 #include <QStatusBar>
 #include <QMenu>
+#include <QMenuBar>
 #ifndef NO_DBUS
 #include <QDBusConnection>
 #include <QDBusError>
@@ -147,7 +148,7 @@ MainWindow::MainWindow()
     dockBookmarks->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     bookmarksList = new QListView(dockBookmarks);
     bookmarksList->setMinimumHeight(24); // Docks get the minimum size from their content widget
-     bookmarksList->setFocusPolicy(Qt::NoFocus); // Avoid hijacking focus when Tab on Edit Path
+    bookmarksList->setFocusPolicy(Qt::ClickFocus); // Avoid hijacking focus when Tab on Edit Path
     dockBookmarks->setWidget(bookmarksList);
     addDockWidget(Qt::LeftDockWidgetArea, dockBookmarks);
 
@@ -1283,6 +1284,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
   // Retreive widget under mouse
   QMenu *popup;
   QWidget *widget = childAt(event->pos());
+  //qDebug() << "WIDGET" << widget;
 
   // Create popup for tab or for status bar
   if (widget == tabs) {
@@ -1296,7 +1298,24 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
     popup->addAction(lockLayoutAct);
     popup->exec(event->globalPos());
     return;
+  } else if (widget == navToolBar) {
+      qDebug() << "TOOLBAR";
+      return;
   }
+
+  QToolButton *isToolButton = dynamic_cast<QToolButton*>(childAt(event->pos()));
+  if (isToolButton) {
+      qDebug() << "TOOLBUTTON";
+      return;
+  }
+
+#ifndef Q_OS_MAC
+  QMenuBar *isMenuBar = dynamic_cast<QMenuBar*>(childAt(event->pos()));
+  if (isMenuBar) {
+      qDebug() << "MENUBAR";
+      return;
+  }
+#endif
 
   // Continue with poups for folders and files
   QList<QAction*> actions;
@@ -1344,6 +1363,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
 
         // Add open with menu
 #ifndef Q_OS_MAC
+        popup->addSeparator();
         popup->addMenu(createOpenWithMenu());
 #endif
         //if (popup->actions().count() == 0) popup->addAction(openAct);
@@ -1396,6 +1416,8 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       else {
         popup->addAction(openAct);
         popup->addSeparator();
+        popup->addAction(addBookmarkAct);
+        popup->addSeparator();
         popup->addAction(cutAct);
         popup->addAction(copyAct);
         popup->addAction(pasteAct);
@@ -1430,6 +1452,10 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
     }
     // Whitespace
     else {
+      popup->addAction(backAct);
+      popup->addAction(upAct);
+      popup->addAction(homeAct);
+      popup->addSeparator();
       popup->addAction(newDirAct);
       popup->addAction(newFileAct);
       popup->addSeparator();
@@ -1463,7 +1489,9 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         isMedia = bookmarksList->currentIndex().data(MEDIA_MODEL).toBool();
         if (!isMedia) {
             popup->addAction(delBookmarkAct);
-            popup->addAction(editBookmarkAct);	//icon
+            if (!curIndex.path().isEmpty()) {
+                popup->addAction(editBookmarkAct);	//icon
+            }
         } else {
             // media actions
 #ifndef NO_UDISKS
@@ -1513,7 +1541,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       foreach (QAction*action, actions) { popup->addAction(action); }
       popup->addSeparator();
     }
-    if (!isMedia) { popup->addAction(folderPropertiesAct); }
+    if (!isMedia && !curIndex.path().isEmpty()) { popup->addAction(folderPropertiesAct); }
   }
 
   popup->exec(event->globalPos());
@@ -1585,7 +1613,6 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 {
     if (e->type() == QEvent::MouseButtonPress) {
         QMouseEvent* me = static_cast<QMouseEvent*>(e);
-        qDebug() << "MOUSE BUTTON EVENT" << me->button();
         switch (me->button()) {
         case Qt::BackButton:
             goBackDir();
