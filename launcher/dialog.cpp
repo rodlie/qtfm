@@ -34,7 +34,7 @@ Dialog::Dialog(QWidget *parent)
 
     userInput = new QLineEdit(this);
     appSuggestions = new QListWidget(this);
-    appSuggestions->setMinimumHeight(100);
+    //appSuggestions->setMinimumHeight(100);
     appSuggestions->setAlternatingRowColors(false);
     appSuggestions->hide();
 
@@ -68,8 +68,9 @@ void Dialog::handleUserInput(QString input)
     appSuggestions->clear();
     if (appSuggestions->isHidden()) {
         appSuggestions->show();
-        doCenter();
     }
+
+    int ac = 0;
     foreach (DesktopFile app, apps) {
         if (app.getName().compare("") == 0 || app.noDisplay()) { continue; }
         if (app.getName().contains(input, Qt::CaseInsensitive) ||
@@ -88,6 +89,7 @@ void Dialog::handleUserInput(QString input)
                                   &Dialog::findIcon,
                                   app.getIcon());
             }
+            ac++;
         }
     }
     QStringList additionalApps = Common::findApplications(input);
@@ -106,7 +108,15 @@ void Dialog::handleUserInput(QString input)
                               &Dialog::findIcon,
                               appItem->data(LIST_ICON).toString());
         }
+        ac++;
     }
+
+    QDesktopWidget wid;
+    int screenHeight = wid.screen()->height()-100;
+    int as = (ac*30)+20;
+    if (as>screenHeight) { as = screenHeight; }
+    setMinimumHeight(as);
+    setMaximumHeight(as);
 }
 
 void Dialog::handleUserEnter()
@@ -192,12 +202,15 @@ QString Dialog::getTerminal()
     return term;
 }
 
-void Dialog::doCenter()
+void Dialog::doCenter(bool horiz)
 {
     QDesktopWidget wid;
     int screenWidth = wid.screen()->width();
     int screenHeight = wid.screen()->height();
-    setGeometry((screenWidth/2)-(width()/2),(screenHeight/2)-(height()/2),width(),height());
+    int newWidth = (screenWidth/2)-(width()/2);
+    int newHeight = (screenHeight/2)-(height()/2);
+    if (horiz) { newHeight = screenHeight/height(); }
+    setGeometry(newWidth, newHeight,width(),height());
 }
 
 void Dialog::readIconCache()

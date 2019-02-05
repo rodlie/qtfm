@@ -43,7 +43,7 @@ private slots:
     bool appExists(QString exe);
     void setupTheme();
     QString getTerminal();
-    void doCenter();
+    void doCenter(bool horiz = true);
     void readIconCache();
     void writeIconCache();
     void findIcon(QString icon);
