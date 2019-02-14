@@ -38,9 +38,7 @@ int main(int argc, char *argv[])
             if (fileName.endsWith(QString(".desktop"))) { // open app
                 DesktopFile desktop(fileName);
                 if (!desktop.getExec().isEmpty()) {
-                    QProcess::startDetached(desktop.getExec()
-                                            .split(QString(" "))
-                                            .takeFirst());
+                    QProcess::startDetached(desktop.getExec());
                     return 0;
                 }
             } else { // open file
