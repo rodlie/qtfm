@@ -55,6 +55,7 @@ Dialog::Dialog(QWidget *parent)
 
     userInput = new QLineEdit(this);
     userInput->setPlaceholderText(tr("Find application ..."));
+    userInput->setStyleSheet(QString("border: 3px solid white; border-radius: 5px; padding:5px;"));
 
     appSuggestions = new QListWidget(this);
     appSuggestions->setAlternatingRowColors(false);
