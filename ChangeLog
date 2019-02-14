@@ -4,6 +4,9 @@
 - moved most code to libfm
 - settings: use decimal keys in config
 - settings: support filter mime types
+
+6.1.7 10-February 2019
+- context menu fixes
 - settings dialog: fix performance issues on old CPUs
 
 6.1.6 31-January 2019
