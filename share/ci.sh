@@ -73,7 +73,7 @@ if [ "${OS}" = "Linux" ]; then
     PATH=${SDK}/bin:/usr/bin:/bin
     mkdir $CWD/build9
     cd $CWD/build9
-    qmake CONFIG+=release CONFIG+=deploy PREFIX=/usr CONFIG+=staticlib CONFIG+=no_tray CONFIG+=no_dbus ..
+    qmake CONFIG+=release CONFIG+=deploy PREFIX=/usr CONFIG+=staticlib CONFIG+=no_tray CONFIG+=no_dbus CONFIG += c++11 ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
