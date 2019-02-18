@@ -19,7 +19,7 @@ class Device : public QObject
     Q_OBJECT
 
 public:
-    explicit Device(const QString block, QObject *parent = Q_NULLPTR);
+    explicit Device(const QString block, QObject *parent = nullptr);
     QString name;
     QString path;
     QString dev;
@@ -58,7 +58,7 @@ class Disks : public QObject
     Q_OBJECT
 
 public:
-    explicit Disks(QObject *parent = Q_NULLPTR);
+    explicit Disks(QObject *parent = nullptr);
     QMap<QString, Device*> devices;
 
 private:

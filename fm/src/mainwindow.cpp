@@ -298,7 +298,7 @@ void MainWindow::lateStart() {
                         QAbstractItemView::SelectedClicked);
 
   // Clipboard configuration
-  progress = Q_NULLPTR;
+  progress = nullptr;
   clipboardChanged();
 
   // Completer configuration
@@ -1165,7 +1165,7 @@ int MainWindow::showReplaceMsgBox(const QFileInfo &f1, const QFileInfo &f2) {
        .arg(f2.filePath()).arg(f2.lastModified().toString()).arg(f2.size());
 
   // Show message
-  return QMessageBox::question(Q_NULLPTR, tr("Replace"), t, QMessageBox::Yes
+  return QMessageBox::question(nullptr, tr("Replace"), t, QMessageBox::Yes
                                | QMessageBox::YesToAll | QMessageBox::No
                                | QMessageBox::NoToAll | QMessageBox::Cancel);
 }
@@ -1182,14 +1182,14 @@ void MainWindow::progressFinished(int ret,QStringList newFiles)
         }
     }
     qDebug() << "progressQueue" << progressQueue;
-    if (progress != Q_NULLPTR) {
+    if (progress != nullptr) {
         progress->setResult(0);
         qDebug() << "progressDialog filename" << progress->getFilename();
         if (progressQueue.isEmpty()) {
             qDebug() << "progress should be closed";
             progress->close();
             delete progress;
-            progress = Q_NULLPTR;
+            progress = nullptr;
         }
     }
 
@@ -1621,7 +1621,7 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         }
     }
 
-      if (dynamic_cast<QListView*>(o) != Q_NULLPTR ){
+      if (dynamic_cast<QListView*>(o) != nullptr ){
         if (e->type()==QEvent::KeyPress) {
             QKeyEvent* key = static_cast<QKeyEvent*>(e);
             if ( (key->key()==Qt::Key_Tab) ) {
@@ -1866,7 +1866,7 @@ void MainWindow::handleMediaUnmount()
 {
     //qDebug() << "handle media unmount";
     QStandardItem *item = modelBookmarks->itemFromIndex(bookmarksList->currentIndex());
-    if (item == Q_NULLPTR) { return; }
+    if (item == nullptr) { return; }
     QString path = item->data(MEDIA_PATH).toString();
     if (path.isEmpty()) { return; }
     disks->devices[path]->unmount();
@@ -1876,7 +1876,7 @@ void MainWindow::handleMediaEject()
 {
     //qDebug() << "handle media eject";
     QStandardItem *item = modelBookmarks->itemFromIndex(bookmarksList->currentIndex());
-    if (item == Q_NULLPTR) { return; }
+    if (item == nullptr) { return; }
     QString path = item->data(MEDIA_PATH).toString();
     if (path.isEmpty()) { return; }
     disks->devices[path]->eject();

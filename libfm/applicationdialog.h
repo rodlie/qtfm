@@ -16,7 +16,7 @@ class ApplicationDialog : public QDialog
 
 public:
   explicit ApplicationDialog(bool enable_launcher = true,
-                             QWidget *parent = Q_NULLPTR);
+                             QWidget *parent = nullptr);
   QString getCurrentLauncher() const;
 
 private slots:

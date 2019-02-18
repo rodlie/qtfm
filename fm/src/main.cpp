@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
   qInstallMessageHandler(msgHandler);
 
 #ifdef WITH_MAGICK
-  Magick::InitializeMagick(Q_NULLPTR);
+  Magick::InitializeMagick(nullptr);
 #endif
   QApplication app(argc, argv);
   QApplication::setOrganizationName(APP);

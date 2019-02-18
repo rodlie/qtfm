@@ -34,11 +34,11 @@
 
 SysTray::SysTray(QObject *parent)
     : QObject(parent)
-    , disktray(Q_NULLPTR)
-    , menu(Q_NULLPTR)
-    , man(Q_NULLPTR)
+    , disktray(nullptr)
+    , menu(nullptr)
+    , man(nullptr)
     , showNotifications(true)
-    , mimeUtilsPtr(Q_NULLPTR)
+    , mimeUtilsPtr(nullptr)
     , autoMount(false)
 {
     // set icon theme
@@ -188,7 +188,7 @@ void SysTray::showMessage(QString title,
 void SysTray::handleContextMenuAction()
 {
     QAction *action = qobject_cast<QAction*>(sender());
-    if (action==Q_NULLPTR) { return; }
+    if (action==nullptr) { return; }
     QString path = action->data().toString();
     if (path.isEmpty()) { return; }
     if (!man->devices.contains(path)) { return; }

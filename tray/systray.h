@@ -33,7 +33,7 @@ class SysTray : public QObject
 {
     Q_OBJECT
 public:
-    explicit SysTray(QObject *parent = Q_NULLPTR);
+    explicit SysTray(QObject *parent = nullptr);
 
 private:
     QSystemTrayIcon *disktray;

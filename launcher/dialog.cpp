@@ -30,9 +30,9 @@
 
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
-    , userInput(Q_NULLPTR)
-    , appSuggestions(Q_NULLPTR)
-    , iconCache(Q_NULLPTR)
+    , userInput(nullptr)
+    , appSuggestions(nullptr)
+    , iconCache(nullptr)
     , dirtyIconCache(false)
 {
     setupTheme();

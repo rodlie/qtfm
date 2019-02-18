@@ -29,7 +29,7 @@ public:
     explicit FM(bool realMime,
                 MimeUtils* mimeUtils,
                 QString startPath = QDir::homePath(),
-                QWidget *parent = Q_NULLPTR);
+                QWidget *parent = nullptr);
     ~FM();
 
 private:

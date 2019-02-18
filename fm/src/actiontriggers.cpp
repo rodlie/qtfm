@@ -816,8 +816,8 @@ void MainWindow::toggleLockLayout() {
     addressToolBar->setMovable(0);
     lockLayoutAct->setText(tr("Unlock layout"));
   } else {
-    dockTree->setTitleBarWidget(Q_NULLPTR);
-    dockBookmarks->setTitleBarWidget(Q_NULLPTR);
+    dockTree->setTitleBarWidget(nullptr);
+    dockBookmarks->setTitleBarWidget(nullptr);
 
     menuToolBar->setMovable(1);
     //editToolBar->setMovable(1);

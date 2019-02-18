@@ -15,8 +15,8 @@
 ApplicationDialog::ApplicationDialog(bool enable_launcher,
                                      QWidget *parent) :
     QDialog(parent)
-  , appList(Q_NULLPTR)
-  , edtCommand(Q_NULLPTR)
+  , appList(nullptr)
+  , edtCommand(nullptr)
 {
     // Title and size
     setWindowTitle(tr("Select application"));

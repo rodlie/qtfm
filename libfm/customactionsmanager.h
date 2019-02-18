@@ -17,7 +17,7 @@ class CustomActionsManager : public QObject {
 public:
   explicit CustomActionsManager(QSettings* settings,
                                 QList<QAction*> *actionList,
-                                QObject *parent = Q_NULLPTR);
+                                QObject *parent = nullptr);
   QMultiHash<QString, QAction*>* getActions() const;
   QMultiHash<QString, QMenu*>* getMenus() const;
   QList<QAction*> *getActionList() const;

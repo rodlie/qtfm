@@ -706,7 +706,7 @@ void MainWindow::addressChanged(int old, int now)
         QApplication::clipboard()->blockSignals(1);
         QApplication::clipboard()->clear(QClipboard::Selection);        //don't paste stuff
 
-        pathEdit->setCompleter(Q_NULLPTR);
+        pathEdit->setCompleter(nullptr);
         tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(temp.left(pos))));
 
         QTimer::singleShot(500,this,SLOT(focusAction()));

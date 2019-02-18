@@ -51,8 +51,8 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
   model = modelList;
   QFileInfo file(pathName);
 
-  folderIcons = Q_NULLPTR;
-  fileIcons = Q_NULLPTR;
+  folderIcons = nullptr;
+  fileIcons = nullptr;
   iconChanged = 0;
 
   files = 0;
@@ -62,7 +62,7 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
   QVBoxLayout *layout = new QVBoxLayout(this);
   QGroupBox *fileFrame = new QGroupBox(this);
   QGroupBox *driveFrame = new QGroupBox(this);
-  QGroupBox * permissions = Q_NULLPTR;
+  QGroupBox * permissions = nullptr;
 
   path = new QLabel;
   path->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
@@ -219,7 +219,7 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
     permissionsNumeric->setValidator(permNumericValidator);
     permissionsNumeric->setMaxLength(3);
 
-    int ret = chmod(pathName.toLocal8Bit(),permString.toInt(Q_NULLPTR,
+    int ret = chmod(pathName.toLocal8Bit(),permString.toInt(nullptr,
                                                             8));
     if(ret) permissions->setDisabled(1);
   }
@@ -243,7 +243,7 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
   // Main layout
   layout->addWidget(fileFrame);
 
-  if ((files == 0 || folders == 0) && permissions!=Q_NULLPTR) { layout->addWidget(permissions); }
+  if ((files == 0 || folders == 0) && permissions!=nullptr) { layout->addWidget(permissions); }
 
   layout->addWidget(driveFrame);
   layout->addWidget(buttons);
@@ -321,7 +321,7 @@ void PropertiesDialog::accept()
     {
         foreach(QString file, fileList)
         {
-            chmod(file.toLocal8Bit(),permissionsNumeric->text().toInt(Q_NULLPTR,
+            chmod(file.toLocal8Bit(),permissionsNumeric->text().toInt(nullptr,
                                                                       8));    //convert to octal
 
             myModelItem *item = static_cast<myModelItem*>(model->index(file).internalPointer());
