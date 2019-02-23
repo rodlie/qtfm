@@ -130,7 +130,7 @@ public slots:
     void contextMenuEvent(QContextMenuEvent *);
     void toggleLockLayout();
     void dragLauncher(const QMimeData *data, const QString &newPath, Common::DragMode dragMode);
-    void pasteLauncher(const QMimeData *data, const QString &newPath, const QStringList &cutList);
+    void pasteLauncher(const QMimeData *data, const QString &newPath, const QStringList &cutList, bool link = false);
     void pasteLauncher(const QList<QUrl> &files, const QString &newPath, const QStringList &cutList, bool link = false);
     void pasteClipboard();
     void progressFinished(int,QStringList);

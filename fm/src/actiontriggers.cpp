@@ -753,8 +753,10 @@ bool MainWindow::linkFiles(const QList<QUrl> &files, const QString &newPath) {
 
   // Quit if folder not writable
   if (!QFileInfo(newPath).isWritable()
-      || newPath == QDir(files.at(0).toLocalFile()).path()) {
-    return false;
+      || newPath == QDir(files.at(0).toLocalFile()).path())
+  {
+      QMessageBox::warning(this, tr("Folder not writable"), tr("The destination folder (%1) is not writable").arg(newPath));
+      return false;
   }
 
   // TODO: even if symlinks are small we have to make sure that we have space

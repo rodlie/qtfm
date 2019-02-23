@@ -149,15 +149,20 @@ bool bookmarkmodel::dropMimeData(const QMimeData * data,
                                               QMessageBox::ActionRole);
         QAbstractButton *copy = box.addButton(tr("Copy here"),
                                               QMessageBox::ActionRole);
+        QAbstractButton *link = box.addButton(tr("Link here"),
+                                              QMessageBox::ActionRole);
         QAbstractButton *canc = box.addButton(QMessageBox::Cancel);
         move->setIcon(QIcon::fromTheme("edit-cut"));
         copy->setIcon(QIcon::fromTheme("edit-copy"));
+        link->setIcon(QIcon::fromTheme("insert-link"));
         canc->setIcon(QIcon::fromTheme("edit-delete"));
         box.exec();
         if (box.clickedButton() == move) {
             mode = Common::DM_MOVE;
         } else if (box.clickedButton() == copy) {
             mode = Common::DM_COPY;
+        } else if (box.clickedButton() == link) {
+            mode = Common::DM_LINK;
         } else if (box.clickedButton() == canc) {
             return false;
         }
@@ -180,6 +185,7 @@ bool bookmarkmodel::dropMimeData(const QMimeData * data,
     }
     emit bookmarkPaste(data,
                        parentPath,
-                       cutList);
+                       cutList,
+                       mode==Common::DM_LINK?true:false);
     return false;
 }

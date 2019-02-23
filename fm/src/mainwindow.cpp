@@ -368,8 +368,8 @@ void MainWindow::lateStart() {
 
   // Connect bookmark model
   connect(modelBookmarks,
-          SIGNAL(bookmarkPaste(const QMimeData *, QString, QStringList)), this,
-          SLOT(pasteLauncher(const QMimeData *, QString, QStringList)));
+          SIGNAL(bookmarkPaste(const QMimeData *, QString, QStringList, bool)), this,
+          SLOT(pasteLauncher(const QMimeData *, QString, QStringList, bool)));
   connect(modelBookmarks, SIGNAL(rowsInserted(QModelIndex, int, int)),
           this, SLOT(readShortcuts()));
   connect(modelBookmarks, SIGNAL(rowsRemoved(QModelIndex, int, int)),
@@ -1045,11 +1045,13 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
  * @param newPath path of new location
  * @param cutList list of items to remove
  */
-void MainWindow::pasteLauncher(const QMimeData *data, const QString &newPath,
-                               const QStringList &cutList) {
+void MainWindow::pasteLauncher(const QMimeData *data,
+                               const QString &newPath,
+                               const QStringList &cutList,
+                               bool link) {
   QList<QUrl> files = data->urls();
   if (files.isEmpty()) { return; }
-  pasteLauncher(files, newPath, cutList);
+  pasteLauncher(files, newPath, cutList, link);
 }
 //---------------------------------------------------------------------------
 
@@ -1123,6 +1125,7 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files, const QString &newPath,
 
   // If only links should be created, create them and exit
   if (link) {
+      qDebug() << "LINK" << files << newPath;
     linkFiles(files, newPath);
     return;
   }

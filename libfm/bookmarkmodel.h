@@ -55,7 +55,8 @@ public:
 signals:
     void bookmarkPaste(const QMimeData *data,
                        QString newPath,
-                       QStringList cutList);
+                       QStringList cutList,
+                       bool link = false);
     void bookmarksChanged();
 
 private:
