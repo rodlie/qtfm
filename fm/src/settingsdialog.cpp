@@ -189,6 +189,7 @@ QWidget *SettingsDialog::createAppearanceSettings()
     checkWindowTitlePath = new QCheckBox(grpAppear);
     checkFileColor = new QCheckBox(grpAppear);
     showHomeButton = new QCheckBox(grpAppear);
+    showNewTabButton = new QCheckBox(grpAppear);
     showTerminalButton = new QCheckBox(grpAppear);
 
 #ifndef Q_OS_MAC
@@ -200,6 +201,7 @@ QWidget *SettingsDialog::createAppearanceSettings()
     layoutAppear->addRow(tr("Colors on file names"), checkFileColor);
     layoutAppear->addRow(tr("Show path in window title"), checkWindowTitlePath);
     layoutAppear->addRow(tr("Show Home button"), showHomeButton);
+    layoutAppear->addRow(tr("Show \"new tab\" button"), showNewTabButton);
     layoutAppear->addRow(tr("Show Terminal button"), showTerminalButton);
 
     // Layout widget
@@ -688,6 +690,7 @@ void SettingsDialog::readSettings() {
 
   comboSingleClick->setCurrentIndex(settingsPtr->value("singleClick", 0).toInt());
   showHomeButton->setChecked(settingsPtr->value("home_button", true).toBool());
+  showNewTabButton->setChecked(settingsPtr->value("newtab_button", false).toBool());
   showTerminalButton->setChecked(settingsPtr->value("terminal_button", true).toBool());
 #if QT_VERSION >= 0x050000
 #ifdef DEPLOY
@@ -917,6 +920,7 @@ bool SettingsDialog::saveSettings() {
 
   settingsPtr->setValue("singleClick", comboSingleClick->currentIndex());
   settingsPtr->setValue("home_button", showHomeButton->isChecked());
+  settingsPtr->setValue("newtab_button", showNewTabButton->isChecked());
   settingsPtr->setValue("terminal_button", showTerminalButton->isChecked());
   settingsPtr->setValue("windowTitlePath", checkWindowTitlePath->isChecked());
 

@@ -154,6 +154,11 @@ void MainWindow::createActions() {
   homeAct->setIcon(actionIcons->at(7));
   actionList->append(homeAct);
 
+  newTabAct = new QAction(tr("New tab"), this);
+  newTabAct->setStatusTip(tr("Open new tab"));
+  connect(newTabAct, SIGNAL(triggered()), this, SLOT(openTab()));
+  newTabAct->setIcon(actionIcons->at(26));
+
   detailAct = new QAction(tr("Detail view"),this);
   detailAct->setStatusTip(tr("Toggle detailed list"));
   detailAct->setCheckable(true);
@@ -580,6 +585,7 @@ void MainWindow::createToolBars() {
   addressToolBar = addToolBar(tr("Address"));
   addressToolBar->setObjectName("Address");
   addressToolBar->addWidget(pathEdit);
+  addressToolBar->addAction(newTabAct);
   addressToolBar->addAction(terminalAct);
 }
 //---------------------------------------------------------------------------

@@ -256,6 +256,7 @@ private:
     QAction *upAct;
     QAction *backAct;
     QAction *homeAct;
+    QAction *newTabAct;
     QAction *hiddenAct;
     QAction *filterAct;
     QAction *detailAct;

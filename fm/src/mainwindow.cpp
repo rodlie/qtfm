@@ -516,6 +516,7 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
 
   // show/hide buttons
   homeAct->setVisible(settings->value("home_button", true).toBool());
+  newTabAct->setVisible(settings->value("newtab_button", false).toBool());
   terminalAct->setVisible(settings->value("terminal_button", true).toBool());
 
   // path history

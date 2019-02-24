@@ -78,6 +78,7 @@ protected:
   QComboBox* comboSingleClick;
   QCheckBox* showTerminalButton;
   QCheckBox* showHomeButton;
+  QCheckBox* showNewTabButton;
   QCheckBox* checkDarkTheme;
   QCheckBox* checkFileColor;
   QCheckBox* checkPathHistory;
