@@ -195,6 +195,16 @@ const QString uDisks2::getDeviceName(QString path)
     return name;
 }
 
+const QString uDisks2::getDeviceLabel(QString path)
+{
+    QDBusInterface iface(DBUS_SERVICE,
+                         path,
+                         QString("%1.Block").arg(DBUS_SERVICE),
+                         QDBusConnection::systemBus());
+    if (!iface.isValid()) { return QString(); }
+    return iface.property("IdLabel").toString();
+}
+
 const QString uDisks2::mountDevice(QString path)
 {
     QDBusInterface filesystem(DBUS_SERVICE,

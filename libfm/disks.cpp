@@ -81,7 +81,9 @@ void Device::updateDeviceProperties()
     QString lastName = name;
 
     drive = uDisks2::getDrivePath(path);
-    name = uDisks2::getDeviceName(drive);
+    name = uDisks2::getDeviceLabel(path);
+
+    if (name.isEmpty()) { name = uDisks2::getDeviceName(drive); }
     if (name.isEmpty()) { name = QObject::tr("Storage"); }
 
     dev = path.split("/").takeLast();

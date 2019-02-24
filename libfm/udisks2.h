@@ -35,6 +35,7 @@ public:
     static const QString getMountPointOptical(QString path);
     static const QString getMountPoint(QString path);
     static const QString getDeviceName(QString path);
+    static const QString getDeviceLabel(QString path);
     static const QString mountDevice(QString path);
     static const QString mountOptical(QString path);
     static const QString unmountDevice(QString path);
