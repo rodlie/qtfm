@@ -383,6 +383,7 @@ QWidget* SettingsDialog::createMimeSettings() {
   cmbDefaultMimeApps = new QComboBox(grpDMime);
   cmbDefaultMimeApps->addItem("/.local/share/applications/mimeapps.list");
   cmbDefaultMimeApps->addItem("/.local/share/applications/defaults.list");
+  cmbDefaultMimeApps->addItem("/.config/mimeapps.list");
   layoutDMime->addRow(tr("Configuration file: "), cmbDefaultMimeApps);
 
   layoutWidget->addWidget(grpMimes);
@@ -705,9 +706,8 @@ void SettingsDialog::readSettings() {
   checkAutoMount->setChecked(settingsPtr->value("trayAutoMount", false).toBool());
   checkDVD->setChecked(settingsPtr->value("autoPlayDVD", false).toBool());
 
-  // Load default mime appis location
-  QString tmp = "/.local/share/applications/mimeapps.list";
-  tmp = settingsPtr->value("defMimeAppsFile", tmp).toString();
+  // Load default mime appss location
+  QString tmp = settingsPtr->value("defMimeAppsFile", MIME_APPS).toString();
 #if QT_VERSION >= 0x050000
   cmbDefaultMimeApps->setCurrentText(tmp);
 #else

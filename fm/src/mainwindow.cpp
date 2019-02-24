@@ -127,8 +127,7 @@ MainWindow::MainWindow()
 
     // Create mime utils
     mimeUtils = new MimeUtils(this);
-    QString tmp = "/.local/share/applications/mimeapps.list";
-    QString name = settings->value("defMimeAppsFile", tmp).toString();
+    QString name = settings->value("defMimeAppsFile", MIME_APPS).toString();
     mimeUtils->setDefaultsFileName(name);
 
     // Create filesystem model

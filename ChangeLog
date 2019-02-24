@@ -8,6 +8,7 @@
 - (u)disks now supports disk labels (with device name as fallback)
 - bookmarks: added "link" option in file actions
 - shared library (libQtFM) is now default (disable with CONFIG+=staticlib)
+- support .config/mimeapps.list
 
 6.1.7 10-February 2019
 - context menu fixes
