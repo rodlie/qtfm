@@ -1,9 +1,13 @@
-6.2.0 TBA
-- imagemagick support
-- support for Qt4 has now ended
-- moved most code to libfm
+6.2.0 XX-March 2019
+- imagemagick support (improved thumbnail support)
+- support for Qt4 has now ended (6.1 was the last branch with support for Qt4)
+- started moving code to lib
 - settings: use decimal keys in config
 - settings: support filter mime types
+- added qtfm-launcher (can be used as an app launcher in openbox etc, also supports xdg-open type actions)
+- (u)disks now supports disk labels (with device name as fallback)
+- bookmarks: added "link" option in file actions
+- shared library (libQtFM) is now default (disable with CONFIG+=staticlib)
 
 6.1.7 10-February 2019
 - context menu fixes
