@@ -121,7 +121,7 @@ void Device::handlePropertiesChanged(const QString &interfaceType, const QMap<QS
 
 Disks::Disks(QObject *parent)
     : QObject(parent)
-    , dbus(0)
+    , dbus(Q_NULLPTR)
 {
     setupDBus();
     timer.setInterval(60000);
@@ -142,6 +142,7 @@ void Disks::setupDBus()
 
 void Disks::scanDevices()
 {
+    if (!dbus) { return; }
     if (!dbus->isValid()) { return; }
     qDebug() << "scanDevices";
     QStringList foundDevices = uDisks2::getDevices();
@@ -160,6 +161,7 @@ void Disks::scanDevices()
 
 void Disks::deviceAdded(const QDBusObjectPath &obj)
 {
+    if (!dbus) { return; }
     if (!dbus->isValid()) { return; }
     QString path = obj.path();
     if (path.startsWith(QString("%1/jobs").arg(DBUS_PATH))) { return; }
@@ -170,6 +172,7 @@ void Disks::deviceAdded(const QDBusObjectPath &obj)
 
 void Disks::deviceRemoved(const QDBusObjectPath &obj)
 {
+    if (!dbus) { return; }
     if (!dbus->isValid()) { return; }
     QString path = obj.path();
     bool deviceExists = devices.contains(path);
@@ -204,5 +207,6 @@ void Disks::checkUDisks()
         setupDBus();
         //return;
     }
+    if (!dbus) { return; }
     if (dbus->isValid()) { scanDevices(); }
 }
