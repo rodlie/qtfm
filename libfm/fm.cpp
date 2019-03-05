@@ -83,11 +83,13 @@ void FM::setPath(QString path)
     QFileInfo name(path);
     if (!name.exists() || path == getPath()) { return; }
     if (modelList->setRootPath(path)) { modelView->invalidate(); }
+
     QModelIndex baseIndex = modelView->mapFromSource(modelList->index(path));
     list->setRootIndex(baseIndex);
-    addHistory(path);
+
+    if (path != QString("/")) { addHistory(path); }
     emit newPath(path);
-    emit newWindowTitle(path.split("/", QString::SkipEmptyParts).takeLast());
+    emit newWindowTitle(path==QString("/")?path:path.split("/", QString::SkipEmptyParts).takeLast());
     updateGrid();
 
     //dirLoaded();
