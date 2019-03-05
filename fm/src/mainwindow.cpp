@@ -840,6 +840,8 @@ void MainWindow::openTab()
 {
     if(curIndex.isDir()) {
         addTab(curIndex.filePath());
+    } else {
+        addTab(QDir::homePath());
     }
 }
 
