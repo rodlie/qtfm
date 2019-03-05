@@ -20,6 +20,7 @@ FM::FM(MimeUtils *mimeUtils,
   , listSelectionModel(Q_NULLPTR)
   , zoom(48)
   , history(Q_NULLPTR)
+  , customComplete(Q_NULLPTR)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setSpacing(0);
@@ -62,6 +63,12 @@ FM::FM(MimeUtils *mimeUtils,
     layout->addWidget(list);
 
     history = new QStringList();
+
+    customComplete = new myCompleter;
+    customComplete->setModel(modelList);
+    customComplete->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
+    customComplete->setMaxVisibleItems(10);
+
     setPath(startPath);
 }
 
@@ -82,6 +89,7 @@ void FM::setPath(QString path)
     emit newPath(path);
     emit newWindowTitle(path.split("/", QString::SkipEmptyParts).takeLast());
     updateGrid();
+
     //dirLoaded();
 }
 
@@ -93,6 +101,11 @@ QString FM::getPath()
 QStringList *FM::getHistory()
 {
     return history;
+}
+
+QCompleter *FM::getCompleter()
+{
+    return customComplete;
 }
 
 

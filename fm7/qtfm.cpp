@@ -79,7 +79,7 @@ QtFM::QtFM(QWidget *parent)
     //navBar->addWidget(upButton);
     //navBar->addWidget(homeButton);
     navBar->addWidget(pathEdit);
-    navBar->addWidget(tileButton);
+    //navBar->addWidget(tileButton);
 
     setMenuBar(mBar);
     setStatusBar(sBar);
@@ -93,6 +93,7 @@ QtFM::QtFM(QWidget *parent)
     backButton->hide();
     upButton->hide();
     homeButton->hide();
+    tileButton->hide();
 
     setupConnections();
     loadSettings();
@@ -147,6 +148,15 @@ void QtFM::setupConnections()
             mdi, SLOT(tileSubWindows()));
     connect(mdi, SIGNAL(subWindowActivated(QMdiSubWindow*)),
             this, SLOT(handleTabActivated(QMdiSubWindow*)));
+
+    connect(pathEdit, SIGNAL(activated(QString)),
+            this, SLOT(pathEditChanged(QString)));
+    /*
+  connect(customComplete, SIGNAL(activated(QString)),
+          this, SLOT(pathEditChanged(QString)));
+  connect(pathEdit->lineEdit(), SIGNAL(cursorPositionChanged(int,int)),
+          this, SLOT(addressChanged(int,int)));
+*/
 }
 
 void QtFM::loadSettings()
@@ -187,6 +197,25 @@ void QtFM::refreshPath(FM *fm)
 {
     if (!fm) { return; }
     pathEdit->clear();
+    pathEdit->setCompleter(fm->getCompleter());
     pathEdit->addItems(*fm->getHistory());
     pathEdit->setCurrentIndex(0);
+}
+
+void QtFM::pathEditChanged(const QString &path)
+{
+    qDebug() << "path edit changed" << path;
+
+    QString info = path;
+    if (!QFileInfo(path).exists()) {
+        qDebug() << "path does not exists" << path;
+        return;
+    }
+
+    info.replace(QString("~"), QDir::homePath());
+    FM *fm = dynamic_cast<FM*>(mdi->currentSubWindow()->widget());
+    if (!fm) { return; }
+
+    qDebug() << "set new path in fm" << path;
+    fm->setPath(path);
 }

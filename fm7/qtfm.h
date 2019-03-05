@@ -54,6 +54,7 @@ private slots:
     void handleUpdatedDir(QString path);
     void handleTabActivated(QMdiSubWindow *tab);
     void refreshPath(FM* fm);
+    void pathEditChanged(const QString &path);
 };
 
 #endif // QTFM_H

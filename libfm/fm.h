@@ -20,6 +20,7 @@
 #include "iconlist.h"
 #include "iconview.h"
 #include "sortmodel.h"
+#include "completer.h"
 
 class FM : public QWidget
 {
@@ -40,6 +41,7 @@ private:
     QItemSelectionModel *listSelectionModel;
     int zoom;
     QStringList* history;
+    QCompleter *customComplete;
 
 signals:
     void newWindowTitle(const QString &title);
@@ -50,6 +52,7 @@ public slots:
     void setPath(QString path);
     QString getPath();
     QStringList *getHistory();
+    QCompleter *getCompleter();
 
 private slots:
     void dirLoaded();
