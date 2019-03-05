@@ -9,11 +9,9 @@
 #include <QVBoxLayout>
 #include <QApplication>
 
-FM::FM(bool realMime,
-       MimeUtils *mimeUtils,
+FM::FM(MimeUtils *mimeUtils,
        QString startPath,
        QWidget *parent) : QWidget(parent)
-  , realMimeTypes(realMime)
   , mimeUtilsPtr(mimeUtils)
   , modelList(Q_NULLPTR)
   , list(Q_NULLPTR)
@@ -27,7 +25,7 @@ FM::FM(bool realMime,
     layout->setSpacing(0);
     layout->setContentsMargins(0,0,0,0);
 
-    modelList = new myModel(realMimeTypes, mimeUtilsPtr);
+    modelList = new myModel(true, mimeUtilsPtr);
     connect(modelList, SIGNAL(reloadDir(QString)), this, SLOT(dirLoaded()));
 
     modelView = new viewsSortProxyModel();

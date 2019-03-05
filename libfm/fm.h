@@ -26,14 +26,12 @@ class FM : public QWidget
     Q_OBJECT
 
 public:
-    explicit FM(bool realMime,
-                MimeUtils* mimeUtils,
+    explicit FM(MimeUtils* mimeUtils,
                 QString startPath = QDir::homePath(),
                 QWidget *parent = Q_NULLPTR);
     ~FM();
 
 private:
-    bool realMimeTypes;
     MimeUtils *mimeUtilsPtr;
     myModel *modelList;
     QListView *list;

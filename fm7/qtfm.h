@@ -24,7 +24,6 @@ public:
 private:
     QMdiArea *mdi;
     MimeUtils *mimes;
-    bool mime;
 
     QMenuBar *mBar;
     QStatusBar *sBar;

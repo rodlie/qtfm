@@ -7,7 +7,6 @@ QtFM::QtFM(QWidget *parent)
     : QMainWindow(parent)
     , mdi(Q_NULLPTR)
     , mimes(Q_NULLPTR)
-    , mime(true)
     , mBar(Q_NULLPTR)
     , sBar(Q_NULLPTR)
     , navBar(Q_NULLPTR)
@@ -112,7 +111,7 @@ void QtFM::newSubWindow(QString path)
     if (!info.isDir()) { return; }
 
     QMdiSubWindow *subwindow = new QMdiSubWindow;
-    FM *fm = new FM(mime, mimes, path);
+    FM *fm = new FM(mimes, path);
 
     connect(fm, SIGNAL(newWindowTitle(QString)),
             subwindow, SLOT(setWindowTitle(QString)));
