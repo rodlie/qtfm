@@ -69,6 +69,7 @@ void bookmarkmodel::addBookmark(QString name,
     item->setData(icon, BOOKMARK_ICON);
     item->setData(isAuto, BOOKMARKS_AUTO);
     item->setData(isMedia, MEDIA_MODEL);
+    item->setToolTip(path);
     if (isMedia) { item->setData(mediaPath, MEDIA_PATH); }
     this->appendRow(item);
     if (changed) { emit bookmarksChanged(); }
