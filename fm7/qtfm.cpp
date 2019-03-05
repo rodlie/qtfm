@@ -49,7 +49,7 @@ QtFM::QtFM(QWidget *parent)
 
     mdi = new QMdiArea(this);
     mdi->setViewMode(QMdiArea::TabbedView);
-    //mdi->setTabPosition(QTabWidget::South);
+    mdi->setTabPosition(QTabWidget::South);
     mdi->setTabsClosable(true);
     mdi->setTabsMovable(true);
 
@@ -97,7 +97,7 @@ QtFM::QtFM(QWidget *parent)
 
     setupConnections();
     loadSettings();
-    parseArgs();
+    QTimer::singleShot(10, this, SLOT(parseArgs()));
 }
 
 QtFM::~QtFM()
@@ -121,22 +121,26 @@ void QtFM::newSubWindow(QString path)
     connect(fm, SIGNAL(newPath(QString)),
             this, SLOT(handleNewPath(QString)));
 
+    mdi->addSubWindow(subwindow);
     subwindow->setWidget(fm);
     subwindow->setAttribute(Qt::WA_DeleteOnClose);
     subwindow->setWindowTitle(info.completeBaseName());
     subwindow->setWindowIcon(windowIcon());
-    mdi->addSubWindow(subwindow);//->setWindowState(Qt::WindowMaximized);
+    subwindow->setWindowState(Qt::WindowMaximized);
+
+    refreshPath(fm);
 }
 
 void QtFM::parseArgs()
 {
     QStringList args = qApp->arguments();
+    if (args.count()<2) {
+        newSubWindow();
+        return;
+    }
     for (int i=1;i<args.count();++i) {
         if (!QFile::exists(args.at(i))) { continue; }
         newSubWindow(args.at(i));
-    }
-    if (mdi->subWindowList().count() == 0) {
-        newSubWindow(QDir::currentPath());
     }
 }
 
@@ -173,7 +177,10 @@ void QtFM::handleNewPath(QString path)
 {
     Q_UNUSED(path)
     FM *fm = dynamic_cast<FM*>(sender());
-    if (!mdi->currentSubWindow() || !fm) { return; }
+    if (!mdi->currentSubWindow() || !fm) {
+        qDebug() << "NO TABS OR FM!";
+        return;
+    }
     if (fm != dynamic_cast<FM*>(mdi->currentSubWindow()->widget())) { return; }
     qDebug() << "update path for tab";
     refreshPath(fm);
@@ -186,7 +193,10 @@ void QtFM::handleUpdatedDir(QString path)
 
 void QtFM::handleTabActivated(QMdiSubWindow *tab)
 {
-    if (!tab) { return; }
+    if (!tab) {
+        qDebug() << "NO TAB ACTIVATED";
+        return;
+    }
     FM *fm = dynamic_cast<FM*>(tab->widget());
     if (!fm) { return; }
     qDebug() << "handle tab activated" << fm->getPath();
@@ -213,6 +223,10 @@ void QtFM::pathEditChanged(const QString &path)
     }
 
     info.replace(QString("~"), QDir::homePath());
+    if (!mdi->currentSubWindow()) {
+        qDebug() << "NO TABS?";
+        return;
+    }
     FM *fm = dynamic_cast<FM*>(mdi->currentSubWindow()->widget());
     if (!fm) { return; }
 

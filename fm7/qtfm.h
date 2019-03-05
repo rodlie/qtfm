@@ -43,7 +43,7 @@ private:
     QPushButton *tileButton;
 
 public slots:
-    void newSubWindow(QString path);
+    void newSubWindow(QString path = QDir::homePath());
 
 private slots:
     void parseArgs();
