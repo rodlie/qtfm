@@ -803,7 +803,8 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
     qDebug() << "get video stream";
     for (int i=0; i < (int)pFormatCtx->nb_streams; i++) {
         if(pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-            if (pFormatCtx->streams[i]->codecpar->codec_id == AV_CODEC_ID_MJPEG) {
+            if (pFormatCtx->streams[i]->codecpar->codec_id == AV_CODEC_ID_MJPEG ||
+                pFormatCtx->streams[i]->codecpar->codec_id == AV_CODEC_ID_PNG) {
                 possibleVideoCover = i;
             }
             if (videoStream<0) { videoStream = i; }
