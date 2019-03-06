@@ -71,13 +71,18 @@ QtFM is available in several distributions:
 
 Download the latest [release](https://github.com/rodlie/qtfm/releases), then make sure you have the required dependencies.
 
-* Requires [QtBase](http://qt.io) 5.2+ (5.6/5.9/5.12 recommended)
+* Requires [QtBase](http://qt.io) 5.2+ (5.6.3/5.9.7/5.12.x recommended)
 * Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/)
 * Requires [adwaita-icon-theme](https://github.com/GNOME/adwaita-icon-theme) or similar
 * Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD/NetBSD/macOS**
 * Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/)/[bsdisks](https://www.freshports.org/sysutils/bsdisks/) at run-time
-* Optional [ImageMagick (Magick++)](http://imagemagick.org) for improved thumbnail support
-* Optional [FFmpeg](https://ffmpeg.org) for video/audio thumbnails
+* Optional [ImageMagick (Magick++)](http://imagemagick.org) 6.9/7.x for improved thumbnail support
+* Optional [FFmpeg](https://ffmpeg.org) 3+ for video/audio thumbnails
+  * libavdevice
+  * libswscale
+  * libavformat
+  * libavcodec
+  * libavutil
 
 Download and extract:
 ```
