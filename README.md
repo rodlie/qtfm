@@ -20,6 +20,11 @@ Lightweight file manager using Qt.
     * Auto mount storage/optical devices when added (not default)
     * Auto play audio CD and video/audio DVD (not default)
   * Application launcher (qtfm-launcher) for Openbox and similar
+  * Extensive thumbnail support
+    * Supports all common (and uncommon) image formats through ImageMagick
+    * Supports PDF and related documents
+    * Supports all common (and uncommon) video formats through FFmpeg
+    * Supports embedded coverart in audio
 
 ## Links
 
@@ -72,6 +77,7 @@ Download the latest [release](https://github.com/rodlie/qtfm/releases), then mak
 * Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD/NetBSD/macOS**
 * Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/)/[bsdisks](https://www.freshports.org/sysutils/bsdisks/) at run-time
 * Optional [ImageMagick (Magick++)](http://imagemagick.org) for improved thumbnail support
+* Optional [FFmpeg](https://ffmpeg.org) for video/audio thumbnails
 
 Download and extract:
 ```
@@ -89,15 +95,18 @@ Optional build options:
  * ``CONFIG+=with_magick`` : This will enable ImageMagick support
    * ``MAGICK_PC=`` : Custom Magick++ pkg-config .pc file
    * ``CONFIG+=magick7`` : Use ImageMagick 7
+ * ``CONFIG+=with_ffmpeg`` : This will enable FFmpeg support (NOTE! requires ImageMagick)
  * ``CONFIG+=no_tray`` : This will disable qtfm-tray
  * ``CONFIG+=no_dbus`` : This will disable D-Bus session and udisks features in (lib)QtFM
  * ``CONFIG+=no_launcher`` : Disable qtfm-launcher (freedesktop application launcher)
  * ``CONFIG+=with_includes`` : Install library includes and pkg-config
+ * ``CONFIG+=staticlib`` : Force static library
  * ``PREFIX=`` : Install prefix, where things are installed when running ``make install``
  * ``DOCDIR=`` : Location for documentation (default is PREFIX/share/doc)
  * ``MANDIR=`` : Location for man pages (default is PREFIX/share/man)
  * ``XDGDIR=`` : Location of XDG (default is /etc/xdg or PREFIX/etc/xdg)
  * ``LIBDIR=`` : Library location (default is ``$PREFIX/lib$LIBSUFFIX``)
+
 
 Doing a normal build:
 ```
@@ -119,7 +128,7 @@ Example:
 
 ```
 mkdir build && cd build
-qmake PREFIX=/usr LIBSUFFIX=64 CONFIG+=with_magick ..
+qmake PREFIX=/usr LIBSUFFIX=64 CONFIG+=with_magick CONFIG+=with_ffmpeg CONFIG+=with_includes ..
 make -jX
 make INSTALL_ROOT=/package_temp_path install
 ```
@@ -132,5 +141,3 @@ QtFM is licensed under the GPL-2.0 License.
 
  * **[powerkit](https://github.com/rodlie/powerkit)** : Desktop Independent Power Manager.
  * **[Openbox](http://openbox.org/wiki/Main_Page)** : Openbox is a highly configurable, next generation window manager with extensive standards support.
- * **[tint2](https://gitlab.com/o9000/tint2)** : A lightweight panel/taskbar for Linux and BSD.
- * **[qterminal](https://github.com/lxqt/qterminal)** : A lightweight Qt-based terminal emulator.
