@@ -55,7 +55,7 @@ FM::FM(MimeUtils *mimeUtils,
     list->setEditTriggers(QAbstractItemView::EditKeyPressed |
                           QAbstractItemView::SelectedClicked);
 
-    connect(list, SIGNAL(clicked(QModelIndex))
+    connect(list, SIGNAL(doubleClicked(QModelIndex))
             ,this, SLOT(listDoubleClicked(QModelIndex)));
 
     listSelectionModel = list->selectionModel();
