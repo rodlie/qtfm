@@ -36,6 +36,7 @@ private:
 
     QAction *tileAction;
     QAction *tabViewAction;
+    QAction *newTabAction;
 
     QPushButton *backButton;
     QPushButton *upButton;
@@ -43,6 +44,7 @@ private:
     QPushButton *tileButton;
 
 public slots:
+    void newSubWindow(bool triggered);
     void newSubWindow(QString path = QDir::homePath());
 
 private slots:

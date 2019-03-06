@@ -16,6 +16,7 @@ QtFM::QtFM(QWidget *parent)
     , viewMenu(Q_NULLPTR)
     , tileAction(Q_NULLPTR)
     , tabViewAction(Q_NULLPTR)
+    , newTabAction(Q_NULLPTR)
     , backButton(Q_NULLPTR)
     , upButton(Q_NULLPTR)
     , homeButton(Q_NULLPTR)
@@ -69,6 +70,11 @@ QtFM::QtFM(QWidget *parent)
     tileAction->setText(tr("Tile Tabs"));
     tileAction->setShortcut(QKeySequence(tr("Ctrl+S")));
 
+    newTabAction = new QAction(this);
+    newTabAction->setText(tr("New tab/subwindow"));
+    newTabAction->setShortcut(QKeySequence(tr("Ctrl+N")));
+
+    fileMenu->addAction(newTabAction);
     viewMenu->addAction(tileAction);
 
     mBar->addMenu(fileMenu);
@@ -103,6 +109,12 @@ QtFM::QtFM(QWidget *parent)
 QtFM::~QtFM()
 {
     writeSettings();
+}
+
+void QtFM::newSubWindow(bool triggered)
+{
+    Q_UNUSED(triggered)
+    newSubWindow();
 }
 
 void QtFM::newSubWindow(QString path)
@@ -161,6 +173,9 @@ void QtFM::setupConnections()
   connect(pathEdit->lineEdit(), SIGNAL(cursorPositionChanged(int,int)),
           this, SLOT(addressChanged(int,int)));
 */
+
+    connect(newTabAction, SIGNAL(triggered(bool)),
+            this, SLOT(newSubWindow(bool)));
 }
 
 void QtFM::loadSettings()
