@@ -843,7 +843,52 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
                     qDebug() << "got embedded picture";
                     avcodec_close(pCodecCtx);
                     avformat_close_input(&pFormatCtx);
-                    return attachedPix;
+                    //return attachedPix;
+
+
+                    qDebug() << "prepare thumbnail for" << file;
+                    try {
+                        Magick::Image thumb(Magick::Blob(attachedPix, attachedPix.length()));
+
+                        Magick::Image background(Magick::Geometry((size_t)pixSize,
+                                                                  (size_t)pixSize),
+                                                 Magick::Color("black"));
+    #ifdef MAGICK7
+                        background.alpha(true);
+    #else
+                        background.matte(true);
+    #endif
+                        background.backgroundColor(background.pixelColor(0,0));
+                        background.transparent(background.pixelColor(0,0));
+
+                        thumb.scale(Magick::Geometry((size_t)pixSize,
+                                                     (size_t)pixSize));
+                        int offsetX = 0;
+                        int offsetY = 0;
+                        if (thumb.columns()<background.columns()) {
+                            offsetX = (int)(background.columns()-thumb.columns())/2;
+                        }
+                        if (thumb.rows()<background.rows()) {
+                            offsetY = (int)(background.rows()-thumb.rows())/2;
+                        }
+                        background.composite(thumb,
+                                             offsetX,
+                                             offsetY,
+                                             MagickCore::OverCompositeOp);
+                        background.magick("BMP");
+                        Magick::Blob buffer;
+                        background.write(&buffer);
+                        result = QByteArray((char*)buffer.data(),
+                                            (int)buffer.length());
+                        qDebug() << "thumbnail is done" << file;
+                    }
+                    catch(Magick::Error &error_ ) {
+                        qWarning() << error_.what();
+                    }
+                    catch(Magick::Warning &warn_ ) {
+                        qWarning() << warn_.what();
+                    }
+
                 }
             }
         }
