@@ -660,18 +660,21 @@ void myModel::loadThumbs(QModelIndexList indexes) {
           (item.split("/").takeLast() == lastEventFilename && !lastEventFilename.isEmpty()))
       {
           qDebug() << "gen new thumb" << item;
-          thumbs->insert(item, getThumb(item));
-          if (item.split("/").takeLast() == lastEventFilename) {
-              qDebug() << "save new thumb cache";
-              lastEventFilename.clear();
-              QFile fileIcons(QString("%1/thumbs.cache").arg(Common::configDir()));
-              if(fileIcons.size() > 10000000) { fileIcons.remove(); }
-              else {
-                  if (fileIcons.open(QIODevice::WriteOnly)) {
-                      QDataStream out(&fileIcons);
-                      out.setDevice(&fileIcons);
-                      out << *thumbs;
-                      fileIcons.close();
+          QByteArray thumb = getThumb(item);
+          if (thumb.size()>0) {
+              thumbs->insert(item, thumb);
+              if (item.split("/").takeLast() == lastEventFilename) {
+                  qDebug() << "save new thumb cache";
+                  lastEventFilename.clear();
+                  QFile fileIcons(QString("%1/thumbs.cache").arg(Common::configDir()));
+                  if(fileIcons.size() > 10000000) { fileIcons.remove(); }
+                  else {
+                      if (fileIcons.open(QIODevice::WriteOnly)) {
+                          QDataStream out(&fileIcons);
+                          out.setDevice(&fileIcons);
+                          out << *thumbs;
+                          fileIcons.close();
+                      }
                   }
               }
           }
