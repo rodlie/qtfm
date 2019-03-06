@@ -141,6 +141,9 @@ void QtFM::newSubWindow(QString path)
     subwindow->setWindowState(Qt::WindowMaximized);
 
     refreshPath(fm);
+    if (mdi->subWindowList().count()>1) {
+        mdi->tileSubWindows();
+    }
 }
 
 void QtFM::parseArgs()
