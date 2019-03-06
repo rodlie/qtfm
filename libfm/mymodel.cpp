@@ -695,7 +695,7 @@ QByteArray myModel::getThumb(QString item) {
 #ifdef WITH_FFMPEG
   QString itemMime = mimeUtilsPtr->getMimeType(item);
   if (itemMime.startsWith(QString("video"))) {
-      return getVideoFrame(item);
+      return getVideoFrame(item, false);
   } else if (itemMime == QString("audio/mpeg")) {
       return  getVideoFrame(item, true);
   }
@@ -798,13 +798,21 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
 
     av_dump_format(pFormatCtx, 0, file.toUtf8().data(), 0);
     int videoStream = -1;
+    int possibleVideoCover = -1;
 
     qDebug() << "get video stream";
     for (int i=0; i < (int)pFormatCtx->nb_streams; i++) {
         if(pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-            videoStream = i;
-            break;
+            if (pFormatCtx->streams[i]->codecpar->codec_id == AV_CODEC_ID_MJPEG) {
+                possibleVideoCover = i;
+            }
+            if (videoStream<0) { videoStream = i; }
+            //break;
         }
+    }
+    if (possibleVideoCover>-1) {
+        qDebug() << "FOUND MJPEG COVER?";
+        videoStream = possibleVideoCover;
     }
     if (videoStream == -1) { return result; }
 
@@ -870,6 +878,7 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
     double dur = static_cast<double>(pFormatCtx->duration)/AV_TIME_BASE;
     int maxFrame = qRound((dur*fps)/2);
     if (videoFrame>=0) { maxFrame = videoFrame; }
+    if (possibleVideoCover>-1) { maxFrame = 0; }
 
     qDebug() << "we need to get frame" << maxFrame;
     int64_t seekT = (int64_t(maxFrame) *
