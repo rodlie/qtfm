@@ -698,9 +698,11 @@ QByteArray myModel::getThumb(QString item) {
 #ifdef WITH_FFMPEG
   QString itemMime = mimeUtilsPtr->getMimeType(item);
   if (itemMime.startsWith(QString("video"))) {
+      QByteArray coverart =  getVideoFrame(item, true);
+      if (coverart.size()>0) { return coverart; }
       return getVideoFrame(item, false);
   } else if (itemMime == QString("audio/mpeg")) {
-      return  getVideoFrame(item, true);
+      return getVideoFrame(item, true);
   }
 #endif
   QByteArray result;
@@ -817,10 +819,9 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
             //break;
         }
     }
-    if (possibleVideoCover>-1) {
+    if (possibleVideoCover>-1 && getEmbedded) {
         qDebug() << "FOUND COVER?";
         videoStream = possibleVideoCover;
-        getEmbedded = true;
     }
     if (videoStream == -1) { return result; }
 
