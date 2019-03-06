@@ -804,7 +804,10 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
     for (int i=0; i < (int)pFormatCtx->nb_streams; i++) {
         if(pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             if (pFormatCtx->streams[i]->codecpar->codec_id == AV_CODEC_ID_MJPEG ||
-                pFormatCtx->streams[i]->codecpar->codec_id == AV_CODEC_ID_PNG) {
+                pFormatCtx->streams[i]->codecpar->codec_id == AV_CODEC_ID_PNG ||
+                pFormatCtx->streams[i]->codecpar->codec_id == AV_CODEC_ID_GIF ||
+                pFormatCtx->streams[i]->codecpar->codec_id == AV_CODEC_ID_TIFF ||
+                pFormatCtx->streams[i]->codecpar->codec_id == AV_CODEC_ID_BMP) {
                 possibleVideoCover = i;
             }
             if (videoStream<0) { videoStream = i; }
@@ -812,8 +815,9 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
         }
     }
     if (possibleVideoCover>-1) {
-        qDebug() << "FOUND MJPEG COVER?";
+        qDebug() << "FOUND COVER?";
         videoStream = possibleVideoCover;
+        getEmbedded = true;
     }
     if (videoStream == -1) { return result; }
 
@@ -879,7 +883,6 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
     double dur = static_cast<double>(pFormatCtx->duration)/AV_TIME_BASE;
     int maxFrame = qRound((dur*fps)/2);
     if (videoFrame>=0) { maxFrame = videoFrame; }
-    if (possibleVideoCover>-1) { maxFrame = 0; }
 
     qDebug() << "we need to get frame" << maxFrame;
     int64_t seekT = (int64_t(maxFrame) *
