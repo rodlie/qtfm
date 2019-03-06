@@ -26,3 +26,6 @@ unix:!macx {
     #desktop man
     !CONFIG(staticlib): QMAKE_RPATHDIR += $ORIGIN/../lib$${LIBSUFFIX}
 }
+
+CONFIG(staticlib): CONFIG(with_magick): include($${top_srcdir}/share/imagemagick.pri)
+CONFIG(staticlib): CONFIG(with_ffmpeg): include($${top_srcdir}/share/ffmpeg.pri)

@@ -64,3 +64,4 @@ unix:!macx {
 }
 
 CONFIG(with_magick): include($${top_srcdir}/share/imagemagick.pri)
+CONFIG(with_ffmpeg): include($${top_srcdir}/share/ffmpeg.pri)

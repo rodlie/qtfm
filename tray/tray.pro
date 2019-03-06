@@ -1,6 +1,7 @@
 include($${top_srcdir}/share/qtfm.pri)
 
-QT += dbus widgets concurrent
+QT += dbus widgets
+CONFIG(staticlib): QT += concurrent
 
 TARGET = qtfm-tray
 TEMPLATE = app
@@ -25,3 +26,5 @@ man.path += $${MANDIR}/man1
 INSTALLS += target desktop man
 
 !CONFIG(staticlib): QMAKE_RPATHDIR += $ORIGIN/../lib$${LIBSUFFIX}
+CONFIG(staticlib): CONFIG(with_magick): include($${top_srcdir}/share/imagemagick.pri)
+CONFIG(staticlib): CONFIG(with_ffmpeg): include($${top_srcdir}/share/ffmpeg.pri)

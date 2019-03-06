@@ -70,6 +70,9 @@ public:
   QString getMimeType(const QModelIndex &index);
   QStringList mimeTypes() const;
   QByteArray getThumb(QString item);
+#ifdef WITH_FFMPEG
+  QByteArray getVideoFrame(QString file, bool getEmbedded = false, int videoFrame = -1, int pixSize = 128);
+#endif
   QFileInfo fileInfo(const QModelIndex &index);
   Qt::DropActions supportedDropActions () const;
   QMimeData* mimeData(const QModelIndexList & indexes) const;
