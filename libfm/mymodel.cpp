@@ -694,8 +694,9 @@ QByteArray myModel::getThumb(QString item) {
 #ifdef WITH_MAGICK
 #ifdef WITH_FFMPEG
   QString itemMime = mimeUtilsPtr->getMimeType(item);
-  if (itemMime.startsWith(QString("video")) ||
-      itemMime == QString("audio/mpeg")) {
+  if (itemMime.startsWith(QString("video"))) {
+      return getVideoFrame(item);
+  } else if (itemMime == QString("audio/mpeg")) {
       return  getVideoFrame(item, true);
   }
 #endif
