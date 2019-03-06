@@ -121,7 +121,8 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
 
     path->setWordWrap(1);
     path->setMinimumWidth(140);
-    path->setText("<b>" + pathName);
+    path->setText(QString("<h2>%1</h2>").arg(pathName.split(QString("/")).takeLast()));
+    path->setToolTip(pathName);
     layoutPath->addWidget(new QLabel(tr("Modified:")),4,0);
     layoutPath->addWidget(modifiedInfo,4,1,Qt::AlignRight);
   } else {
@@ -184,8 +185,8 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
     layoutPermissions->addWidget(new QLabel(" "),0,1);     //blank column
     layoutPermissions->setColumnStretch(1,1);
 
-    layoutPermissions->addWidget(new QLabel(tr("Owner")),0,2);
-    layoutPermissions->addWidget(new QLabel(tr("Group")),0,3);
+    layoutPermissions->addWidget(new QLabel(tr("Owner (%1)").arg(file.owner())),0,2);
+    layoutPermissions->addWidget(new QLabel(tr("Group (%1)").arg(file.group())),0,3);
     layoutPermissions->addWidget(new QLabel(tr("Other")),0,4);
 
     layoutPermissions->addWidget(ownerRead,1,2);
