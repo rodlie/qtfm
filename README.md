@@ -1,3 +1,4 @@
+# QtFM 6.2
 <p align="left"><img src="share/hicolor/scalable/apps/qtfm.svg" alt="QList" height="100px"></p>
 
 [![GitHub release](https://img.shields.io/github/release/rodlie/qtfm.svg)](https://github.com/rodlie/qtfm/releases)
@@ -8,23 +9,23 @@
 
 Lightweight file manager using Qt.
 
-  * Desktop (theme/applications/mime) integration
+  * XDG integration
   * Customizable interface
   * Powerful custom command system
   * Customizable key bindings
   * Drag & drop functionality
   * Tabs
-  * Udisks support
-  * System tray daemon (qtfm-tray, see man for more info)
+  * Removable storage support
+  * System tray daemon (``man qtfm-tray``)
     * Show available storage/optical devices in system tray
     * Auto mount storage/optical devices when added (not default)
     * Auto play audio CD and video/audio DVD (not default)
-  * Application launcher (qtfm-launcher) for Openbox and similar
+  * Application/XDG launcher (qtfm-launcher) for Openbox and similar
   * Extensive thumbnail support
-    * Supports all common (and uncommon) image formats through ImageMagick
+    * Supports image formats through ImageMagick
     * Supports PDF and related documents
-    * Supports all common (and uncommon) video formats through FFmpeg
-    * Supports embedded coverart in audio
+    * Supports video formats through FFmpeg
+    * Supports embedded coverart in media files
 
 ## Links
 
@@ -71,13 +72,21 @@ QtFM is available in several distributions:
 
 Download the latest [release](https://github.com/rodlie/qtfm/releases), then make sure you have the required dependencies.
 
-* Requires [QtBase](http://qt.io) 5.2+ (5.6.3/5.9.7/5.12.x recommended)
+* Requires [Qt](http://qt.io) 5.2+ (5.6.3/5.9.7/5.12.x recommended)
+  * libQt5Widgets
+  * libQt5Gui
+  * libQt5Concurrent
+  * libQt5DBus
+  * libQt5Core
 * Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/)
 * Requires [adwaita-icon-theme](https://github.com/GNOME/adwaita-icon-theme) or similar
 * Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD/NetBSD/macOS**
-* Optional [udisks](https://www.freedesktop.org/wiki/Software/udisks/)/[bsdisks](https://www.freshports.org/sysutils/bsdisks/) at run-time
-* Optional [ImageMagick (Magick++)](http://imagemagick.org) 6.9/7.x for improved thumbnail support
-* Optional [FFmpeg](https://ffmpeg.org) 3+ for video/audio thumbnails
+* Recommended [udisks](https://www.freedesktop.org/wiki/Software/udisks/)/[bsdisks](https://www.freshports.org/sysutils/bsdisks/) at run-time
+* Recommended [ImageMagick (Magick++)](http://imagemagick.org) 6.9/7.x for improved thumbnail support
+  * libMagick++
+  * libMagickWand
+  * libMagickCore
+* Recommended [FFmpeg](https://ffmpeg.org) 3+ for video/audio thumbnails/coverart
   * libavdevice
   * libswscale
   * libavformat
@@ -95,7 +104,8 @@ Or use git:
 git clone https://github.com/rodlie/qtfm
 cd qtfm
 ```
-Optional build options:
+
+Build options:
 
  * ``CONFIG+=with_magick`` : This will enable ImageMagick support
    * ``MAGICK_PC=`` : Custom Magick++ pkg-config .pc file
@@ -111,7 +121,6 @@ Optional build options:
  * ``MANDIR=`` : Location for man pages (default is PREFIX/share/man)
  * ``XDGDIR=`` : Location of XDG (default is /etc/xdg or PREFIX/etc/xdg)
  * ``LIBDIR=`` : Library location (default is ``$PREFIX/lib$LIBSUFFIX``)
-
 
 Doing a normal build:
 ```
@@ -133,9 +142,89 @@ Example:
 
 ```
 mkdir build && cd build
-qmake PREFIX=/usr LIBSUFFIX=64 CONFIG+=with_magick CONFIG+=with_ffmpeg CONFIG+=with_includes ..
+qmake PREFIX=/usr LIBSUFFIX=64 CONFIG+=with_magick CONFIG+=with_ffmpeg ..
 make -jX
 make INSTALL_ROOT=/package_temp_path install
+```
+```
+pkg
+├── etc
+│   └── xdg
+│       └── autostart
+│           └── qtfm-tray.desktop
+└── usr
+    ├── bin
+    │   ├── qtfm
+    │   ├── qtfm-launcher
+    │   └── qtfm-tray
+    ├── lib64
+    │   ├── libQtFM.so -> libQtFM.so.6.2.0
+    │   ├── libQtFM.so.6 -> libQtFM.so.6.2.0
+    │   ├── libQtFM.so.6.2 -> libQtFM.so.6.2.0
+    │   └── libQtFM.so.6.2.0
+    └── share
+        ├── applications
+        │   └── qtfm.desktop
+        ├── doc
+        │   └── qtfm-6.2.0
+        │       ├── AUTHORS
+        │       ├── ChangeLog
+        │       ├── LICENSE
+        │       └── README.md
+        ├── icons
+        │   └── hicolor
+        │       ├── 128x128
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 160x160
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 16x16
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 192x192
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 20x20
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 22x22
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 24x24
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 256x256
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 32x32
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 36x36
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 48x48
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 512x512
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 64x64
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 72x72
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       ├── 96x96
+        │       │   └── apps
+        │       │       └── qtfm.png
+        │       └── scalable
+        │           └── apps
+        │               └── qtfm.svg
+        └── man
+            └── man1
+                ├── qtfm-tray.1
+                └── qtfm.1
 ```
 
 ## License
