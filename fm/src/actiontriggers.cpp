@@ -29,7 +29,7 @@ void MainWindow::executeFile(QModelIndex index, bool run) {
 #ifdef Q_OS_MAC
     myProcess->startDetached(QString("open %1").arg(modelList->filePath(srcIndex)));
 #else
-    myProcess->startDetached(modelList->filePath(srcIndex));
+    myProcess->startDetached(QString("\"%1\"").arg(modelList->filePath(srcIndex)));
 #endif
   } else {
     mimeUtils->openInApp(modelList->fileInfo(srcIndex), ""/*term*/);
