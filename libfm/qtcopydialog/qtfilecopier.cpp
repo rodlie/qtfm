@@ -57,6 +57,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QTimer>
 #include <QtCore/QMetaType>
+#include <QDebug>
 
 struct CopyRequest {
     CopyRequest() {
@@ -1384,6 +1385,7 @@ QtFileCopier::QtFileCopier(QObject *parent) : QObject(parent)
 
 QtFileCopier::~QtFileCopier()
 {
+    qDebug() << "DEL COPIER";
     Q_D(QtFileCopier);
     delete d;
 }

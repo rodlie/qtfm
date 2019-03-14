@@ -53,6 +53,8 @@
 #include <QMessageBox>
 #include <QStyle>
 #include <QEvent>
+#include <QDebug>
+
 #include "qtfilecopier.h"
 #include "ui_qtcopydialog.h"
 #include "ui_qtoverwritedialog.h"
@@ -624,8 +626,9 @@ void QtCopyDialogPrivate::addRequest(int id)
     window \a flags.
 */
 
-QtCopyDialog::QtCopyDialog(QWidget *parent, Qt::WindowFlags f)
+QtCopyDialog::QtCopyDialog(QWidget *parent, bool delOnClose, Qt::WindowFlags f)
     : QDialog(parent, f)
+    , m_del(delOnClose)
 {
     d_ptr = new QtCopyDialogPrivate;
     Q_D(QtCopyDialog);
@@ -648,14 +651,16 @@ QtCopyDialog::QtCopyDialog(QWidget *parent, Qt::WindowFlags f)
     \sa setFileCopier()
 */
 
-QtCopyDialog::QtCopyDialog(QtFileCopier *copier, QWidget *parent, Qt::WindowFlags f)
+QtCopyDialog::QtCopyDialog(QtFileCopier *copier, QWidget *parent, bool delOnClose, Qt::WindowFlags f)
     : QDialog(parent, f)
+    , m_del(delOnClose)
 {
     d_ptr = new QtCopyDialogPrivate;
     Q_D(QtCopyDialog);
     d->q_ptr = this;
     d->init();
 
+    if (m_del) { setAttribute(Qt::WA_DeleteOnClose); }
     setFileCopier(copier);
 
     //setModal(false);
@@ -667,7 +672,9 @@ QtCopyDialog::QtCopyDialog(QtFileCopier *copier, QWidget *parent, Qt::WindowFlag
 
 QtCopyDialog::~QtCopyDialog()
 {
+    qDebug() << "DEL DIALOG";
     Q_D(QtCopyDialog);
+    if (m_del) { fileCopier()->deleteLater(); }
     delete d;
 }
 
@@ -798,13 +805,6 @@ void QtCopyDialog::reject()
         d->fileCopier->cancelAll();
     QDialog::reject();
 }
-
-
-
-
-
-
-
 
 #include "qtcopydialog.moc"
 #include "moc_qtcopydialog.cpp"
