@@ -48,6 +48,16 @@ HEADERS += \
     fm.h \
     bookmarkmodel.h
 
+# qtcopydialog
+INCLUDEPATH += qtcopydialog
+SOURCES += qtcopydialog/qtcopydialog.cpp \
+           qtcopydialog/qtfilecopier.cpp
+HEADERS += qtcopydialog/qtcopydialog.h \
+           qtcopydialog/qtfilecopier.h
+FORMS   += qtcopydialog/qtcopydialog.ui \
+           qtcopydialog/qtoverwritedialog.ui \
+           qtcopydialog/qtotherdialog.ui
+
 unix:!macx {
     DESTDIR = $${top_builddir}/lib$${LIBSUFFIX}
     OBJECTS_DIR = $${DESTDIR}/.obj_libfm

@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- qtcopydialog-2.2_1-opensource/src/qtfilecopier.cpp -->
+<head>
+  <title>QtFileCopier Class Reference</title>
+  <link href="classic.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="left" valign="top" width="32"><img src="images/qt-logo.png" align="left" width="57" height="67" border="0" /></td>
+<td width="1">&nbsp;&nbsp;</td><td class="postheader" valign="center"><a href="index.html"><font color="#004faf">Home</font></a></td>
+</tr></table><h1 class="title">QtFileCopier Class Reference</h1>
+<p>The QtFileCopier class allows you to copy and move files in a background process. <a href="#details">More...</a></p>
+<pre> #include &lt;QtFileCopier&gt;</pre><p>Inherits <a href="http://qt.nokia.com/doc/4.5/qobject.html">QObject</a>.</p>
+<ul>
+<li><a href="qtfilecopier-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-types"></a>
+<h3>Public Types</h3>
+<ul>
+<li><div class="fn"></div>enum <b><a href="qtfilecopier.html#CopyFlag-enum">CopyFlag</a></b> { NonInteractive, Force, MakeLinks, FollowLinks }</li>
+<li><div class="fn"></div>flags <b><a href="qtfilecopier.html#CopyFlag-enum">CopyFlags</a></b></li>
+<li><div class="fn"></div>enum <b><a href="qtfilecopier.html#Error-enum">Error</a></b> { NoError, SourceNotExists, DestinationExists, SourceDirectoryOmitted, ..., Canceled }</li>
+<li><div class="fn"></div>enum <b><a href="qtfilecopier.html#State-enum">State</a></b> { Idle, Busy, WaitingForInteraction }</li>
+</ul>
+<a name="properties"></a>
+<h3>Properties</h3>
+<ul>
+<li><div class="fn"></div><b><a href="qtfilecopier.html#autoReset-prop">autoReset</a></b> : bool</li>
+<li><div class="fn"></div><b><a href="qtfilecopier.html#progressInterval-prop">progressInterval</a></b> : int</li>
+</ul>
+<ul>
+<li><div class="fn"></div>1 property inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#properties">QObject</a></li>
+</ul>
+<a name="public-functions"></a>
+<h3>Public Functions</h3>
+<ul>
+<li><div class="fn"></div><b><a href="qtfilecopier.html#QtFileCopier">QtFileCopier</a></b> ( QObject * <i>parent</i> = 0 )</li>
+<li><div class="fn"></div><b><a href="qtfilecopier.html#dtor.QtFileCopier">~QtFileCopier</a></b> ()</li>
+<li><div class="fn"></div>bool <b><a href="qtfilecopier.html#autoReset-prop">autoReset</a></b> () const</li>
+<li><div class="fn"></div>int <b><a href="qtfilecopier.html#copy">copy</a></b> ( const QString &amp; <i>sourceFile</i>, const QString &amp; <i>destinationPath</i>, CopyFlags <i>flags</i> = 0 )</li>
+<li><div class="fn"></div>QList&lt;int&gt; <b><a href="qtfilecopier.html#copyDirectory">copyDirectory</a></b> ( const QString &amp; <i>sourceDir</i>, const QString &amp; <i>destinationDir</i>, CopyFlags <i>flags</i> = 0 )</li>
+<li><div class="fn"></div>QList&lt;int&gt; <b><a href="qtfilecopier.html#copyFiles">copyFiles</a></b> ( const QStringList &amp; <i>sourceFiles</i>, const QString &amp; <i>destinationDir</i>, CopyFlags <i>flags</i> = 0 )</li>
+<li><div class="fn"></div>int <b><a href="qtfilecopier.html#currentId">currentId</a></b> () const</li>
+<li><div class="fn"></div>QString <b><a href="qtfilecopier.html#destinationFilePath">destinationFilePath</a></b> ( int <i>identifier</i> ) const</li>
+<li><div class="fn"></div>QList&lt;int&gt; <b><a href="qtfilecopier.html#entryList">entryList</a></b> ( int <i>identifier</i> ) const</li>
+<li><div class="fn"></div>bool <b><a href="qtfilecopier.html#isDir">isDir</a></b> ( int <i>identifier</i> ) const</li>
+<li><div class="fn"></div>int <b><a href="qtfilecopier.html#move">move</a></b> ( const QString &amp; <i>sourceFile</i>, const QString &amp; <i>destinationPath</i>, CopyFlags <i>flags</i> = 0 )</li>
+<li><div class="fn"></div>QList&lt;int&gt; <b><a href="qtfilecopier.html#moveDirectory">moveDirectory</a></b> ( const QString &amp; <i>sourceDir</i>, const QString &amp; <i>destinationDir</i>, CopyFlags <i>flags</i> = 0 )</li>
+<li><div class="fn"></div>QList&lt;int&gt; <b><a href="qtfilecopier.html#moveFiles">moveFiles</a></b> ( const QStringList &amp; <i>sourceFiles</i>, const QString &amp; <i>destinationDir</i>, CopyFlags <i>flags</i> = 0 )</li>
+<li><div class="fn"></div>QList&lt;int&gt; <b><a href="qtfilecopier.html#pendingRequests">pendingRequests</a></b> () const</li>
+<li><div class="fn"></div>int <b><a href="qtfilecopier.html#progressInterval-prop">progressInterval</a></b> () const</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#autoReset-prop">setAutoReset</a></b> ( bool <i>on</i> )</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#progressInterval-prop">setProgressInterval</a></b> ( int <i>ms</i> )</li>
+<li><div class="fn"></div>QString <b><a href="qtfilecopier.html#sourceFilePath">sourceFilePath</a></b> ( int <i>identifier</i> ) const</li>
+<li><div class="fn"></div>State <b><a href="qtfilecopier.html#state">state</a></b> () const</li>
+</ul>
+<ul>
+<li><div class="fn"></div>29 public functions inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#public-functions">QObject</a></li>
+</ul>
+<a name="public-slots"></a>
+<h3>Public Slots</h3>
+<ul>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#cancel">cancel</a></b> ( int <i>identifier</i> )</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#cancelAll">cancelAll</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#overwrite">overwrite</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#overwriteAll">overwriteAll</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#reset">reset</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#resetOverwrite">resetOverwrite</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#resetSkip">resetSkip</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#retry">retry</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#skip">skip</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#skipAll">skipAll</a></b> ()</li>
+</ul>
+<ul>
+<li><div class="fn"></div>1 public slot inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#public-slots">QObject</a></li>
+</ul>
+<a name="signals"></a>
+<h3>Signals</h3>
+<ul>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#canceled">canceled</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#dataTransferProgress">dataTransferProgress</a></b> ( int <i>identifier</i>, qint64 <i>progress</i> )</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#done">done</a></b> ( bool <i>error</i> )</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#error">error</a></b> ( int <i>identifier</i>, QtFileCopier::Error <i>error</i>, bool <i>stopped</i> )</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#finished">finished</a></b> ( int <i>identifier</i>, bool <i>error</i> )</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#started">started</a></b> ( int <i>identifier</i> )</li>
+<li><div class="fn"></div>void <b><a href="qtfilecopier.html#stateChanged">stateChanged</a></b> ( QtFileCopier::State <i>state</i> )</li>
+</ul>
+<ul>
+<li><div class="fn"></div>1 signal inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#signals">QObject</a></li>
+</ul>
+<h3>Additional Inherited Members</h3>
+<ul>
+<li><div class="fn"></div>1 public type inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#public-variables">QObject</a></li>
+<li><div class="fn"></div>4 static public members inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#static-public-members">QObject</a></li>
+<li><div class="fn"></div>7 protected functions inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#protected-functions">QObject</a></li>
+<li><div class="fn"></div>2 protected variables inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#protected-variables">QObject</a></li>
+</ul>
+<a name="details"></a>
+<hr />
+<h2>Detailed Description</h2>
+<p>The QtFileCopier class allows you to copy and move files in a background process.</p>
+<p>QtFileCopier provides a collection of functions performing the copy and move operations:</p>
+<ul>
+<li><a href="qtfilecopier.html#copy">copy</a>()</li>
+<li><a href="qtfilecopier.html#copyFiles">copyFiles</a>()</li>
+<li><a href="qtfilecopier.html#copyDirectory">copyDirectory</a>()</li>
+<li><a href="qtfilecopier.html#move">move</a>()</li>
+<li><a href="qtfilecopier.html#moveFiles">moveFiles</a>()</li>
+<li><a href="qtfilecopier.html#moveDirectory">moveDirectory</a>()</li>
+</ul>
+<p>If you want to present visual feedback of an operation's progress in an console application or in a GUI application, you can either create an instance of the <a href="qtcopydialog.html">QtCopyDialog</a> class, and connect it to your instance of the QtFileCopier class using the <a href="qtcopydialog.html#setFileCopier">QtCopyDialog::setFileCopier</a>() function, or you can let the application provide the visual feedback itself.</p>
+<p>The QtFileCopier class also provides a series of other functions, signals and slots.</p>
+<p>Operations are queued and performed one by one. You are notified about the beginning and end of each operation by the <a href="qtfilecopier.html#started">started</a>() and <a href="qtfilecopier.html#finished">finished</a>() signals, respectively. In particular, when an operation concerns a directory, you are notified about the beginning and end of each sub-directory operation recursively.</p>
+<p>While performing the operations you are notified about the progress with the <a href="qtfilecopier.html#dataTransferProgress">dataTransferProgress</a>() signal. If an error occurs, the <a href="qtfilecopier.html#error">error</a>() signal is emitted.</p>
+<p>You can retrieve information about current and pending operations using the <a href="qtfilecopier.html#pendingRequests">pendingRequests</a>() and <a href="qtfilecopier.html#currentId">currentId</a>() functions. To retrieve information about a specific operation you can use the <a href="qtfilecopier.html#sourceFilePath">sourceFilePath</a>(), <a href="qtfilecopier.html#destinationFilePath">destinationFilePath</a>(), <a href="qtfilecopier.html#entryList">entryList</a>() and <a href="qtfilecopier.html#isDir">isDir</a>() functions, passing the operation's identifier as argument.</p>
+<p>All pending operations can be canceled with the <a href="qtfilecopier.html#cancelAll">cancelAll</a>() slot, you can cancel any given operation by specifying its identifier as argument.</p>
+<p>By default, a file copier works in an interactive mode which means that when an error occurs, the operation is halted, the <a href="qtfilecopier.html#error">error</a>() signal is emitted, and the file copier waits for the user's respons. The user can choose to resume by skipping the operation, overwrite the destination or repeat the operation using the <a href="qtfilecopier.html#skip">skip</a>(), <a href="qtfilecopier.html#skipAll">skipAll</a>(), <a href="qtfilecopier.html#overwrite">overwrite</a>(), <a href="qtfilecopier.html#overwriteAll">overwriteAll</a>() or <a href="qtfilecopier.html#retry">retry</a>() slots.</p>
+<p>You can manipulate the behavior, and the result, of each operation with the <a href="qtfilecopier.html#CopyFlag-enum">QtFileCopier::CopyFlags</a> passed with the <a href="qtfilecopier.html#copy">copy</a>() and <a href="qtfilecopier.html#move">move</a>() functions. Note that when the <a href="qtfilecopier.html#CopyFlag-enum">QtFileCopier::NonInteractive</a> flag is passed as argument, the operation will not halt if an error occurs.</p>
+<p>An instance of the QtFileCopier class is always in one of the states specified by the <a href="qtfilecopier.html#State-enum">QtFileCopier::State</a> enum. You are notified about transitions from one state to another by the <a href="qtfilecopier.html#stateChanged">stateChanged</a>() signal. The new state is passed as argument.</p>
+<p>When all pending operations are completed, the <a href="qtfilecopier.html#done">done</a>() signal is emitted.</p>
+<p>If you want to provide feedback and error handling, you can use your class constructor to create the file copier, and an associated copy dialog, and to connect the various QtFileCopier signals to your own custum slots. For example:</p>
+<pre> QtFileCopier *copier;
+ QtCopyDialog *copyDialog;
+
+ MyClass::MyClass(QObject *parent)
+ {
+     copier = new QtFileCopier(parent);
+     copyDialog = new QtCopyDialog(parent);
+     copyDialog-&gt;setFileCopier(copier);
+
+     QObject::connect(copier, SIGNAL(stateChanged(QtFileCopier::State)),
+                      this, SLOT(stateChanged(QtFileCopier::State)));
+
+     QObject::connect(copier, SIGNAL(done(bool)), this, SLOT(done(bool)));
+
+     QObject::connect(copier, SIGNAL(error(int, QtFileCopier::Error, bool)),
+                      this, SLOT(error(int, QtFileCopier::Error, bool)));
+ }</pre>
+<p>The copy dialog provides visual feedback, and the option of aborting the operation. The error handling can be implemented in a custom slot. In addition, you can implement any other respons to the file copier's signals:</p>
+<pre> QMainWindow *mainWindow;
+
+ MyClass::error(int identifier, QtFileCopier::Error error, bool stopped)
+ {
+     if (stopped == true) {
+         ... <span class="comment">// make interactive query</span>
+     }
+ }
+
+ MyClass::stateChanged(QtFileCopier::State state)
+ {
+     if (state != Idle) {
+         mainWindow-&gt;setCursor(Qt::WaitCursor);
+         ... <span class="comment">// copying started</span>
+     } else {
+         mainWindow-&gt;unsetCursor();
+         ...
+     }
+ }
+
+ MyClass::done(bool error)
+ {
+     mainWindow-&gt;statusBar()-&gt;showMessage(tr(&quot;Done&quot;));
+ }</pre>
+<p>In the end, you can let your <a href="qtfilecopier.html#copy">copy</a>() function perform the required operations:</p>
+<pre> QString sourceFile;
+ QStringList sourceFiles;
+ QString destinationPath;
+ QString destinationDir;
+
+ CopyFlags flags;
+
+ MyClass::copy()
+ {
+     copier-&gt;copy(sourceFile, destinationPath, flags);
+     copier-&gt;copyFiles(sourceFiles, destinationDir, flags);
+     copier-&gt;move(sourceFile, destinationPath, flags);
+ }</pre>
+<p>If you choose to use the QtFileCopier class to perform the operations in a background process without error handling and visual feedback, you can implement the QtFileCopier construction in your <a href="qtfilecopier.html#copy">copy</a>() function:</p>
+<pre> MyClass::copy()
+ {
+     QtFileCopier copier(this);
+     QtFileCopier::QtCopyFlags flags = QtFileCopier::NonInteractive;
+     copier.copy(sourceFile, destinationPath, flags);
+     copier.copyFiles(sourceFiles, destinationDir, flags);
+     copier.move(sourceFile, destinationPath, flags);
+ }</pre>
+<p>Note that when reaching the end of the MyClass::copy() function in the example above, the QtFileCopier destructor will not abort the operations currently performed, nor will it wait for the operations to be completed; the destructor will destroy the file copier while the operations will still be running in their own threads. When all tasks in a thread are done, the thread will automatically destroy itself.</p>
+<p>See also <a href="qtcopydialog.html">QtCopyDialog</a>.</p>
+<hr />
+<h2>Member Type Documentation</h2>
+<h3 class="flags"><a name="CopyFlag-enum"></a>enum QtFileCopier::CopyFlag<br />flags QtFileCopier::CopyFlags</h3>
+<p>This enum type is used to specify how <a href="qtfilecopier.html">QtFileCopier</a> performs a copy or move operation.</p>
+<p><table border="1" cellpadding="2" cellspacing="1" width="100%">
+<tr><th width="25%">Constant</th><th width="15%">Value</th><th width="60%">Description</th></tr>
+<tr><td valign="top"><tt>QtFileCopier::NonInteractive</tt></td><td align="center" valign="top"><tt>0x01</tt></td><td valign="top"><a href="qtfilecopier.html">QtFileCopier</a> ignores any errors that occur while performing the operation (i.e&#x2e; an error in the operation will not block the <a href="qtfilecopier.html">QtFileCopier</a>'s thread).</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::Force</tt></td><td align="center" valign="top"><tt>0x02</tt></td><td valign="top">When the destination file cannot be opened for writing, the <a href="qtfilecopier.html">QtFileCopier</a> tries to remove it and open it again.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::MakeLinks</tt></td><td align="center" valign="top"><tt>0x04</tt></td><td valign="top">The <a href="qtfilecopier.html">QtFileCopier</a> makes symbolic links (or shortcuts on Windows) instead of copying.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::FollowLinks</tt></td><td align="center" valign="top"><tt>0x08</tt></td><td valign="top">The <a href="qtfilecopier.html">QtFileCopier</a> recursively follows symbolic links (or shortcuts on Windows) and copies the target instead of copying link itself.</td></tr>
+</table></p>
+<p>The CopyFlags type is a typedef for <a href="qflags.html">QFlags</a>&lt;CopyFlag&gt;. It stores an OR combination of CopyFlag values.</p>
+<p>See also <a href="qtfilecopier.html#copy">copy</a>() and <a href="qtfilecopier.html#move">move</a>().</p>
+<h3 class="fn"><a name="Error-enum"></a>enum QtFileCopier::Error</h3>
+<p>This enum type is used to specify the various errors that can occur during a copy or move operation.</p>
+<p><table border="1" cellpadding="2" cellspacing="1" width="100%">
+<tr><th width="25%">Constant</th><th width="15%">Value</th><th width="60%">Description</th></tr>
+<tr><td valign="top"><tt>QtFileCopier::NoError</tt></td><td align="center" valign="top"><tt>0</tt></td><td valign="top">No error occured.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::SourceNotExists</tt></td><td align="center" valign="top"><tt>1</tt></td><td valign="top">The source file doesn't exist.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::DestinationExists</tt></td><td align="center" valign="top"><tt>2</tt></td><td valign="top">The destination file exists.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::SourceDirectoryOmitted</tt></td><td align="center" valign="top"><tt>3</tt></td><td valign="top">The source was supposed to be a file, but the specified source is a directory (e.g&#x2e; calling the <a href="qtfilecopier.html#copy">copy</a>() function).</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::SourceFileOmitted</tt></td><td align="center" valign="top"><tt>4</tt></td><td valign="top">The source was supposed to be a directory, but the specified source is a file (e.g&#x2e; calling the <a href="qtfilecopier.html#copyDirectory">copyDirectory</a>() function).</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::PathToDestinationNotExists</tt></td><td align="center" valign="top"><tt>5</tt></td><td valign="top">The path to the destination file doesn't exist.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::CannotCreateDestinationDirectory</tt></td><td align="center" valign="top"><tt>6</tt></td><td valign="top">The destination directory cannot be created.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::CannotOpenSourceFile</tt></td><td align="center" valign="top"><tt>7</tt></td><td valign="top">The source file cannot be opened.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::CannotOpenDestinationFile</tt></td><td align="center" valign="top"><tt>8</tt></td><td valign="top">The destination file cannot be opened.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::CannotRemoveDestinationFile</tt></td><td align="center" valign="top"><tt>9</tt></td><td valign="top">The destination file cannot be removed (this error occurs when the <a href="qtfilecopier.html#CopyFlag-enum">QtFileCopier::Force</a> flag is specified).</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::CannotCreateSymLink</tt></td><td align="center" valign="top"><tt>10</tt></td><td valign="top">The requested symbolic link (or shortcut on Windows) cannot be created.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::CannotReadSourceFile</tt></td><td align="center" valign="top"><tt>11</tt></td><td valign="top">The source file cannot be read.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::CannotWriteDestinationFile</tt></td><td align="center" valign="top"><tt>12</tt></td><td valign="top">The destination file cannot be written.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::CannotRemoveSource</tt></td><td align="center" valign="top"><tt>13</tt></td><td valign="top">The source file cannot be removed (this error occurs when performing move operations).</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::Canceled</tt></td><td align="center" valign="top"><tt>14</tt></td><td valign="top">The operation was canceled.</td></tr>
+</table></p>
+<p>See also <a href="qtfilecopier.html#error">error</a>().</p>
+<h3 class="fn"><a name="State-enum"></a>enum QtFileCopier::State</h3>
+<p>This enum type defines the various states a file copier can have.</p>
+<p>An instance of the <a href="qtfilecopier.html">QtFileCopier</a> class is always in one of the states specified by this enum. You are notified about transitions from one state to another by the <a href="qtfilecopier.html#stateChanged">stateChanged</a>() signal. The default state is QtFileCopier::Idle.</p>
+<p><table border="1" cellpadding="2" cellspacing="1" width="100%">
+<tr><th width="25%">Constant</th><th width="15%">Value</th><th width="60%">Description</th></tr>
+<tr><td valign="top"><tt>QtFileCopier::Idle</tt></td><td align="center" valign="top"><tt>0</tt></td><td valign="top">The file copier is not performing any operation and has an empty pending list.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::Busy</tt></td><td align="center" valign="top"><tt>1</tt></td><td valign="top">The file copier is performing an operation.</td></tr>
+<tr><td valign="top"><tt>QtFileCopier::WaitingForInteraction</tt></td><td align="center" valign="top"><tt>2</tt></td><td valign="top">The file copier is waiting for the user's respons. To resume the operation use the <a href="qtfilecopier.html#skip">skip</a>(), <a href="qtfilecopier.html#skipAll">skipAll</a>(), <a href="qtfilecopier.html#overwrite">overwrite</a>(), <a href="qtfilecopier.html#overwriteAll">overwriteAll</a>() or <a href="qtfilecopier.html#retry">retry</a>() functions.</td></tr>
+</table></p>
+<p>See also <a href="qtfilecopier.html#state">state</a>() and <a href="qtfilecopier.html#stateChanged">stateChanged</a>().</p>
+<hr />
+<h2>Property Documentation</h2>
+<h3 class="fn"><a name="autoReset-prop"></a>autoReset : bool</h3>
+<p>This property holds whether the file copier's default behavior is automatically reset when all pending operations are completed, or not.</p>
+<p>The default is true.</p>
+<p>Note that if this property is set to false, and for example, the last failing operation before the file copier entered the idle state was resolved by skipping all subsequent operations with the same error, the file copier will continue to skip operations with this error unless the <a href="qtfilecopier.html#reset">reset</a>() function is called explicitly.</p>
+<p>Access functions:</p>
+<ul>
+<li><div class="fn"></div><b>bool autoReset () const</b></li>
+<li><div class="fn"></div><b>void setAutoReset ( bool <i>on</i> )</b></li>
+</ul>
+<p>See also <a href="qtfilecopier.html#reset">reset</a>().</p>
+<h3 class="fn"><a name="progressInterval-prop"></a>progressInterval : int</h3>
+<p>This property holds the time that must pass before the next dataTransferProgress() signal is emitted.</p>
+<p>The default is 100 miliseconds.</p>
+<p>Access functions:</p>
+<ul>
+<li><div class="fn"></div><b>int progressInterval () const</b></li>
+<li><div class="fn"></div><b>void setProgressInterval ( int <i>ms</i> )</b></li>
+</ul>
+<p>See also <a href="qtfilecopier.html#dataTransferProgress">dataTransferProgress</a>().</p>
+<hr />
+<h2>Member Function Documentation</h2>
+<h3 class="fn"><a name="QtFileCopier"></a>QtFileCopier::QtFileCopier ( <a href="http://qt.nokia.com/doc/4.5/qobject.html">QObject</a> * <i>parent</i> = 0 )</h3>
+<p>Creates a file copier with the given <i>parent</i>. The file copier's default state is <a href="qtfilecopier.html#State-enum">QtFileCopier::Idle</a>.</p>
+<h3 class="fn"><a name="dtor.QtFileCopier"></a>QtFileCopier::~QtFileCopier ()</h3>
+<p>Destroys the file copier.</p>
+<p>If there are pending operations, they will be still completed after the file copier's destruction. If the file copier was in the <a href="qtfilecopier.html#State-enum">QtFileCopier::WaitingForInteraction</a> state, the halted operation is resolved, but no operations are halted after the file copier is destroyed.</p>
+<p>To stop all the pending operations, you must call <a href="qtfilecopier.html#cancelAll">cancelAll</a>() before destructing the file copier.</p>
+<h3 class="fn"><a name="cancel"></a>void QtFileCopier::cancel ( int <i>identifier</i> )&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Cancels the operation with the given <i>identifier</i>.</p>
+<h3 class="fn"><a name="cancelAll"></a>void QtFileCopier::cancelAll ()&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Cancels all operations, including the current one.</p>
+<h3 class="fn"><a name="canceled"></a>void QtFileCopier::canceled ()&nbsp;&nbsp;<tt> [signal]</tt></h3>
+<p>This signal is emitted when the <a href="qtfilecopier.html#cancelAll">cancelAll</a>() function is called, i.e&#x2e; when all pending operations are canceled.</p>
+<p>See also <a href="qtfilecopier.html#started">started</a>() and <a href="qtfilecopier.html#pendingRequests">pendingRequests</a>().</p>
+<h3 class="fn"><a name="copy"></a>int QtFileCopier::copy ( const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>sourceFile</i>, const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>destinationPath</i>, <a href="qtfilecopier.html#CopyFlag-enum">CopyFlags</a> <i>flags</i> = 0 )</h3>
+<p>Schedules an operation copying the <i>sourceFile</i> into the <i>destinationPath</i>, retaining the file name.</p>
+<p>The file copier will perform the copy operation according to the specified <i>flags</i> when the program execution returns to the event processing loop. The operation can only be scheduled when the file copier is in the <a href="qtfilecopier.html#State-enum">QtFileCopier::Idle</a> state.</p>
+<p>If the <i>destinationPath</i> points to an existing directory, the <i>sourceFile</i> is copied into that directory. If the <i>destinationPath</i> doesn't exist, the operation will fail.</p>
+<p>The function returns a non negative value as the operation identifier. If the operation is not valid, or the file copier is not in the appropiate state, the function returns -1.</p>
+<p>See also <a href="qtfilecopier.html#copyFiles">copyFiles</a>(), <a href="qtfilecopier.html#copyDirectory">copyDirectory</a>(), and <a href="qtfilecopier.html#move">move</a>().</p>
+<h3 class="fn"><a name="copyDirectory"></a><a href="http://qt.nokia.com/doc/4.5/qlist.html">QList</a>&lt;int&gt; QtFileCopier::copyDirectory ( const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>sourceDir</i>, const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>destinationDir</i>, <a href="qtfilecopier.html#CopyFlag-enum">CopyFlags</a> <i>flags</i> = 0 )</h3>
+<p>Schedules recursively operations copying the files in <i>sourceDir</i> into the <i>destinationDir</i>, retaining the file names.</p>
+<p>The file copier will perform the copy operations according to the specified <i>flags</i> when the program execution returns to the event processing loop. The operations can only be scheduled when the file copier is in the <a href="qtfilecopier.html#State-enum">QtFileCopier::Idle</a> state.</p>
+<p>If the <i>destinationDir</i> points to an existing directory, the <i>sourceDir</i> is copied into that directory. If the <i>destinationDir</i> doesn't exist, the operation will fail.</p>
+<p>The function returns a list of non negative values as the operation identifiers. The returned list can contain less items than the number of files in <i>sourceDir</i> in case some operations were not valid.</p>
+<p>See also <a href="qtfilecopier.html#copy">copy</a>(), <a href="qtfilecopier.html#copyFiles">copyFiles</a>(), and <a href="qtfilecopier.html#moveDirectory">moveDirectory</a>().</p>
+<h3 class="fn"><a name="copyFiles"></a><a href="http://qt.nokia.com/doc/4.5/qlist.html">QList</a>&lt;int&gt; QtFileCopier::copyFiles ( const <a href="http://qt.nokia.com/doc/4.5/qstringlist.html">QStringList</a> &amp; <i>sourceFiles</i>, const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>destinationDir</i>, <a href="qtfilecopier.html#CopyFlag-enum">CopyFlags</a> <i>flags</i> = 0 )</h3>
+<p>Schedules operations copying the <i>sourceFiles</i> into the <i>destinationDir</i>, retaining the file names.</p>
+<p>The file copier will perform the copy operations according to the specified <i>flags</i> when the program execution returns to the event processing loop. The operations can only be scheduled when the file copier is in the <a href="qtfilecopier.html#State-enum">QtFileCopier::Idle</a> state.</p>
+<p>If a source in the <i>sourceFiles</i> list points to a directory then that source is omitted. If the <i>destinationDir</i> doesn't exist, the function does nothing.</p>
+<p>The function returns a list of non negative values as the operation identifiers. The returned list can contain less items than the <i>sourceFiles</i> list in case some operations were not valid.</p>
+<p>See also <a href="qtfilecopier.html#copy">copy</a>(), <a href="qtfilecopier.html#copyDirectory">copyDirectory</a>(), and <a href="qtfilecopier.html#moveFiles">moveFiles</a>().</p>
+<h3 class="fn"><a name="currentId"></a>int QtFileCopier::currentId () const</h3>
+<p>Returns the currently performed operation's identifier, or -1 if there is no current operation (e.g&#x2e; the file copier is in the <a href="qtfilecopier.html#State-enum">QtFileCopier::Idle</a> state).</p>
+<h3 class="fn"><a name="dataTransferProgress"></a>void QtFileCopier::dataTransferProgress ( int <i>identifier</i>, <a href="http://qt.nokia.com/doc/4.5/qtglobal.html#qint64-typedef">qint64</a> <i>progress</i> )&nbsp;&nbsp;<tt> [signal]</tt></h3>
+<p>This signal is emitted approximately every 100 miliseconds to indicate the progress of the operation with the given <i>identifier</i>, It is only emitted when the file copier is in the <a href="qtfilecopier.html#State-enum">QtFileCopier::Busy</a> state. In addition the signal is emitted at the end of a successful operation, before the <a href="qtfilecopier.html#finished">finished</a>() signal is emitted.</p>
+<p>The <i>progress</i> parameter indicates how many bytes of the source file that are copied or moved.</p>
+<h3 class="fn"><a name="destinationFilePath"></a><a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> QtFileCopier::destinationFilePath ( int <i>identifier</i> ) const</h3>
+<p>Returns the destination path of the operation with the given <i>identifier</i>. If there is no matching pending operation, the function returns an empty string.</p>
+<p>See also <a href="qtfilecopier.html#sourceFilePath">sourceFilePath</a>().</p>
+<h3 class="fn"><a name="done"></a>void QtFileCopier::done ( bool <i>error</i> )&nbsp;&nbsp;<tt> [signal]</tt></h3>
+<p>This signal is emitted when an operation is completed and there is no more pending operations. The <i>error</i> parameter is set to true if at least one operation failed, otherwise it is set to false.</p>
+<h3 class="fn"><a name="entryList"></a><a href="http://qt.nokia.com/doc/4.5/qlist.html">QList</a>&lt;int&gt; QtFileCopier::entryList ( int <i>identifier</i> ) const</h3>
+<p>Returns the list of recursively generated operations for the operation with the given <i>identifier</i>. If the specified operation doesn't concern a directory, the function returns an empty list.</p>
+<p>See also <a href="qtfilecopier.html#isDir">isDir</a>().</p>
+<h3 class="fn"><a name="error"></a>void QtFileCopier::error ( int <i>identifier</i>, <a href="qtfilecopier.html#Error-enum">QtFileCopier::Error</a> <i>error</i>, bool <i>stopped</i> )&nbsp;&nbsp;<tt> [signal]</tt></h3>
+<p>This signal is emitted when an error occurs.</p>
+<p>The parameters are the <i>identifier</i> of the current operation, the type of <i>error</i>, and <i>stopped</i> which tells whether the operation is waiting for user respons or not. When an operation is halted due to an error (<i>stopped</i> == true), use the <a href="qtfilecopier.html#retry">retry</a>(), <a href="qtfilecopier.html#skip">skip</a>(), <a href="qtfilecopier.html#skipAll">skipAll</a>(), <a href="qtfilecopier.html#overwrite">overwrite</a>() or <a href="qtfilecopier.html#overwriteAll">overwriteAll</a>() slots to resume.</p>
+<p>See also <a href="qtfilecopier.html#Error-enum">QtFileCopier::Error</a>.</p>
+<h3 class="fn"><a name="finished"></a>void QtFileCopier::finished ( int <i>identifier</i>, bool <i>error</i> )&nbsp;&nbsp;<tt> [signal]</tt></h3>
+<p>This signal is emitted when the operation with the given <i>identifier</i> is completed. The <i>error</i> parameter is set to true if the operation failed, otherwise it is set to false.</p>
+<p>If the operation concerns a directory, and the error parameter is set to true, all the recursively generated operations will automatically be canceled.</p>
+<p>See also <a href="qtfilecopier.html#started">started</a>() and <a href="qtfilecopier.html#entryList">entryList</a>().</p>
+<h3 class="fn"><a name="isDir"></a>bool QtFileCopier::isDir ( int <i>identifier</i> ) const</h3>
+<p>Returns whether the source of the operation with the given <i>identifier</i> is a directory. If there is no matching pending operation, the function returns false.</p>
+<p>See also <a href="qtfilecopier.html#sourceFilePath">sourceFilePath</a>() and <a href="qtfilecopier.html#entryList">entryList</a>().</p>
+<h3 class="fn"><a name="move"></a>int QtFileCopier::move ( const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>sourceFile</i>, const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>destinationPath</i>, <a href="qtfilecopier.html#CopyFlag-enum">CopyFlags</a> <i>flags</i> = 0 )</h3>
+<p>Schedules an operation moving the <i>sourceFile</i> into the <i>destinationPath</i>, retaining the file name.</p>
+<p>The file copier will perform the move operation according to the specified <i>flags</i> when the program execution returns to the event processing loop. The operation can only be scheduled when the file copier is in the <a href="qtfilecopier.html#State-enum">QtFileCopier::Idle</a> state.</p>
+<p><b>Warning:</b> <a href="qtfilecopier.html">QtFileCopier</a> doesn't accept, and ignores, the <a href="qtfilecopier.html#CopyFlag-enum">QtFileCopier::MakeLinks</a> and <a href="qtfilecopier.html#CopyFlag-enum">QtFileCopier::FollowLinks</a> for move operations.</p>
+<p>If the <i>destinationPath</i> points to an existing directory, the <i>sourceFile</i> is moved into that directory. If the <i>destinationPath</i> doesn't exist, the operation will fail.</p>
+<p>The function returns a non negative value as the operation identifier. If the operation is not valid, or the file copier is not in the appropiate state, the function returns -1.</p>
+<p>See also <a href="qtfilecopier.html#moveFiles">moveFiles</a>(), <a href="qtfilecopier.html#moveDirectory">moveDirectory</a>(), and <a href="qtfilecopier.html#copy">copy</a>().</p>
+<h3 class="fn"><a name="moveDirectory"></a><a href="http://qt.nokia.com/doc/4.5/qlist.html">QList</a>&lt;int&gt; QtFileCopier::moveDirectory ( const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>sourceDir</i>, const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>destinationDir</i>, <a href="qtfilecopier.html#CopyFlag-enum">CopyFlags</a> <i>flags</i> = 0 )</h3>
+<p>Schedules recursively operations moving the files in <i>sourceDir</i> into the <i>destinationDir</i>, retaining the file names.</p>
+<p>The file copier performs the move operations according to the specified <i>flags</i> when the program execution returns to the event processing loop. The operations can only be scheduled when the file copier is in the <a href="qtfilecopier.html#State-enum">QtFileCopier::Idle</a> state.</p>
+<p><b>Warning:</b> <a href="qtfilecopier.html">QtFileCopier</a> doesn't accept, and ignores, the <a href="qtfilecopier.html#CopyFlag-enum">QtFileCopier::MakeLinks</a> and <a href="qtfilecopier.html#CopyFlag-enum">QtFileCopier::FollowLinks</a> for move operations.</p>
+<p>If the <i>destinationDir</i> points to an existing directory, the <i>sourceDir</i> is moved into that directory. If the destinationDir doesn't exist, the operation will fail.</p>
+<p>The function returns a list of non negative values as the operation identifiers. The returned list can contain less items than the number of files in <i>sourceDir</i> in case some operations were not valid.</p>
+<p>See also <a href="qtfilecopier.html#move">move</a>(), <a href="qtfilecopier.html#moveFiles">moveFiles</a>(), and <a href="qtfilecopier.html#copyDirectory">copyDirectory</a>().</p>
+<h3 class="fn"><a name="moveFiles"></a><a href="http://qt.nokia.com/doc/4.5/qlist.html">QList</a>&lt;int&gt; QtFileCopier::moveFiles ( const <a href="http://qt.nokia.com/doc/4.5/qstringlist.html">QStringList</a> &amp; <i>sourceFiles</i>, const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>destinationDir</i>, <a href="qtfilecopier.html#CopyFlag-enum">CopyFlags</a> <i>flags</i> = 0 )</h3>
+<p>Schedules operations moving the <i>sourceFiles</i> into the <i>destinationDir</i>, retaining the file names.</p>
+<p>The file copier performs the move operations according to the specified <i>flags</i> when the program execution returns to the event processing loop. The operations can only be scheduled when the file copier is in the <a href="qtfilecopier.html#State-enum">QtFileCopier::Idle</a> state.</p>
+<p><b>Warning:</b> <a href="qtfilecopier.html">QtFileCopier</a> doesn't accept, and ignores, the <a href="qtfilecopier.html#CopyFlag-enum">QtFileCopier::MakeLinks</a> and <a href="qtfilecopier.html#CopyFlag-enum">QtFileCopier::FollowLinks</a> for move operations.</p>
+<p>If a source in the <i>sourceFiles</i> list points to a directory then that source is omitted. If the <i>destinationDir</i> doesn't exist, the function does nothing.</p>
+<p>The function returns a list of non negative values as the operation identifiers. The returned list can contain less items than the <i>sourceFiles</i> list in case some operations were not valid.</p>
+<p>See also <a href="qtfilecopier.html#move">move</a>(), <a href="qtfilecopier.html#moveDirectory">moveDirectory</a>(), and <a href="qtfilecopier.html#copyFiles">copyFiles</a>().</p>
+<h3 class="fn"><a name="overwrite"></a>void QtFileCopier::overwrite ()&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Overwrites the current destination path. If the current destination is a directory, all subdirectory paths will be overwritten recursively.</p>
+<p>The slot is used to resume when an operation has halted due to an error. For that reason it only applies while waiting for interaction (i.e the file copier is in the <a href="qtfilecopier.html#State-enum">QtFileCopier::WaitingForInteraction</a> state). In that case, the file copier changes the state to <a href="qtfilecopier.html#State-enum">QtFileCopier::Busy</a> when this function is called.</p>
+<p>See also <a href="qtfilecopier.html#skip">skip</a>() and <a href="qtfilecopier.html#overwriteAll">overwriteAll</a>().</p>
+<h3 class="fn"><a name="overwriteAll"></a>void QtFileCopier::overwriteAll ()&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Overwrites all the subsequent destination paths including the current one.</p>
+<p>If a destination path is a directory, all subdirectory paths will be overwritten recursively.</p>
+<p>The slot is used to resume when an operation has halted due to an error. For that reason it only applies while waiting for interaction (i.e the file copier is in the <a href="qtfilecopier.html#State-enum">QtFileCopier::WaitingForInteraction</a> state). In that case the file copier changes the state to <a href="qtfilecopier.html#State-enum">QtFileCopier::Busy</a>.</p>
+<p>See also <a href="qtfilecopier.html#overwrite">overwrite</a>(), <a href="qtfilecopier.html#skipAll">skipAll</a>(), and <a href="qtfilecopier.html#resetOverwrite">resetOverwrite</a>().</p>
+<h3 class="fn"><a name="pendingRequests"></a><a href="http://qt.nokia.com/doc/4.5/qlist.html">QList</a>&lt;int&gt; QtFileCopier::pendingRequests () const</h3>
+<p>Returns a list of identifiers to the pending operation requests, including the currently performed operation.</p>
+<p>See also <a href="qtfilecopier.html#sourceFilePath">sourceFilePath</a>() and <a href="qtfilecopier.html#destinationFilePath">destinationFilePath</a>().</p>
+<h3 class="fn"><a name="reset"></a>void QtFileCopier::reset ()&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Resets the file copier's default error handling behavior.</p>
+<p>See also <a href="qtfilecopier.html#autoReset-prop">autoReset</a>, <a href="qtfilecopier.html#resetSkip">resetSkip</a>(), and <a href="qtfilecopier.html#resetOverwrite">resetOverwrite</a>().</p>
+<h3 class="fn"><a name="resetOverwrite"></a>void QtFileCopier::resetOverwrite ()&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Resets the file copier's default behavior for handling <a href="qtfilecopier.html#Error-enum">QtFileCopier::DestinationExists</a> errors, i.e&#x2e; entering the <a href="qtfilecopier.html#State-enum">QtFileCopier::WaitingForInteraction</a> state.</p>
+<p>See also <a href="qtfilecopier.html#reset">reset</a>() and <a href="qtfilecopier.html#overwriteAll">overwriteAll</a>().</p>
+<h3 class="fn"><a name="resetSkip"></a>void QtFileCopier::resetSkip ()&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Resets the file copier's default behavior for error handling, i.e&#x2e; entering the <a href="qtfilecopier.html#State-enum">QtFileCopier::WaitingForInteraction</a> state when <i>any</i> error occurs.</p>
+<p>See also <a href="qtfilecopier.html#reset">reset</a>() and <a href="qtfilecopier.html#skipAll">skipAll</a>().</p>
+<h3 class="fn"><a name="retry"></a>void QtFileCopier::retry ()&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Tries to perform the current (failing) operation once more.</p>
+<p>The slot only applies while waiting for interaction (i.e the file copier is in the <a href="qtfilecopier.html#State-enum">QtFileCopier::WaitingForInteraction</a> state). In that case the file copier changes the state to <a href="qtfilecopier.html#State-enum">QtFileCopier::Busy</a>.</p>
+<p>See also <a href="qtfilecopier.html#skip">skip</a>() and <a href="qtfilecopier.html#overwrite">overwrite</a>().</p>
+<h3 class="fn"><a name="skip"></a>void QtFileCopier::skip ()&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Skips the current operation.</p>
+<p>If the current operation is applied to a directory, all recursively generated operations will also be skipped.</p>
+<p>The slot is used to resume when an operation has halted due to an error. For that reason it only applies while waiting for interaction (i.e the file copier is in the <a href="qtfilecopier.html#State-enum">QtFileCopier::WaitingForInteraction</a> state). In that case the file copier changes the state to <a href="qtfilecopier.html#State-enum">QtFileCopier::Busy</a>.</p>
+<p>See also <a href="qtfilecopier.html#overwrite">overwrite</a>() and <a href="qtfilecopier.html#skipAll">skipAll</a>().</p>
+<h3 class="fn"><a name="skipAll"></a>void QtFileCopier::skipAll ()&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Skips all the subsequent operations resulting in the same error, including the current one.</p>
+<p>If an operation is applied to a directory, all recursively generated operations will also be skipped.</p>
+<p>The slot is used to resume when an operation has halted due to an error. For that reason it only applies while waiting for interaction (i.e the file copier is in the <a href="qtfilecopier.html#State-enum">QtFileCopier::WaitingForInteraction</a> state). In that case the file copier changes the state to <a href="qtfilecopier.html#State-enum">QtFileCopier::Busy</a>.</p>
+<p>See also <a href="qtfilecopier.html#skip">skip</a>(), <a href="qtfilecopier.html#overwriteAll">overwriteAll</a>(), and <a href="qtfilecopier.html#resetSkip">resetSkip</a>().</p>
+<h3 class="fn"><a name="sourceFilePath"></a><a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> QtFileCopier::sourceFilePath ( int <i>identifier</i> ) const</h3>
+<p>Returns the source path of the operation with the given <i>identifier</i>. If there is no matching pending operation, the function returns an empty string.</p>
+<p>See also <a href="qtfilecopier.html#destinationFilePath">destinationFilePath</a>().</p>
+<h3 class="fn"><a name="started"></a>void QtFileCopier::started ( int <i>identifier</i> )&nbsp;&nbsp;<tt> [signal]</tt></h3>
+<p>This signal is emitted when the operation with the given <i>identifier</i> starts.</p>
+<p>For each operation, two signals are emitted: the started() and <a href="qtfilecopier.html#finished">finished</a>() signals. Between those signals there can be emitted <a href="qtfilecopier.html#error">error</a>() and <a href="qtfilecopier.html#dataTransferProgress">dataTransferProgress</a>() signals concerning the operation. When the operation concerns a directory, recursively generated started() and <a href="qtfilecopier.html#finished">finished</a>() signals can occur in between the inital signal pair as well.</p>
+<p>See also <a href="qtfilecopier.html#finished">finished</a>().</p>
+<h3 class="fn"><a name="state"></a><a href="qtfilecopier.html#State-enum">State</a> QtFileCopier::state () const</h3>
+<p>Returns the current state of the file copier.</p>
+<h3 class="fn"><a name="stateChanged"></a>void QtFileCopier::stateChanged ( <a href="qtfilecopier.html#State-enum">QtFileCopier::State</a> <i>state</i> )&nbsp;&nbsp;<tt> [signal]</tt></h3>
+<p>This signal is emitted when the state of the copier changes. The new <i>state</i> is passed as the signals argument.</p>
+<p>Note that the file copier's state changes <i>after</i> the signal is emitted.</p>
+<p>See also <a href="qtfilecopier.html#state">state</a>().</p>
+<p /><address><hr /><div align="center">
+<table width="100%" cellspacing="0" border="0"><tr class="address">
+<td width="30%" align="left">Copyright &copy; 2009 Nokia Corporation and/or its subsidiary(-ies)</td>
+<td width="40%" align="center"><a href="http://qt.nokia.com/doc/trademarks.html">Trademarks</a></td>
+<td width="30%" align="right"><div align="right">Qt Solutions</div></td>
+</tr></table></div></address></body>
+</html>

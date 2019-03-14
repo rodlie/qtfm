@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE QDOCINDEX>
+<INDEX url="" title="Qt Solutions: Copy Dialog Documentation" version="">
+    <namespace access="public" threadsafety="unspecified" status="commendable" name="" href="" location="" module="">
+        <class access="public" threadsafety="unspecified" status="commendable" name="QtFileCopier" href="qtfilecopier.html" location="qtfilecopier.h" bases="QObject" module="">
+            <property access="public" threadsafety="unspecified" status="commendable" name="progressInterval" fullname="QtFileCopier::progressInterval" href="qtfilecopier.html#progressInterval-prop" location="qtfilecopier.h" type="int">
+                <getter name="progressInterval"/>
+                <setter name="setProgressInterval"/>
+            </property>
+            <property access="public" threadsafety="unspecified" status="commendable" name="autoReset" fullname="QtFileCopier::autoReset" href="qtfilecopier.html#autoReset-prop" location="qtfilecopier.h" type="bool">
+                <getter name="autoReset"/>
+                <setter name="setAutoReset"/>
+            </property>
+            <function access="public" threadsafety="unspecified" status="commendable" name="QtFileCopier" fullname="QtFileCopier::QtFileCopier" href="qtfilecopier.html#QtFileCopier" location="qtfilecopier.h" virtual="non" meta="constructor" const="false" static="false" overload="false" type="" signature="QtFileCopier(QObject * parent)">
+                <parameter left="QObject *" right="" name="parent" default="0"/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="~QtFileCopier" fullname="QtFileCopier::~QtFileCopier" href="qtfilecopier.html#dtor.QtFileCopier" location="qtfilecopier.h" virtual="non" meta="destructor" const="false" static="false" overload="false" type="" signature="~QtFileCopier()"/>
+            <enum access="public" threadsafety="unspecified" status="commendable" name="State" fullname="QtFileCopier::State" href="qtfilecopier.html#State-enum" location="qtfilecopier.h">
+                <value name="Idle" value="0"/>
+                <value name="Busy" value="1"/>
+                <value name="WaitingForInteraction" value="2"/>
+            </enum>
+            <enum access="public" threadsafety="unspecified" status="commendable" name="CopyFlag" fullname="QtFileCopier::CopyFlag" href="qtfilecopier.html#CopyFlag-enum" location="qtfilecopier.h" typedef="QtFileCopier::CopyFlags">
+                <value name="NonInteractive" value="0x01"/>
+                <value name="Force" value="0x02"/>
+                <value name="MakeLinks" value="0x04"/>
+                <value name="FollowLinks" value="0x08"/>
+            </enum>
+            <enum access="public" threadsafety="unspecified" status="commendable" name="Error" fullname="QtFileCopier::Error" href="qtfilecopier.html#Error-enum" location="qtfilecopier.h">
+                <value name="NoError" value="0"/>
+                <value name="SourceNotExists" value="1"/>
+                <value name="DestinationExists" value="2"/>
+                <value name="SourceDirectoryOmitted" value="3"/>
+                <value name="SourceFileOmitted" value="4"/>
+                <value name="PathToDestinationNotExists" value="5"/>
+                <value name="CannotCreateDestinationDirectory" value="6"/>
+                <value name="CannotOpenSourceFile" value="7"/>
+                <value name="CannotOpenDestinationFile" value="8"/>
+                <value name="CannotRemoveDestinationFile" value="9"/>
+                <value name="CannotCreateSymLink" value="10"/>
+                <value name="CannotReadSourceFile" value="11"/>
+                <value name="CannotWriteDestinationFile" value="12"/>
+                <value name="CannotRemoveSource" value="13"/>
+                <value name="Canceled" value="14"/>
+            </enum>
+            <typedef access="public" threadsafety="unspecified" status="commendable" name="CopyFlags" fullname="QtFileCopier::CopyFlags" href="qtfilecopier.html#CopyFlags-typedef" location="qtfilecopier.h" enum="QtFileCopier::CopyFlag"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="copy" fullname="QtFileCopier::copy" href="qtfilecopier.html#copy" location="qtfilecopier.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="int" signature="copy(const QString &amp; sourceFile, const QString &amp; destinationPath, QFlags&lt;QtFileCopier::CopyFlag&gt; flags)">
+                <parameter left="const QString &amp;" right="" name="sourceFile" default=""/>
+                <parameter left="const QString &amp;" right="" name="destinationPath" default=""/>
+                <parameter left="QFlags&lt;QtFileCopier::CopyFlag&gt;" right="" name="flags" default="0"/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="copyFiles" fullname="QtFileCopier::copyFiles" href="qtfilecopier.html#copyFiles" location="qtfilecopier.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="QList&lt;int&gt;" signature="copyFiles(const QStringList &amp; sourceFiles, const QString &amp; destinationDir, QFlags&lt;QtFileCopier::CopyFlag&gt; flags)">
+                <parameter left="const QStringList &amp;" right="" name="sourceFiles" default=""/>
+                <parameter left="const QString &amp;" right="" name="destinationDir" default=""/>
+                <parameter left="QFlags&lt;QtFileCopier::CopyFlag&gt;" right="" name="flags" default="0"/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="copyDirectory" fullname="QtFileCopier::copyDirectory" href="qtfilecopier.html#copyDirectory" location="qtfilecopier.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="QList&lt;int&gt;" signature="copyDirectory(const QString &amp; sourceDir, const QString &amp; destinationDir, QFlags&lt;QtFileCopier::CopyFlag&gt; flags)">
+                <parameter left="const QString &amp;" right="" name="sourceDir" default=""/>
+                <parameter left="const QString &amp;" right="" name="destinationDir" default=""/>
+                <parameter left="QFlags&lt;QtFileCopier::CopyFlag&gt;" right="" name="flags" default="0"/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="move" fullname="QtFileCopier::move" href="qtfilecopier.html#move" location="qtfilecopier.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="int" signature="move(const QString &amp; sourceFile, const QString &amp; destinationPath, QFlags&lt;QtFileCopier::CopyFlag&gt; flags)">
+                <parameter left="const QString &amp;" right="" name="sourceFile" default=""/>
+                <parameter left="const QString &amp;" right="" name="destinationPath" default=""/>
+                <parameter left="QFlags&lt;QtFileCopier::CopyFlag&gt;" right="" name="flags" default="0"/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="moveFiles" fullname="QtFileCopier::moveFiles" href="qtfilecopier.html#moveFiles" location="qtfilecopier.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="QList&lt;int&gt;" signature="moveFiles(const QStringList &amp; sourceFiles, const QString &amp; destinationDir, QFlags&lt;QtFileCopier::CopyFlag&gt; flags)">
+                <parameter left="const QStringList &amp;" right="" name="sourceFiles" default=""/>
+                <parameter left="const QString &amp;" right="" name="destinationDir" default=""/>
+                <parameter left="QFlags&lt;QtFileCopier::CopyFlag&gt;" right="" name="flags" default="0"/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="moveDirectory" fullname="QtFileCopier::moveDirectory" href="qtfilecopier.html#moveDirectory" location="qtfilecopier.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="QList&lt;int&gt;" signature="moveDirectory(const QString &amp; sourceDir, const QString &amp; destinationDir, QFlags&lt;QtFileCopier::CopyFlag&gt; flags)">
+                <parameter left="const QString &amp;" right="" name="sourceDir" default=""/>
+                <parameter left="const QString &amp;" right="" name="destinationDir" default=""/>
+                <parameter left="QFlags&lt;QtFileCopier::CopyFlag&gt;" right="" name="flags" default="0"/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="pendingRequests" fullname="QtFileCopier::pendingRequests" href="qtfilecopier.html#pendingRequests" location="qtfilecopier.h" virtual="non" meta="plain" const="true" static="false" overload="false" type="QList&lt;int&gt;" signature="pendingRequests() const"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="sourceFilePath" fullname="QtFileCopier::sourceFilePath" href="qtfilecopier.html#sourceFilePath" location="qtfilecopier.cpp" virtual="non" meta="plain" const="true" static="false" overload="false" type="QString" signature="sourceFilePath(int identifier) const">
+                <parameter left="int" right="" name="identifier" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="destinationFilePath" fullname="QtFileCopier::destinationFilePath" href="qtfilecopier.html#destinationFilePath" location="qtfilecopier.cpp" virtual="non" meta="plain" const="true" static="false" overload="false" type="QString" signature="destinationFilePath(int identifier) const">
+                <parameter left="int" right="" name="identifier" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="isDir" fullname="QtFileCopier::isDir" href="qtfilecopier.html#isDir" location="qtfilecopier.cpp" virtual="non" meta="plain" const="true" static="false" overload="false" type="bool" signature="isDir(int identifier) const">
+                <parameter left="int" right="" name="identifier" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="entryList" fullname="QtFileCopier::entryList" href="qtfilecopier.html#entryList" location="qtfilecopier.cpp" virtual="non" meta="plain" const="true" static="false" overload="false" type="QList&lt;int&gt;" signature="entryList(int identifier) const">
+                <parameter left="int" right="" name="identifier" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="currentId" fullname="QtFileCopier::currentId" href="qtfilecopier.html#currentId" location="qtfilecopier.h" virtual="non" meta="plain" const="true" static="false" overload="false" type="int" signature="currentId() const"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="state" fullname="QtFileCopier::state" href="qtfilecopier.html#state" location="qtfilecopier.h" virtual="non" meta="plain" const="true" static="false" overload="false" type="State" signature="state() const"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setAutoReset" fullname="QtFileCopier::setAutoReset" href="qtfilecopier.html#autoReset-prop" location="qtfilecopier.cpp" virtual="non" meta="plain" const="false" static="false" overload="false" associated-property="autoReset" type="void" signature="setAutoReset(bool on)">
+                <parameter left="bool" right="" name="on" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="autoReset" fullname="QtFileCopier::autoReset" href="qtfilecopier.html#autoReset-prop" location="qtfilecopier.cpp" virtual="non" meta="plain" const="true" static="false" overload="false" associated-property="autoReset" type="bool" signature="autoReset() const"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="progressInterval" fullname="QtFileCopier::progressInterval" href="qtfilecopier.html#progressInterval-prop" location="qtfilecopier.cpp" virtual="non" meta="plain" const="true" static="false" overload="false" associated-property="progressInterval" type="int" signature="progressInterval() const"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setProgressInterval" fullname="QtFileCopier::setProgressInterval" href="qtfilecopier.html#progressInterval-prop" location="qtfilecopier.cpp" virtual="non" meta="plain" const="false" static="false" overload="false" associated-property="progressInterval" type="void" signature="setProgressInterval(int ms)">
+                <parameter left="int" right="" name="ms" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="cancelAll" fullname="QtFileCopier::cancelAll" href="qtfilecopier.html#cancelAll" location="qtfilecopier.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="cancelAll()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="cancel" fullname="QtFileCopier::cancel" href="qtfilecopier.html#cancel" location="qtfilecopier.cpp" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="cancel(int identifier)">
+                <parameter left="int" right="" name="identifier" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="skip" fullname="QtFileCopier::skip" href="qtfilecopier.html#skip" location="qtfilecopier.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="skip()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="skipAll" fullname="QtFileCopier::skipAll" href="qtfilecopier.html#skipAll" location="qtfilecopier.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="skipAll()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="retry" fullname="QtFileCopier::retry" href="qtfilecopier.html#retry" location="qtfilecopier.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="retry()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="overwrite" fullname="QtFileCopier::overwrite" href="qtfilecopier.html#overwrite" location="qtfilecopier.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="overwrite()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="overwriteAll" fullname="QtFileCopier::overwriteAll" href="qtfilecopier.html#overwriteAll" location="qtfilecopier.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="overwriteAll()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="reset" fullname="QtFileCopier::reset" href="qtfilecopier.html#reset" location="qtfilecopier.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="reset()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="resetSkip" fullname="QtFileCopier::resetSkip" href="qtfilecopier.html#resetSkip" location="qtfilecopier.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="resetSkip()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="resetOverwrite" fullname="QtFileCopier::resetOverwrite" href="qtfilecopier.html#resetOverwrite" location="qtfilecopier.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="resetOverwrite()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="error" fullname="QtFileCopier::error" href="qtfilecopier.html#error" location="qtfilecopier.h" virtual="non" meta="signal" const="false" static="false" overload="false" type="void" signature="error(int identifier, QtFileCopier::Error error, bool stopped)">
+                <parameter left="int" right="" name="identifier" default=""/>
+                <parameter left="QtFileCopier::Error" right="" name="error" default=""/>
+                <parameter left="bool" right="" name="stopped" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="stateChanged" fullname="QtFileCopier::stateChanged" href="qtfilecopier.html#stateChanged" location="qtfilecopier.h" virtual="non" meta="signal" const="false" static="false" overload="false" type="void" signature="stateChanged(QtFileCopier::State state)">
+                <parameter left="QtFileCopier::State" right="" name="state" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="done" fullname="QtFileCopier::done" href="qtfilecopier.html#done" location="qtfilecopier.h" virtual="non" meta="signal" const="false" static="false" overload="false" type="void" signature="done(bool error)">
+                <parameter left="bool" right="" name="error" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="started" fullname="QtFileCopier::started" href="qtfilecopier.html#started" location="qtfilecopier.h" virtual="non" meta="signal" const="false" static="false" overload="false" type="void" signature="started(int identifier)">
+                <parameter left="int" right="" name="identifier" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="dataTransferProgress" fullname="QtFileCopier::dataTransferProgress" href="qtfilecopier.html#dataTransferProgress" location="qtfilecopier.h" virtual="non" meta="signal" const="false" static="false" overload="false" type="void" signature="dataTransferProgress(int identifier, qint64 progress)">
+                <parameter left="int" right="" name="identifier" default=""/>
+                <parameter left="qint64" right="" name="progress" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="finished" fullname="QtFileCopier::finished" href="qtfilecopier.html#finished" location="qtfilecopier.h" virtual="non" meta="signal" const="false" static="false" overload="false" type="void" signature="finished(int identifier, bool error)">
+                <parameter left="int" right="" name="identifier" default=""/>
+                <parameter left="bool" right="" name="error" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="canceled" fullname="QtFileCopier::canceled" href="qtfilecopier.html#canceled" location="qtfilecopier.h" virtual="non" meta="signal" const="false" static="false" overload="false" type="void" signature="canceled()"/>
+        </class>
+        <class access="public" threadsafety="unspecified" status="commendable" name="QtCopyDialog" href="qtcopydialog.html" location="qtcopydialog.h" bases="QDialog" module="">
+            <property access="public" threadsafety="unspecified" status="commendable" name="minimumDuration" fullname="QtCopyDialog::minimumDuration" href="qtcopydialog.html#minimumDuration-prop" location="qtcopydialog.h" type="int">
+                <getter name="minimumDuration"/>
+                <setter name="setMinimumDuration"/>
+            </property>
+            <property access="public" threadsafety="unspecified" status="commendable" name="autoClose" fullname="QtCopyDialog::autoClose" href="qtcopydialog.html#autoClose-prop" location="qtcopydialog.h" type="bool">
+                <getter name="autoClose"/>
+                <setter name="setAutoClose"/>
+            </property>
+            <function access="public" threadsafety="unspecified" status="commendable" name="QtCopyDialog" fullname="QtCopyDialog::QtCopyDialog" href="qtcopydialog.html#QtCopyDialog" location="qtcopydialog.cpp" virtual="non" meta="constructor" const="false" static="false" overload="false" type="" signature="QtCopyDialog(QWidget * parent, Qt::WFlags flags)">
+                <parameter left="QWidget *" right="" name="parent" default="0"/>
+                <parameter left="Qt::WFlags" right="" name="flags" default="0"/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="QtCopyDialog" fullname="QtCopyDialog::QtCopyDialog" href="qtcopydialog.html#QtCopyDialog-2" location="qtcopydialog.cpp" virtual="non" meta="constructor" const="false" static="false" overload="true" overload-number="2" type="" signature="QtCopyDialog(QtFileCopier * copier, QWidget * parent, Qt::WFlags flags)">
+                <parameter left="QtFileCopier *" right="" name="copier" default=""/>
+                <parameter left="QWidget *" right="" name="parent" default="0"/>
+                <parameter left="Qt::WFlags" right="" name="flags" default="0"/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="~QtCopyDialog" fullname="QtCopyDialog::~QtCopyDialog" href="qtcopydialog.html#dtor.QtCopyDialog" location="qtcopydialog.h" virtual="non" meta="destructor" const="false" static="false" overload="false" type="" signature="~QtCopyDialog()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setFileCopier" fullname="QtCopyDialog::setFileCopier" href="qtcopydialog.html#setFileCopier" location="qtcopydialog.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="void" signature="setFileCopier(QtFileCopier * copier)">
+                <parameter left="QtFileCopier *" right="" name="copier" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="fileCopier" fullname="QtCopyDialog::fileCopier" href="qtcopydialog.html#fileCopier" location="qtcopydialog.h" virtual="non" meta="plain" const="true" static="false" overload="false" type="QtFileCopier *" signature="fileCopier() const"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="minimumDuration" fullname="QtCopyDialog::minimumDuration" href="qtcopydialog.html#minimumDuration-prop" location="qtcopydialog.cpp" virtual="non" meta="plain" const="true" static="false" overload="false" associated-property="minimumDuration" type="int" signature="minimumDuration() const"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setMinimumDuration" fullname="QtCopyDialog::setMinimumDuration" href="qtcopydialog.html#minimumDuration-prop" location="qtcopydialog.cpp" virtual="non" meta="plain" const="false" static="false" overload="false" associated-property="minimumDuration" type="void" signature="setMinimumDuration(int ms)">
+                <parameter left="int" right="" name="ms" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="autoClose" fullname="QtCopyDialog::autoClose" href="qtcopydialog.html#autoClose-prop" location="qtcopydialog.cpp" virtual="non" meta="plain" const="true" static="false" overload="false" associated-property="autoClose" type="bool" signature="autoClose() const"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setAutoClose" fullname="QtCopyDialog::setAutoClose" href="qtcopydialog.html#autoClose-prop" location="qtcopydialog.cpp" virtual="non" meta="plain" const="false" static="false" overload="false" associated-property="autoClose" type="void" signature="setAutoClose(bool on)">
+                <parameter left="bool" right="" name="on" default=""/>
+            </function>
+        </class>
+        <page access="public" status="commendable" name="index.html" href="index.html" subtype="page" title="Copy Dialog" fulltitle="Copy Dialog" subtitle="" location="index.qdoc">
+            <contents name="description" title="Description" level="1"/>
+            <contents name="classes" title="Classes" level="1"/>
+            <contents name="tested-platforms" title="Tested platforms" level="1"/>
+            <contents name="screenshots" title="Screenshots" level="1"/>
+        </page>
+    </namespace>
+</INDEX>
