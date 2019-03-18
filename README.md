@@ -111,16 +111,16 @@ Build options:
    * ``MAGICK_PC=`` : Custom Magick++ pkg-config .pc file
    * ``CONFIG+=magick7`` : Use ImageMagick 7
  * ``CONFIG+=with_ffmpeg`` : This will enable FFmpeg support (NOTE! requires ImageMagick)
- * ``CONFIG+=no_tray`` : This will disable qtfm-tray
+ * ``CONFIG+=no_tray`` : This will disable qtfm-tray (no_dbus will also disable this feature)
  * ``CONFIG+=no_dbus`` : This will disable D-Bus session and udisks features in (lib)QtFM
- * ``CONFIG+=no_launcher`` : Disable qtfm-launcher (freedesktop application launcher)
+ * ``CONFIG+=no_launcher`` : Disable qtfm-launcher (XDG application launcher)
  * ``CONFIG+=with_includes`` : Install library includes and pkg-config
- * ``CONFIG+=staticlib`` : Force static library
+ * ``CONFIG+=sharedlib`` : Force shared library
  * ``PREFIX=`` : Install prefix, where things are installed when running ``make install``
  * ``DOCDIR=`` : Location for documentation (default is PREFIX/share/doc)
  * ``MANDIR=`` : Location for man pages (default is PREFIX/share/man)
  * ``XDGDIR=`` : Location of XDG (default is /etc/xdg or PREFIX/etc/xdg)
- * ``LIBDIR=`` : Library location (default is ``$PREFIX/lib$LIBSUFFIX``)
+ * ``LIBDIR=`` : Library location (default is ``$PREFIX/lib$LIBSUFFIX``), only used if shared library is enabled
 
 Doing a normal build:
 ```
@@ -142,7 +142,7 @@ Example:
 
 ```
 mkdir build && cd build
-qmake PREFIX=/usr LIBSUFFIX=64 CONFIG+=with_magick CONFIG+=with_ffmpeg ..
+qmake PREFIX=/usr CONFIG+=with_magick CONFIG+=with_ffmpeg ..
 make -jX
 make INSTALL_ROOT=/package_temp_path install
 ```
@@ -157,11 +157,6 @@ pkg
     │   ├── qtfm
     │   ├── qtfm-launcher
     │   └── qtfm-tray
-    ├── lib64
-    │   ├── libQtFM.so -> libQtFM.so.6.2.0
-    │   ├── libQtFM.so.6 -> libQtFM.so.6.2.0
-    │   ├── libQtFM.so.6.2 -> libQtFM.so.6.2.0
-    │   └── libQtFM.so.6.2.0
     └── share
         ├── applications
         │   └── qtfm.desktop
