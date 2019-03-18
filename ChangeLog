@@ -1,6 +1,7 @@
 6.2.0 XX-March 2019
-- imagemagick support (improved thumbnail support) CONFIG+=with_imagemagick
-- support for Qt4 has now ended (6.1 was the last branch with support for Qt4)
+- imagemagick support (improved thumbnail support) CONFIG+=with_magick
+- ffmpeg support (get screenshot/coverart from audio/video) CONFIG+=with_ffmpeg (requires imagemagick support)
+- support for Qt4 has now ended
 - started moving code to lib
 - settings: use decimal keys in config
 - settings: support filter mime types
@@ -9,7 +10,10 @@
 - bookmarks: added "link" option in file actions
 - shared library (libQtFM) is now default (disable with CONFIG+=staticlib)
 - support .config/mimeapps.list
-- ffmpeg support (get thumbnails from audio/video) CONFIG+=with_ffmpeg (requires imagemagick support)
+
+6.1.8 19-March 2019
+- Fix segfault if D-Bus is missing
+- Fix executeFile path
 
 6.1.7 10-February 2019
 - context menu fixes
