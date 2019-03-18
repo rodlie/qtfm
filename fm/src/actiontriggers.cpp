@@ -29,7 +29,7 @@ void MainWindow::executeFile(QModelIndex index, bool run) {
   if (run) {
     QProcess *myProcess = new QProcess(this);
 #ifdef Q_OS_MAC
-    myProcess->startDetached(QString("open %1").arg(modelList->filePath(srcIndex)));
+    myProcess->startDetached(QString("open \"%1\"").arg(modelList->filePath(srcIndex)));
 #else
     myProcess->startDetached(QString("\"%1\"").arg(modelList->filePath(srcIndex)));
 #endif
