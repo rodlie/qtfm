@@ -1,5 +1,6 @@
-6.1.8 06-March 2019
+6.1.8 19-March 2019
 - Fix segfault if D-Bus is missing
+- Fix executeFile path
 
 6.1.7 11-February 2019
 - context menu fixes
