@@ -25,9 +25,9 @@ if [ "${SETUP}" = 1 ]; then
     echo "Setup ubuntu ..."
     sudo apt-get update
     sudo apt-get install qtbase5-dev qt5-qmake tree
-    curl -L https://sourceforge.net/projects/qt-file-manager/files/sdk/qtfm-sdk-trusty-6.1.tar.bz2/download --output download.tar.bz2
-    tar xf download.tar.bz2 -C /opt
-    rm -f download.tar.bz2
+    #curl -L https://sourceforge.net/projects/qt-file-manager/files/sdk/qtfm-sdk-trusty-6.1.tar.bz2/download --output download.tar.bz2
+    #tar xf download.tar.bz2 -C /opt
+    #rm -f download.tar.bz2
   elif [ "${OS}" = "Darwin" ]; then
     curl -L https://sourceforge.net/projects/qt-file-manager/files/sdk/qtfm-mac-sdk-6.1.tar.bz2/download --output download.tar.bz2
     tar xf download.tar.bz2 -C /opt
@@ -49,38 +49,48 @@ if [ "${OS}" = "Linux" ]; then
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
+
+    mkdir $CWD/build2
+    cd $CWD/build2
+    qmake -qt=qt5 CONFIG+=release CONFIG+=sharedlib LIBSUFFIX=64 PREFIX=/usr  ..
+    make
+    make INSTALL_ROOT=`pwd`/pkg install
+    tree pkg
+
     mkdir $CWD/build3
     cd $CWD/build3
     qmake -qt=qt5 CONFIG+=debug PREFIX=/usr  ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
+
     mkdir $CWD/build5
     cd $CWD/build5
     qmake -qt=qt5 CONFIG+=debug PREFIX=/usr CONFIG+=no_dbus ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
+
     mkdir $CWD/build7
     cd $CWD/build7
-    qmake -qt=qt5 CONFIG+=release PREFIX=/usr CONFIG+=no_dbus CONFIG+=no_tray ..
+    qmake -qt=qt5 CONFIG+=release PREFIX=/usr CONFIG+=no_dbus ..
     make
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
 
-    echo "===> Building linux64 ..."
-    PKG_CONFIG_PATH="${SDK}/lib/pkgconfig:${PKG_CONFIG_PATH}"
-    PATH=${SDK}/bin:/usr/bin:/bin
-    mkdir $CWD/build9
-    cd $CWD/build9
-    qmake CONFIG+=release CONFIG+=deploy PREFIX=/usr CONFIG+=staticlib CONFIG+=no_tray CONFIG+=no_dbus ..
-    make
-    make INSTALL_ROOT=`pwd`/pkg install
-    tree pkg
-    cp -a pkg/usr qtfm-$TAG-Linux64
-    strip -s qtfm-$TAG-Linux64/bin/qtfm
-    tar cvvzf qtfm-$TAG-Linux64.tgz qtfm-$TAG-Linux64
-    mv qtfm-$TAG-Linux64.tgz $DEPLOY/
+    #echo "===> Building linux64 ..."
+    #PKG_CONFIG_PATH="${SDK}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+    #PATH=${SDK}/bin:/usr/bin:/bin
+    #mkdir $CWD/build9
+    #cd $CWD/build9
+    #qmake CONFIG+=release CONFIG+=deploy PREFIX=/usr CONFIG+=staticlib CONFIG+=no_tray CONFIG+=no_dbus ..
+    #make
+    #make INSTALL_ROOT=`pwd`/pkg install
+    #tree pkg
+    #cp -a pkg/usr qtfm-$TAG-Linux64
+    #strip -s qtfm-$TAG-Linux64/bin/qtfm
+    #tar cvvzf qtfm-$TAG-Linux64.tgz qtfm-$TAG-Linux64
+    #mv qtfm-$TAG-Linux64.tgz $DEPLOY/
 elif [ "${OS}" = "Darwin" ]; then
     echo "===> Building mac64 ..."
     PKG_CONFIG=${SDK}/bin/pkg-config
