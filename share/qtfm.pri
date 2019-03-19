@@ -34,7 +34,11 @@ macx {
 }
 
 CONFIG(deploy) : DEFINES += DEPLOY
-CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
+CONFIG(release, debug|release) {
+    DEFINES += QT_NO_DEBUG_OUTPUT
+    !CONFIG(sharedlib): CONFIG += staticlib
+}
+
 freebsd: LIBS += -linotify
 netbsd-g++: PKGCONFIG += libinotify
 

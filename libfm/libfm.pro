@@ -94,7 +94,8 @@ unix:!macx {
         QMAKE_PKGCONFIG_DESTDIR = pkgconfig
     }
 
-    INSTALLS += target docs
+    INSTALLS += docs
+    !CONFIG(staticlib): INSTALLS += target
     CONFIG(with_includes): INSTALLS += target_inc
 }
 

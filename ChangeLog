@@ -8,7 +8,6 @@
 - added qtfm-launcher (can be used as an app launcher in openbox etc, also supports xdg-open type actions)
 - (u)disks now supports disk labels (with device name as fallback)
 - bookmarks: added "link" option in file actions
-- shared library (libQtFM) is now default (disable with CONFIG+=staticlib)
 - support .config/mimeapps.list
 
 6.1.8 19-March 2019
