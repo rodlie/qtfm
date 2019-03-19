@@ -7,7 +7,7 @@ TARGET_NAME = $${QTFM_TARGET_NAME}
 VERSION = $${QTFM_MAJOR}.$${QTFM_MINOR}.$${QTFM_PATCH}
 TEMPLATE = app
 
-INCLUDEPATH += src $${top_srcdir}/libfm
+INCLUDEPATH += src $${top_srcdir}/libfm $${top_srcdir}/libfm/qtcopydialog
 
 DEFINES += APP=\"\\\"$${TARGET}\\\"\"
 DEFINES += APP_NAME=\"\\\"$${TARGET_NAME}\\\"\"

@@ -45,6 +45,9 @@
 
 #include "common.h"
 
+#include "qtcopydialog.h"
+#include "qtfilecopier.h"
+
 #ifdef Q_OS_MAC
 #include <QStyleFactory>
 #endif
@@ -1037,7 +1040,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
 
   // Paste launcher (this method has to be called instead of that with 'data'
   // parameter, because that 'data' can timeout)
-  pasteLauncher(files, newPath, cutList, dragMode == Common::DM_LINK);
+  pasteLauncher2(files, newPath, cutList, dragMode == Common::DM_LINK);
 }
 //---------------------------------------------------------------------------
 
@@ -1053,7 +1056,7 @@ void MainWindow::pasteLauncher(const QMimeData *data,
                                bool link) {
   QList<QUrl> files = data->urls();
   if (files.isEmpty()) { return; }
-  pasteLauncher(files, newPath, cutList, link);
+  pasteLauncher2(files, newPath, cutList, link);
 }
 //---------------------------------------------------------------------------
 
@@ -1150,6 +1153,79 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files, const QString &newPath,
   listSelectionModel->clear();
   QtConcurrent::run(this, &MainWindow::pasteFiles, files, newPath, cutList);
 }
+
+void MainWindow::pasteLauncher2(const QList<QUrl> &files,
+                                const QString &newPath,
+                                const QStringList &cutList,
+                                bool link)
+{
+    qDebug() << "==> PASTE LAUNCHER v2" << "COPY" << files << "OR MOVE" << cutList << "TO" << newPath << "SYMLINK?" << link;
+
+    if (!QFile::exists(newPath)) {
+        qDebug() << "destination path does not exists" << newPath;
+        return;
+    }
+    if (files.size()==0 && cutList.size()==0) {
+        qDebug() << "nothing to copy or move ...";
+        return;
+    }
+    if (link && (files.size()==0 || cutList.size()>0)) {
+        qDebug() << "is symlink but nothing to copy ...";
+        return;
+    }
+
+    QStringList _files, _dirs;
+    if (cutList.size()>0) { // move
+        for (int i=0; i<cutList.size(); i++) {
+            QFileInfo info(cutList.at(i));
+            if (!info.isDir() && !info.isFile()) { continue; }
+            if (info.isDir()) { _dirs << info.absoluteFilePath(); }
+            else if (info.isFile()) { _files << info.absoluteFilePath(); }
+        }
+        if (_files.size()>0 || _dirs.size()>0) {
+            QtFileCopier *copyHandler = new QtFileCopier(this);
+            QtCopyDialog *copyDialog = new QtCopyDialog(copyHandler, this);
+            copyDialog->setMinimumDuration(100);
+            copyDialog->setAutoClose(true);
+            if (_files.size()>0) {
+                copyHandler->moveFiles(_files, newPath);
+                //qDebug() << "MOVE FILES" << _files << "TO" << newPath;
+            }
+            if (_dirs.size()>0) {
+                for (int i=0;i<_dirs.size();++i) {
+                    copyHandler->moveDirectory(_dirs.at(i), newPath);
+                    //qDebug() << "MOVE DIR" << _dirs.at(i) << "TO" << newPath;
+                }
+            }
+        }
+    } else if (files.size()>0) { // copy
+        for (int i=0; i<files.size(); i++) {
+            QFileInfo info(files.at(i).toLocalFile());
+            if (!info.isDir() && !info.isFile()) { continue; }
+            if (info.isDir()) { _dirs << info.absoluteFilePath(); }
+            else if (info.isFile()) { _files << info.absoluteFilePath(); }
+        }
+        if (_files.size()>0 || _dirs.size()>0) {
+            QtFileCopier *copyHandler = new QtFileCopier(this);
+            QtCopyDialog *copyDialog = new QtCopyDialog(copyHandler, this);
+            copyDialog->setMinimumDuration(100);
+            copyDialog->setAutoClose(true);
+            if (_files.size()>0) {
+                if (link) { copyHandler->copyFiles(_files, newPath, QtFileCopier::MakeLinks); }
+                else { copyHandler->copyFiles(_files, newPath); }
+                //qDebug() << "COPY FILES" << _files << "TO" << newPath << "SYMLINK?" << link;
+            }
+            if (_dirs.size()>0) {
+                for (int i=0;i<_dirs.size();++i) {
+                    if (link) { copyHandler->copyDirectory(_dirs.at(i), newPath, QtFileCopier::MakeLinks); }
+                    else { copyHandler->copyDirectory(_dirs.at(i), newPath); }
+                    //qDebug() << "COPY DIR" <<_dirs.at(i) << "TO" << newPath << "SYMLINK?" << link;
+                }
+            }
+        }
+    }
+}
+
 //---------------------------------------------------------------------------
 
 /**
