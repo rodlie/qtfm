@@ -110,6 +110,7 @@ Build options:
  * ``CONFIG+=with_magick`` : This will enable ImageMagick support
    * ``MAGICK_PC=`` : Custom Magick++ pkg-config .pc file
    * ``CONFIG+=magick7`` : Use ImageMagick 7
+   * ``CONFIG+=oldmagick`` : If you have ImageMagick older than 6.9 (Ubuntu)
  * ``CONFIG+=with_ffmpeg`` : This will enable FFmpeg support (NOTE! requires ImageMagick)
  * ``CONFIG+=no_tray`` : This will disable qtfm-tray (no_dbus will also disable this feature)
  * ``CONFIG+=no_dbus`` : This will disable D-Bus session and udisks features in (lib)QtFM
