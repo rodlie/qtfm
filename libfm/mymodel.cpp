@@ -709,7 +709,9 @@ QByteArray myModel::getThumb(QString item) {
   qDebug() << "generate thumbnail for" << item;
   try {
       Magick::Image background(Magick::Geometry(128, 128), Magick::ColorRGB(0, 0, 0));
+#ifndef OLDMAGICK
       background.quiet(true);
+#endif
 #ifdef MAGICK7
       background.alpha(true);
 #else
@@ -719,7 +721,9 @@ QByteArray myModel::getThumb(QString item) {
       background.transparent(background.pixelColor(0,0));
 
       Magick::Image thumb;
+#ifndef OLDMAGICK
       thumb.quiet(true);
+#endif
       QString filename = item;
       thumb.read(filename.toUtf8().data());
       thumb.scale(Magick::Geometry(128, 128));
