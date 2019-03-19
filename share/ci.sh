@@ -25,7 +25,7 @@ if [ "${SETUP}" = 1 ]; then
     echo "Setup ubuntu ..."
     sudo add-apt-repository -y ppa:jonathonf/ffmpeg-3
     sudo apt-get update
-    sudo apt-get install git build-essential qtbase5-dev qt5-qmake libmagick++-dev libavdevice-dev libswscale-dev libavformat-dev libavcodec-dev libavutil-dev
+    sudo apt-get install tree git build-essential qtbase5-dev qt5-qmake libmagick++-dev libavdevice-dev libswscale-dev libavformat-dev libavcodec-dev libavutil-dev
     #curl -L https://sourceforge.net/projects/qt-file-manager/files/sdk/qtfm-sdk-trusty-6.1.tar.bz2/download --output download.tar.bz2
     #tar xf download.tar.bz2 -C /opt
     #rm -f download.tar.bz2
