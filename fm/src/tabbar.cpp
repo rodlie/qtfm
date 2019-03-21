@@ -43,6 +43,7 @@ void tabBar::mousePressEvent(QMouseEvent * event)
             history.removeAt(tab);
             viewType.removeAt(tab);
             this->removeTab(tab);
+            if (this->count()==1) { this->hide(); }
         }
     }
     else
@@ -157,4 +158,5 @@ void tabBar::closeTab()
     history.removeAt(currentIndex());
     viewType.removeAt(this->currentIndex());
     removeTab(this->currentIndex());
+    if (this->count()==1) { this->hide(); }
 }
