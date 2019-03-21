@@ -110,6 +110,7 @@ int tabBar::addNewTab(QString path, int type)
     int newtab = addTab(filename);
     setTabData(newtab,file.filePath());
     setIcon(newtab);
+    if (this->count()>1 && this->isHidden()) { this->show(); }
     return newtab;
 }
 

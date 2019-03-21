@@ -75,7 +75,8 @@ void MainWindow::openFile()
     foreach (QModelIndex index, items) {
         QModelIndex srcIndex = modelView->mapToSource(index);
         QString filePath = modelList->filePath(srcIndex);
-        if (filePath.isEmpty()) { continue; }
+        QFileInfo fileInfo(filePath);
+        if (fileInfo.isDir()) { continue; }
         QString mime = mimeUtils->getMimeType(filePath);
         if (mime.isEmpty()) { continue; }
         files[filePath] = mime;

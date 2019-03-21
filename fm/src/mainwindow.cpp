@@ -845,6 +845,13 @@ void MainWindow::openTab()
     }
 }
 
+void MainWindow::openNewTab()
+{
+    QFileInfo info(curIndex.filePath());
+    if (!info.isDir()) { return; }
+    addTab(curIndex.filePath());
+}
+
 //---------------------------------------------------------------------------
 int MainWindow::addTab(QString path)
 {
@@ -1419,7 +1426,8 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       }
       // Folder/directory
       else {
-        popup->addAction(openAct);
+        //popup->addAction(openAct);
+        popup->addAction(openInTabAct);
         popup->addSeparator();
         popup->addAction(addBookmarkAct);
         popup->addSeparator();
