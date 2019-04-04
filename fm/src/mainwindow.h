@@ -139,6 +139,7 @@ public slots:
     void tabChanged(int index);
     void newWindow();
     void openTab();
+    void openNewTab();
     void tabsOnTop();
     int addTab(QString path);
     void clearCutItems();
@@ -296,6 +297,7 @@ private:
     QAction *openFolderAct;
     QAction *newWinAct;
     QAction *openTabAct;
+    QAction *openInTabAct;
     QAction *closeTabAct;
     QAction *tabsOnTopAct;
     QAction *aboutAct;

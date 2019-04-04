@@ -6,7 +6,7 @@
 #include <QDockWidget>
 #include <QStatusBar>
 #include <QToolBar>
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__APPLE__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__APPLE__)
 #include <sys/mount.h>
 #else
 #include <sys/vfs.h>
@@ -75,7 +75,8 @@ void MainWindow::openFile()
     foreach (QModelIndex index, items) {
         QModelIndex srcIndex = modelView->mapToSource(index);
         QString filePath = modelList->filePath(srcIndex);
-        if (filePath.isEmpty()) { continue; }
+        QFileInfo fileInfo(filePath);
+        if (fileInfo.isDir()) { continue; }
         QString mime = mimeUtils->getMimeType(filePath);
         if (mime.isEmpty()) { continue; }
         files[filePath] = mime;

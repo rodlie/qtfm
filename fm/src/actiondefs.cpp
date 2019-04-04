@@ -102,6 +102,10 @@ void MainWindow::createActions() {
   openTabAct->setIcon(actionIcons->at(26));
   actionList->append(openTabAct);
 
+  openInTabAct = new QAction(tr("Open in new tab"), this);
+  connect(openInTabAct, SIGNAL(triggered()), this, SLOT(openNewTab()));
+  openInTabAct->setIcon(actionIcons->at(26));
+
   closeTabAct = new QAction(tr("Close tab"), this);
   closeTabAct->setStatusTip(tr("Middle-click tabs to close"));
   connect(closeTabAct, SIGNAL(triggered()), tabs, SLOT(closeTab()));

@@ -43,6 +43,7 @@ void tabBar::mousePressEvent(QMouseEvent * event)
             history.removeAt(tab);
             viewType.removeAt(tab);
             this->removeTab(tab);
+            if (this->count()==1) { this->hide(); }
         }
     }
     else
@@ -109,6 +110,7 @@ int tabBar::addNewTab(QString path, int type)
     int newtab = addTab(filename);
     setTabData(newtab,file.filePath());
     setIcon(newtab);
+    if (this->count()>1 && this->isHidden()) { this->show(); }
     return newtab;
 }
 
@@ -157,4 +159,5 @@ void tabBar::closeTab()
     history.removeAt(currentIndex());
     viewType.removeAt(this->currentIndex());
     removeTab(this->currentIndex());
+    if (this->count()==1) { this->hide(); }
 }
