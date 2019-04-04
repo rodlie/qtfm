@@ -4,7 +4,7 @@
 [![Github commits (since latest release)](https://img.shields.io/github/commits-since/rodlie/qtfm/latest.svg)](https://github.com/rodlie/qtfm)
 [![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
 
-Lightweight desktop independent Qt file manager for Linux, FreeBSD, NetBSD and macOS.
+Lightweight desktop independent Qt file manager for Linux, FreeBSD, NetBSD, OpenBSD and macOS.
 
  * Desktop (theme/applications/mime) integration
  * Customizable interface
