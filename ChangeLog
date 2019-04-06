@@ -1,3 +1,6 @@
+6.3.0 TBA
+- 
+
 6.2.0 XX-April 2019
 - imagemagick support (improved thumbnail support) CONFIG+=with_magick
 - ffmpeg support (get screenshot/coverart from audio/video) CONFIG+=with_ffmpeg (requires imagemagick support)

@@ -1,9 +1,11 @@
-# QtFM 6.2
+# QtFM 6.3
 <p align="left"><img src="share/hicolor/scalable/apps/qtfm.svg" alt="QList" height="100px"></p>
 
 [![GitHub release](https://img.shields.io/github/release/rodlie/qtfm.svg)](https://github.com/rodlie/qtfm/releases)
 [![Github commits (since latest release)](https://img.shields.io/github/commits-since/rodlie/qtfm/latest.svg)](https://github.com/rodlie/qtfm)
 [![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
+
+**This is the qtfm development branch, you can track progress [here](https://github.com/rodlie/qtfm/projects/1).**
 
 ![screenshot1](docs/screenshot.png)
 
