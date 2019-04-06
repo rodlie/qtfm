@@ -627,6 +627,7 @@ void MainWindow::exitAction() {
 
 void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
 {
+    qDebug() << "treeSelectionChanged";
     Q_UNUSED(previous)
 
     QFileInfo name = modelList->fileInfo(modelTree->mapToSource(current));
@@ -1663,14 +1664,18 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 
 void MainWindow::refresh(bool modelRefresh, bool loadDir)
 {
-    qDebug() << "refresh";
+    qDebug() << "refresh" << modelRefresh << loadDir;
     if (modelRefresh) {
         modelList->refreshItems();
         modelList->forceRefresh();
     }
+
     QModelIndex baseIndex = modelView->mapFromSource(modelList->index(pathEdit->currentText()));
     if (currentView == 2) { detailTree->setRootIndex(baseIndex); }
     else { list->setRootIndex(baseIndex); }
+
+    pathEditChanged(pathEdit->currentText());
+
     if (loadDir) {
         qDebug() << "trigger dirloaded from refresh";
         dirLoaded();
