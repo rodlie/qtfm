@@ -1,7 +1,8 @@
 TEMPLATE = subdirs
 CONFIG -= ordered
-SUBDIRS += libfm fm
+SUBDIRS += libfm fm settings
 fm.depends += libfm
+settings.depends += libfm
 
 CONFIG(v7) {
     SUBDIRS += fm7
