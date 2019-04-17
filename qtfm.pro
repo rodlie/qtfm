@@ -1,8 +1,7 @@
 TEMPLATE = subdirs
 CONFIG -= ordered
-SUBDIRS += libfm fm settings
+SUBDIRS += libfm fm
 fm.depends += libfm
-settings.depends += libfm
 
 CONFIG(v7) {
     SUBDIRS += fm7
@@ -10,6 +9,8 @@ CONFIG(v7) {
 }
 
 unix:!macx {
+    SUBDIRS += settings
+    settings.depends += libfm
     !CONFIG(no_dbus) {
         !CONFIG(no_tray) {
             SUBDIRS += tray
