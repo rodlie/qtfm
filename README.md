@@ -1,36 +1,30 @@
 # QtFM 6.2
-<p align="left"><img src="share/hicolor/scalable/apps/qtfm.svg" alt="QList" height="100px"></p>
+![screenshot1](docs/screenshot.png)
+<p align="left" style="float:right;"><img src="share/hicolor/scalable/apps/qtfm.svg" alt="QList" height="100px"></p>
 
 [![GitHub release](https://img.shields.io/github/release/rodlie/qtfm.svg)](https://github.com/rodlie/qtfm/releases)
 [![Github commits (since latest release)](https://img.shields.io/github/commits-since/rodlie/qtfm/latest.svg)](https://github.com/rodlie/qtfm)
 [![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
 
-![screenshot1](docs/screenshot.png)
 
-Lightweight file manager using Qt.
+Lightweight desktop independent Qt file manager for Linux, FreeBSD, NetBSD, OpenBSD and macOS.
 
   * XDG integration
   * Customizable interface
   * Powerful custom command system
   * Customizable key bindings
   * Drag & drop functionality
-  * Tabs
+  * Tabs support
   * Removable storage support
-  * System tray daemon (``man qtfm-tray``)
+  * System tray daemon (``qtfm-tray(1)``)
     * Show available storage/optical devices in system tray
-    * Auto mount storage/optical devices when added (not default)
-    * Auto play audio CD and video/audio DVD (not default)
+    * Auto mount (and open) storage/optical devices when added *(not default)*
+    * Auto play CD/DVD *(not default)*
   * Extensive thumbnail support
     * Supports image formats through ``ImageMagick``
     * Supports PDF and related documents
     * Supports video formats through ``FFmpeg``
     * Supports embedded images in media files
-
-## Links
-
- * [Releases](https://github.com/rodlie/qtfm/releases)
- * [Milestones](https://github.com/rodlie/qtfm/milestones)
- * [Issues](https://github.com/rodlie/qtfm/issues)
 
 ## Default shortcuts
 
@@ -60,12 +54,6 @@ Lightweight file manager using Qt.
 | Drag and Drop Ask Action    | [alt]       |
 
 All shortcuts can be modified.
-
-## Packages
-
-QtFM is available in several distributions:
-
-[![Packaging status](https://repology.org/badge/vertical-allrepos/qtfm.svg)](https://repology.org/metapackage/qtfm)
 
 ## Build
 
@@ -144,80 +132,6 @@ mkdir build && cd build
 qmake PREFIX=/usr CONFIG+=with_magick CONFIG+=with_ffmpeg ..
 make -jX
 make INSTALL_ROOT=/package_temp_path install
-```
-```
-pkg
-├── etc
-│   └── xdg
-│       └── autostart
-│           └── qtfm-tray.desktop
-└── usr
-    ├── bin
-    │   ├── qtfm
-    │   └── qtfm-tray
-    └── share
-        ├── applications
-        │   └── qtfm.desktop
-        ├── doc
-        │   └── qtfm-6.2.x
-        │       ├── AUTHORS
-        │       ├── ChangeLog
-        │       ├── LICENSE
-        │       └── README.md
-        ├── icons
-        │   └── hicolor
-        │       ├── 128x128
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 160x160
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 16x16
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 192x192
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 20x20
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 22x22
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 24x24
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 256x256
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 32x32
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 36x36
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 48x48
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 512x512
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 64x64
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 72x72
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       ├── 96x96
-        │       │   └── apps
-        │       │       └── qtfm.png
-        │       └── scalable
-        │           └── apps
-        │               └── qtfm.svg
-        └── man
-            └── man1
-                ├── qtfm-tray.1
-                └── qtfm.1
 ```
 
 ## License
