@@ -1,11 +1,10 @@
 6.2.0 XX-April 2019
 - imagemagick support (improved thumbnail support) CONFIG+=with_magick
-- ffmpeg support (get screenshot/coverart from audio/video) CONFIG+=with_ffmpeg (requires imagemagick support)
+- ffmpeg support (get thumbnails from audio/video) CONFIG+=with_ffmpeg (requires imagemagick support)
 - support for Qt4 has now ended
 - started moving code to lib
 - settings: use decimal keys in config
 - settings: support filter mime types
-- added qtfm-launcher (can be used as an app launcher in openbox etc, also supports xdg-open type actions)
 - (u)disks now supports disk labels (with device name as fallback)
 - bookmarks: added "link" option in file actions
 - support .config/mimeapps.list
@@ -14,6 +13,7 @@
 - remove "open file" in context menu if selected item is folder
 - added "open in new tab" in context menu
 - don't collapse tree on refresh
+- Fix segfault if clipboard mime is NULL
 
 6.1.8 19-March 2019
 - Fix segfault if D-Bus is missing

@@ -20,12 +20,11 @@ Lightweight file manager using Qt.
     * Show available storage/optical devices in system tray
     * Auto mount storage/optical devices when added (not default)
     * Auto play audio CD and video/audio DVD (not default)
-  * Application/XDG launcher (qtfm-launcher) for Openbox and similar
   * Extensive thumbnail support
-    * Supports image formats through ImageMagick
+    * Supports image formats through ``ImageMagick``
     * Supports PDF and related documents
-    * Supports video formats through FFmpeg
-    * Supports embedded coverart in media files
+    * Supports video formats through ``FFmpeg``
+    * Supports embedded images in media files
 
 ## Links
 
@@ -80,7 +79,7 @@ Download the latest [release](https://github.com/rodlie/qtfm/releases), then mak
   * libQt5Core
 * Requires [hicolor-icon-theme](https://www.freedesktop.org/wiki/Software/icon-theme/)
 * Requires [adwaita-icon-theme](https://github.com/GNOME/adwaita-icon-theme) or similar
-* Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) **if using FreeBSD/NetBSD/macOS**
+* Requires [libinotify](https://github.com/libinotify-kqueue/libinotify-kqueue) *if using BSD/macOS*
 * Recommended [udisks](https://www.freedesktop.org/wiki/Software/udisks/)/[bsdisks](https://www.freshports.org/sysutils/bsdisks/) at run-time
 * Recommended [ImageMagick (Magick++)](http://imagemagick.org) 6.9/7.x for improved thumbnail support
   * libMagick++
@@ -95,32 +94,31 @@ Download the latest [release](https://github.com/rodlie/qtfm/releases), then mak
 
 Download and extract:
 ```
-tar xvf qtfm-6.x.x.tar.gz
-cd qtfm-6.x.x
+tar xvf qtfm-6.2.x.tar.gz
+cd qtfm-6.2.x
 ```
 
 Or use git:
 ```
-git clone https://github.com/rodlie/qtfm
+git clone -b 6.2 https://github.com/rodlie/qtfm
 cd qtfm
 ```
 
 Build options:
 
- * ``CONFIG+=with_magick`` : This will enable ImageMagick support
-   * ``MAGICK_PC=`` : Custom Magick++ pkg-config .pc file
-   * ``CONFIG+=magick7`` : Use ImageMagick 7
-   * ``CONFIG+=oldmagick`` : If you have ImageMagick older than 6.9 (Ubuntu)
- * ``CONFIG+=with_ffmpeg`` : This will enable FFmpeg support (NOTE! requires ImageMagick)
- * ``CONFIG+=no_tray`` : This will disable qtfm-tray (no_dbus will also disable this feature)
- * ``CONFIG+=no_dbus`` : This will disable D-Bus session and udisks features in (lib)QtFM
- * ``CONFIG+=no_launcher`` : Disable qtfm-launcher (XDG application launcher)
+ * ``CONFIG+=with_magick`` : This will enable ``ImageMagick`` support.
+   * ``MAGICK_PC=`` : Custom ``Magick++`` pkg-config .pc file.
+   * ``CONFIG+=magick7`` : Use ``ImageMagick`` v7+.
+   * ``CONFIG+=oldmagick`` : If you have ``ImageMagick`` older than 6.9 *(Ubuntu)*.
+ * ``CONFIG+=with_ffmpeg`` : This will enable FFmpeg support *(**NOTE!** requires ImageMagick)*.
+ * ``CONFIG+=no_tray`` : This will disable ``qtfm-tray`` (``no_dbus`` will also disable this feature).
+ * ``CONFIG+=no_dbus`` : This will disable D-Bus session and ``udisks`` features in (lib)QtFM, ``qtfm-tray`` will also not be built.
  * ``CONFIG+=with_includes`` : Install library includes and pkg-config
- * ``CONFIG+=sharedlib`` : Force shared library
+ * ``CONFIG+=sharedlib`` : Force shared library.
  * ``PREFIX=`` : Install prefix, where things are installed when running ``make install``
- * ``DOCDIR=`` : Location for documentation (default is PREFIX/share/doc)
- * ``MANDIR=`` : Location for man pages (default is PREFIX/share/man)
- * ``XDGDIR=`` : Location of XDG (default is /etc/xdg or PREFIX/etc/xdg)
+ * ``DOCDIR=`` : Location for documentation (default is ``PREFIX/share/doc``)
+ * ``MANDIR=`` : Location for man pages (default is ``PREFIX/share/man``)
+ * ``XDGDIR=`` : Location of XDG (default is ``/etc/xdg`` or ``PREFIX/etc/xdg``)
  * ``LIBDIR=`` : Library location (default is ``$PREFIX/lib$LIBSUFFIX``), only used if shared library is enabled
 
 Doing a normal build:
@@ -156,13 +154,12 @@ pkg
 └── usr
     ├── bin
     │   ├── qtfm
-    │   ├── qtfm-launcher
     │   └── qtfm-tray
     └── share
         ├── applications
         │   └── qtfm.desktop
         ├── doc
-        │   └── qtfm-6.2.0
+        │   └── qtfm-6.2.x
         │       ├── AUTHORS
         │       ├── ChangeLog
         │       ├── LICENSE
