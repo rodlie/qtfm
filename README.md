@@ -1,11 +1,4 @@
 # QtFM 6.2
-![screenshot1](docs/screenshot.png)
-<p align="left" style="float:right;"><img src="share/hicolor/scalable/apps/qtfm.svg" alt="QList" height="100px"></p>
-
-[![GitHub release](https://img.shields.io/github/release/rodlie/qtfm.svg)](https://github.com/rodlie/qtfm/releases)
-[![Github commits (since latest release)](https://img.shields.io/github/commits-since/rodlie/qtfm/latest.svg)](https://github.com/rodlie/qtfm)
-[![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
-
 
 Lightweight desktop independent Qt file manager for Linux, FreeBSD, NetBSD, OpenBSD and macOS.
 
@@ -128,17 +121,7 @@ Same as above, but you should use ``PREFIX=`` and ``INSTALL_ROOT=``.
 Example:
 
 ```
-mkdir build && cd build
 qmake PREFIX=/usr CONFIG+=with_magick CONFIG+=with_ffmpeg ..
 make -jX
-make INSTALL_ROOT=/package_temp_path install
+make INSTALL_ROOT=<package> install
 ```
-
-## License
-
-QtFM is licensed under the GPL-2.0 License.
-
-## Related
-
- * **[powerkit](https://github.com/rodlie/powerkit)** : Desktop Independent Power Manager.
- * **[Openbox](http://openbox.org/wiki/Main_Page)** : Openbox is a highly configurable, next generation window manager with extensive standards support.
