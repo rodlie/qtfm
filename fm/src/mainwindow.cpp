@@ -956,15 +956,21 @@ void MainWindow::pathEditChanged(QString path) {
 //---------------------------------------------------------------------------
 
 /**
- * @brief Reaction for change of clippboard content
+ * @brief Handle clipboard changes
  */
-void MainWindow::clipboardChanged() {
-  if (QApplication::clipboard()->mimeData()->hasUrls()) {
-    pasteAct->setEnabled(true);
-  } else {
+void MainWindow::clipboardChanged()
+{
+    qDebug() << "clipboard changed";
+    if (QApplication::clipboard()->mimeData()) {
+        if (QApplication::clipboard()->mimeData()->hasUrls()) {
+            qDebug() << "clipboard has data, enable paste";
+            pasteAct->setEnabled(true);
+            return;
+        }
+    }
+    // clear tmp and disable paste if no mime
     modelList->clearCutItems();
     pasteAct->setEnabled(false);
-  }
 }
 //---------------------------------------------------------------------------
 
