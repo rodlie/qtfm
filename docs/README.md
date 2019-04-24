@@ -13,4 +13,5 @@ Lightweight desktop independent Qt file manager for Linux, FreeBSD, NetBSD, Open
  * Drag & drop functionality
  * Tabs
  * Removable device support
- * System tray daemon
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/qtfm.svg)](https://repology.org/metapackage/qtfm)
