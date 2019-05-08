@@ -83,11 +83,11 @@ if [ "${OS}" = "Linux" ]; then
     cd $CWD/build8
     qmake -qt=qt5 CONFIG+=release PREFIX=/usr CONFIG+=no_dbus ..
     make -j$(nproc)
-    make INSTALL_ROOT=appdir -j$(nproc) install ; find appdir/
+    make INSTALL_ROOT=appdir -j$(nproc) install ; find build8/appdir/
     wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
     chmod a+x linuxdeployqt-continuous-x86_64.AppImage
     unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
-    ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/*.desktop -appimage
+    ./linuxdeployqt-continuous-x86_64.AppImage build8/appdir/usr/share/applications/*.desktop -appimage
     wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh # TODO: Move to .travis.yml
     bash upload.sh APPNAME*.AppImage* # TODO: Move to .travis.yml
     
