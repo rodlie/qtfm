@@ -87,7 +87,7 @@ if [ "${OS}" = "Linux" ]; then
     wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
     chmod a+x linuxdeployqt-continuous-x86_64.AppImage
     unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
-    ./linuxdeployqt-continuous-x86_64.AppImage fm/appdir/usr/share/applications/*.desktop -appimage
+    ./linuxdeployqt-continuous-x86_64.AppImage fm/appdir/usr/share/applications/*.desktop -appimage -qmake=/usr/lib/x86_64-linux-gnu/qt5/bin/qmake
     wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh # TODO: Move to .travis.yml
     bash upload.sh APPNAME*.AppImage* # TODO: Move to .travis.yml
     
