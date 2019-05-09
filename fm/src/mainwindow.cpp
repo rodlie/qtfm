@@ -1355,7 +1355,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
 
       // File
       if (!curIndex.isDir()) {
-        //QString type = modelList->getMimeType(modelList->index(curIndex.filePath()));
+        QString type = modelList->getMimeType(modelList->index(curIndex.filePath()));
 
         // Add custom actions to the list of actions
         QHashIterator<QString, QAction*> i(*customActManager->getActions());
@@ -1366,7 +1366,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         }
 
         // Add run action or open with default application action
-        if (curIndex.isExecutable() || curIndex.isBundle()) {
+        if (curIndex.isExecutable() || curIndex.isBundle() || type.endsWith("appimage")) {
           popup->addAction(runAct);
         } else {
           popup->addAction(openAct);
