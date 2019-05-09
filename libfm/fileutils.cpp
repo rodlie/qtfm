@@ -190,7 +190,8 @@ QIcon FileUtils::searchMimeIcon(QString mime, const QIcon &defaultIcon) {
                  mime.endsWith("disk-image") ||
                  mime.endsWith("saturn-rom") ||
                  mime.endsWith("wii-rom") ||
-                 mime.endsWith("gamecube-rom")) {
+                 mime.endsWith("gamecube-rom") ||
+                 mime.endsWith("appimage")) {
           icon = QIcon::fromTheme("media-optical");
       } else if (mime.contains("office")) {
           if (mime.contains("document")) {
