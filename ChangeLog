@@ -1,4 +1,4 @@
-6.2.0 30-April 2019
+6.2.0 XX-May 2019
 - imagemagick support (improved thumbnail support) CONFIG+=with_magick
 - ffmpeg support (get thumbnails from audio/video) CONFIG+=with_ffmpeg
 - support for Qt4 has now ended
@@ -12,6 +12,8 @@
 - tabbar: hide if only one tab
 - remove "open file" in context menu if selected item is folder
 - added "open in new tab" in context menu
+- fixed run executable on double click
+- support running AppImages
 
 6.1.9 24-April 2019
 - clipboard: check pointer before read (fix segfault on wayland)
