@@ -23,16 +23,20 @@ void MainWindow::executeFile(QModelIndex index, bool run) {
   // Index of file
   QModelIndex srcIndex = modelView->mapToSource(index);
 
+   QString filePath = modelList->filePath(srcIndex);
+   QString type = mimeUtils->getMimeType(filePath);
+   if (type.endsWith("executable") || type.endsWith("appimage")) { run = true; }
+
   // Run or open
   if (run) {
     QProcess *myProcess = new QProcess(this);
 #ifdef Q_OS_MAC
-    myProcess->startDetached(QString("open \"%1\"").arg(modelList->filePath(srcIndex)));
+    myProcess->startDetached(QString("open \"%1\"").arg(filePath));
 #else
-    myProcess->startDetached(QString("\"%1\"").arg(modelList->filePath(srcIndex)));
+    myProcess->startDetached(QString("\"%1\"").arg(filePath));
 #endif
   } else {
-    mimeUtils->openInApp(modelList->fileInfo(srcIndex), ""/*term*/);
+    mimeUtils->openInApp(filePath, ""/*term*/);
   }
 }
 //---------------------------------------------------------------------------
