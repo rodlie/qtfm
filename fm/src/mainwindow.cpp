@@ -1039,6 +1039,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
     } else if (box.clickedButton() == canc) {
       return;
     }
+    currentDragMode = dragMode;
   }
 
   // If moving is enabled, cut files from the original location
