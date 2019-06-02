@@ -141,12 +141,13 @@ const QString uDisks2::getMountPointOptical(QString path)
     QString mountpoint;
     QString device = path.split("/").takeLast();
     if (device.isEmpty()) { return mountpoint; }
-    QFile mtab("/etc/mtab");
-    if (!mtab.open(QIODevice::ReadOnly)) { return QString(); }
-    QTextStream ts(&mtab);
+    QFile mtabFile("/etc/mtab");
+    if (!mtabFile.open(QIODevice::ReadOnly)) { return QString(); }
+    QString mtab = mtabFile.readAll();
+    QStringList lines = mtab.split("\n");
     QVector<QStringList> result;
-    while(!ts.atEnd()) {
-        QString line = ts.readLine();
+    for (int i=0;i<lines.size();++i) {
+        QString line = lines.at(i);
         QStringList info = line.split(" ", QString::SkipEmptyParts);
         if (info.size()>=2) {
             QString dev = info.at(0);
@@ -154,8 +155,8 @@ const QString uDisks2::getMountPointOptical(QString path)
             if (dev == QString("/dev/%1").arg(device)) { mountpoint = mnt; }
         }
     }
-    mtab.close();
-    //qDebug() << "optical mountpoint" << mountpoint;
+    mtabFile.close();
+    qDebug() << "optical mountpoint" << mountpoint;
     return mountpoint;
 }
 
