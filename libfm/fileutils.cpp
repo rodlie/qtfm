@@ -1,7 +1,7 @@
 #include "fileutils.h"
 #include <QDirIterator>
 
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__APPLE__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__APPLE__)
 #include <sys/mount.h>
 #else
 #include <sys/vfs.h>
@@ -190,7 +190,8 @@ QIcon FileUtils::searchMimeIcon(QString mime, const QIcon &defaultIcon) {
                  mime.endsWith("disk-image") ||
                  mime.endsWith("saturn-rom") ||
                  mime.endsWith("wii-rom") ||
-                 mime.endsWith("gamecube-rom")) {
+                 mime.endsWith("gamecube-rom") ||
+                 mime.endsWith("appimage")) {
           icon = QIcon::fromTheme("media-optical");
       } else if (mime.contains("office")) {
           if (mime.contains("document")) {

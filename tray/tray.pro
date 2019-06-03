@@ -1,8 +1,6 @@
 include($${top_srcdir}/share/qtfm.pri)
 
 QT += dbus widgets
-CONFIG(staticlib): QT += concurrent
-
 TARGET = qtfm-tray
 TEMPLATE = app
 
@@ -11,7 +9,6 @@ HEADERS += systray.h
 RESOURCES += tray.qrc
 
 INCLUDEPATH += $${top_srcdir}/libfm
-LIBS += -L$${top_builddir}/lib$${LIBSUFFIX} -lQtFM
 
 DESTDIR = $${top_builddir}/bin
 OBJECTS_DIR = $${DESTDIR}/.obj_tray
@@ -25,6 +22,27 @@ man.files += qtfm-tray.1
 man.path += $${MANDIR}/man1
 INSTALLS += target desktop man
 
-!CONFIG(staticlib): QMAKE_RPATHDIR += $ORIGIN/../lib$${LIBSUFFIX}
-CONFIG(staticlib): CONFIG(with_magick): include($${top_srcdir}/share/imagemagick.pri)
-CONFIG(staticlib): CONFIG(with_ffmpeg): include($${top_srcdir}/share/ffmpeg.pri)
+# Don't link against libfm if static (too many 3rdparty depends)
+CONFIG(staticlib) {
+    SOURCES += \
+        $${top_srcdir}/libfm/common.cpp \
+        $${top_srcdir}/libfm/disks.cpp \
+        $${top_srcdir}/libfm/udisks2.cpp \
+        $${top_srcdir}/libfm/fileutils.cpp \
+        $${top_srcdir}/libfm/desktopfile.cpp \
+        $${top_srcdir}/libfm/properties.cpp \
+        $${top_srcdir}/libfm/mimeutils.cpp
+    HEADERS += \
+        $${top_srcdir}/libfm/disks.h \
+        $${top_srcdir}/libfm/disks.h \
+        $${top_srcdir}/libfm/udisks2.h \
+        $${top_srcdir}/libfm/fileutils.h \
+        $${top_srcdir}/libfm/desktopfile.h \
+        $${top_srcdir}/libfm/properties.h \
+        $${top_srcdir}/libfm/mimeutils.h
+}
+# Link against libfm if shared
+!CONFIG(staticlib) {
+    LIBS += -L$${top_builddir}/lib$${LIBSUFFIX} -lQtFM
+    QMAKE_RPATHDIR += $ORIGIN/../lib$${LIBSUFFIX}
+}

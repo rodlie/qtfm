@@ -5,5 +5,5 @@ Icon=qtfm
 Exec=qtfm-tray
 Terminal=false
 Type=Application
-NotShowIn=GNOME;KDE;LXDE;LXQt;MATE;Razor;ROX;TDE;Unity;XFCE;Cinnamon;
+OnlyShowIn=Lumina;
 StartupNotify=false

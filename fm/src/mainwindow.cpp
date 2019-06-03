@@ -630,6 +630,7 @@ void MainWindow::exitAction() {
 
 void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
 {
+    qDebug() << "treeSelectionChanged";
     Q_UNUSED(previous)
 
     QFileInfo name = modelList->fileInfo(modelTree->mapToSource(current));
@@ -848,6 +849,13 @@ void MainWindow::openTab()
     }
 }
 
+void MainWindow::openNewTab()
+{
+    QFileInfo info(curIndex.filePath());
+    if (!info.isDir()) { return; }
+    addTab(curIndex.filePath());
+}
+
 //---------------------------------------------------------------------------
 int MainWindow::addTab(QString path)
 {
@@ -936,15 +944,21 @@ void MainWindow::pathEditChanged(QString path) {
 //---------------------------------------------------------------------------
 
 /**
- * @brief Reaction for change of clippboard content
+ * @brief Handle clipboard changes
  */
-void MainWindow::clipboardChanged() {
-  if (QApplication::clipboard()->mimeData()->hasUrls()) {
-    pasteAct->setEnabled(true);
-  } else {
+void MainWindow::clipboardChanged()
+{
+    qDebug() << "clipboard changed";
+    if (QApplication::clipboard()->mimeData()) {
+        if (QApplication::clipboard()->mimeData()->hasUrls()) {
+            qDebug() << "clipboard has data, enable paste";
+            pasteAct->setEnabled(true);
+            return;
+        }
+    }
+    // clear tmp and disable paste if no mime
     modelList->clearCutItems();
     pasteAct->setEnabled(false);
-  }
 }
 //---------------------------------------------------------------------------
 
@@ -1028,6 +1042,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
     } else if (box.clickedButton() == canc) {
       return;
     }
+    currentDragMode = dragMode;
   }
 
   // If moving is enabled, cut files from the original location
@@ -1417,7 +1432,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
 
       // File
       if (!curIndex.isDir()) {
-        //QString type = modelList->getMimeType(modelList->index(curIndex.filePath()));
+        QString type = modelList->getMimeType(modelList->index(curIndex.filePath()));
 
         // Add custom actions to the list of actions
         QHashIterator<QString, QAction*> i(*customActManager->getActions());
@@ -1428,7 +1443,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         }
 
         // Add run action or open with default application action
-        if (curIndex.isExecutable() || curIndex.isBundle()) {
+        if (curIndex.isExecutable() || curIndex.isBundle() || type.endsWith("appimage")) {
           popup->addAction(runAct);
         } else {
           popup->addAction(openAct);
@@ -1495,7 +1510,8 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       }
       // Folder/directory
       else {
-        popup->addAction(openAct);
+        //popup->addAction(openAct);
+        popup->addAction(openInTabAct);
         popup->addSeparator();
         popup->addAction(addBookmarkAct);
         popup->addSeparator();
@@ -1731,14 +1747,18 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 
 void MainWindow::refresh(bool modelRefresh, bool loadDir)
 {
-    qDebug() << "refresh";
+    qDebug() << "refresh" << modelRefresh << loadDir;
     if (modelRefresh) {
         modelList->refreshItems();
         modelList->forceRefresh();
     }
+
     QModelIndex baseIndex = modelView->mapFromSource(modelList->index(pathEdit->currentText()));
     if (currentView == 2) { detailTree->setRootIndex(baseIndex); }
     else { list->setRootIndex(baseIndex); }
+
+    pathEditChanged(pathEdit->currentText());
+
     if (loadDir) {
         qDebug() << "trigger dirloaded from refresh";
         dirLoaded();
