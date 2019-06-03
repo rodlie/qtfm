@@ -1,5 +1,5 @@
 6.3.0 TBA
-- 
+- cmake support
 
 6.2.0 05-June 2019
 - imagemagick support (improved thumbnail support) CONFIG+=with_magick
