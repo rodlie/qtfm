@@ -15,6 +15,7 @@
 - fixed run executable on double click
 - support running AppImages
 - fixed mount/umount issue with optical storage
+- fixed current drag mode (thanks to @ferion11)
 
 6.1.9 24-April 2019
 - clipboard: check pointer before read (fix segfault on wayland)
