@@ -181,7 +181,7 @@ if(ENABLE_DBUS)
 endif()
 
 # qtfm-tray
-if(ENABLE_DBUS)
+if(ENABLE_DBUS AND ENABLE_TRAY)
     add_executable(${PROJECT_NAME}-tray tray/main.cpp tray/systray.cpp tray/tray.qrc)
     target_include_directories(${PROJECT_NAME}-tray PRIVATE tray libfm)
     target_link_libraries(${PROJECT_NAME}-tray Qt5::Core Qt5::Gui Qt5::Widgets Qt5::DBus QtFM)
