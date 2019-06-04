@@ -155,9 +155,11 @@ void tabBar::setType(int type)
 //---------------------------------------------------------------------------
 void tabBar::closeTab()
 {
-    delete history.at(currentIndex());
-    history.removeAt(currentIndex());
-    viewType.removeAt(this->currentIndex());
-    removeTab(this->currentIndex());
+    if (currentIndex()>-1) {
+        delete history.at(currentIndex());
+        history.removeAt(currentIndex());
+        viewType.removeAt(this->currentIndex());
+        removeTab(this->currentIndex());
+    }
     if (this->count()==1) { this->hide(); }
 }
