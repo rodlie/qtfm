@@ -1,4 +1,7 @@
-6.2.0 XX-May 2019
+6.3.0 TBA
+- cmake support
+
+6.2.0 05-June 2019
 - imagemagick support (improved thumbnail support) CONFIG+=with_magick
 - ffmpeg support (get thumbnails from audio/video) CONFIG+=with_ffmpeg
 - support for Qt4 has now ended
@@ -14,6 +17,8 @@
 - added "open in new tab" in context menu
 - fixed run executable on double click
 - support running AppImages
+- fixed mount/umount issue with optical storage
+- fixed current drag mode (thanks to @ferion11)
 
 6.1.9 24-April 2019
 - clipboard: check pointer before read (fix segfault on wayland)
