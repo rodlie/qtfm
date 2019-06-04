@@ -24,6 +24,9 @@ QtFM::QtFM(QWidget *parent)
     , upButton(Q_NULLPTR)
     , homeButton(Q_NULLPTR)
     , tileButton(Q_NULLPTR)
+    , dockBookmarks(Q_NULLPTR)
+    , bookmarksList(Q_NULLPTR)
+    , modelBookmarks(Q_NULLPTR)
 {
     QIcon::setThemeSearchPaths(Common::iconPaths(qApp->applicationDirPath()));
     Common::setupIconTheme(qApp->applicationFilePath());
@@ -53,7 +56,7 @@ QtFM::QtFM(QWidget *parent)
     pathEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     mdi = new QMdiArea(this);
-    mdi->setViewMode(QMdiArea::SubWindowView);
+    mdi->setViewMode(QMdiArea::TabbedView);
     mdi->setTabPosition(QTabWidget::North);
     mdi->setTabsClosable(true);
     mdi->setTabsMovable(true);
@@ -113,6 +116,24 @@ QtFM::QtFM(QWidget *parent)
     homeButton->hide();
     tileButton->hide();
 
+
+
+    dockBookmarks = new QDockWidget(tr("Bookmarks"),this,Qt::SubWindow);
+    dockBookmarks->setObjectName("bookmarksDock");
+    dockBookmarks->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+    dockBookmarks->setFeatures(QDockWidget::DockWidgetMovable);
+
+
+    //QHash<QString, QIcon> *folderIcons = Q_NULLPTR;
+    modelBookmarks = new bookmarkmodel(/*folderIcons*/);
+    //connect(modelBookmarks, SIGNAL(bookmarksChanged()), this, SLOT(handleBookmarksChanged()));
+
+    bookmarksList = new QListView(dockBookmarks);
+
+    dockBookmarks->setWidget(bookmarksList);
+    addDockWidget(Qt::LeftDockWidgetArea, dockBookmarks);
+
+
     setupConnections();
     loadSettings();
     QTimer::singleShot(10, this, SLOT(parseArgs()));
@@ -120,6 +141,7 @@ QtFM::QtFM(QWidget *parent)
 
 QtFM::~QtFM()
 {
+    modelBookmarks->deleteLater();
     writeSettings();
 }
 
@@ -202,11 +224,15 @@ void QtFM::setupConnections()
 void QtFM::loadSettings()
 {
     qDebug() << "load settings";
+
+    setupBookmarks();
 }
 
 void QtFM::writeSettings()
 {
     qDebug() << "write settings";
+
+    writeBookmarks();
 }
 
 void QtFM::handleNewPath(QString path)
@@ -229,25 +255,29 @@ void QtFM::handleUpdatedDir(QString path)
 
 void QtFM::handleTabActivated(QMdiSubWindow *tab)
 {
-    if (!tab) {
-        qDebug() << "NO TAB ACTIVATED";
-        return;
-    }
+    if (!tab) { return; }
+
+    // FM?
     FM *fm = dynamic_cast<FM*>(tab->widget());
-    if (!fm) {
-        QTermWidget *console = dynamic_cast<QTermWidget*>(tab->widget());
-        if (console) {
-            qDebug() << "handle term activated" << console->workingDirectory();
-            pathEdit->clear();
-            pathEdit->setCurrentIndex(0);
-            pathEdit->setCurrentText(console->workingDirectory());
-            tab->setWindowTitle(console->workingDirectory());
-        }
+    if (fm) {
+        qDebug() << "handle fm activated" << fm->getPath();
+        tab->setWindowTitle(fm->getPath().split("/").takeLast());
+        refreshPath(fm);
         return;
     }
-    qDebug() << "handle tab activated" << fm->getPath();
-    tab->setWindowTitle(fm->getPath());
-    refreshPath(fm);
+
+    // TERM?
+    QTermWidget *console = dynamic_cast<QTermWidget*>(tab->widget());
+    if (console) {
+        qDebug() << "handle term activated" << console->workingDirectory();
+        pathEdit->clear();
+        pathEdit->setCurrentIndex(0);
+        pathEdit->setCurrentText(console->workingDirectory());
+        tab->setWindowTitle(console->workingDirectory().split("/").takeLast());
+        return;
+    }
+
+    qDebug() << "unknown tab activated, ignore";
 }
 
 void QtFM::handleOpenFile(const QString &file)
@@ -275,7 +305,7 @@ void QtFM::handleTermTitleChanged()
         return;
     }
     if (console != dynamic_cast<QTermWidget*>(mdi->currentSubWindow()->widget())) { return; }
-    mdi->currentSubWindow()->setWindowTitle(console->workingDirectory());
+    mdi->currentSubWindow()->setWindowTitle(console->workingDirectory().split("/").takeLast());
 }
 
 void QtFM::refreshPath(FM *fm)
@@ -291,22 +321,22 @@ void QtFM::pathEditChanged(const QString &path)
 {
     qDebug() << "path edit changed" << path;
 
-    QString info = path;
-    if (!QFileInfo(path).exists()) {
-        qDebug() << "path does not exists" << path;
-        return;
-    }
-
-    info.replace(QString("~"), QDir::homePath());
     if (!mdi->currentSubWindow()) {
         qDebug() << "NO TABS?";
         return;
     }
     FM *fm = dynamic_cast<FM*>(mdi->currentSubWindow()->widget());
-    if (!fm) { return; }
-
-    qDebug() << "set new path in fm" << path;
-    fm->setPath(path);
+    if (fm) {
+        QString info = path;
+        if (!QFileInfo(path).exists()) {
+            qDebug() << "path does not exists, ignore" << path;
+            return;
+        }
+        info.replace(QString("~"), QDir::homePath());
+        qDebug() << "set new fm path in tab" << path;
+        fm->setPath(path);
+        return;
+    }
 }
 
 // EXPERIMENTAL!
@@ -351,4 +381,59 @@ void QtFM::newTerminal(const QString &path)
     if (mdi->subWindowList().count()>1) {
         mdi->tileSubWindows();
     }
+}
+
+void QtFM::setupBookmarks()
+{
+    qDebug() << "setup bookmarks";
+
+    bookmarksList->setMinimumHeight(24);
+    bookmarksList->setFocusPolicy(Qt::ClickFocus);
+    bookmarksList->setDragDropMode(QAbstractItemView::DragDrop);
+    bookmarksList->setDropIndicatorShown(true);
+    bookmarksList->setDefaultDropAction(Qt::MoveAction);
+    bookmarksList->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    bookmarksList->setModel(modelBookmarks);
+    bookmarksList->setResizeMode(QListView::Adjust);
+    bookmarksList->setFlow(QListView::TopToBottom);
+    bookmarksList->setIconSize(QSize(24, 24));
+
+    // Remove old bookmarks
+    modelBookmarks->removeRows(0, modelBookmarks->rowCount());
+
+    // Load bookmarks
+    //loadBookmarks();
+
+    modelBookmarks->addBookmark(tr("Computer"), "/", "", "computer", "", false, false);
+#ifdef Q_OS_MAC
+    modelBookmarks->addBookmark(tr("Applications"), "/Applications", "", "applications-other", "", false, false);
+#endif
+    modelBookmarks->addBookmark(tr("Home"), QDir::homePath(), "", "user-home", "", false, false);
+    if (QFile::exists(QString("%1/Desktop").arg(QDir::homePath()))) {
+        modelBookmarks->addBookmark(tr("Desktop"), QString("%1/Desktop").arg(QDir::homePath()), "", "user-desktop", "", false, false);
+    }
+    if (QFile::exists(QString("%1/Documents").arg(QDir::homePath()))) {
+        modelBookmarks->addBookmark(tr("Documents"), QString("%1/Documents").arg(QDir::homePath()), "", "text-x-generic", "", false, false);
+    }
+    if (QFile::exists(QString("%1/Dowloads").arg(QDir::homePath()))) {
+        modelBookmarks->addBookmark(tr("Downloads"), QString("%1/Dowloads").arg(QDir::homePath()), "", "applications-internet", "", false, false);
+    }
+    if (QFile::exists(QString("%1/Pictures").arg(QDir::homePath()))) {
+        modelBookmarks->addBookmark(tr("Pictures"), QString("%1/Pictures").arg(QDir::homePath()), "", "image-x-generic", "", false, false);
+    }
+    if (QFile::exists(QString("%1/Videos").arg(QDir::homePath()))) {
+        modelBookmarks->addBookmark(tr("Videos"), QString("%1/Videos").arg(QDir::homePath()), "", "video-x-generic", "", false, false);
+    }
+    if (QFile::exists(QString("%1/Music").arg(QDir::homePath()))) {
+        modelBookmarks->addBookmark(tr("Music"), QString("%1/Music").arg(QDir::homePath()), "", "audio-x-generic", "", false, false);
+    }
+    if (QFile::exists(QString("%1/.local/share/Trash").arg(QDir::homePath()))) {
+        modelBookmarks->addBookmark(tr("Trash"), QString("%1/.local/share/Trash").arg(QDir::homePath()), "", "user-trash", "", false, false);
+    }
+    //writeBookmarks();
+}
+
+void QtFM::writeBookmarks()
+{
+    qDebug() << "write bookmarks";
 }

@@ -9,11 +9,13 @@
 #include <QStatusBar>
 #include <QMenuBar>
 #include <QAction>
+#include <QDockWidget>
 
 #include <qtermwidget5/qtermwidget.h>
 
 #include "mimeutils.h"
 #include "fm.h"
+#include "bookmarkmodel.h"
 
 class QtFM : public QMainWindow
 {
@@ -46,6 +48,10 @@ private:
     QPushButton *homeButton;
     QPushButton *tileButton;
 
+    QDockWidget *dockBookmarks;
+    QListView *bookmarksList;
+    bookmarkmodel *modelBookmarks;
+
 public slots:
     void newSubWindow(bool triggered);
     void newSubWindow(QString path = QDir::homePath());
@@ -65,6 +71,8 @@ private slots:
     void refreshPath(FM* fm);
     void pathEditChanged(const QString &path);
     void newTerminal(const QString &path);
+    void setupBookmarks();
+    void writeBookmarks();
 };
 
 #endif // QTFM_H
