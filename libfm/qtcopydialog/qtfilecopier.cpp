@@ -538,7 +538,7 @@ struct RenameNode : public ChainNode {
         if (r.move) {
             QFileInfo fis(r.source);
             QDir dir = fis.dir();
-            if (!(r.copyFlags & QtFileCopier::FollowLinks) || !r.dir && !fis.isSymLink()) {
+            if (!(r.copyFlags & QtFileCopier::FollowLinks) || (!r.dir && !fis.isSymLink())) {
                 if (dir.rename(fis.fileName(), r.dest)) {
                     QFileInfo fid(r.dest);
                     if (r.dir)
