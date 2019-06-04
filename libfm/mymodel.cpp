@@ -635,6 +635,7 @@ void myModel::loadThumbs(QModelIndexList indexes) {
         || mimetype == QString("audio/mpeg")
 #endif
 #endif
+        || filename.endsWith(".desktop")
         )
     { files.append(filename); }
   }
@@ -694,6 +695,20 @@ void myModel::loadThumbs(QModelIndexList indexes) {
 QByteArray myModel::getThumb(QString item) {
 
   if (item.isEmpty()) { return QByteArray(); }
+  if (item.endsWith(".desktop")) {
+      QString iconFile = Common::findIcon("", QIcon::themeName(), Common::getDesktopIcon(item));
+      if (!iconFile.isEmpty()) {
+          QPixmap pix = QPixmap::fromImage(QImage(iconFile));
+          if (!pix.isNull()) {
+              QByteArray raw;
+              QBuffer buffer(&raw);
+              buffer.open(QIODevice::WriteOnly);
+              pix.save(&buffer, "PNG");
+              return raw;
+          }
+      }
+      return QByteArray();
+  }
 #ifdef WITH_MAGICK
 #ifdef WITH_FFMPEG
   QString itemMime = mimeUtilsPtr->getMimeType(item);
