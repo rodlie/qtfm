@@ -320,11 +320,9 @@ void QtFM::refreshPath(FM *fm)
 void QtFM::pathEditChanged(const QString &path)
 {
     qDebug() << "path edit changed" << path;
+    if (!mdi->currentSubWindow()) { return; }
 
-    if (!mdi->currentSubWindow()) {
-        qDebug() << "NO TABS?";
-        return;
-    }
+    // FM
     FM *fm = dynamic_cast<FM*>(mdi->currentSubWindow()->widget());
     if (fm) {
         QString info = path;
@@ -337,6 +335,18 @@ void QtFM::pathEditChanged(const QString &path)
         fm->setPath(path);
         return;
     }
+
+    // TERM
+    /*QTermWidget *console = dynamic_cast<QTermWidget*>(mdi->currentSubWindow()->widget());
+    if (console) {
+        qDebug() << "change working directory in terminal" << console->workingDirectory() << path;
+        if (console->workingDirectory() != path) {
+            console->setWorkingDirectory(path);
+            //console->update();
+            //console->clear();
+        }
+        return;
+    }*/
 }
 
 // EXPERIMENTAL!
