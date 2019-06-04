@@ -17,6 +17,7 @@
 - fixed mount/umount issue with optical storage
 - fixed current drag mode (thanks to @DanielDevBR)
 - fix potential crash in close tab
+- show and run .desktop in file view
 
 6.1.9 24-April 2019
 - clipboard: check pointer before read (fix segfault on wayland)
