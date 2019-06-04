@@ -244,7 +244,7 @@ MainWindow::MainWindow()
     customActManager = new CustomActionsManager(settings, actionList, this);
 
     // Create bookmarks model
-    modelBookmarks = new bookmarkmodel(modelList->folderIcons);
+    modelBookmarks = new bookmarkmodel(/*modelList->folderIcons*/);
     connect(modelBookmarks, SIGNAL(bookmarksChanged()), this, SLOT(handleBookmarksChanged()));
 
     // Load settings before showing window

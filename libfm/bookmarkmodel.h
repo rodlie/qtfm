@@ -26,7 +26,7 @@
 #define MEDIA_PATH Qt::UserRole+5
 
 #include <QStandardItemModel>
-#include <QHash>
+//#include <QHash>
 #include <QIcon>
 #include <QMimeData>
 #include <QModelIndex>
@@ -37,7 +37,7 @@ class bookmarkmodel : public QStandardItemModel
     Q_OBJECT
 
 public:
-    bookmarkmodel(QHash<QString, QIcon> *);
+    bookmarkmodel(/*QHash<QString, QIcon> **/);
     QStringList mimeTypes() const;
     bool dropMimeData(const QMimeData *data,
                       Qt::DropAction action,
@@ -59,8 +59,8 @@ signals:
                        bool link = false);
     void bookmarksChanged();
 
-private:
-    QHash<QString, QIcon> *folderIcons;
+//private:
+    //QHash<QString, QIcon> *folderIcons;
 };
 
 #endif // BOOKMARKMODEL_H

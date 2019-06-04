@@ -31,10 +31,10 @@
 #include <QMessageBox>
 #include <QAbstractButton>
 
-bookmarkmodel::bookmarkmodel(QHash<QString,
-                             QIcon> *icons)
+bookmarkmodel::bookmarkmodel(/*QHash<QString,
+                             QIcon> *icons*/)
 {
-    folderIcons = icons;
+    //folderIcons = icons;
 }
 
 void bookmarkmodel::addBookmark(QString name,
@@ -59,9 +59,9 @@ void bookmarkmodel::addBookmark(QString name,
 
     QIcon theIcon = QIcon::fromTheme(icon,
                                      QApplication::style()->standardIcon(QStyle::SP_DirIcon));
-    if (icon.isEmpty()) {
+    /*if (icon.isEmpty()) {
         if (folderIcons->contains(name)) { theIcon = folderIcons->value(name); }
-    }
+    }*/
 
     if (name.isEmpty()) name = QString("/");
     QStandardItem *item = new QStandardItem(theIcon, name);
