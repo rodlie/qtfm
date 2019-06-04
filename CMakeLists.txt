@@ -4,6 +4,10 @@ include(GNUInstallDirs)
 project(qtfm VERSION 6.3.0)
 set(PROJECT_VERSION_EXTRA _alpha)
 
+add_definitions(-DAPP="${PROJECT_NAME}")
+add_definitions(-DAPP_NAME="QtFM")
+add_definitions(-DAPP_VERSION="${PROJECT_VERSION}${PROJECT_VERSION_EXTRA}")
+
 #set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -71,7 +75,7 @@ if(ENABLE_DBUS)
         libfm/udisks2.cpp
     )
     target_link_libraries(QtFMBus Qt5::DBus)
-    target_include_directories(QtFMBus PRIVATE src/libfm)
+    target_include_directories(QtFMBus PRIVATE libfm)
 endif()
 add_library(
     QtFM
@@ -119,8 +123,8 @@ if(ENABLE_MAGICK OR ENABLE_MAGICK7)
     if(ENABLE_FFMPEG)
         target_include_directories(QtFM
                                    PRIVATE
-                                   src/libfm
-                                   src/libfm/qtcopydialog
+                                   libfm
+                                   libfm/qtcopydialog
                                    ${MAGICK_INCLUDEDIR}
                                    ${AVUTIL_INCLUDEDIR})
         target_link_libraries(QtFM
@@ -132,12 +136,12 @@ if(ENABLE_MAGICK OR ENABLE_MAGICK7)
     else()
         target_include_directories(QtFM
                                    PRIVATE
-                                   src/libfm
-                                   src/libfm/qtcopydialog
+                                   libfm
+                                   libfm/qtcopydialog
                                    ${MAGICK_INCLUDEDIR})
     endif()
 else()
-    target_include_directories(QtFM PRIVATE src/libfm src/libfm/qtcopydialog)
+    target_include_directories(QtFM PRIVATE libfm libfm/qtcopydialog)
 endif()
 
 target_link_libraries(
@@ -151,11 +155,32 @@ if(ENABLE_DBUS)
     target_link_libraries(QtFM Qt5::DBus QtFMBus)
 endif()
 
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
-else()
-    set(LIB_INSTALL_DIR ${CMAKE_INSTALL_FULL_LIBDIR})
+# qtfm
+add_executable(
+    ${PROJECT_NAME}
+    fm/src/main.cpp
+    fm/src/mainwindow.cpp
+    fm/src/bookmarks.cpp
+    fm/src/tabbar.cpp
+    fm/src/settingsdialog.cpp
+    fm/src/actiondefs.cpp
+    fm/src/actiontriggers.cpp
+    share/${PROJECT_NAME}.qrc
+)
+target_link_libraries(
+    ${PROJECT_NAME}
+    Qt5::Core
+    Qt5::Gui
+    Qt5::Widgets
+    Qt5::Concurrent
+    QtFM
+)
+target_include_directories(${PROJECT_NAME} PRIVATE fm/src libfm libfm/qtcopydialog)
+if(ENABLE_DBUS)
+    target_link_libraries(${PROJECT_NAME} Qt5::DBus)
 endif()
+
+# qtfm-tray
 
 # docs
 install(
@@ -174,6 +199,13 @@ if(CMAKE_INSTALL_PREFIX STREQUAL "/usr")
     set(DEFAULT_SYSCONFDIR "/etc")
 endif()
 
+# libdir
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
+else()
+    set(LIB_INSTALL_DIR ${CMAKE_INSTALL_FULL_LIBDIR})
+endif()
+
 # install
 install(
     TARGETS
@@ -181,4 +213,21 @@ install(
     DESTINATION
     ${LIB_INSTALL_DIR}
 )
-
+install(
+    TARGETS
+    ${PROJECT_NAME}
+    DESTINATION
+    ${CMAKE_INSTALL_BINDIR}
+)
+install(
+    FILES
+    fm/${PROJECT_NAME}.1
+    DESTINATION
+    ${CMAKE_INSTALL_MANDIR}/man1
+)
+install(
+    FILES
+    fm/${PROJECT_NAME}.desktop
+    DESTINATION
+    ${CMAKE_INSTALL_DATAROOTDIR}/applications
+)
