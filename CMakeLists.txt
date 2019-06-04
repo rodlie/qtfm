@@ -65,6 +65,12 @@ find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Concurrent REQUIRED)
 
+# inotify
+if("${CMAKE_SYSTEM}" NOT MATCHES "Linux")
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(NOTIFY REQUIRED libinotify)
+endif()
+
 # libfm
 if(ENABLE_DBUS)
     add_library(
@@ -125,6 +131,7 @@ if(ENABLE_MAGICK OR ENABLE_MAGICK7)
                                    PRIVATE
                                    libfm
                                    libfm/qtcopydialog
+                                   ${NOTIFY_INCLUDEDIR}
                                    ${MAGICK_INCLUDEDIR}
                                    ${AVUTIL_INCLUDEDIR})
         target_link_libraries(QtFM
@@ -138,10 +145,11 @@ if(ENABLE_MAGICK OR ENABLE_MAGICK7)
                                    PRIVATE
                                    libfm
                                    libfm/qtcopydialog
+                                   ${NOTIFY_INCLUDEDIR}
                                    ${MAGICK_INCLUDEDIR})
     endif()
 else()
-    target_include_directories(QtFM PRIVATE libfm libfm/qtcopydialog)
+    target_include_directories(QtFM PRIVATE libfm libfm/qtcopydialog ${NOTIFY_INCLUDEDIR})
 endif()
 
 target_link_libraries(
@@ -153,6 +161,12 @@ target_link_libraries(
 )
 if(ENABLE_DBUS)
     target_link_libraries(QtFM Qt5::DBus QtFMBus)
+endif()
+if("${CMAKE_SYSTEM}" NOT MATCHES "Linux")
+    target_link_libraries(QtFM ${NOTIFY_LIBRARIES})
+endif()
+if(APPLE)
+    target_link_libraries(QtFM -framework CoreFoundation -framework CoreServices)
 endif()
 
 # qtfm
@@ -178,6 +192,12 @@ target_link_libraries(
 target_include_directories(${PROJECT_NAME} PRIVATE fm/src libfm libfm/qtcopydialog)
 if(ENABLE_DBUS)
     target_link_libraries(${PROJECT_NAME} Qt5::DBus)
+endif()
+if("${CMAKE_SYSTEM}" NOT MATCHES "Linux")
+    target_link_libraries(${PROJECT_NAME} ${NOTIFY_LIBRARIES})
+endif()
+if(APPLE)
+    target_link_libraries(${PROJECT_NAME} -framework CoreFoundation -framework CoreServices)
 endif()
 
 # qtfm-tray

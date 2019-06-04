@@ -1,7 +1,8 @@
 6.3.0 TBA
 - cmake support
-  - macosx not supported (yet)
+  - mandatory shared library
 - new file transfer dialog
+  - from Qt Solutions
 
 6.2.0 05-June 2019
 - imagemagick support (improved thumbnail support) CONFIG+=with_magick
