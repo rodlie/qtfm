@@ -242,7 +242,7 @@ install(
     DESTINATION
     ${CMAKE_INSTALL_DATAROOTDIR}/icons
 )
-if(ENABLE_DBUS)
+if(ENABLE_DBUS AND ENABLE_TRAY)
     install(
         TARGETS
         ${PROJECT_NAME}-tray
