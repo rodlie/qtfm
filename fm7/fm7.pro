@@ -41,4 +41,5 @@ unix:!macx {
     !CONFIG(staticlib): QMAKE_RPATHDIR += $ORIGIN/../lib$${LIBSUFFIX}
 }
 
-CONFIG(with_magick): include($${top_srcdir}/share/imagemagick.pri)
+
+PKGCONFIG += qtermwidget5

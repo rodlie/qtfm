@@ -2,6 +2,8 @@
 #include "common.h"
 
 #include <QMdiSubWindow>
+#include <QApplication>
+#include <QFont>
 
 QtFM::QtFM(QWidget *parent)
     : QMainWindow(parent)
@@ -17,6 +19,7 @@ QtFM::QtFM(QWidget *parent)
     , tileAction(Q_NULLPTR)
     , tabViewAction(Q_NULLPTR)
     , newTabAction(Q_NULLPTR)
+    , newTermAction(Q_NULLPTR)
     , backButton(Q_NULLPTR)
     , upButton(Q_NULLPTR)
     , homeButton(Q_NULLPTR)
@@ -77,7 +80,13 @@ QtFM::QtFM(QWidget *parent)
     newTabAction->setIcon(QIcon::fromTheme("window-new"));
     newTabAction->setShortcut(QKeySequence(tr("Ctrl+N")));
 
+    newTermAction = new QAction(this);
+    newTermAction->setText(tr("Open new terminal"));
+    newTermAction->setIcon(QIcon::fromTheme("terminal"));
+
+
     fileMenu->addAction(newTabAction);
+    fileMenu->addAction(newTermAction);
     viewMenu->addAction(tileAction);
 
     mBar->addMenu(fileMenu);
@@ -126,7 +135,7 @@ void QtFM::newSubWindow(QString path)
     QFileInfo info(path);
     if (!info.isDir()) { return; }
 
-    QMdiSubWindow *subwindow = new QMdiSubWindow;
+    QMdiSubWindow *subwindow = new QMdiSubWindow(this);
     FM *fm = new FM(mimes, path);
 
     connect(fm, SIGNAL(newWindowTitle(QString)),
@@ -186,6 +195,8 @@ void QtFM::setupConnections()
 
     connect(newTabAction, SIGNAL(triggered(bool)),
             this, SLOT(newSubWindow(bool)));
+    connect(newTermAction, SIGNAL(triggered(bool)),
+            this, SLOT(handleNewTermAction()));
 }
 
 void QtFM::loadSettings()
@@ -223,7 +234,17 @@ void QtFM::handleTabActivated(QMdiSubWindow *tab)
         return;
     }
     FM *fm = dynamic_cast<FM*>(tab->widget());
-    if (!fm) { return; }
+    if (!fm) {
+        QTermWidget *console = dynamic_cast<QTermWidget*>(tab->widget());
+        if (console) {
+            qDebug() << "handle term activated" << console->workingDirectory();
+            pathEdit->clear();
+            pathEdit->setCurrentIndex(0);
+            pathEdit->setCurrentText(console->workingDirectory());
+            tab->setWindowTitle(console->workingDirectory());
+        }
+        return;
+    }
     qDebug() << "handle tab activated" << fm->getPath();
     refreshPath(fm);
 }
@@ -236,6 +257,24 @@ void QtFM::handleOpenFile(const QString &file)
 void QtFM::handlePreviewFile(const QString &file)
 {
     qDebug() << "handle preview file" << file;
+}
+
+void QtFM::handleNewTermAction()
+{
+    qDebug() << "handle new terminal";
+    newTerminal(QDir::homePath());
+}
+
+void QtFM::handleTermTitleChanged()
+{
+    qDebug() << "handle term title changed";
+    QTermWidget *console = dynamic_cast<QTermWidget*>(sender());
+    if (!mdi->currentSubWindow() || !console) {
+        qDebug() << "NO TABS OR TERM!";
+        return;
+    }
+    if (console != dynamic_cast<QTermWidget*>(mdi->currentSubWindow()->widget())) { return; }
+    mdi->currentSubWindow()->setWindowTitle(console->workingDirectory());
 }
 
 void QtFM::refreshPath(FM *fm)
@@ -267,4 +306,42 @@ void QtFM::pathEditChanged(const QString &path)
 
     qDebug() << "set new path in fm" << path;
     fm->setPath(path);
+}
+
+// EXPERIMENTAL!
+void QtFM::newTerminal(const QString &path)
+{
+    QFileInfo info(path);
+    if (!info.isDir()) { return; }
+
+    qDebug() << "new terminal" << path;
+    QMdiSubWindow *subwindow = new QMdiSubWindow(this);
+    QTermWidget *console = new QTermWidget(this);
+
+    QFont font = QApplication::font();
+#ifdef Q_OS_MACOS
+    font.setFamily("Monaco");
+#elif defined(Q_WS_QWS)
+    font.setFamily("fixed");
+#else
+    font.setFamily("Monospace");
+#endif
+    font.setPointSize(9);
+    console->setTerminalFont(font);
+    console->setScrollBarPosition(QTermWidget::ScrollBarRight);
+    console->setWorkingDirectory(path);
+
+    connect(console, SIGNAL(finished()), subwindow, SLOT(close()));
+    connect(console, SIGNAL(titleChanged()), this, SLOT(handleTermTitleChanged()));
+
+    mdi->addSubWindow(subwindow);
+    subwindow->setWidget(console);
+    subwindow->setAttribute(Qt::WA_DeleteOnClose);
+    subwindow->setWindowTitle(console->workingDirectory());
+    subwindow->setWindowIcon(QIcon::fromTheme("utilities-terminal"));
+    subwindow->setWindowState(Qt::WindowMaximized);
+
+    if (mdi->subWindowList().count()>1) {
+        mdi->tileSubWindows();
+    }
 }

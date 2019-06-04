@@ -10,6 +10,8 @@
 #include <QMenuBar>
 #include <QAction>
 
+#include <qtermwidget5/qtermwidget.h>
+
 #include "mimeutils.h"
 #include "fm.h"
 
@@ -37,6 +39,7 @@ private:
     QAction *tileAction;
     QAction *tabViewAction;
     QAction *newTabAction;
+    QAction *newTermAction;
 
     QPushButton *backButton;
     QPushButton *upButton;
@@ -57,8 +60,11 @@ private slots:
     void handleTabActivated(QMdiSubWindow *tab);
     void handleOpenFile(const QString &file);
     void handlePreviewFile(const QString &file);
+    void handleNewTermAction();
+    void handleTermTitleChanged();
     void refreshPath(FM* fm);
     void pathEditChanged(const QString &path);
+    void newTerminal(const QString &path);
 };
 
 #endif // QTFM_H
