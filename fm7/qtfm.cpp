@@ -53,7 +53,7 @@ QtFM::QtFM(QWidget *parent)
     pathEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     mdi = new QMdiArea(this);
-    mdi->setViewMode(QMdiArea::TabbedView);
+    mdi->setViewMode(QMdiArea::SubWindowView);
     mdi->setTabPosition(QTabWidget::North);
     mdi->setTabsClosable(true);
     mdi->setTabsMovable(true);
@@ -246,6 +246,7 @@ void QtFM::handleTabActivated(QMdiSubWindow *tab)
         return;
     }
     qDebug() << "handle tab activated" << fm->getPath();
+    tab->setWindowTitle(fm->getPath());
     refreshPath(fm);
 }
 
@@ -328,6 +329,12 @@ void QtFM::newTerminal(const QString &path)
 #endif
     font.setPointSize(9);
     console->setTerminalFont(font);
+    console->setTerminalSizeHint(true);
+    //console->setBidiEnabled(true);
+    //console->setBlinkingCursor(true);
+    if (console->availableColorSchemes().contains("WhiteOnBlack")) {
+        console->setColorScheme("WhiteOnBlack");
+    }
     console->setScrollBarPosition(QTermWidget::ScrollBarRight);
     console->setWorkingDirectory(path);
 
