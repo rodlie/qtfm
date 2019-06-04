@@ -25,15 +25,31 @@ void MainWindow::executeFile(QModelIndex index, bool run) {
 
    QString filePath = modelList->filePath(srcIndex);
    QString type = mimeUtils->getMimeType(filePath);
-   if (type.endsWith("executable") || type.endsWith("appimage")) { run = true; }
+   if (type.endsWith("executable") || type.endsWith("appimage") || filePath.endsWith(".desktop")) { run = true; }
 
   // Run or open
   if (run) {
-    QProcess *myProcess = new QProcess(this);
 #ifdef Q_OS_MAC
-    myProcess->startDetached(QString("open \"%1\"").arg(filePath));
+    QProcess::startDetached(QString("open \"%1\"").arg(filePath));
 #else
-    myProcess->startDetached(QString("\"%1\"").arg(filePath));
+    if (filePath.endsWith(".desktop")) {
+        DesktopFile df(filePath);
+        if (!df.getExec().isEmpty()) {
+            filePath = df.getExec();
+            if (filePath.toLower().contains("%f")) {
+              filePath.replace("%f", "", Qt::CaseInsensitive);
+            } else if (filePath.toLower().contains("%u")) {
+              filePath.replace("%u", "", Qt::CaseInsensitive);
+            }
+            filePath = filePath.trimmed();
+        } else { return; }
+    }
+    if (filePath.contains(" ")) {
+        filePath.prepend("\"");
+        filePath.append("\"");
+    }
+    qDebug() << "RUN" << filePath;
+    QProcess::startDetached(filePath);
 #endif
   } else {
     mimeUtils->openInApp(filePath, ""/*term*/);
@@ -45,6 +61,7 @@ void MainWindow::executeFile(QModelIndex index, bool run) {
  * @brief Runs a file
  */
 void MainWindow::runFile() {
+    qDebug() << "runFile";
   executeFile(listSelectionModel->currentIndex(), 1);
 }
 //---------------------------------------------------------------------------

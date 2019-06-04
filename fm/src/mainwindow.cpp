@@ -1443,7 +1443,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         }
 
         // Add run action or open with default application action
-        if (curIndex.isExecutable() || curIndex.isBundle() || type.endsWith("appimage")) {
+        if (curIndex.isExecutable() || curIndex.isBundle() || type.endsWith("appimage") || curIndex.absoluteFilePath().endsWith(".desktop")) {
           popup->addAction(runAct);
         } else {
           popup->addAction(openAct);
