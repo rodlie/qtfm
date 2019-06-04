@@ -1019,7 +1019,7 @@ void MainWindow::showAboutBox()
     box.setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/images/qtfm.png")));
     box.setIconPixmap(QPixmap::fromImage(QImage(":/images/qtfm.png")));
     box.setText(QString("<h1>%1 %2</h1>"
-                        "<p>Desktop Independent File Manager</p>").arg(APP_NAME).arg(APP_VERSION));
+                        "<p>Qt File Manager</p>").arg(APP_NAME).arg(APP_VERSION));
     box.setInformativeText(QString("<p style=\"text-align:justify;font-size:small;\">"
                                    "This program is free software; you can redistribute it and/or modify"
                                    " it under the terms of the GNU General Public License as published by"
@@ -1033,12 +1033,6 @@ void MainWindow::showAboutBox()
     if (authorsFile.open(QIODevice::Text|QIODevice::ReadOnly)) {
         details.append(authorsFile.readAll());
         authorsFile.close();
-    }
-    QFile changesFile(":/ChangeLog");
-    if (changesFile.open(QIODevice::Text|QIODevice::ReadOnly)) {
-        details.append("\n\nCHANGELOG\n\n");
-        details.append(changesFile.readAll());
-        changesFile.close();
     }
     if (!details.isEmpty()) { box.setDetailedText(details); }
     QGridLayout* layout = (QGridLayout*)box.layout();
