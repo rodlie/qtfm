@@ -30,6 +30,5 @@
         <file>images/user-trash.png</file>
         <file>images/qtfm.png</file>
         <file>../AUTHORS</file>
-        <file>../ChangeLog</file>
     </qresource>
 </RCC>
