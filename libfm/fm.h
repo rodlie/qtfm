@@ -47,6 +47,8 @@ signals:
     void newWindowTitle(const QString &title);
     void updatedDir(const QString &dir);
     void newPath(const QString &path);
+    void openFile(const QString &file);
+    void previewFile(const QString &file);
 
 public slots:
     void setPath(QString path);
@@ -58,6 +60,7 @@ private slots:
     void dirLoaded();
     void updateGrid();
     void listDoubleClicked(QModelIndex current);
+    void listClicked(QModelIndex current);
     void addHistory(QString path);
     void remHistory();
 };

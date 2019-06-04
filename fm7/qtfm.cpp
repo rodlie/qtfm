@@ -37,6 +37,7 @@ QtFM::QtFM(QWidget *parent)
 
     editMenu = new QMenu(this);
     editMenu->setTitle(tr("Edit"));
+    editMenu->hide();
 
     viewMenu = new QMenu(this);
     viewMenu->setTitle(tr("View"));
@@ -50,7 +51,7 @@ QtFM::QtFM(QWidget *parent)
 
     mdi = new QMdiArea(this);
     mdi->setViewMode(QMdiArea::TabbedView);
-    mdi->setTabPosition(QTabWidget::South);
+    mdi->setTabPosition(QTabWidget::North);
     mdi->setTabsClosable(true);
     mdi->setTabsMovable(true);
 
@@ -67,18 +68,20 @@ QtFM::QtFM(QWidget *parent)
     tileButton->setText(tr("Tile"));
 
     tileAction = new QAction(this);
-    tileAction->setText(tr("Tile Tabs"));
-    tileAction->setShortcut(QKeySequence(tr("Ctrl+S")));
+    tileAction->setText(tr("Tile"));
+    tileAction->setIcon(QIcon::fromTheme("preferences-system-windows"));
+    tileAction->setShortcut(QKeySequence(tr("Ctrl+T")));
 
     newTabAction = new QAction(this);
-    newTabAction->setText(tr("New tab/subwindow"));
+    newTabAction->setText(tr("Open new folder"));
+    newTabAction->setIcon(QIcon::fromTheme("window-new"));
     newTabAction->setShortcut(QKeySequence(tr("Ctrl+N")));
 
     fileMenu->addAction(newTabAction);
     viewMenu->addAction(tileAction);
 
     mBar->addMenu(fileMenu);
-    mBar->addMenu(editMenu);
+    //mBar->addMenu(editMenu);
     mBar->addMenu(viewMenu);
 
     //navBar->addWidget(backButton);
@@ -132,6 +135,10 @@ void QtFM::newSubWindow(QString path)
             this, SLOT(handleUpdatedDir(QString)));
     connect(fm, SIGNAL(newPath(QString)),
             this, SLOT(handleNewPath(QString)));
+    connect(fm, SIGNAL(openFile(QString)),
+            this, SLOT(handleOpenFile(QString)));
+    connect(fm, SIGNAL(previewFile(QString)),
+            this, SLOT(handlePreviewFile(QString)));
 
     mdi->addSubWindow(subwindow);
     subwindow->setWidget(fm);
@@ -219,6 +226,16 @@ void QtFM::handleTabActivated(QMdiSubWindow *tab)
     if (!fm) { return; }
     qDebug() << "handle tab activated" << fm->getPath();
     refreshPath(fm);
+}
+
+void QtFM::handleOpenFile(const QString &file)
+{
+    qDebug() << "handle open file" << file;
+}
+
+void QtFM::handlePreviewFile(const QString &file)
+{
+    qDebug() << "handle preview file" << file;
 }
 
 void QtFM::refreshPath(FM *fm)

@@ -55,6 +55,8 @@ private slots:
     void handleNewPath(QString path);
     void handleUpdatedDir(QString path);
     void handleTabActivated(QMdiSubWindow *tab);
+    void handleOpenFile(const QString &file);
+    void handlePreviewFile(const QString &file);
     void refreshPath(FM* fm);
     void pathEditChanged(const QString &path);
 };

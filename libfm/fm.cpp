@@ -57,6 +57,8 @@ FM::FM(MimeUtils *mimeUtils,
 
     connect(list, SIGNAL(doubleClicked(QModelIndex))
             ,this, SLOT(listDoubleClicked(QModelIndex)));
+    connect(list, SIGNAL(clicked(QModelIndex))
+            ,this, SLOT(listClicked(QModelIndex)));
 
     listSelectionModel = list->selectionModel();
 
@@ -158,7 +160,19 @@ void FM::listDoubleClicked(QModelIndex current)
         setPath(modelList->filePath(index));
     } else {
         qDebug() << "is file";
+        emit openFile(modelList->filePath(index));
     }
+}
+
+void FM::listClicked(QModelIndex current)
+{
+    Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
+    if (mods == Qt::ControlModifier || mods == Qt::ShiftModifier) {
+        return;
+    }
+    QModelIndex index = modelView->mapToSource(current);
+    qDebug() << "preview";
+    emit previewFile(modelList->filePath(index));
 }
 
 void FM::addHistory(QString path)
