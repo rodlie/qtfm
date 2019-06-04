@@ -181,6 +181,11 @@ if(ENABLE_DBUS)
 endif()
 
 # qtfm-tray
+if(ENABLE_DBUS)
+    add_executable(${PROJECT_NAME}-tray tray/main.cpp tray/systray.cpp tray/tray.qrc)
+    target_include_directories(${PROJECT_NAME}-tray PRIVATE tray libfm)
+    target_link_libraries(${PROJECT_NAME}-tray Qt5::Core Qt5::Gui Qt5::Widgets Qt5::DBus QtFM)
+endif()
 
 # docs
 install(
@@ -231,3 +236,23 @@ install(
     DESTINATION
     ${CMAKE_INSTALL_DATAROOTDIR}/applications
 )
+install(
+    DIRECTORY
+    share/hicolor
+    DESTINATION
+    ${CMAKE_INSTALL_DATAROOTDIR}/icons
+)
+if(ENABLE_DBUS)
+    install(
+        TARGETS
+        ${PROJECT_NAME}-tray
+        DESTINATION
+        ${CMAKE_INSTALL_BINDIR}
+    )
+    install(
+        FILES
+        tray/${PROJECT_NAME}-tray.1
+        DESTINATION
+        ${CMAKE_INSTALL_MANDIR}/man1
+    )
+endif()
