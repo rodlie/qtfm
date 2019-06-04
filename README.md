@@ -1,6 +1,6 @@
-# QtFM 6.2
+# QtFM
 
-Lightweight desktop independent Qt file manager for Linux, FreeBSD, NetBSD, OpenBSD and macOS.
+Qt File Manager for Linux, FreeBSD, NetBSD, OpenBSD and macOS.
 
   * XDG integration
   * Customizable interface
@@ -52,7 +52,7 @@ All shortcuts can be modified.
 
 Download the latest [release](https://github.com/rodlie/qtfm/releases), then make sure you have the required dependencies.
 
-* Requires [Qt](http://qt.io) 5.2+ (5.6.3/5.9.7/5.12.x recommended)
+* Requires [Qt](http://qt.io) 5.2+ (LTS recommended)
   * libQt5Widgets
   * libQt5Gui
   * libQt5Concurrent
@@ -75,13 +75,13 @@ Download the latest [release](https://github.com/rodlie/qtfm/releases), then mak
 
 Download and extract:
 ```
-tar xvf qtfm-6.2.x.tar.gz
-cd qtfm-6.2.x
+tar xvf qtfm-6.x.y.tar.gz
+cd qtfm-6.x.y
 ```
 
 Or use git:
 ```
-git clone -b 6.2 https://github.com/rodlie/qtfm
+git clone https://github.com/rodlie/qtfm
 cd qtfm
 ```
 

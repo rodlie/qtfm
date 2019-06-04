@@ -4,7 +4,7 @@
 [![Github commits (since latest release)](https://img.shields.io/github/commits-since/rodlie/qtfm/latest.svg)](https://github.com/rodlie/qtfm)
 [![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
 
-Lightweight desktop independent Qt file manager for Linux, FreeBSD, NetBSD, OpenBSD and macOS.
+Qt File Manager for Linux, FreeBSD, NetBSD, OpenBSD and macOS.
 
   * XDG integration
   * Customizable interface
@@ -17,7 +17,7 @@ Lightweight desktop independent Qt file manager for Linux, FreeBSD, NetBSD, Open
     * Show available storage/optical devices in system tray
     * Auto mount (and open) storage/optical devices when added *(not default)*
     * Auto play CD/DVD *(not default)*
-  * Extensive thumbnail support
+  * Extensive thumbnail support (``6.2+``)
     * Supports image formats through ``ImageMagick``
     * Supports PDF and related documents
     * Supports video formats through ``FFmpeg``

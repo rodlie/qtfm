@@ -1,6 +1,6 @@
 theme: jekyll-theme-minimal
 title: QtFM
-description: Lightweight UNIX File Manager
+description: Qt File Manager for UNIX
 logo: https://github.com/rodlie/qtfm/raw/master/share/hicolor/256x256/apps/qtfm.png
 show_downloads: true
 github:
