@@ -153,13 +153,13 @@ MainWindow::MainWindow()
     dockBookmarks->setWidget(bookmarksList);
     addDockWidget(Qt::LeftDockWidgetArea, dockBookmarks);
 
-    QWidget *main = new QWidget;
+    QWidget *main = new QWidget(this);
     mainLayout = new QVBoxLayout(main);
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(0,0,0,0);
 
-    stackWidget = new QStackedWidget();
-    QWidget *page = new QWidget();
+    stackWidget = new QStackedWidget(this);
+    QWidget *page = new QWidget(this);
     QHBoxLayout *hl1 = new QHBoxLayout(page);
     hl1->setSpacing(0);
     hl1->setContentsMargins(0,0,0,0);
@@ -167,7 +167,7 @@ MainWindow::MainWindow()
     hl1->addWidget(list);
     stackWidget->addWidget(page);
 
-    QWidget *page2 = new QWidget();
+    QWidget *page2 = new QWidget(this);
     hl1 = new QHBoxLayout(page2);
     hl1->setSpacing(0);
     hl1->setContentsMargins(0,0,0,0);
@@ -212,7 +212,7 @@ MainWindow::MainWindow()
     detailTree->setModel(modelView);
     detailTree->setSelectionModel(listSelectionModel);
 
-    pathEdit = new QComboBox();
+    pathEdit = new QComboBox(this);
     pathEdit->setEditable(true);
     pathEdit->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
     pathEdit->setMinimumWidth(100);
@@ -302,7 +302,7 @@ void MainWindow::lateStart() {
   clipboardChanged();
 
   // Completer configuration
-  customComplete = new myCompleter;
+  customComplete = new myCompleter();
   customComplete->setModel(modelTree);
   customComplete->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
   customComplete->setMaxVisibleItems(10);
