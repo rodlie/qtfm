@@ -488,281 +488,13 @@ void MainWindow::renameFile() {
 }
 //---------------------------------------------------------------------------
 
-/**
- * @brief Pastes list of files/dirs into new path
- * @param files list of files
- * @param newPath new (destination) path
- * @param cutList list of files that are going to be removed from source path
- * @return true if operation was successfull
- */
-bool MainWindow::pasteFiles(const QList<QUrl> &files, const QString &newPath,
-                            const QStringList &cutList) {
 
-  qDebug() << "pasteFiles" << files << newPath << cutList;
-  // Temporary variables
-  bool ok = true;
-  QStringList newFiles;
-
-  // Quit if folder not writable
-  if (!QFileInfo(newPath).isWritable()
-      || newPath == QDir(files.at(0).toLocalFile()).path()) {
-    emit copyProgressFinished(1, newFiles);
-    return 0;
-  }
-
-  // Get total size in bytes
-  qint64 total = FileUtils::totalSize(files);
-
-  // Check available space on destination before we start
-#ifdef __NetBSD__
-  struct statvfs info;
-  statvfs(newPath.toLocal8Bit(), &info);
-#else
-  struct statfs info;
-  statfs(newPath.toLocal8Bit(), &info);
-#endif
-  if ((qint64) info.f_bavail * info.f_bsize < total) {
-
-    // If it is a cut/move on the same device it doesn't matter
-    if (cutList.count()) {
-      qint64 driveSize = (qint64) info.f_bavail*info.f_bsize;
-#ifdef __NetBSD__
-      statvfs(files.at(0).path().toLocal8Bit(),&info);
-#else
-      statfs(files.at(0).path().toLocal8Bit(),&info);
-#endif
-      // Same device?
-      if ((qint64) info.f_bavail*info.f_bsize != driveSize) {
-        emit copyProgressFinished(2, newFiles);
-        return 0;
-      }
-    } else {
-      emit copyProgressFinished(2, newFiles);
-      return 0;
-    }
-  }
-
-  // Main loop
-  for (int i = 0; i < files.count(); ++i) {
-
-    // Canceled ?
-    if (progress) {
-        qDebug() << "check for cancel!" << newFiles << progress->getFilename();
-        if (progress->result() == 1 && newFiles.contains(progress->getFilename())) {
-          emit copyProgressFinished(0, newFiles);
-          return 1;
-        }
-    }
-
-    // Destination file name and url
-    QFileInfo temp(files.at(i).toLocalFile());
-    QString destName = temp.fileName();
-    QString destUrl = newPath + QDir::separator() + destName;
-
-    // Only do 'Copy(x) of' if same folder
-    // %1 = num copy
-    // %2 = orig filename (example.tar.gz)
-    // %3 = timestamp (yyyyMMddHHmmss, use 'copyXofTS' to override)
-    // %4 = orig suffix (example.tar.gz=>tar.gz)
-    // %5 = orig basename (example.tar.gz=>example)
-    if (temp.path() == newPath) {
-        int num = 1;
-        while (QFile(destUrl).exists()) {
-            QFileInfo fileInfo(destName);
-            destName = copyXof;
-            if (destName.contains("%1")) {
-                destName.replace("%1", QString::number(num));
-            }
-            if (destName.contains("%2")) {
-                destName.replace("%2", fileInfo.fileName());
-            }
-            if (destName.contains("%3")) {
-                destName.replace("%3", QDateTime::currentDateTime().toString(copyXofTS));
-            }
-            if (destName.contains("%4")) {
-                destName.replace("%4", fileInfo.completeSuffix());
-            }
-            if (destName.contains("%5")) {
-                destName.replace("%5", fileInfo.baseName());
-            }
-            destUrl = newPath + QDir::separator() + destName;
-            num++;
-      }
-    }
-
-    // If destination file does not exist and is directory
-    QFileInfo dName(destUrl);
-    if (!dName.exists() || dName.isDir()) {
-
-      // Keep a list of new files so we can select them later
-      newFiles.append(destUrl);
-
-      // Cut action
-      if (cutList.contains(temp.filePath())) {
-
-        // Files or directories
-        if (temp.isFile()) {
-
-          // NOTE: Rename will fail if across different filesystem
-          /*QFSFileEngine*/ QFile file(temp.filePath());
-          if (!file.rename(destUrl))	{
-            ok = cutCopyFile(temp.filePath(), destUrl, total, true);
-          }
-        } else {
-          ok = QFile(temp.filePath()).rename(destUrl);
-
-          // File exists or move folder between different filesystems, so use
-          // copy/remove method
-          if (!ok) {
-            if (temp.isDir()) {
-              ok = true;
-              copyFolder(temp.filePath(), destUrl, total, true);
-              modelList->clearCutItems();
-            }
-            // File already exists, don't do anything
-          }
-        }
-      } else {
-        if (temp.isDir()) {
-          copyFolder(temp.filePath(),destUrl,total,false);
-        } else {
-          ok = cutCopyFile(temp.filePath(), destUrl, total, false);
-        }
-      }
-    }
-  }
-
-  // Finished
-  emit copyProgressFinished(0, newFiles);
-  return 1;
-}
 //---------------------------------------------------------------------------
 
-/**
- * @brief Copies source directory to destination directory
- * @param srcFolder location of source directory
- * @param dstFolder location of destination directory
- * @param total total copy size
- * @param cut true/false if source directory is going to be moved/copied
- * @return true if copy was successfull
- */
-bool MainWindow::copyFolder(const QString &srcFolder, const QString &dstFolder,
-                            qint64 total, bool cut) {
 
-  qDebug() << "copyFolder" << srcFolder << dstFolder << total << cut;
-  // Temporary variables
-  QDir srcDir(srcFolder);
-  QDir dstDir(QFileInfo(dstFolder).path());
-  QStringList files;
-  bool ok = true;
-
-  // Name of destination directory
-  QString folderName = QFileInfo(dstFolder).fileName();
-
-  // Id destination location does not exist, create it
-  if (!QFileInfo(dstFolder).exists()) {
-    dstDir.mkdir(folderName);
-  }
-  dstDir = QDir(dstFolder);
-
-  // Get files in source directory
-  files = srcDir.entryList(QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
-
-  // Copy each file
-  for (int i = 0; i < files.count(); i++) {
-    QString srcName = srcDir.path() + QDir::separator() + files[i];
-    QString dstName = dstDir.path() + QDir::separator() + files[i];
-
-    // Don't remove source folder if all files not cut
-    if (!cutCopyFile(srcName, dstName, total, cut)) ok = false;
-
-    // Cancelled
-    if (progress) {
-        qDebug() << "check for cancel!" << dstName << progress->getFilename();
-        if (progress->result() == 1 && dstName == progress->getFilename()) { return 0; }
-    }
-  }
-
-  // Get directories in source directory
-  files.clear();
-  files = srcDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Hidden);
-
-  // Copy each directory
-  for (int i = 0; i < files.count(); i++) {
-    QString srcName = srcDir.path() + QDir::separator() + files[i];
-    QString dstName = dstDir.path() + QDir::separator() + files[i];
-    if (progress) {
-        qDebug() << "check for cancel!" << dstName << progress->getFilename();
-        if (progress->result() == 1 && dstName == progress->getFilename()) { return 0; }
-    }
-    copyFolder(srcName, dstName, total, cut);
-  }
-
-  // Remove source folder if all files moved ok
-  if (cut && ok) {
-    srcDir.rmdir(srcFolder);
-  }
-  return ok;
-}
 //---------------------------------------------------------------------------
 
-/**
- * @brief Copies or moves file
- * @param src location of source file
- * @param dst location of destination file
- * @param totalSize total copy size
- * @param cut true/false if source file is going to be moved/copied
- * @return true if copy was successfull
- */
-bool MainWindow::cutCopyFile(const QString &src, QString dst, qint64 totalSize,
-                             bool cut) {
 
-  qDebug() << "cutCopyFile" << src << dst << totalSize << cut;
-  // Create files with given locations
-  QFile srcFile(src);
-  QFile dstFile(dst);
-
-  // Destination file already exists, exit
-  if (dstFile.exists()) return 1;
-
-  // If destination location is too long make it shorter
-  //if (dst.length() > 50) dst = "/.../" + dst.split(QDir::separator()).last();
-
-  // Open source and destination files
-  srcFile.open(QFile::ReadOnly);
-  dstFile.open(QFile::WriteOnly);
-
-  // Determine buffer size, calculate size of file and number of steps
-  char block[4096];
-  qint64 total = srcFile.size();
-  qint64 steps = total >> 7; // shift right 7, same as divide 128, much faster
-  qint64 interTotal = 0;
-
-  // Copy blocks
-  while (!srcFile.atEnd()) {
-    if (progress) {
-        qDebug() << "check for cancel!" << dst << progress->getFilename();
-        if (progress->result() == 1 && dst == progress->getFilename()) { break; /* cancelled */ }
-    }
-    qint64 inBytes = srcFile.read(block, sizeof(block));
-    dstFile.write(block, inBytes);
-    interTotal += inBytes;
-    if (interTotal > steps) {
-      emit updateCopyProgress(interTotal, totalSize, dst);
-      interTotal = 0;
-    }
-  }
-
-  // Update copy progress
-  emit updateCopyProgress(interTotal, totalSize, dst);
-
-  dstFile.close();
-  srcFile.close();
-
-  if (dstFile.size() != total) return 0;
-  if (cut) srcFile.remove();  // if file is cut remove the source
-  return 1;
-}
 //---------------------------------------------------------------------------
 
 /**
@@ -1031,17 +763,18 @@ void MainWindow::toggleHidden() {
 void MainWindow::showAboutBox()
 {
     QMessageBox box;
-    QSpacerItem* horizontalSpacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
     box.setWindowTitle(tr("About %1").arg(APP_NAME));
     box.setWindowIcon(QIcon::fromTheme("qtfm", QIcon(":/images/qtfm.png")));
     box.setIconPixmap(QPixmap::fromImage(QImage(":/images/qtfm.png")));
     box.setText(QString("<h1>%1 %2</h1>"
-                        "<p>Qt File Manager</p>").arg(APP_NAME).arg(APP_VERSION));
+                        "<h3 style=\"font-weight:normal;\">Qt File Manager</h3>").arg(APP_NAME).arg(APP_VERSION));
     box.setInformativeText(QString("<p style=\"text-align:justify;font-size:small;\">"
                                    "This program is free software; you can redistribute it and/or modify"
                                    " it under the terms of the GNU General Public License as published by"
                                    " the Free Software Foundation; either version 2 of the License, or"
                                    " (at your option) any later version.</p>"
+                                   "<p style=\"font-size:small;\">Copyright &copy;2010-2019 The QtFM Developers."
+                                   "<br>All rights reserved.</p>"
                                    "<p style=\"font-weight:bold;\">"
                                    "<a href=\"https://qtfm.eu\">"
                                    "https://qtfm.eu</a></p>"));
@@ -1052,8 +785,6 @@ void MainWindow::showAboutBox()
         authorsFile.close();
     }
     if (!details.isEmpty()) { box.setDetailedText(details); }
-    QGridLayout* layout = (QGridLayout*)box.layout();
-    layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
     box.exec();
 }
 //---------------------------------------------------------------------------

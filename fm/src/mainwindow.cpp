@@ -1055,7 +1055,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
 
   // Paste launcher (this method has to be called instead of that with 'data'
   // parameter, because that 'data' can timeout)
-  pasteLauncher2(files, newPath, cutList, dragMode == Common::DM_LINK);
+  pasteLauncher(files, newPath, cutList, dragMode == Common::DM_LINK);
 }
 //---------------------------------------------------------------------------
 
@@ -1068,113 +1068,21 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
 void MainWindow::pasteLauncher(const QMimeData *data,
                                const QString &newPath,
                                const QStringList &cutList,
-                               bool link) {
+                               bool link)
+{
   QList<QUrl> files = data->urls();
   if (files.isEmpty()) { return; }
-  pasteLauncher2(files, newPath, cutList, link);
+  pasteLauncher(files, newPath, cutList, link);
 }
 //---------------------------------------------------------------------------
 
-/**
- * @brief Pastes files to the new path
- * @param files list of files
- * @param newPath new path
- * @param cutList files to remove from original path
- * @param link true if link should be created (default value = false)
- */
-void MainWindow::pasteLauncher(const QList<QUrl> &files, const QString &newPath,
-                               const QStringList &cutList, bool link) {
 
-  qDebug() << "pasteLauncher" << files << newPath << cutList << link;
-  // File no longer exists?
-  if (!QFile(files.at(0).path()).exists()) {
-    QString msg = tr("File '%1' no longer exists!").arg(files.at(0).path());
-    QMessageBox::information(this, tr("No paste for you!"), msg);
-    pasteAct->setEnabled(false);
-    return;
-  }
-
-  // Temporary variables
-  int replace = 0;
-  QStringList completeList;
-  QString baseName = QFileInfo(files.at(0).toLocalFile()).path();
-
-  // Only if not in same directory, otherwise we will do 'Copy(x) of'
-  if (newPath != baseName) {
-
-    foreach (QUrl file, files) {
-
-      // Merge or replace?
-      QFileInfo temp(file.toLocalFile());
-
-      if (temp.isDir() && QFileInfo(newPath + QDir::separator() + temp.fileName()).exists()) {
-        QString msg = QString("<b>%1</b><p>Already exists!<p>What do you want to do?").arg(newPath + QDir::separator() + temp.fileName());
-        QMessageBox message(QMessageBox::Question, tr("Existing folder"), msg, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-        message.button(QMessageBox::Yes)->setText(tr("Merge"));
-        message.button(QMessageBox::No)->setText(tr("Replace"));
-
-        int merge = message.exec();
-        if (merge == QMessageBox::Cancel) { return; }
-        if (merge == QMessageBox::Yes) {
-          FileUtils::recurseFolder(temp.filePath(), temp.fileName(), &completeList);
-        } else {
-          FileUtils::removeRecurse(newPath, temp.fileName());
-        }
-      } else completeList.append(temp.fileName());
-    }
-
-    // Ask whether replace files if files with same name already exist in
-    // destination directory
-    foreach (QString file, completeList) {
-      QFileInfo temp(newPath + QDir::separator() + file);
-      if (temp.exists()) {
-        QFileInfo orig(baseName + QDir::separator() + file);
-        if (replace != QMessageBox::YesToAll && replace != QMessageBox::NoToAll) {
-          // TODO: error dispalys only at once
-          replace = showReplaceMsgBox(temp, orig);
-        }
-        if (replace == QMessageBox::Cancel) {
-          return;
-        }
-        if (replace == QMessageBox::Yes || replace == QMessageBox::YesToAll) {
-          QFile(temp.filePath()).remove();
-        }
-      }
-    }
-  }
-
-  // If only links should be created, create them and exit
-  if (link) {
-      qDebug() << "LINK" << files << newPath;
-    linkFiles(files, newPath);
-    return;
-  }
-
-  // Copy/move files
-  for (int i=0;i<files.size();++i) {
-      QString queueFile = files.at(i).fileName();
-      queueFile.prepend(QString("%1/").arg(newPath));
-      if (!progressQueue.contains(queueFile)) {
-          qDebug() << "add to queue" << queueFile;
-          progressQueue.append(queueFile);
-      }
-  }
-  QString title = cutList.count() == 0 ? tr("Copying...") : tr("Moving...");
-  if (!progress) {
-      progress = new myProgressDialog(title);
-      connect(this, SIGNAL(updateCopyProgress(qint64, qint64, QString)), progress, SLOT(update(qint64, qint64, QString)));
-  }
-
-  listSelectionModel->clear();
-  QtConcurrent::run(this, &MainWindow::pasteFiles, files, newPath, cutList);
-}
-
-void MainWindow::pasteLauncher2(const QList<QUrl> &files,
+void MainWindow::pasteLauncher(const QList<QUrl> &files,
                                 const QString &newPath,
                                 const QStringList &cutList,
                                 bool link)
 {
-    qDebug() << "==> PASTE LAUNCHER v2" << "COPY" << files << "OR MOVE" << cutList << "TO" << newPath << "SYMLINK?" << link;
+    //qDebug() << "==> PASTE LAUNCHER v2" << "COPY" << files << "OR MOVE" << cutList << "TO" << newPath << "SYMLINK?" << link;
 
     if (!QFile::exists(newPath)) {
         qDebug() << "destination path does not exists" << newPath;

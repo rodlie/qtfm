@@ -95,8 +95,6 @@ public slots:
     void trashFile();
     void cutFile();
     void copyFile();
-    bool cutCopyFile(const QString &source, QString dest, qint64 totalSize, bool cut);
-    bool pasteFiles(const QList<QUrl> &files, const QString &newPath, const QStringList &cutList);
     bool linkFiles(const QList<QUrl> &files, const QString &newPath);
     void newDir();
     void newFile();
@@ -120,7 +118,6 @@ public slots:
     void editBookmark();
     void toggleWrapBookmarks();
     void showEditDialog();
-    bool copyFolder(const QString &srcFolder, const QString &dstFolder, qint64, bool);
     void renameFile();
     void actionMapper(QString);
     void folderPropertiesLauncher();
@@ -132,7 +129,6 @@ public slots:
     void dragLauncher(const QMimeData *data, const QString &newPath, Common::DragMode dragMode);
     void pasteLauncher(const QMimeData *data, const QString &newPath, const QStringList &cutList, bool link = false);
     void pasteLauncher(const QList<QUrl> &files, const QString &newPath, const QStringList &cutList, bool link = false);
-    void pasteLauncher2(const QList<QUrl> &files, const QString &newPath, const QStringList &cutList, bool link = false);
     void pasteClipboard();
     void progressFinished(int,QStringList);
     void listItemClicked(QModelIndex);
