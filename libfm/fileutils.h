@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QFileInfo>
-#include "progressdlg.h"
+#include <QIcon>
 #include "desktopfile.h"
 #include "properties.h"
 

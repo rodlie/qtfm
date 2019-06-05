@@ -6,6 +6,8 @@
 #include <QMessageBox>
 #include <QMimeDatabase>
 #include <QMimeType>
+#include <QDir>
+#include <QApplication>
 
 #ifdef Q_OS_DARWIN
 #include <CoreFoundation/CoreFoundation.h>

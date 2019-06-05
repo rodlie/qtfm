@@ -13,12 +13,11 @@ SOURCES += \
     fileutils.cpp \
     mimeutils.cpp \
     properties.cpp \
-    processdialog.cpp \
-    progressdlg.cpp \
     icondlg.cpp \
     mymodel.cpp \
     mymodelitem.cpp \
     propertiesdlg.cpp \
+    processdialog.cpp \
     common.cpp \
     completer.cpp \
     sortmodel.cpp \
@@ -36,7 +35,6 @@ HEADERS += \
     properties.h \
     common.h \
     processdialog.h \
-    progressdlg.h \
     icondlg.h \
     mymodel.h \
     mymodelitem.h \

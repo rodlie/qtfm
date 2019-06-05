@@ -6,6 +6,8 @@
 #include <QFormLayout>
 #include <QCompleter>
 #include <QApplication>
+#include <QStringListModel>
+#include <QTimer>
 
 /**
  * @brief Constructor

@@ -1,5 +1,7 @@
 #include "fileutils.h"
 #include <QDirIterator>
+#include <QUrl>
+#include <QApplication>
 
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__APPLE__)
 #include <sys/mount.h>

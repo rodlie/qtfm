@@ -40,7 +40,6 @@
 
 #include "mymodel.h"
 #include "bookmarkmodel.h"
-#include "progressdlg.h"
 #include "propertiesdlg.h"
 #include "icondlg.h"
 #include "tabbar.h"
@@ -130,7 +129,6 @@ public slots:
     void pasteLauncher(const QMimeData *data, const QString &newPath, const QStringList &cutList, bool link = false);
     void pasteLauncher(const QList<QUrl> &files, const QString &newPath, const QStringList &cutList, bool link = false);
     void pasteClipboard();
-    void progressFinished(int,QStringList);
     void listItemClicked(QModelIndex);
     void listItemPressed(QModelIndex);
     void tabChanged(int index);
@@ -192,7 +190,6 @@ private:
     void createToolBars();
     void writeSettings();
     void recurseFolder(QString path, QString parent, QStringList *);
-    int showReplaceMsgBox(const QFileInfo &f1, const QFileInfo &f2);
     QMenu* createOpenWithMenu();
 
     int zoom;
@@ -208,7 +205,6 @@ private:
     tabBar *tabs;
     MimeUtils *mimeUtils;
 
-    myProgressDialog * progress;
     PropertiesDialog * properties;
     QSettings *settings;
     QDockWidget *dockTree;

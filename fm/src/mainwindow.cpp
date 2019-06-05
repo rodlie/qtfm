@@ -39,7 +39,6 @@
 
 #include "mainwindow.h"
 #include "mymodel.h"
-#include "progressdlg.h"
 #include "fileutils.h"
 #include "applicationdialog.h"
 
@@ -300,7 +299,6 @@ void MainWindow::lateStart() {
                         QAbstractItemView::SelectedClicked);
 
   // Clipboard configuration
-  progress = Q_NULLPTR;
   clipboardChanged();
 
   // Completer configuration
@@ -363,10 +361,6 @@ void MainWindow::lateStart() {
           SIGNAL(selectionChanged(const QItemSelection, const QItemSelection)),
           this, SLOT(listSelectionChanged(const QItemSelection,
                                           const QItemSelection)));
-
-  // Connect copy progress
-  connect(this, SIGNAL(copyProgressFinished(int,QStringList)),
-          this, SLOT(progressFinished(int,QStringList)));
 
   // Connect bookmark model
   connect(modelBookmarks,
@@ -1151,77 +1145,10 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files,
 
 //---------------------------------------------------------------------------
 
-/**
- * @brief Asks user whether replace file 'f1' with another file 'f2'
- * @param f1 file to be replaced with f2
- * @param f2 file to replace f1
- * @return result
- */
-int MainWindow::showReplaceMsgBox(const QFileInfo &f1, const QFileInfo &f2) {
 
-  // Create message
-  QString t = tr("<h3>Do you want to replace?</h3><p><b>%1</p><p>Modified: %2<br>"
-                 "Size: %3 bytes</p><p>with:<p><b>%4</p><p>Modified: %5"
-                 "<br>Size: %6 bytes</p>");
-
-  // Populate message with data
-  t = t.arg(f1.filePath()).arg(f1.lastModified().toString()).arg(f1.size())
-       .arg(f2.filePath()).arg(f2.lastModified().toString()).arg(f2.size());
-
-  // Show message
-  return QMessageBox::question(Q_NULLPTR, tr("Replace"), t, QMessageBox::Yes
-                               | QMessageBox::YesToAll | QMessageBox::No
-                               | QMessageBox::NoToAll | QMessageBox::Cancel);
-}
 //---------------------------------------------------------------------------
 
-void MainWindow::progressFinished(int ret,QStringList newFiles)
-{
-    qDebug() << "progressFinished" << ret << newFiles;
-    qDebug() << "progressQueue" << progressQueue;
-    for (int i=0;i<newFiles.size();++i) {
-        if (progressQueue.contains(newFiles.at(i))) {
-            qDebug() << "remove from queue" << newFiles.at(i);
-            progressQueue.remove(progressQueue.indexOf(newFiles.at(i)));
-        }
-    }
-    qDebug() << "progressQueue" << progressQueue;
-    if (progress != Q_NULLPTR) {
-        progress->setResult(0);
-        qDebug() << "progressDialog filename" << progress->getFilename();
-        if (progressQueue.isEmpty()) {
-            qDebug() << "progress should be closed";
-            progress->close();
-            delete progress;
-            progress = Q_NULLPTR;
-        }
-    }
 
-    if (newFiles.count()) {
-        disconnect(listSelectionModel,SIGNAL(selectionChanged(const QItemSelection, const QItemSelection)),this,SLOT(listSelectionChanged(const QItemSelection, const QItemSelection)));
-
-        qApp->processEvents();              //make sure notifier has added new files to the model
-
-        if (QFileInfo(newFiles.first()).path() == pathEdit->currentText()) { // highlight new files if visible
-            foreach(QString item, newFiles) {
-                listSelectionModel->select(modelView->mapFromSource(modelList->index(item)),QItemSelectionModel::Select);
-            }
-        }
-
-        connect(listSelectionModel,SIGNAL(selectionChanged(const QItemSelection, const QItemSelection)),this,SLOT(listSelectionChanged(const QItemSelection, const QItemSelection)));
-        curIndex.setFile(newFiles.first());
-
-        if (currentView == 2) { detailTree->scrollTo(modelView->mapFromSource(modelList->index(newFiles.first())),QAbstractItemView::EnsureVisible); }
-        else { list->scrollTo(modelView->mapFromSource(modelList->index(newFiles.first())),QAbstractItemView::EnsureVisible); }
-
-        if (QFile(QDir::tempPath() + QString("/%1.temp").arg(APP)).exists()) { QApplication::clipboard()->clear(); }
-
-        clearCutItems();
-    }
-
-    if (ret == 1) { QMessageBox::information(this,tr("Failed"),tr("Paste failed...do you have write permissions?")); }
-    if (ret == 2) { QMessageBox::warning(this,tr("Too big!"),tr("There is not enough space on the destination storage!")); }
-}
 
 //---------------------------------------------------------------------------
 

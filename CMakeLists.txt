@@ -101,7 +101,6 @@ add_library(
     libfm/mymodel.cpp
     libfm/mymodelitem.cpp
     libfm/processdialog.cpp
-    libfm/progressdlg.cpp
     libfm/properties.cpp
     libfm/propertiesdlg.cpp
     libfm/sortmodel.cpp
