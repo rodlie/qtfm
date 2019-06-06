@@ -57,6 +57,7 @@ public slots:
     void newSubWindow(QString path = QDir::homePath());
 
 private slots:
+    void setupWidgets();
     void parseArgs();
     void setupConnections();
     void loadSettings();
@@ -66,13 +67,14 @@ private slots:
     void handleTabActivated(QMdiSubWindow *tab);
     void handleOpenFile(const QString &file);
     void handlePreviewFile(const QString &file);
-    void handleNewTermAction();
+    void handleNewTermAction(const QString &path = QString());
     void handleTermTitleChanged();
     void refreshPath(FM* fm);
     void pathEditChanged(const QString &path);
     void newTerminal(const QString &path);
     void setupBookmarks();
     void writeBookmarks();
+    void handleBookmarksChanged();
 };
 
 #endif // QTFM_H
