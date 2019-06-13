@@ -10,7 +10,7 @@ class DfmQTreeView : public QTreeView
 {
     Q_OBJECT
 public:
-    explicit DfmQTreeView(QWidget *parent = nullptr);
+    explicit DfmQTreeView(QWidget *parent);
     virtual ~DfmQTreeView();
 
     virtual QModelIndex indexAt (const QPoint& point) const;
