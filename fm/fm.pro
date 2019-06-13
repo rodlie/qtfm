@@ -16,7 +16,8 @@ DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\"
 HEADERS += \
     src/mainwindow.h \
     src/tabbar.h \
-    src/settingsdialog.h
+    src/settingsdialog.h \
+    src/dfmqtreeview.h
 
 SOURCES += \
     src/main.cpp \
@@ -25,7 +26,8 @@ SOURCES += \
     src/tabbar.cpp \
     src/settingsdialog.cpp \
     src/actiondefs.cpp \
-    src/actiontriggers.cpp
+    src/actiontriggers.cpp \
+    src/dfmqtreeview.cpp
 
 RESOURCES += $${top_srcdir}/share/$${TARGET}.qrc
 
