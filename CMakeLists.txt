@@ -66,7 +66,7 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Concurrent REQUIRED)
 
 # inotify
-if("${CMAKE_SYSTEM}" NOT MATCHES "Linux")
+if(NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(NOTIFY REQUIRED libinotify)
 endif()
@@ -161,7 +161,7 @@ target_link_libraries(
 if(ENABLE_DBUS)
     target_link_libraries(QtFM Qt5::DBus QtFMBus)
 endif()
-if("${CMAKE_SYSTEM}" NOT MATCHES "Linux")
+if(NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
     target_link_libraries(QtFM ${NOTIFY_LIBRARIES})
 endif()
 if(APPLE)
@@ -178,6 +178,7 @@ add_executable(
     fm/src/settingsdialog.cpp
     fm/src/actiondefs.cpp
     fm/src/actiontriggers.cpp
+    fm/src/dfmqtreeview.cpp
     share/${PROJECT_NAME}.qrc
 )
 target_link_libraries(
@@ -192,7 +193,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE fm/src libfm libfm/qtcopydial
 if(ENABLE_DBUS)
     target_link_libraries(${PROJECT_NAME} Qt5::DBus)
 endif()
-if("${CMAKE_SYSTEM}" NOT MATCHES "Linux")
+if(NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
     target_link_libraries(${PROJECT_NAME} ${NOTIFY_LIBRARIES})
 endif()
 if(APPLE)
