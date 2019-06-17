@@ -50,6 +50,7 @@
 #include "iconlist.h"
 #include "completer.h"
 #include "sortmodel.h"
+#include "dfmqtreeview.h"
 
 // libdisks
 #ifndef NO_UDISKS
@@ -212,7 +213,7 @@ private:
     QVBoxLayout *mainLayout;
     QStackedWidget *stackWidget;
     QTreeView *tree;
-    QTreeView *detailTree;
+    DfmQTreeView *detailTree;
     QListView *list;
     QListView *bookmarksList;
     QComboBox *pathEdit;

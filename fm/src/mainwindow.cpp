@@ -171,7 +171,7 @@ MainWindow::MainWindow()
     hl1 = new QHBoxLayout(page2);
     hl1->setSpacing(0);
     hl1->setContentsMargins(0,0,0,0);
-    detailTree = new QTreeView(page2);
+    detailTree = new DfmQTreeView(page2);
     hl1->addWidget(detailTree);
     stackWidget->addWidget(page2);
 
@@ -206,9 +206,10 @@ MainWindow::MainWindow()
     list->setTextElideMode(Qt::ElideNone);
     listSelectionModel = list->selectionModel();
 
-    detailTree->setRootIsDecorated(false);
-    detailTree->setItemsExpandable(false);
+    detailTree->setRootIsDecorated(true);
+    detailTree->setItemsExpandable(true);
     detailTree->setUniformRowHeights(true);
+    detailTree->setAlternatingRowColors(true);
     detailTree->setModel(modelView);
     detailTree->setSelectionModel(listSelectionModel);
 
