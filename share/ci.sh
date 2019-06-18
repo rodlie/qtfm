@@ -24,7 +24,6 @@ if [ "${SETUP}" = 1 ]; then
   if [ "${OS}" = "Linux" ]; then
     echo "Setup ubuntu ..."
     sudo add-apt-repository -y ppa:jonathonf/ffmpeg-3
-    sudo apt-get install software-properties-common
     sudo add-apt-repository ppa:george-edison55/cmake-3.x
     sudo apt-get update
     sudo apt-get install tree cmake git build-essential qtbase5-dev qt5-qmake libmagick++-dev libavdevice-dev libswscale-dev libavformat-dev libavcodec-dev libavutil-dev
