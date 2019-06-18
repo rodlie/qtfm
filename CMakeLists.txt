@@ -104,6 +104,7 @@ add_library(
     libfm/properties.cpp
     libfm/propertiesdlg.cpp
     libfm/sortmodel.cpp
+    libfm/dfmqtreeview.cpp
     libfm/qtcopydialog/qtcopydialog.cpp
     libfm/qtcopydialog/qtfilecopier.cpp
     libfm/qtcopydialog/qtcopydialog.ui
@@ -178,7 +179,6 @@ add_executable(
     fm/src/settingsdialog.cpp
     fm/src/actiondefs.cpp
     fm/src/actiontriggers.cpp
-    fm/src/dfmqtreeview.cpp
     share/${PROJECT_NAME}.qrc
 )
 target_link_libraries(

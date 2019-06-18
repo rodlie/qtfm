@@ -24,7 +24,8 @@ SOURCES += \
     iconview.cpp \
     iconlist.cpp \
     fm.cpp \
-    bookmarkmodel.cpp
+    bookmarkmodel.cpp \
+    dfmqtreeview.cpp
 
 HEADERS += \
     applicationdialog.h \
@@ -44,7 +45,8 @@ HEADERS += \
     completer.h \
     sortmodel.h \
     fm.h \
-    bookmarkmodel.h
+    bookmarkmodel.h \
+    dfmqtreeview.h
 
 # qtcopydialog
 INCLUDEPATH += qtcopydialog
