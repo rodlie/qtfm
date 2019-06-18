@@ -182,7 +182,7 @@ MainWindow::MainWindow()
 
     setCentralWidget(main);
 
-    modelTree = new mainTreeFilterProxyModel();
+    modelTree = new viewsSortProxyModel();
     modelTree->setSourceModel(modelList);
     modelTree->setSortCaseSensitivity(Qt::CaseInsensitive);
 
@@ -629,7 +629,7 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
     Q_UNUSED(previous)
 
     QFileInfo name = modelList->fileInfo(modelTree->mapToSource(current));
-    if (!name.exists()) { return; }
+    if (!name.exists() || name.isFile()) { return; }
 
     curIndex = name;
     if (showPathInWindowTitle) {
