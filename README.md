@@ -85,6 +85,8 @@ git clone https://github.com/rodlie/qtfm
 cd qtfm
 ```
 
+### qmake
+
 Build options:
 
  * ``CONFIG+=with_magick`` : This will enable ``ImageMagick`` support.
@@ -114,14 +116,46 @@ You can run the binary ``bin/qtfm`` or install to ``/usr/local``:
 sudo make install
 ```
 
+### cmake
+
+Since version 6.3.0 building with CMake is supported.
+
+Build options (added):
+```
+ENABLE_MAGICK "Enable support for ImageMagick" (default false)
+ENABLE_MAGICK7 "Enable support for ImageMagick v7" (default false)
+ENABLE_FFMPEG "Enable support for FFmpeg v3" (default false)
+ENABLE_DBUS "Enable support for D-Bus" (default true)
+ENABLE_UDISKS "Enable support for udisks" (default true)
+ENABLE_TRAY "Enable support for qtfm-tray" (default true)
+```
+
+Doing a normal build:
+```
+mkdir build && cd build
+cmake ..
+make
+```
+
+You can run the binary ``qtfm`` or install to ``/usr/local``:
+```
+sudo make install
+```
+
 ## Packaging
 
-Same as above, but you should use ``PREFIX=`` and ``INSTALL_ROOT=``.
-
-Example:
+### qmake
 
 ```
 qmake PREFIX=/usr CONFIG+=with_magick CONFIG+=with_ffmpeg ..
 make -jX
 make INSTALL_ROOT=<package> install
+```
+
+### cmake
+
+```
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 -DENABLE_MAGICK=true -DENABLE_FFMPEG=true ..
+make -jX
+make DESTDIR=<package> install
 ```
