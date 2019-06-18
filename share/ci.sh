@@ -79,6 +79,18 @@ if [ "${OS}" = "Linux" ]; then
     make INSTALL_ROOT=`pwd`/pkg install
     tree pkg
 
+    mkdir $CWD/build8
+    cd $CWD/build8
+    qmake -qt=qt5 CONFIG+=release PREFIX=/usr CONFIG+=no_dbus ..
+    make -j$(nproc)
+    make INSTALL_ROOT=appdir -j$(nproc) install ; find fm/appdir/
+    wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+    chmod a+x linuxdeployqt-continuous-x86_64.AppImage
+    unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
+    ./linuxdeployqt-continuous-x86_64.AppImage fm/appdir/usr/share/applications/*.desktop -extra-plugins=iconengines,imageformats -appimage -qmake=/usr/lib/x86_64-linux-gnu/qt5/bin/qmake
+    wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh # TODO: Move to .travis.yml
+    bash upload.sh QtFM*.AppImage* # TODO: Move to .travis.yml
+    
     #echo "===> Building linux64 ..."
     #PKG_CONFIG_PATH="${SDK}/lib/pkgconfig:${PKG_CONFIG_PATH}"
     #PATH=${SDK}/bin:/usr/bin:/bin
