@@ -1254,6 +1254,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
   popup = new QMenu(this);
 
   bool isMedia = false;
+  bool isTreeFile = false;
 
   if (focusWidget() == list || focusWidget() == detailTree) {
 
@@ -1445,36 +1446,48 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       }
       popup->addSeparator();
     } else {
+      // tree
+      QString  treeSelectedFile = tree->currentIndex().data().toString();
+      if (treeSelectedFile == curIndex.fileName()) { treeSelectedFile = ""; } // dir
+      QFileInfo treeSelectedFileInfo(QString("%1/%2")
+                                     .arg(curIndex.filePath())
+                                     .arg(treeSelectedFile));
+      isTreeFile = treeSelectedFileInfo.isFile();
+
       bookmarksList->clearSelection();
-      popup->addAction(newDirAct);
-      popup->addAction(newFileAct);
-      popup->addAction(newWinAct);
-      popup->addAction(openTabAct);
-      popup->addSeparator();
-      popup->addAction(cutAct);
-      popup->addAction(copyAct);
-      popup->addAction(pasteAct);
-      popup->addSeparator();
-      popup->addAction(renameAct);
-      popup->addSeparator();
-      if (modelList->getRootPath() != trashDir) {
-        popup->addAction(trashAct);
+      if (treeSelectedFileInfo.isDir()) { // only for folders (for now)
+          popup->addAction(newDirAct);
+          popup->addAction(newFileAct);
+          popup->addAction(newWinAct);
+          popup->addAction(openTabAct);
+          popup->addSeparator();
+          popup->addAction(cutAct);
+          popup->addAction(copyAct);
+          popup->addAction(pasteAct);
+          popup->addSeparator();
+          popup->addAction(renameAct);
+          popup->addSeparator();
+          if (modelList->getRootPath() != trashDir) {
+            popup->addAction(trashAct);
+          }
+          popup->addAction(deleteAct);
       }
-      popup->addAction(deleteAct);
     }
     popup->addSeparator();
 
-    foreach (QMenu* parent, customActManager->getMenus()->values("folder")) {
-      popup->addMenu(parent);
+    if (!isTreeFile) { // not a selected file in tree (dock)
+        foreach (QMenu* parent, customActManager->getMenus()->values("folder")) {
+          popup->addMenu(parent);
+        }
+        actions = customActManager->getActions()->values(curIndex.fileName());
+        actions.append(customActManager->getActions()->values(curIndex.path()));
+        actions.append(customActManager->getActions()->values("folder"));
+        if (actions.count()) {
+          foreach (QAction*action, actions) { popup->addAction(action); }
+          popup->addSeparator();
+        }
+        if (!isMedia && !curIndex.path().isEmpty()) { popup->addAction(folderPropertiesAct); }
     }
-    actions = customActManager->getActions()->values(curIndex.fileName());
-    actions.append(customActManager->getActions()->values(curIndex.path()));
-    actions.append(customActManager->getActions()->values("folder"));
-    if (actions.count()) {
-      foreach (QAction*action, actions) { popup->addAction(action); }
-      popup->addSeparator();
-    }
-    if (!isMedia && !curIndex.path().isEmpty()) { popup->addAction(folderPropertiesAct); }
   }
 
   popup->exec(event->globalPos());
