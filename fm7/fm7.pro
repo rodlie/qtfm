@@ -42,4 +42,3 @@ unix:!macx {
 }
 
 
-PKGCONFIG += qtermwidget5

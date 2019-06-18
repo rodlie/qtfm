@@ -19,8 +19,6 @@ QtFM::QtFM(QWidget *parent)
     , viewMenu(Q_NULLPTR)
     , tileAction(Q_NULLPTR)
     , tabViewAction(Q_NULLPTR)
-    , newTabAction(Q_NULLPTR)
-    , newTermAction(Q_NULLPTR)
     , backButton(Q_NULLPTR)
     , upButton(Q_NULLPTR)
     , homeButton(Q_NULLPTR)
@@ -154,18 +152,6 @@ void QtFM::setupWidgets()
     tileAction->setIcon(QIcon::fromTheme("preferences-system-windows"));
     tileAction->setShortcut(QKeySequence(tr("Ctrl+T")));
 
-    newTabAction = new QAction(this);
-    newTabAction->setText(tr("Open new folder"));
-    newTabAction->setIcon(QIcon::fromTheme("window-new"));
-    newTabAction->setShortcut(QKeySequence(tr("Ctrl+N")));
-
-    newTermAction = new QAction(this);
-    newTermAction->setText(tr("Open new terminal"));
-    newTermAction->setIcon(QIcon::fromTheme("terminal"));
-
-
-    fileMenu->addAction(newTabAction);
-    fileMenu->addAction(newTermAction);
     viewMenu->addAction(tileAction);
 
     mBar->addMenu(fileMenu);
@@ -241,11 +227,6 @@ void QtFM::setupConnections()
     connect(pathEdit, SIGNAL(activated(QString)),
             this, SLOT(pathEditChanged(QString)));
 
-    connect(newTabAction, SIGNAL(triggered(bool)),
-            this, SLOT(newSubWindow(bool)));
-    connect(newTermAction, SIGNAL(triggered(bool)),
-            this, SLOT(handleNewTermAction()));
-
     connect(modelBookmarks, SIGNAL(bookmarksChanged()),
             this, SLOT(handleBookmarksChanged()));
 }
@@ -296,16 +277,7 @@ void QtFM::handleTabActivated(QMdiSubWindow *tab)
         return;
     }
 
-    // TERM?
-    QTermWidget *console = dynamic_cast<QTermWidget*>(tab->widget());
-    if (console) { // get window title from term and clear pathedit
-        qDebug() << "handle term activated" << console->workingDirectory();
-        pathEdit->clear();
-        pathEdit->setCurrentIndex(0);
-        pathEdit->setCurrentText(console->workingDirectory());
-        tab->setWindowTitle(console->workingDirectory().split("/").takeLast());
-        return;
-    }
+    // can add support for other "tabs" here:
 }
 
 void QtFM::handleOpenFile(const QString &file)
@@ -316,21 +288,6 @@ void QtFM::handleOpenFile(const QString &file)
 void QtFM::handlePreviewFile(const QString &file)
 {
     qDebug() << "handle preview file" << file;
-}
-
-// open new terminal from action
-void QtFM::handleNewTermAction(const QString &path)
-{
-    newTerminal(path.isEmpty()?QDir::homePath():path);
-}
-
-// handle terminal title changed
-void QtFM::handleTermTitleChanged()
-{
-    QTermWidget *console = dynamic_cast<QTermWidget*>(sender());
-    if (!mdi->currentSubWindow() || !console) { return; }
-    if (console != dynamic_cast<QTermWidget*>(mdi->currentSubWindow()->widget())) { return; }
-    mdi->currentSubWindow()->setWindowTitle(console->workingDirectory().split("/").takeLast());
 }
 
 // update path from FM
@@ -360,61 +317,7 @@ void QtFM::pathEditChanged(const QString &path)
         return;
     }
 
-    // TERM
-    /*QTermWidget *console = dynamic_cast<QTermWidget*>(mdi->currentSubWindow()->widget());
-    if (console) {
-        qDebug() << "change working directory in terminal" << console->workingDirectory() << path;
-        if (console->workingDirectory() != path) {
-            console->setWorkingDirectory(path);
-            //console->update();
-            //console->clear();
-        }
-        return;
-    }*/
-}
-
-// EXPERIMENTAL!
-void QtFM::newTerminal(const QString &path)
-{
-    QFileInfo info(path);
-    if (!info.isDir()) { return; }
-
-    qDebug() << "new terminal" << path;
-    QMdiSubWindow *subwindow = new QMdiSubWindow(this);
-    QTermWidget *console = new QTermWidget(this);
-
-    QFont font = QApplication::font();
-#ifdef Q_OS_MACOS
-    font.setFamily("Monaco");
-#elif defined(Q_WS_QWS)
-    font.setFamily("fixed");
-#else
-    font.setFamily("Monospace");
-#endif
-    font.setPointSize(9);
-    console->setTerminalFont(font);
-    console->setTerminalSizeHint(true);
-    //console->setBidiEnabled(true);
-    //console->setBlinkingCursor(true);
-    if (console->availableColorSchemes().contains("WhiteOnBlack")) {
-        console->setColorScheme("WhiteOnBlack");
-    }
-    console->setScrollBarPosition(QTermWidget::ScrollBarRight);
-    console->setWorkingDirectory(path);
-
-    connect(console, SIGNAL(finished()), subwindow, SLOT(close()));
-    connect(console, SIGNAL(titleChanged()), this, SLOT(handleTermTitleChanged()));
-
-    mdi->addSubWindow(subwindow);
-    subwindow->setWidget(console);
-    subwindow->setAttribute(Qt::WA_DeleteOnClose);
-    subwindow->setWindowTitle(console->workingDirectory());
-    subwindow->setWindowIcon(QIcon::fromTheme("utilities-terminal"));
-    subwindow->setWindowState(Qt::WindowMaximized);
-
-    if (mdi->subWindowList().count()>1) {
-        mdi->tileSubWindows();
-    }
+    // can add support for other "tabs" here:
 }
 
 // setup bookmarks
