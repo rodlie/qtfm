@@ -1447,15 +1447,11 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       popup->addSeparator();
     } else {
       // tree
-      QString  treeSelectedFile = tree->currentIndex().data().toString();
-      if (treeSelectedFile == curIndex.fileName()) { treeSelectedFile = ""; } // dir
-      QFileInfo treeSelectedFileInfo(QString("%1/%2")
-                                     .arg(curIndex.filePath())
-                                     .arg(treeSelectedFile));
-      isTreeFile = treeSelectedFileInfo.isFile();
+      curIndex = modelList->filePath(modelTree->mapToSource(tree->currentIndex()));
+      if (curIndex.isFile()) { isTreeFile = true;}
 
       bookmarksList->clearSelection();
-      if (treeSelectedFileInfo.isDir()) { // only for folders (for now)
+      if (!isTreeFile) { // only for folders (for now)
           popup->addAction(newDirAct);
           popup->addAction(newFileAct);
           popup->addAction(newWinAct);
