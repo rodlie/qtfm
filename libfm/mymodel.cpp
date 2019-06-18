@@ -418,6 +418,7 @@ bool myModel::canFetchMore (const QModelIndex & parent) const
 
 bool myModel::hasChildren(const QModelIndex &parent) const
 {
+    if (!parent.isValid()) { return true; }
     myModelItem *item = static_cast<myModelItem*>(parent.internalPointer());
     if (item && item->fileInfo().isDir()) {
         if (QDir(item->fileInfo()
