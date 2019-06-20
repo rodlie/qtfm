@@ -295,7 +295,7 @@ void DfmQTreeView::updateElasticBandSelection()
    QModelIndex toggleIndexRangeBegin = QModelIndex();
 
    do {
-       QRect currIndexRect = visualRect(currIndex);
+       QRect currIndexRect = nameColumnRect(currIndex);
 
         // Update some optimization info as we go.
        const int cr = currIndexRect.right();
