@@ -6,6 +6,8 @@
 // First column, index 0, is the Name column
 #define COLUMN_NAME 0
 
+class DfmQStyledItemDelegate;
+
 /**
  * Extends QTreeView by a custom selection
  */
@@ -60,6 +62,7 @@ private:
     bool m_ignoreScrollTo;    // true if calls to scrollTo(...) should do nothing.
 
     QRect m_dropRect;
+    DfmQStyledItemDelegate* m_fileItemDelegate;
 
     QRect nameColumnRect(const QModelIndex& index) const;
 

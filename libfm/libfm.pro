@@ -25,7 +25,8 @@ SOURCES += \
     iconlist.cpp \
     fm.cpp \
     bookmarkmodel.cpp \
-    dfmqtreeview.cpp
+    dfmqtreeview.cpp \
+    dfmqstyleditemdelegate.cpp
 
 HEADERS += \
     applicationdialog.h \
@@ -46,7 +47,8 @@ HEADERS += \
     sortmodel.h \
     fm.h \
     bookmarkmodel.h \
-    dfmqtreeview.h
+    dfmqtreeview.h \
+    dfmqstyleditemdelegate.h
 
 # qtcopydialog
 INCLUDEPATH += qtcopydialog

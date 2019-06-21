@@ -7,6 +7,8 @@
 #include <QPainter>
 #include <QScrollBar>
 
+#include "dfmqstyleditemdelegate.h"
+
 DfmQTreeView::DfmQTreeView(QWidget *parent) :
     QTreeView(parent),
     m_expandingTogglePressed(false),
@@ -16,6 +18,9 @@ DfmQTreeView::DfmQTreeView(QWidget *parent) :
     m_band()
 {
     setUniformRowHeights(true);
+    m_fileItemDelegate = new DfmQStyledItemDelegate(this);
+    m_fileItemDelegate->setMinimizedNameColumnSelection(true);
+    this->setItemDelegate(m_fileItemDelegate);
 }
 
 DfmQTreeView::~DfmQTreeView()
@@ -133,7 +138,7 @@ void DfmQTreeView::mouseReleaseEvent(QMouseEvent* event)
 }
 
 void DfmQTreeView::paintEvent(QPaintEvent* event)
-{
+{   
     QTreeView::paintEvent(event);
     if (m_band.show) {
         // The following code has been taken from QListView and adapted
@@ -155,14 +160,18 @@ QModelIndex DfmQTreeView::indexAt(const QPoint& point) const
 {
     // The blank portion of the name column counts as empty space
     const QModelIndex index = QTreeView::indexAt(point);
+    bool isTheNameColumn = index.column() == COLUMN_NAME;
+    if (!isTheNameColumn) return QModelIndex(); //only do selection on the name column.
     const bool isAboveEmptySpace  = !m_useDefaultIndexAt &&
-                                    (index.column() == COLUMN_NAME) &&
+                                    isTheNameColumn &&
                                     !nameColumnRect(index).contains(point);
     return isAboveEmptySpace ? QModelIndex() : index;
 }
 
 void DfmQTreeView::setSelection(const QRect& rect, QItemSelectionModel::SelectionFlags command)
 {
+    command &= ~QItemSelectionModel::Rows; //remove the QItemSelectionModel::Rows flag for selection only in the name column
+
     // We must override setSelection() as Qt calls it internally and when this happens
     // we must ensure that the default indexAt() is used.
     if (!m_band.show) {
@@ -358,7 +367,7 @@ void DfmQTreeView::updateElasticBandSelection()
     } while (!allItemsInBoundDone);
 
 
-    selectionModel()->select(itemsToToggle, QItemSelectionModel::Toggle | QItemSelectionModel::Rows);
+    selectionModel()->select(itemsToToggle, QItemSelectionModel::Toggle);
 
     m_band.lastSelectionOrigin = m_band.origin;
     m_band.lastSelectionDestination = m_band.destination;
@@ -427,10 +436,8 @@ QRect DfmQTreeView::nameColumnRect(const QModelIndex& index) const
     QRect guessedItemContentRect = visualRect(index);
 
     if (index.isValid()) {
-        QStyleOptionViewItem itemStyle = QTreeView::viewOptions();
-        QFontMetrics fontMetrics(itemStyle.font);
         QString filename = index.data(Qt::DisplayRole).toString();
-        const int itemContentWidth = itemStyle.decorationSize.width() + fontMetrics.width(filename);
+        const int itemContentWidth = DfmQStyledItemDelegate::nameColumnWidth(filename, QTreeView::viewOptions());
         guessedItemContentRect.setWidth(itemContentWidth);
     }
 
