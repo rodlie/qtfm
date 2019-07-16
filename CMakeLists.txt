@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 include(GNUInstallDirs)
 
 project(qtfm VERSION 6.3.0)
-set(PROJECT_VERSION_EXTRA _alpha)
+#set(PROJECT_VERSION_EXTRA _alpha)
 
 add_definitions(-DAPP="${PROJECT_NAME}")
 add_definitions(-DAPP_NAME="QtFM")
