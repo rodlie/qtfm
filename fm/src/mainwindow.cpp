@@ -1097,6 +1097,7 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files,
         for (int i=0; i<cutList.size(); i++) {
             QFileInfo info(cutList.at(i));
             if (!info.isDir() && !info.isFile()) { continue; }
+            if (cutList.at(i) == (newPath + "/" + info.fileName())) { continue; }
             if (info.isDir()) { _dirs << info.absoluteFilePath(); }
             else if (info.isFile()) { _files << info.absoluteFilePath(); }
         }
