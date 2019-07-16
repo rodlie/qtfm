@@ -3,6 +3,11 @@
 
 #include <QTreeView>
 
+// First column, index 0, is the Name column
+#define COLUMN_NAME 0
+
+class DfmQStyledItemDelegate;
+
 /**
  * Extends QTreeView by a custom selection
  */
@@ -10,7 +15,7 @@ class DfmQTreeView : public QTreeView
 {
     Q_OBJECT
 public:
-    explicit DfmQTreeView(QWidget *parent);
+    explicit DfmQTreeView(QWidget *parent = 0);
     virtual ~DfmQTreeView();
 
     virtual QModelIndex indexAt (const QPoint& point) const;
@@ -57,6 +62,9 @@ private:
     bool m_ignoreScrollTo;    // true if calls to scrollTo(...) should do nothing.
 
     QRect m_dropRect;
+    DfmQStyledItemDelegate* m_fileItemDelegate;
+
+    QRect nameColumnRect(const QModelIndex& index) const;
 
     struct ElasticBand
     {

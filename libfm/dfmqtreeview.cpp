@@ -7,6 +7,8 @@
 #include <QPainter>
 #include <QScrollBar>
 
+#include "dfmqstyleditemdelegate.h"
+
 DfmQTreeView::DfmQTreeView(QWidget *parent) :
     QTreeView(parent),
     m_expandingTogglePressed(false),
@@ -16,6 +18,9 @@ DfmQTreeView::DfmQTreeView(QWidget *parent) :
     m_band()
 {
     setUniformRowHeights(true);
+    m_fileItemDelegate = new DfmQStyledItemDelegate(this);
+    m_fileItemDelegate->setMinimizedNameColumnSelection(true);
+    this->setItemDelegate(m_fileItemDelegate);
 }
 
 DfmQTreeView::~DfmQTreeView()
@@ -43,13 +48,13 @@ void DfmQTreeView::mousePressEvent(QMouseEvent* event)
 
     const QModelIndex index = indexAt(event->pos());
     const bool updateState = index.isValid() &&
-                             (index.column() == 0) && // First column is the Name column
+                             (index.column() == COLUMN_NAME) &&
                              (event->button() == Qt::LeftButton);
     if (updateState) {
         setState(QAbstractItemView::DraggingState);
     }
 
-    if (!index.isValid() || (index.column() != 0)) { // First column is the Name column
+    if (!index.isValid() || (index.column() != COLUMN_NAME)) {
         const Qt::KeyboardModifiers mod = QApplication::keyboardModifiers();
         if (!m_expandingTogglePressed && !(mod & Qt::ShiftModifier) && !(mod & Qt::ControlModifier)) {
             clearSelection();
@@ -112,7 +117,7 @@ void DfmQTreeView::mouseReleaseEvent(QMouseEvent* event)
 {
     if (!m_expandingTogglePressed) {
         const QModelIndex index = indexAt(event->pos());
-        if (index.isValid() && (index.column() == 0)) { // First column is the Name column
+        if (index.isValid() && (index.column() == COLUMN_NAME)) {
             QTreeView::mouseReleaseEvent(event);
         } else {
             // don't change the current index if the cursor is released
@@ -133,7 +138,7 @@ void DfmQTreeView::mouseReleaseEvent(QMouseEvent* event)
 }
 
 void DfmQTreeView::paintEvent(QPaintEvent* event)
-{
+{   
     QTreeView::paintEvent(event);
     if (m_band.show) {
         // The following code has been taken from QListView and adapted
@@ -155,14 +160,18 @@ QModelIndex DfmQTreeView::indexAt(const QPoint& point) const
 {
     // The blank portion of the name column counts as empty space
     const QModelIndex index = QTreeView::indexAt(point);
+    bool isTheNameColumn = index.column() == COLUMN_NAME;
+    if (!isTheNameColumn) return QModelIndex(); //only do selection on the name column.
     const bool isAboveEmptySpace  = !m_useDefaultIndexAt &&
-                                    (index.column() == 0) && // First column is the Name column
-                                    !visualRect(index).contains(point);
+                                    isTheNameColumn &&
+                                    !nameColumnRect(index).contains(point);
     return isAboveEmptySpace ? QModelIndex() : index;
 }
 
 void DfmQTreeView::setSelection(const QRect& rect, QItemSelectionModel::SelectionFlags command)
 {
+    command &= ~QItemSelectionModel::Rows; //remove the QItemSelectionModel::Rows flag for selection only in the name column
+
     // We must override setSelection() as Qt calls it internally and when this happens
     // we must ensure that the default indexAt() is used.
     if (!m_band.show) {
@@ -195,8 +204,8 @@ void DfmQTreeView::updateElasticBandSelection()
     // Clip horizontally to the name column, as some filenames will be
     // longer than the column.  We don't clip vertically as origin
     // may be above or below the current viewport area.
-    const int nameColumnX = header()->sectionPosition(0); // First column is the Name column
-    const int nameColumnWidth = header()->sectionSize(0); // First column is the Name column
+    const int nameColumnX = header()->sectionPosition(COLUMN_NAME);
+    const int nameColumnWidth = header()->sectionSize(COLUMN_NAME);
     QRect selRect = elasticBandRect().normalized();
     QRect nameColumnArea(nameColumnX, selRect.y(), nameColumnWidth, selRect.height());
     selRect = nameColumnArea.intersected(selRect).normalized();
@@ -268,9 +277,9 @@ void DfmQTreeView::updateElasticBandSelection()
     // TODO - would this still work if the columns could be re-ordered?
     QModelIndex startIndex = QTreeView::indexAt(boundingRect.topLeft());
     if (startIndex.parent().isValid()) {
-        startIndex = startIndex.parent().child(startIndex.row(), 0); // First column is the Name column
+        startIndex = startIndex.parent().child(startIndex.row(), COLUMN_NAME);
     } else {
-        startIndex = model()->index(startIndex.row(), 0); // First column is the Name column
+        startIndex = model()->index(startIndex.row(), COLUMN_NAME);
     }
     if (!startIndex.isValid()) {
         selectionModel()->select(m_band.originalSelection, QItemSelectionModel::ClearAndSelect);
@@ -295,7 +304,7 @@ void DfmQTreeView::updateElasticBandSelection()
    QModelIndex toggleIndexRangeBegin = QModelIndex();
 
    do {
-       QRect currIndexRect = visualRect(currIndex);
+       QRect currIndexRect = nameColumnRect(currIndex);
 
         // Update some optimization info as we go.
        const int cr = currIndexRect.right();
@@ -358,7 +367,7 @@ void DfmQTreeView::updateElasticBandSelection()
     } while (!allItemsInBoundDone);
 
 
-    selectionModel()->select(itemsToToggle, QItemSelectionModel::Toggle | QItemSelectionModel::Rows);
+    selectionModel()->select(itemsToToggle, QItemSelectionModel::Toggle);
 
     m_band.lastSelectionOrigin = m_band.origin;
     m_band.lastSelectionDestination = m_band.destination;
@@ -400,7 +409,7 @@ bool DfmQTreeView::isAboveExpandingToggle(const QPoint& pos) const
     // also assumes a toggle for file items.
     if (itemsExpandable()) {
         const QModelIndex index = QTreeView::indexAt(pos);
-        if (index.isValid() && (index.column() == 0)) { // First column is the Name column
+        if (index.isValid() && (index.column() == COLUMN_NAME)) {
             QRect rect = visualRect(index);
             const int toggleSize = rect.height();
             if (isRightToLeft()) {
@@ -419,6 +428,20 @@ bool DfmQTreeView::isAboveExpandingToggle(const QPoint& pos) const
         }
     }
     return false;
+}
+
+QRect DfmQTreeView::nameColumnRect(const QModelIndex& index) const
+{
+    // The code guesses the width of the name
+    QRect guessedItemContentRect = visualRect(index);
+
+    if (index.isValid()) {
+        QString filename = index.data(Qt::DisplayRole).toString();
+        const int itemContentWidth = DfmQStyledItemDelegate::nameColumnWidth(filename, QTreeView::viewOptions());
+        guessedItemContentRect.setWidth(itemContentWidth);
+    }
+
+    return guessedItemContentRect;
 }
 
 DfmQTreeView::ElasticBand::ElasticBand() :
