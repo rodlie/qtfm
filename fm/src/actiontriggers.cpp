@@ -315,10 +315,7 @@ void MainWindow::deleteFile() {
   // Delete selected file(s)
   for (int i = 0; i < selList.count(); ++i) {
     QFileInfo file(modelList->filePath(selList.at(i)));
-    if (file.isWritable()) {
-      if (file.isSymLink()) {
-        ok = QFile::remove(file.filePath());
-      } else {
+    if (file.isWritable() || file.isSymLink()) {
         if (yesToAll == false) {
           if (confirm) {
             QString title = tr("Careful");
@@ -330,10 +327,11 @@ void MainWindow::deleteFile() {
             if (ret == QMessageBox::No) return;
           }
         }
-        ok = modelList->remove(selList.at(i));
-      }
-    } else if (file.isSymLink()) {
-      ok = QFile::remove(file.filePath());
+        if (file.isSymLink()) {
+            ok = QFile::remove(file.filePath());
+        } else {
+            ok = modelList->remove(selList.at(i));
+        }
     }
   }
 
