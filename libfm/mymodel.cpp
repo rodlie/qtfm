@@ -423,7 +423,7 @@ bool myModel::hasChildren(const QModelIndex &parent) const
     if (item && item->fileInfo().isDir()) {
         if (QDir(item->fileInfo()
                  .absoluteFilePath())
-                .entryInfoList(QDir::NoDotAndDotDot|QDir::AllEntries)
+                .entryInfoList(QDir::NoDotAndDotDot|QDir::AllEntries|QDir::System)
                 .count() > 0)
         {
             return true;

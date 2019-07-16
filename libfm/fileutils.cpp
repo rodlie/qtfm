@@ -61,7 +61,7 @@ void FileUtils::recurseFolder(const QString &path, const QString &parent,
   // Get all files in this path
   QDir dir(path);
   QStringList files = dir.entryList(QDir::AllEntries | QDir::Files
-                                    | QDir::NoDotAndDotDot | QDir::Hidden);
+                                    | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System);
 
   // Go through all files in current directory
   for (int i = 0; i < files.count(); i++) {
