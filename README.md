@@ -91,7 +91,6 @@ Build options:
 
  * ``CONFIG+=with_magick`` : This will enable ``ImageMagick`` support.
    * ``MAGICK_PC=`` : Custom ``Magick++`` pkg-config .pc file.
-   * ``CONFIG+=magick7`` : Use ``ImageMagick`` v7+.
    * ``CONFIG+=oldmagick`` : If you have ``ImageMagick`` older than 6.9 *(Ubuntu)*.
  * ``CONFIG+=with_ffmpeg`` : This will enable FFmpeg support *(**NOTE!** requires ImageMagick)*.
  * ``CONFIG+=no_tray`` : This will disable ``qtfm-tray`` (``no_dbus`` will also disable this feature).
@@ -123,7 +122,6 @@ Since version 6.3.0 building with CMake is supported.
 Build options (added):
 ```
 ENABLE_MAGICK "Enable support for ImageMagick" (default false)
-ENABLE_MAGICK7 "Enable support for ImageMagick v7" (default false)
 ENABLE_FFMPEG "Enable support for FFmpeg v3" (default false)
 ENABLE_DBUS "Enable support for D-Bus" (default true)
 ENABLE_UDISKS "Enable support for udisks" (default true)

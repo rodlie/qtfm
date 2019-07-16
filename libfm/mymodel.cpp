@@ -756,7 +756,7 @@ QByteArray myModel::getThumb(QString item) {
 #ifndef OLDMAGICK
       background.quiet(true);
 #endif
-#ifdef MAGICK7
+#if MagickLibVersion >= 0x700
       background.alpha(true);
 #else
       background.matte(true);
@@ -905,11 +905,11 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
                         Magick::Image background(Magick::Geometry((size_t)pixSize,
                                                                   (size_t)pixSize),
                                                  Magick::Color("black"));
-    #ifdef MAGICK7
+#if MagickLibVersion >= 0x700
                         background.alpha(true);
-    #else
+#else
                         background.matte(true);
-    #endif
+#endif
                         background.backgroundColor(background.pixelColor(0,0));
                         background.transparent(background.pixelColor(0,0));
 
@@ -1034,7 +1034,7 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
                     Magick::Image background(Magick::Geometry((size_t)pixSize,
                                                               (size_t)pixSize),
                                              Magick::Color("black"));
-#ifdef MAGICK7
+#if MagickLibVersion >= 0x700
                     background.alpha(true);
 #else
                     background.matte(true);

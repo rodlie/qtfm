@@ -23,20 +23,16 @@ add_compile_options(-Wall -Wextra)
 
 # configure
 set(ENABLE_MAGICK false CACHE BOOL "Enable support for ImageMagick")
-set(ENABLE_MAGICK7 false CACHE BOOL "Enable support for ImageMagick v7")
 set(ENABLE_FFMPEG false CACHE BOOL "Enable support for FFmpeg v3")
 set(ENABLE_DBUS true CACHE BOOL "Enable support for D-Bus")
 set(ENABLE_UDISKS true CACHE BOOL "Enable support for udisks")
 set(ENABLE_TRAY true CACHE BOOL "Enable support for qtfm-tray")
 
 # magick
-if(ENABLE_MAGICK OR ENABLE_MAGICK7)
+if(ENABLE_MAGICK)
     add_definitions(-DWITH_MAGICK)
-    if(ENABLE_MAGICK7)
-        add_definitions(-DMAGICK7)
-    endif()
     find_package(PkgConfig REQUIRED)
-    pkg_check_modules(MAGICK REQUIRED ImageMagick++)
+    pkg_check_modules(MAGICK REQUIRED Magick++)
     # ffmpeg
     if(ENABLE_FFMPEG)
         pkg_check_modules(AVDEVICE REQUIRED libavdevice)
@@ -124,7 +120,7 @@ set_target_properties(
     SOVERSION
     ${PROJECT_VERSION_MAJOR}
 )
-if(ENABLE_MAGICK OR ENABLE_MAGICK7)
+if(ENABLE_MAGICK)
     target_compile_definitions(QtFM PRIVATE ${MAGICK_CFLAGS_OTHER})
     target_link_libraries(QtFM ${MAGICK_LIBRARIES})
     if(ENABLE_FFMPEG)
