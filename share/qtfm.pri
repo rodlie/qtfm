@@ -15,7 +15,7 @@ unix:!macx {
         isEmpty(XDGDIR): XDGDIR = $${PREFIX}/etc/xdg
     }
     isEmpty(LIBDIR): LIBDIR = $$PREFIX/lib$${LIBSUFFIX}
-    isEmpty(DOCDIR): DOCDIR = $$PREFIX/share/doc
+    isEmpty(DOCDIR): DOCDIR = $$PREFIX/share/doc/$${QTFM_TARGET}-$${QTFM_MAJOR}.$${QTFM_MINOR}.$${QTFM_PATCH}
     isEmpty(MANDIR): MANDIR = $$PREFIX/share/man
     isEmpty(XDGDIR): XDGDIR = /etc/xdg
 }

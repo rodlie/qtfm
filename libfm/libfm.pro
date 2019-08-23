@@ -79,7 +79,7 @@ unix:!macx {
     CONFIG(with_includes): CONFIG += create_prl no_install_prl create_pc
 
     target.path = $${LIBDIR}
-    docs.path = $${DOCDIR}/$${QTFM_TARGET}-$${VERSION}
+    docs.path = $${DOCDIR}
     docs.files += \
                 $${top_srcdir}/LICENSE \
                 $${top_srcdir}/README.md \

@@ -98,7 +98,7 @@ Build options:
  * ``CONFIG+=with_includes`` : Install library includes and pkg-config
  * ``CONFIG+=sharedlib`` : Force shared library.
  * ``PREFIX=`` : Install prefix, where things are installed when running ``make install``
- * ``DOCDIR=`` : Location for documentation (default is ``PREFIX/share/doc``)
+ * ``DOCDIR=`` : Location for documentation (default is ``PREFIX/share/doc/qtfm-VERSION``)
  * ``MANDIR=`` : Location for man pages (default is ``PREFIX/share/man``)
  * ``XDGDIR=`` : Location of XDG (default is ``/etc/xdg`` or ``PREFIX/etc/xdg``)
  * ``LIBDIR=`` : Library location (default is ``$PREFIX/lib$LIBSUFFIX``), only used if shared library is enabled
