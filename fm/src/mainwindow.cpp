@@ -51,11 +51,13 @@
 #include <QStyleFactory>
 #endif
 
+
 void MainWindow::loadSession()
 {
 	QString sessionFileName=Common::configDir()+"/session";
 	QFile sessionFile(sessionFileName);
 	if(!sessionFile.open(QIODevice::ReadWrite)) {qDebug()<<"failed to open session file";return;}
+
 	QString data=sessionFile.readAll();
 
 	QStringList lines=data.split("\n");
@@ -129,7 +131,8 @@ MainWindow::MainWindow()
     }
 
     settings = new QSettings(Common::configFile(), QSettings::IniFormat);
-    if (settings->value("clearCache").toBool()) {
+
+   if (settings->value("clearCache").toBool()) {
         qDebug() << "clear cache";
         Common::removeFileCache();
         Common::removeFolderCache();
@@ -293,7 +296,9 @@ MainWindow::MainWindow()
 }
 MainWindow::~MainWindow()
 {
-	saveSession();
+    if(settings->value("saveSession",true).toBool()) {
+        saveSession();
+    }
 }
 //---------------------------------------------------------------------------
 
@@ -432,7 +437,9 @@ void MainWindow::lateStart() {
 
   // Read defaults
   QTimer::singleShot(100, mimeUtils, SLOT(generateDefaults()));
-  loadSession();
+  if(settings->value("saveSession",true).toBool()) {
+	loadSession();
+  }
 }
 //---------------------------------------------------------------------------
 
