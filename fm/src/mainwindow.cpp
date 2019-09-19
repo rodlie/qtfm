@@ -51,6 +51,37 @@
 #include <QStyleFactory>
 #endif
 
+void MainWindow::loadSession()
+{
+	QString sessionFileName=Common::configDir()+"/session";
+	QFile sessionFile(sessionFileName);
+	if(!sessionFile.open(QIODevice::ReadWrite|QIODevice::ExistingOnly)) {qDebug()<<"failed to find sesstion file";return;}
+	QString data=sessionFile.readAll();
+
+	auto lines=data.split("\n");
+	if(!lines.size()) return;
+	for(int ii=0;ii<lines.size();ii++)
+	{
+			auto pathname=lines[ii];
+				if(pathname.isEmpty()) continue;
+			tabs->addNewTab(pathname,0);
+	}
+	int startTab=0;
+	tree->setCurrentIndex(modelTree->mapFromSource(modelList->index( tabs->tabData(startTab).toString() )));
+	tabs->setCurrentIndex(startTab);
+}
+void MainWindow::saveSession()
+{
+	QString sessionFileName=Common::configDir()+"/session";
+	QFile sessionFile(sessionFileName);
+	if(!sessionFile.open(QIODevice::ReadWrite|QIODevice::Truncate)) {qDebug()<<"failed to find sesstion file";return;}
+	if(!tabs->count()) { sessionFile.write(pathEdit->currentText().toUtf8()); sessionFile.write("\n");}
+	for(int ii=0;ii<tabs->count();ii++){
+		QString pathname=tabs->tabData(ii).toString();
+		sessionFile.write( pathname.toUtf8() );sessionFile.write("\n");
+	}
+	sessionFile.close();
+}
 MainWindow::MainWindow()
 {
     // setup icon theme search path
@@ -260,6 +291,10 @@ MainWindow::MainWindow()
 
     QTimer::singleShot(0, this, SLOT(lateStart()));
 }
+MainWindow::~MainWindow()
+{
+	saveSession();
+}
 //---------------------------------------------------------------------------
 
 /**
@@ -397,6 +432,7 @@ void MainWindow::lateStart() {
 
   // Read defaults
   QTimer::singleShot(100, mimeUtils, SLOT(generateDefaults()));
+  loadSession();
 }
 //---------------------------------------------------------------------------
 
