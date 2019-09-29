@@ -77,6 +77,7 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   selector->addItem(new QListWidgetItem(icon4, tr("System Tray"), selector));
 #endif
   selector->addItem(new QListWidgetItem(icon4, tr("Advanced"), selector));
+  selector->addItem(new QListWidgetItem(icon4,  tr("Session"), selector));
 
   stack->addWidget(createGeneralSettings());
   stack->addWidget(createAppearanceSettings());
@@ -87,7 +88,7 @@ SettingsDialog::SettingsDialog(QList<QAction *> *actionList,
   stack->addWidget(createSystraySettings());
 #endif
   stack->addWidget(createAdvSettings());
-
+  stack->addWidget(createSessionSettings());
   connect(selector,
           SIGNAL(currentRowChanged(int)),
           stack,
@@ -496,6 +497,15 @@ QWidget *SettingsDialog::createAdvSettings()
 
     return widget;
 }
+
+QWidget *SettingsDialog::createSessionSettings()
+{
+	//
+	QWidget *widget = new QWidget();
+    QVBoxLayout* layoutWidget = new QVBoxLayout(widget);
+    checkSaveSession=new QCheckBox("Save tabs on exit");
+    layoutWidget->addWidget(checkSaveSession);
+}
 //---------------------------------------------------------------------------
 
 /**
@@ -747,7 +757,9 @@ void SettingsDialog::readSettings() {
     item->setCheckState(3, setChecked ? Qt::Checked : Qt::Unchecked);
   }
   settingsPtr->endGroup();
-
+  settingsPtr->beginGroup("session");
+  checkSaveSession->setChecked(settingsPtr->value("saveSession",true).toBool());
+  settingsPtr->endGroup();
   // Loads icons for actions
   for (int x = 0; x < actionsWidget->topLevelItemCount(); x++) {
     QApplication::processEvents();
@@ -987,6 +999,9 @@ bool SettingsDialog::saveSettings() {
   }
   settingsPtr->endGroup();
 
+  settingsPtr->beginGroup("Session");
+  settingsPtr->setValue("saveSession", checkSaveSession->isChecked());
+  settingsPtr->endGroup();
   // Mime types
 #ifndef Q_OS_MAC
   for (int i = 0; i < mimesWidget->topLevelItemCount(); ++i) {

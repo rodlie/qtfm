@@ -62,6 +62,7 @@ protected:
   QWidget* createMimeSettings();
   QWidget* createSystraySettings();
   QWidget* createAdvSettings();
+  QWidget* createSessionSettings();
   MimeUtils* mimeUtilsPtr;
   QSettings* settingsPtr;
   QList<QAction*> *actionListPtr;
@@ -99,6 +100,7 @@ protected:
   QCheckBox* checkWindowTitlePath;
   QLineEdit* editCopyX;
   QLineEdit* editCopyTS;
+  QCheckBox* checkSaveSession;
 };
 
 #endif // SETTINGSDIALOG_H

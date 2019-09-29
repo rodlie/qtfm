@@ -57,7 +57,6 @@ void MainWindow::loadSession()
 	QString sessionFileName=Common::configDir()+"/session";
 	QFile sessionFile(sessionFileName);
 	if(!sessionFile.open(QIODevice::ReadWrite)) {qDebug()<<"failed to open session file";return;}
-
 	QString data=sessionFile.readAll();
 
 	QStringList lines=data.split("\n");
@@ -883,7 +882,7 @@ void MainWindow::openTab()
     if(curIndex.isDir()) {
         addTab(curIndex.filePath());
     } else {
-        addTab(QDir::homePath());
+        qDebug()<<"using default session";addTab(QDir::homePath());
     }
 }
 
