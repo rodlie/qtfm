@@ -617,7 +617,7 @@ void myModel::cacheInfo()
 //---------------------------------------------------------------------------
 
 /**
- * @brief Sets indicator wthether show thumbnails of pictures
+ * @brief Sets indicator whether show thumbnails of pictures
  * @param icons
  */
 void myModel::setMode(bool icons) {
@@ -1375,7 +1375,7 @@ bool myModel::remove(const QModelIndex & theIndex)
  * @param row
  * @param column
  * @param parent
- * @return true if successfull
+ * @return true if successful
  */
 bool myModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
                            int row, int column, const QModelIndex &parent) {

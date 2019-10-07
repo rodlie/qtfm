@@ -45,7 +45,7 @@ void bookmarkmodel::addBookmark(QString name,
                                 bool isMedia,
                                 bool changed)
 {
-    if (path.isEmpty() && !isMedia) { //add seperator
+    if (path.isEmpty() && !isMedia) { //add separator
         QStandardItem *item = new QStandardItem(QIcon::fromTheme(icon), "");
         item->setData(QBrush(QPixmap(":/images/sep.png")),
                       Qt::BackgroundRole);

@@ -372,7 +372,7 @@ void MainWindow::lateStart() {
   connect(modelBookmarks, SIGNAL(rowsRemoved(QModelIndex, int, int)),
           this, SLOT(readShortcuts()));
 
-  // Conect list model
+  // Connect list model
   connect(modelList,
           SIGNAL(dragDropPaste(const QMimeData *, QString, Common::DragMode)),
           this,
@@ -540,7 +540,7 @@ void MainWindow::firstRunBookmarks(bool isFirstRun)
     modelBookmarks->addBookmark(tr("Home"), QDir::homePath(), "", "user-home", "", false, false);
     modelBookmarks->addBookmark(tr("Desktop"), QString("%1/Desktop").arg(QDir::homePath()), "", "user-desktop", "", false, false);
     //modelBookmarks->addBookmark(tr("Documents"), QString("%1/Documents").arg(QDir::homePath()), "", "text-x-generic", "", false, false);
-    //modelBookmarks->addBookmark(tr("Downloads"), QString("%1/Dowloads").arg(QDir::homePath()), "", "applications-internet", "", false, false);
+    //modelBookmarks->addBookmark(tr("Downloads"), QString("%1/Downloads").arg(QDir::homePath()), "", "applications-internet", "", false, false);
     //modelBookmarks->addBookmark(tr("Pictures"), QString("%1/Pictures").arg(QDir::homePath()), "", "image-x-generic", "", false, false);
     //modelBookmarks->addBookmark(tr("Videos"), QString("%1/Videos").arg(QDir::homePath()), "", "video-x-generic", "", false, false);
     //modelBookmarks->addBookmark(tr("Music"), QString("%1/Music").arg(QDir::homePath()), "", "audio-x-generic", "", false, false);
@@ -726,7 +726,7 @@ void MainWindow::dirLoaded(bool thumbs)
 
 void MainWindow::updateDir()
 {
-    dirLoaded(false /* dont refresh thumb*/);
+    dirLoaded(false /* don't refresh thumb*/);
 }
 
 void MainWindow::handleReloadDir(const QString &path)
@@ -1214,7 +1214,7 @@ void MainWindow::writeSettings() {
  */
 void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
 
-  // Retreive widget under mouse
+  // Retrieve widget under mouse
   QMenu *popup;
   QWidget *widget = childAt(event->pos());
   //qDebug() << "WIDGET" << widget;
@@ -1250,7 +1250,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
   }
 #endif
 
-  // Continue with poups for folders and files
+  // Continue with popups for folders and files
   QList<QAction*> actions;
   popup = new QMenu(this);
 
@@ -1442,7 +1442,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         }
       } else {
         bookmarksList->clearSelection();
-        popup->addAction(addSeparatorAct);	//seperator
+        popup->addAction(addSeparatorAct);	//separator
         popup->addAction(wrapBookmarksAct);
       }
       popup->addSeparator();
@@ -1661,7 +1661,7 @@ void MainWindow::selectAppForFiles()
         QString desktop = Common::findApplication(qApp->applicationFilePath(), appName);
         if (desktop.isEmpty()) { return; }
         DesktopFile df = DesktopFile(desktop);
-        if (df.getExec().contains("%F") || df.getExec().contains("%U")) { // app suports multiple files
+        if (df.getExec().contains("%F") || df.getExec().contains("%U")) { // app supports multiple files
             mimeUtils->openFilesInApp(df.getExec(), files, df.isTerminal()?term:"");
         } else { // launch new instance for each file
             for (int i=0;i<files.size();++i) {
@@ -1700,7 +1700,7 @@ void MainWindow::openInApp()
         fileList << filePath;
     }
 
-    if (df.getExec().contains("%F") || df.getExec().contains("%U")) { // app suports multiple files
+    if (df.getExec().contains("%F") || df.getExec().contains("%U")) { // app supports multiple files
         mimeUtils->openFilesInApp(df.getExec(), fileList, df.isTerminal()?term:"");
     } else { // launch new instance for each file
         for (int i=0;i<fileList.size();++i) {
