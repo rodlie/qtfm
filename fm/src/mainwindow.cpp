@@ -55,14 +55,14 @@ void MainWindow::loadSession()
 {
 	QString sessionFileName=Common::configDir()+"/session";
 	QFile sessionFile(sessionFileName);
-	if(!sessionFile.open(QIODevice::ReadWrite|QIODevice::ExistingOnly)) {qDebug()<<"failed to find sesstion file";return;}
+	if(!sessionFile.open(QIODevice::ReadWrite)) {qDebug()<<"failed to open session file";return;}
 	QString data=sessionFile.readAll();
 
-	auto lines=data.split("\n");
+	QStringList lines=data.split("\n");
 	if(!lines.size()) return;
 	for(int ii=0;ii<lines.size();ii++)
 	{
-			auto pathname=lines[ii];
+			QString pathname=lines[ii];
 				if(pathname.isEmpty()) continue;
 			tabs->addNewTab(pathname,0);
 	}
@@ -74,7 +74,7 @@ void MainWindow::saveSession()
 {
 	QString sessionFileName=Common::configDir()+"/session";
 	QFile sessionFile(sessionFileName);
-	if(!sessionFile.open(QIODevice::ReadWrite|QIODevice::Truncate)) {qDebug()<<"failed to find sesstion file";return;}
+	if(!sessionFile.open(QIODevice::ReadWrite|QIODevice::Truncate)) {qDebug()<<"failed to find session file";return;}
 	if(!tabs->count()) { sessionFile.write(pathEdit->currentText().toUtf8()); sessionFile.write("\n");}
 	for(int ii=0;ii<tabs->count();ii++){
 		QString pathname=tabs->tabData(ii).toString();
