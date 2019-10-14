@@ -101,6 +101,9 @@ public:
     static QVector<QStringList> getDefaultActions();
     static QString formatSize(qint64 num);
     static QString getDriveInfo(QString path);
+    static QString getXdgCacheHome();
+    static QString getThumbnailHash(const QString &filename);
+    static QString hasThumbnail(const QString &filename);
 };
 
 #endif // COMMON_H

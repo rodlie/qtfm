@@ -1222,17 +1222,25 @@ QVariant myModel::findIcon(myModelItem *item) const {
 #endif
   }
 
-  // If thumbnails are allowed and current file has it, show it
-  if (showThumbs) {
-    /*if (icons->contains(item->absoluteFilePath())) {
-      return *icons->object(item->absoluteFilePath());
-    } else*/ if (thumbs->contains(item->absoluteFilePath())) {
-      QPixmap pic;
-      pic.loadFromData(thumbs->value(item->absoluteFilePath()));
-      icons->insert(item->absoluteFilePath(), new QIcon(pic), 1);
-      return *icons->object(item->absoluteFilePath());
+    // If thumbnails are allowed and current file has it, show it
+    if (showThumbs) {
+        if (icons->contains(item->absoluteFilePath())) {
+            qDebug() << "USING ICON CACHE FOR" << item->absoluteFilePath();
+            return *icons->object(item->absoluteFilePath());
+        } else if (thumbs->contains(item->absoluteFilePath())) {
+            qDebug() << "USING THUMB CACHE FOR" << item->absoluteFilePath();
+            QPixmap pic;
+            pic.loadFromData(thumbs->value(item->absoluteFilePath()));
+            icons->insert(item->absoluteFilePath(), new QIcon(pic), 1);
+            return *icons->object(item->absoluteFilePath());
+        } else if (!Common::hasThumbnail(item->absoluteFilePath()).isEmpty()) {
+            qDebug() << "USING XDG CACHE FOR" << item->absoluteFilePath();
+            QPixmap pic;
+            pic.load(Common::hasThumbnail(item->absoluteFilePath()));
+            icons->insert(item->absoluteFilePath(), new QIcon(pic), 1);
+            return *icons->object(item->absoluteFilePath());
+        }
     }
-  }
 
   // NOTE: Suffix is resolved using method getRealSuffix instead of suffix()
   // method. It is because files can contain version suffix e.g. .so.1.0.0

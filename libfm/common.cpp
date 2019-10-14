@@ -20,6 +20,8 @@
 #include <QSettings>
 #include <QPalette>
 #include <QVector>
+#include <QCryptographicHash>
+#include <QUrl>
 
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__APPLE__)
 #include <sys/mount.h>
@@ -622,4 +624,35 @@ QString Common::getDriveInfo(QString path)
     return QString("%1  /  %2  (%3%)").arg(formatSize((qint64) (info.f_blocks - info.f_bavail)*info.f_bsize))
             .arg(formatSize((qint64) info.f_blocks*info.f_bsize))
             .arg((info.f_blocks - info.f_bavail)*100/info.f_blocks);
+}
+
+QString Common::getXdgCacheHome()
+{
+    QString result = qgetenv("XDG_CACHE_HOME");
+    if (result.isEmpty()) {
+        result = QString("%1/.cache").arg(QDir::homePath());
+    }
+    return result;
+}
+
+QString Common::getThumbnailHash(const QString &filename)
+{
+    if (!filename.isEmpty()) {
+        QString filenameString = QUrl::fromUserInput(filename).toString();
+        QString hash = QString(QCryptographicHash::hash(filenameString.toUtf8(),
+                                                        QCryptographicHash::Md5).toHex());
+        return hash;
+    }
+    return QString();
+}
+
+QString Common::hasThumbnail(const QString &filename)
+{
+    if (QFile::exists(filename)) {
+        QString imagePath = QString("%1/thumbnails/normal/%2.png")
+                            .arg(getXdgCacheHome())
+                            .arg(getThumbnailHash(filename));
+        if (QFile::exists(imagePath)) { return imagePath; }
+    }
+    return QString();
 }
