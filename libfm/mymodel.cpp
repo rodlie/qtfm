@@ -423,7 +423,7 @@ bool myModel::hasChildren(const QModelIndex &parent) const
     if (item && item->fileInfo().isDir()) {
         if (QDir(item->fileInfo()
                  .absoluteFilePath())
-                .entryInfoList(QDir::NoDotAndDotDot|QDir::AllEntries)
+                .entryInfoList(QDir::NoDotAndDotDot|QDir::AllEntries|QDir::System)
                 .count() > 0)
         {
             return true;
@@ -617,7 +617,7 @@ void myModel::cacheInfo()
 //---------------------------------------------------------------------------
 
 /**
- * @brief Sets indicator wthether show thumbnails of pictures
+ * @brief Sets indicator whether show thumbnails of pictures
  * @param icons
  */
 void myModel::setMode(bool icons) {
@@ -1383,7 +1383,7 @@ bool myModel::remove(const QModelIndex & theIndex)
  * @param row
  * @param column
  * @param parent
- * @return true if successfull
+ * @return true if successful
  */
 bool myModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
                            int row, int column, const QModelIndex &parent) {

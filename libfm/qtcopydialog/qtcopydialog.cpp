@@ -756,7 +756,7 @@ QtFileCopier *QtCopyDialog::fileCopier() const
     duration is set to 0, the dialog appears as soon as the program
     execution returns to the event processing loop.
 
-    The default duration is 2000 miliseconds.
+    The default duration is 2000 milliseconds.
 */
 
 int QtCopyDialog::minimumDuration() const

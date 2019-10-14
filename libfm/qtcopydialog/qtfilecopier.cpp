@@ -1232,7 +1232,7 @@ void QtFileCopierPrivate::progressRequest()
     By default, a file copier works in an interactive mode which means
     that when an error occurs, the operation is halted, the error()
     signal is emitted, and the file copier waits for the user's
-    respons.  The user can choose to resume by skipping the operation,
+    response.  The user can choose to resume by skipping the operation,
     overwrite the destination or repeat the operation using the
     skip(), skipAll(), overwrite(), overwriteAll() or retry() slots.
 
@@ -1253,7 +1253,7 @@ void QtFileCopierPrivate::progressRequest()
     If you want to provide feedback and error handling, you can use
     your class constructor to create the file copier, and an
     associated copy dialog, and to connect the various QtFileCopier
-    signals to your own custum slots. For example:
+    signals to your own custom slots. For example:
 
     \code
     QtFileCopier *copier;
@@ -1277,7 +1277,7 @@ void QtFileCopierPrivate::progressRequest()
 
     The copy dialog provides visual feedback, and the option of
     aborting the operation. The error handling can be implemented in a
-    custom slot. In addition, you can implement any other respons to
+    custom slot. In addition, you can implement any other response to
     the file copier's signals:
 
     \code
@@ -1404,7 +1404,7 @@ QtFileCopier::~QtFileCopier()
            an empty pending list.
     \value Busy The file copier is performing an operation.
     \value WaitingForInteraction The file copier is waiting for the
-           user's respons. To resume the operation use the skip(), skipAll(),
+           user's response. To resume the operation use the skip(), skipAll(),
            overwrite(), overwriteAll() or retry() functions.
 
     \sa state(), stateChanged()
@@ -1433,7 +1433,7 @@ QtFileCopier::~QtFileCopier()
     This enum type is used to specify the various errors that can
     occur during a copy or move operation.
 
-    \value NoError No error occured.
+    \value NoError No error occurred.
     \value SourceNotExists The source file doesn't exist.
     \value DestinationExists The destination file exists.
     \value SourceDirectoryOmitted The source was supposed to be a file, but
@@ -1470,7 +1470,7 @@ QtFileCopier::~QtFileCopier()
 
     The parameters are the \a identifier of the current operation, the
     type of \a error, and \a stopped which tells whether the operation
-    is waiting for user respons or not. When an operation is halted
+    is waiting for user response or not. When an operation is halted
     due to an error (\a stopped == true), use the retry(), skip(),
     skipAll(), overwrite() or overwriteAll() slots to resume.
 
@@ -1508,7 +1508,7 @@ QtFileCopier::~QtFileCopier()
     error() and dataTransferProgress() signals concerning the
     operation. When the operation concerns a directory, recursively
     generated started() and finished() signals can occur in between
-    the inital signal pair as well.
+    the initial signal pair as well.
 
     \sa finished()
 */
@@ -1516,7 +1516,7 @@ QtFileCopier::~QtFileCopier()
 /*!
     \fn void QtFileCopier::dataTransferProgress(int identifier, qint64 progress)
 
-    This signal is emitted approximately every 100 miliseconds to
+    This signal is emitted approximately every 100 milliseconds to
     indicate the progress of the operation with the given \a
     identifier, It is only emitted when the file copier is in the
     QtFileCopier::Busy state. In addition the signal is emitted at the
@@ -1565,7 +1565,7 @@ QtFileCopier::~QtFileCopier()
 
     The function returns a non negative value as the operation
     identifier. If the operation is not valid, or the file copier is
-    not in the appropiate state, the function returns -1.
+    not in the appropriate state, the function returns -1.
 
     \sa copyFiles(), copyDirectory(), move()
 */
@@ -1658,7 +1658,7 @@ QList<int> QtFileCopier::copyDirectory(const QString &sourceDir,
 
     The function returns a non negative value as the operation
     identifier. If the operation is not valid, or the file copier is
-    not in the appropiate state, the function returns -1.
+    not in the appropriate state, the function returns -1.
 
     \sa moveFiles() moveDirectory() copy()
 */
@@ -2083,7 +2083,7 @@ bool QtFileCopier::autoReset() const
     \brief the time that must pass before the next dataTransferProgress()
     signal is emitted.
 
-    The default is 100 miliseconds.
+    The default is 100 milliseconds.
 
     \sa dataTransferProgress()
 */

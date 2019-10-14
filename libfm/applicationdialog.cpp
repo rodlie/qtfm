@@ -121,7 +121,7 @@ void ApplicationDialog::populate()
 
 /**
  * @brief Creates default application categories
- * @param names names of cathegories with synonyms
+ * @param names names of categories with synonyms
  */
 
 void ApplicationDialog::createCategories()
@@ -154,7 +154,7 @@ void ApplicationDialog::createCategories()
 /**
  * @brief Searches the most suitable category for application
  * @param app
- * @return cathegory
+ * @return category
  */
 
 QTreeWidgetItem* ApplicationDialog::findCategory(const DesktopFile &app)
@@ -164,7 +164,7 @@ QTreeWidgetItem* ApplicationDialog::findCategory(const DesktopFile &app)
 
     // Try to find more suitable category
     foreach (QString name, catNames.keys()) {
-        // Try cathegory name
+        // Try category name
         if (app.getCategories().contains(name)) {
             category = categories.value(name);
             break;
