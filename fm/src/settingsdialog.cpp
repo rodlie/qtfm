@@ -709,7 +709,7 @@ void SettingsDialog::readSettings() {
   checkAutoMount->setChecked(settingsPtr->value("trayAutoMount", false).toBool());
   checkDVD->setChecked(settingsPtr->value("autoPlayDVD", false).toBool());
 
-  // Load default mime appss location
+  // Load default mime apps location
   QString tmp = settingsPtr->value("defMimeAppsFile", MIME_APPS).toString();
 #if QT_VERSION >= 0x050000
   cmbDefaultMimeApps->setCurrentText(tmp);
@@ -775,7 +775,7 @@ void SettingsDialog::readShortcuts() {
   pixmap.fill(Qt::transparent);
   QIcon blank(pixmap);
 
-  // Read shorcuts
+  // Read shortcuts
   QHash<QString, QString> shortcuts;
   settingsPtr->beginGroup("customShortcuts");
   QStringList keys = settingsPtr->childKeys();
@@ -903,7 +903,7 @@ void SettingsDialog::loadMimes(int section) {
 
 /**
  * @brief Saves settings
- * @return true if successfull
+ * @return true if successful
  */
 bool SettingsDialog::saveSettings() {
 
@@ -1014,7 +1014,7 @@ bool SettingsDialog::saveSettings() {
     QMessageBox::information(this, title, msg.arg(duplicates.join("<p>")));
   }
 
-  // Save succeded
+  // Save succeeded
   return true;
 }
 //---------------------------------------------------------------------------

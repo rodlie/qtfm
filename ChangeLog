@@ -248,7 +248,7 @@
 
 4.4	29-January-2011
 - added gui icon chooser for bookmarks and custom actions.
-- modified 'File open' to handle mutliple selections.
+- modified 'File open' to handle multiple selections.
 - modified 'Edit filetype' to handle differences in Gnome/KDE settings.
 - fixed issues with icon and theme integration in KDE environment.
 - fixed 'div 0' bug in progress bar calculation.
@@ -315,7 +315,7 @@
 - modified Icon/List/Detail switching behaviour.
 - modified copy progress estimation, now based on size, more accurate.
 - fixed bug in copy progress dialog which would sometimes continue progress after canceling.
-- fixed bug with Drag/Drop not working if target aready exists.
+- fixed bug with Drag/Drop not working if target already exists.
 
 3.2	30-November-2010
 - terminal icon now taken from current theme.
@@ -325,7 +325,7 @@
 
 3.1	21-September-2010
 - added 'group' to detail view.
-- added 'F3 home', 'F4 Terminal'  shorcuts.
+- added 'F3 home', 'F4 Terminal'  shortcuts.
 - added 'svg,gif' thumbnail support.
 - modified delete, more efficient when trying to remove files with no permission.
 
@@ -359,7 +359,7 @@
 2.5	16-August-2010
 - added 'Type' column back in detail view.
 - modified copy progress dialog, better display when copying multiple folders.
-- modifed naming convention when pasting hidden files.
+- modified naming convention when pasting hidden files.
 - fixed new file/folder icons.
 - fixed bug with Drag/Drop after swapping between list/icon modes.
 - fixed bug in copy/paste and delete if all items selected with 'Ctrl-a'.
@@ -373,7 +373,7 @@
 - added file information to status bar, removed tooltips.
 - modified autobookmarks and mounting/unmounting detection in /media.
 - modified thumb alignment to account for different aspect ratio pics.
-- modified toolbars, seperate navigation and address bars.
+- modified toolbars, separate navigation and address bars.
 
 2.2	2-August-2010
 - added dynamic updating of autobookmarks for removable drives in /media.

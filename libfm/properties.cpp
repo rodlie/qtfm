@@ -18,7 +18,7 @@ Properties::Properties(const QString &fileName, const QString &group) {
 
 /**
  * @brief Creates properties
- * @param other properies
+ * @param other properties
  */
 Properties::Properties(const Properties &other) {
   this->data = other.data;
@@ -50,7 +50,7 @@ bool Properties::load(const QString &fileName, const QString &group) {
   // specified, groupFound is always true
   bool groupFound = group.isEmpty();
 
-  // Read propeties
+  // Read properties
   QTextStream in(&file);
   while (!in.atEnd()) {
 

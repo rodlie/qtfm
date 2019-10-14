@@ -343,8 +343,8 @@ void QtFM::setupBookmarks()
     if (QFile::exists(QString("%1/Documents").arg(QDir::homePath()))) {
         modelBookmarks->addBookmark(tr("Documents"), QString("%1/Documents").arg(QDir::homePath()), "", "text-x-generic", "", false, false);
     }
-    if (QFile::exists(QString("%1/Dowloads").arg(QDir::homePath()))) {
-        modelBookmarks->addBookmark(tr("Downloads"), QString("%1/Dowloads").arg(QDir::homePath()), "", "applications-internet", "", false, false);
+    if (QFile::exists(QString("%1/Downloads").arg(QDir::homePath()))) {
+        modelBookmarks->addBookmark(tr("Downloads"), QString("%1/Downloads").arg(QDir::homePath()), "", "applications-internet", "", false, false);
     }
     if (QFile::exists(QString("%1/Pictures").arg(QDir::homePath()))) {
         modelBookmarks->addBookmark(tr("Pictures"), QString("%1/Pictures").arg(QDir::homePath()), "", "image-x-generic", "", false, false);
