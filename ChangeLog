@@ -1,11 +1,8 @@
-6.3.0 XX-August 2019
+6.3.0 TBA
 - optional cmake support
 - new file transfer dialog
 - improved detail view (thanks to @ferion11)
 - protect against accidental deletion (thanks to @bodwok)
-
-6.2.1 XX-July 2019
-- fix remove symlink bug (thanks to @ferion11)
 
 6.2.0 05-June 2019
 - imagemagick support (improved thumbnail support) CONFIG+=with_magick
