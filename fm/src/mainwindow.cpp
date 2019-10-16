@@ -49,9 +49,9 @@
 
 #ifdef Q_OS_MAC
 #include <QStyleFactory>
+
 #endif
-
-
+#include <QDebug>
 void MainWindow::loadSession()
 {
 	QString sessionFileName=Common::configDir()+"/session";
@@ -882,7 +882,7 @@ void MainWindow::openTab()
     if(curIndex.isDir()) {
         addTab(curIndex.filePath());
     } else {
-        qDebug()<<"using default session";addTab(QDir::homePath());
+        addTab(QDir::homePath());
     }
 }
 

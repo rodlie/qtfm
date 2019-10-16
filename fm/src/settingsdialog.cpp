@@ -504,7 +504,10 @@ QWidget *SettingsDialog::createSessionSettings()
 	QWidget *widget = new QWidget();
     QVBoxLayout* layoutWidget = new QVBoxLayout(widget);
     checkSaveSession=new QCheckBox("Save tabs on exit");
+    bool flgSaveSession=settingsPtr->value("saveSession",true).toBool();
+    checkSaveSession->setChecked(flgSaveSession);
     layoutWidget->addWidget(checkSaveSession);
+    return widget;
 }
 //---------------------------------------------------------------------------
 
@@ -757,9 +760,7 @@ void SettingsDialog::readSettings() {
     item->setCheckState(3, setChecked ? Qt::Checked : Qt::Unchecked);
   }
   settingsPtr->endGroup();
-  settingsPtr->beginGroup("session");
   checkSaveSession->setChecked(settingsPtr->value("saveSession",true).toBool());
-  settingsPtr->endGroup();
   // Loads icons for actions
   for (int x = 0; x < actionsWidget->topLevelItemCount(); x++) {
     QApplication::processEvents();
@@ -999,9 +1000,8 @@ bool SettingsDialog::saveSettings() {
   }
   settingsPtr->endGroup();
 
-  settingsPtr->beginGroup("Session");
-  settingsPtr->setValue("saveSession", checkSaveSession->isChecked());
-  settingsPtr->endGroup();
+  bool flgSaveSession=checkSaveSession->isChecked();
+  settingsPtr->setValue("saveSession",flgSaveSession );
   // Mime types
 #ifndef Q_OS_MAC
   for (int i = 0; i < mimesWidget->topLevelItemCount(); ++i) {
