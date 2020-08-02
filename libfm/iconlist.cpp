@@ -1,5 +1,7 @@
 #include "iconlist.h"
 
+#include <QPainterPath>
+
 QSize IconListDelegate::sizeHint(const QStyleOptionViewItem &option,
                                  const QModelIndex &index) const
 {
