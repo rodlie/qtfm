@@ -79,6 +79,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
     myModel *modelList;
+    ~MainWindow();
+    void loadSession();
+    void saveSession();
 
 protected:
     void closeEvent(QCloseEvent *event);
