@@ -45,7 +45,8 @@ extern "C" {
  * @param realMime
  * @param mimeUtils
  */
-myModel::myModel(bool realMime, MimeUtils *mimeUtils) {
+myModel::myModel(bool realMime, MimeUtils *mimeUtils, QObject *parent)
+    : QAbstractItemModel(parent) {
 
 #ifdef WITH_MAGICK
   Magick::InitializeMagick(Q_NULLPTR);
@@ -120,6 +121,12 @@ myModel::myModel(bool realMime, MimeUtils *mimeUtils) {
  * @brief Deletes model of file system
  */
 myModel::~myModel() {
+  delete mimeGeneric;
+  delete mimeGlob;
+  delete mimeIcons;
+  delete folderIcons;
+  delete thumbs;
+  delete icons;
   delete rootItem;
   delete iconFactory;
 }

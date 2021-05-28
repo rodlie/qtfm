@@ -134,7 +134,7 @@ MainWindow::MainWindow()
 
     // Create filesystem model
     bool realMime = settings->value("realMimeTypes", true).toBool();
-    modelList = new myModel(realMime, mimeUtils);
+    modelList = new myModel(realMime, mimeUtils, this);
     connect(modelList, SIGNAL(reloadDir(QString)), this, SLOT(handleReloadDir(QString)));
 
     dockTree = new QDockWidget(tr("Tree"),this,Qt::SubWindow);
