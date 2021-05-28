@@ -37,7 +37,7 @@ class myModel : public QAbstractItemModel {
   Q_OBJECT
 public:
 
-  myModel(bool realMime, MimeUtils* mimeUtils);
+  myModel(bool realMime, MimeUtils* mimeUtils, QObject* parent = nullptr);
   ~myModel();
   void loadMimeTypes() const;
   void cacheInfo();
