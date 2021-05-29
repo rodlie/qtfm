@@ -22,8 +22,8 @@ endif()
 add_compile_options(-Wall -Wextra)
 
 # configure
-set(ENABLE_MAGICK false CACHE BOOL "Enable support for ImageMagick")
-set(ENABLE_FFMPEG false CACHE BOOL "Enable support for FFmpeg v3")
+set(ENABLE_MAGICK true CACHE BOOL "Enable support for ImageMagick")
+set(ENABLE_FFMPEG true CACHE BOOL "Enable support for FFmpeg v3")
 set(ENABLE_DBUS true CACHE BOOL "Enable support for D-Bus")
 set(ENABLE_UDISKS true CACHE BOOL "Enable support for udisks")
 set(ENABLE_TRAY true CACHE BOOL "Enable support for qtfm-tray")
@@ -121,33 +121,22 @@ set_target_properties(
     ${PROJECT_VERSION_MAJOR}
 )
 if(ENABLE_MAGICK)
-    target_compile_definitions(QtFM PRIVATE ${MAGICK_CFLAGS_OTHER})
+    string(REGEX MATCH "\\-DMAGICKCORE_HDRI_ENABLE=[^ $]" MAGICK_HDRI ${MAGICK_CFLAGS})
+    add_definitions(-DMAGICKCORE_QUANTUM_DEPTH=16)
+    add_definitions(${MAGICK_HDRI})
+    target_include_directories(QtFM PRIVATE ${MAGICK_INCLUDEDIR})
     target_link_libraries(QtFM ${MAGICK_LIBRARIES})
     if(ENABLE_FFMPEG)
-        target_include_directories(QtFM
-                                   PRIVATE
-                                   libfm
-                                   libfm/qtcopydialog
-                                   ${NOTIFY_INCLUDEDIR}
-                                   ${MAGICK_INCLUDEDIR}
-                                   ${AVUTIL_INCLUDEDIR})
+        target_include_directories(QtFM PRIVATE ${AVUTIL_INCLUDEDIR})
         target_link_libraries(QtFM
                               ${AVDEVICE_LIBRARIES}
                               ${SWSCALE_LIBRARIES}
                               ${AVFORMAT_LIBRARIES}
                               ${AVCODEC_LIBRARIES}
                               ${AVUTIL_LIBRARIES})
-    else()
-        target_include_directories(QtFM
-                                   PRIVATE
-                                   libfm
-                                   libfm/qtcopydialog
-                                   ${NOTIFY_INCLUDEDIR}
-                                   ${MAGICK_INCLUDEDIR})
     endif()
-else()
-    target_include_directories(QtFM PRIVATE libfm libfm/qtcopydialog ${NOTIFY_INCLUDEDIR})
 endif()
+target_include_directories(QtFM PRIVATE libfm libfm/qtcopydialog ${NOTIFY_INCLUDEDIR})
 
 target_link_libraries(
     QtFM
