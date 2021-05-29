@@ -2,7 +2,7 @@
 
 [![GitHub release](https://img.shields.io/github/release/rodlie/qtfm.svg)](https://github.com/rodlie/qtfm/releases)
 [![Github commits (since latest release)](https://img.shields.io/github/commits-since/rodlie/qtfm/latest.svg)](https://github.com/rodlie/qtfm)
-[![Build Status](https://travis-ci.org/rodlie/qtfm.svg?branch=master)](https://travis-ci.org/rodlie/qtfm)
+[![C/C++ CI](https://github.com/rodlie/qtfm/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/rodlie/qtfm/actions/workflows/c-cpp.yml)
 
 Qt File Manager for Linux, FreeBSD, NetBSD, OpenBSD and macOS.
 
