@@ -14,15 +14,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: apt install
-      run: sudo apt-get install tree qt5-default qtbase5-dev cmake libmagick++-dev libavdevice-dev libswscale-dev libavformat-dev libavcodec-dev libavutil-dev
-    - name: Build (cmake release)
+      run: sudo apt-get install tree qt5-default qtbase5-dev libmagick++-dev libavdevice-dev libswscale-dev libavformat-dev libavcodec-dev libavutil-dev
+    - name: Build (qmake release)
       run: |
         mkdir build
         cd build
-        cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DENABLE_MAGICK=true -DENABLE_FFMPEG=true ..
+        qmake CONFIG+=with_magick CONFIG+=with_ffmpeg CONFIG+=release PREFIX=/usr ..
         make -j2
-        make DESTDIR=`pwd`/pkg install
-        tree pkg
-        ldd pkg/bin/qtfm
-        ldd pkg/bin/qtfm-tray
+        sudo make install
+        ldd /usr/bin/qtfm
+        ldd /usr/bin/qtfm-tray
         
