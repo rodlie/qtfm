@@ -407,8 +407,8 @@ void Common::setupIconTheme(QString appFilePath)
         QSettings settings(Common::configFile(), QSettings::IniFormat);
         temp = settings.value("fallbackTheme").toString();
     }
-    if(temp.isEmpty() || temp == "hicolor") {
-        if(QFile::exists(QDir::homePath() + "/" + ".gtkrc-2.0")) { // try gtk-2.0
+    if (temp.isEmpty() || temp == "hicolor") {
+        if (QFile::exists(QDir::homePath() + "/" + ".gtkrc-2.0")) { // try gtk-2.0
             qDebug() << "checking for icon theme in gtkrc-2.0";
             QSettings gtkFile(QDir::homePath() + "/.gtkrc-2.0",QSettings::IniFormat/*,this*/);
             temp = gtkFile.value("gtk-icon-theme-name").toString().remove("\"");
@@ -419,7 +419,11 @@ void Common::setupIconTheme(QString appFilePath)
             temp = gtkFile.value("gtk-fallback-icon-theme").toString().remove("\"");
         }
         //fallback
-        if(temp.isNull()) {
+        if (temp.isEmpty()) {
+#ifdef Q_OS_MACX
+            Q_UNUSED(appFilePath)
+            temp = "Adwaita";
+#else
             qDebug() << "checking for icon theme in static fallback";
             QStringList themes;
             themes << QString("%1/../share/icons/Humanity").arg(appFilePath);
@@ -440,6 +444,7 @@ void Common::setupIconTheme(QString appFilePath)
                     break;
                 }
             }
+#endif
         }
         if (temp!="hicolor" && !temp.isEmpty()) {
             qDebug() << "save icon theme for later use";

@@ -29,7 +29,6 @@ macx {
     LIBS += -framework CoreFoundation -framework CoreServices
     QT_CONFIG -= no-pkg-config
     PKGCONFIG += libinotify
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
     CONFIG += staticlib
 }
 

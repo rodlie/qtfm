@@ -273,7 +273,7 @@ QString myModel::getMimeType(const QModelIndex &index)
             if(item->mMimeType.isNull()) item->mMimeType = "file";
         }
     }
-    //qDebug() << "item mime" << item->absoluteFilePath() << item->mMimeType;
+    qDebug() << "item mime" << item->absoluteFilePath() << item->mMimeType;
     return item->mMimeType;
 }
 
@@ -1254,7 +1254,10 @@ QVariant myModel::findIcon(myModelItem *item) const {
 
   // If there is icon for current suffix then return it
   QString suffix = FileUtils::getRealSuffix(type.fileName()); /*type.suffix();*/
-  if (mimeIcons->contains(suffix)) { return mimeIcons->value(suffix); }
+  if (mimeIcons->contains(suffix)) {
+      qDebug() << "USING SUFFIX ICON FOR" << suffix << item->absoluteFilePath();
+      return mimeIcons->value(suffix);
+  }
 
   // The icon
   QIcon theIcon;
@@ -1268,6 +1271,7 @@ QVariant myModel::findIcon(myModelItem *item) const {
     // however operation 'getMimeType' could cause slowdown
     if (!type.isExecutable()) {
       QString mime = mimeUtilsPtr->getMimeType(type.absoluteFilePath());
+      qDebug() << "USING MIME ICON FOR" << mime << item->absoluteFilePath();
       return FileUtils::searchMimeIcon(mime);
     }
 

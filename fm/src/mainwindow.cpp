@@ -109,26 +109,13 @@ MainWindow::MainWindow()
         settings->setValue("clearCache", false);
     }
 
-    // Dark theme
-#ifdef DEPLOY
-    if (settings->value("darkTheme", true).toBool()) {
-#else
+    // Dark theme?
     if (settings->value("darkTheme").toBool()) {
-#endif
         qApp->setPalette(Common::darkTheme());
     }
 
     // set icon theme
-#ifdef Q_OS_MAC
-#ifdef DEPLOY
-    QIcon::setThemeName("Adwaita");
-    qApp->setStyle(QStyleFactory::create("fusion"));
-#else
     Common::setupIconTheme(qApp->applicationFilePath());
-#endif
-#else
-    Common::setupIconTheme(qApp->applicationFilePath());
-#endif
 
     // Create mime utils
     mimeUtils = new MimeUtils(this);
