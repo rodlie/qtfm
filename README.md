@@ -121,8 +121,8 @@ Since version 6.3.0 building with CMake is supported.
 
 Build options (added):
 ```
-ENABLE_MAGICK "Enable support for ImageMagick" (default false)
-ENABLE_FFMPEG "Enable support for FFmpeg v3" (default false)
+ENABLE_MAGICK "Enable support for ImageMagick" (default true)
+ENABLE_FFMPEG "Enable support for FFmpeg v3" (default true)
 ENABLE_DBUS "Enable support for D-Bus" (default true)
 ENABLE_UDISKS "Enable support for udisks" (default true)
 ENABLE_TRAY "Enable support for qtfm-tray" (default true)
@@ -153,7 +153,7 @@ make INSTALL_ROOT=<package> install
 ### cmake
 
 ```
-cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 -DENABLE_MAGICK=true -DENABLE_FFMPEG=true ..
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 ..
 make -jX
 make DESTDIR=<package> install
 ```
