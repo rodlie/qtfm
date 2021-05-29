@@ -456,7 +456,7 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
   // Load zoom settings
   zoom = settings->value("zoom", 48).toInt();
   zoomTree = settings->value("zoomTree", 16).toInt();
-  zoomBook = settings->value("zoomBook", 32).toInt();
+  zoomBook = settings->value("zoomBook", 24).toInt();
   zoomList = settings->value("zoomList", 24).toInt();
   zoomDetail = settings->value("zoomDetail", 32).toInt();
   detailTree->setIconSize(QSize(zoomDetail, zoomDetail));
