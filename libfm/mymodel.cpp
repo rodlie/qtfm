@@ -49,12 +49,16 @@ myModel::myModel(bool realMime, MimeUtils *mimeUtils, QObject *parent)
     : QAbstractItemModel(parent) {
 
 #ifdef WITH_MAGICK
-  Magick::InitializeMagick(Q_NULLPTR);
+    Magick::InitializeMagick(Q_NULLPTR);
 #endif
 #ifdef WITH_FFMPEG
+#if (LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(58,9,100))
     av_register_all();
+#endif
     avdevice_register_all();
+#if (LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 9, 100))
     avcodec_register_all();
+#endif
     avformat_network_init();
 #ifdef QT_NO_DEBUG
     av_log_set_level(AV_LOG_QUIET);
