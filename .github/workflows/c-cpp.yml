@@ -17,7 +17,7 @@ jobs:
       run: sudo apt-get install tree qt5-default qtbase5-dev libmagick++-dev libavdevice-dev libswscale-dev libavformat-dev libavcodec-dev libavutil-dev
     - name: Build 1 (qmake release)
       run: |
-        export CWD=`pwd`
+        cd $GITHUB_WORKSPACE
         mkdir build1
         cd build1
         qmake CONFIG+=with_magick CONFIG+=with_ffmpeg CONFIG+=release PREFIX=/usr ..
@@ -26,7 +26,7 @@ jobs:
         tree pkg
     - name: Build 2 (cmake release)
       run: |
-        cd $CWD
+        cd $GITHUB_WORKSPACE
         mkdir build2
         cd build2
         cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_BUILD_TYPE=Release ..
