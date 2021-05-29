@@ -1,0 +1,21 @@
+name: C/C++ CI
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: apt install
+      run: sudo apt-get install tree qt5-default qtbase5-dev libmagick++-dev libavdevice-dev libswscale-dev libavformat-dev libavcodec-dev libavutil-dev
+    - name: Build (qmake release)
+      run: |
+        mkdir build
+        cd build
+        qmake CONFIG+=with_magick CONFIG+=with_ffmpeg CONFIG+=release PREFIX=/usr ..
+        make -j2
+        sudo make install
+        ldd /usr/bin/qtfm
+        ldd /usr/bin/qtfm-tray
+        
