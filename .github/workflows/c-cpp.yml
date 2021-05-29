@@ -15,13 +15,24 @@ jobs:
     - uses: actions/checkout@v2
     - name: apt install
       run: sudo apt-get install tree qt5-default qtbase5-dev libmagick++-dev libavdevice-dev libswscale-dev libavformat-dev libavcodec-dev libavutil-dev
-    - name: Build (qmake release)
+    - name: Build 1 (qmake release)
       run: |
-        mkdir build
-        cd build
+        export CWD=`pwd`
+        mkdir build1
+        cd build1
         qmake CONFIG+=with_magick CONFIG+=with_ffmpeg CONFIG+=release PREFIX=/usr ..
         make -j2
+        make INSTALL_ROOT=`pwd`/pkg install
+        tree pkg
+    - name: Build 2 (cmake release)
+      run: |
+        cd $CWD
+        mkdir build2
+        cd build2
+        cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_BUILD_TYPE=Release ..
+        make -j2
+        make DESTDIR=`pwd`/pkg install
+        tree pkg
         sudo make install
         ldd /usr/bin/qtfm
         ldd /usr/bin/qtfm-tray
-        
