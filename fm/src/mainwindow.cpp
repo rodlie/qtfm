@@ -85,12 +85,15 @@ MainWindow::MainWindow()
     }
 #endif
 
+    // get path from cmd
     startPath = QDir::currentPath();
     QStringList args = QApplication::arguments();
 
     if(args.count() > 1) {
         startPath = args.at(1);
-        if(QUrl(startPath).isLocalFile()) {
+        if (startPath == ".") {
+            startPath = getenv("PWD");
+        } else if (QUrl(startPath).isLocalFile()) {
             startPath = QUrl(args.at(1)).toLocalFile();
         }
     }
