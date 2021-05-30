@@ -1,8 +1,9 @@
-6.2.1 XX-June 2021
+6.2.1 05-June 2021
 - fix remove symlink bug (thanks to @ferion11)
 - fix build with Qt 5.15 (thanks to @a17r)
 - fix memory leak (thanks to @Kakueeen)
 - fix for "." start path
+- fix .desktop key/value parser
 
 6.2.0 05-June 2019
 - imagemagick support (improved thumbnail support) CONFIG+=with_magick
