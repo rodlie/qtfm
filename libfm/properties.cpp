@@ -72,8 +72,10 @@ bool Properties::load(const QString &fileName, const QString &group) {
 
     // If we are in correct group and line contains assignment then read data
     if (groupFound && line.contains("=")) {
-      QStringList tmp = line.split("=");
-      data.insert(tmp.at(0), tmp.at(1));
+        int index = line.indexOf("=");
+        QString key = line.mid(0, index);
+        QString val = line.mid(index+1);
+        data.insert(key, val);
     }
   }
   file.close();
