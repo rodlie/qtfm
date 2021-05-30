@@ -26,13 +26,8 @@ DesktopFile::DesktopFile(const QString &fileName) {
   type = desktop.value("Type", "Application").toString();
   no_display = desktop.value("NoDisplay", false).toBool();
   terminal = desktop.value("Terminal", false).toBool();
-  categories = desktop.value("Categories").toString().remove(" ").split(";");
-  mimeType = desktop.value("MimeType").toString().remove(" ").split(";");
-
-  // Fix categories
-  if (categories.first().compare("") == 0) {
-    categories.removeFirst();
-  }
+  categories = desktop.value("Categories").toString().remove(" ").split(";", Qt::SkipEmptyParts);
+  mimeType = desktop.value("MimeType").toString().remove(" ").split(";", Qt::SkipEmptyParts);
 }
 //---------------------------------------------------------------------------
 
