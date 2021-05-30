@@ -19,7 +19,7 @@ DfmQTreeView::DfmQTreeView(QWidget *parent) :
 {
     setUniformRowHeights(true);
     m_fileItemDelegate = new DfmQStyledItemDelegate(this);
-    m_fileItemDelegate->setMinimizedNameColumnSelection(true);
+    m_fileItemDelegate->setMinimizedNameColumnSelection(false); // if true long filenames will overflow the column!
     this->setItemDelegate(m_fileItemDelegate);
 }
 
