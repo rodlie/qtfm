@@ -17,7 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: apt install
-      run: sudo apt-get install tree qt5-default qtbase5-dev libmagick++-dev libavdevice-dev libswscale-dev libavformat-dev libavcodec-dev libavutil-dev
+      run: |
+        sudo apt-get update
+        sudo apt-get install tree qt5-default qtbase5-dev libmagick++-dev libavdevice-dev libswscale-dev libavformat-dev libavcodec-dev libavutil-dev
     - name: Build 1 (qmake release)
       run: |
         cd $GITHUB_WORKSPACE
