@@ -11,7 +11,6 @@
 #include <QKeyEvent>
 #include <QModelIndex>
 #include <QPainter>
-#include <QPainterPath>
 
 class IconViewDelegate : public QStyledItemDelegate
 {

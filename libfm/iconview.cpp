@@ -1,5 +1,7 @@
 #include "iconview.h"
 
+#include <QPainterPath>
+
 bool IconViewDelegate::eventFilter(QObject *object,
                                    QEvent *event)
 {
