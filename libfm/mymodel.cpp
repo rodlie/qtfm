@@ -33,6 +33,7 @@
 
 #ifdef WITH_FFMPEG
 extern "C" {
+#include <libavcodec/avcodec.h>
 #include <libavutil/avutil.h>
 #include <libavutil/imgutils.h>
 #include <libavdevice/avdevice.h>
