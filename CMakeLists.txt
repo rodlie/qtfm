@@ -41,6 +41,7 @@ if(ENABLE_MAGICK)
         pkg_check_modules(AVCODEC REQUIRED libavcodec)
         pkg_check_modules(AVUTIL REQUIRED libavutil)
         add_definitions(-DWITH_FFMPEG)
+        add_compile_options(-fpermissive) # a fix for ffmpeg 5
     endif()
 endif()
 
