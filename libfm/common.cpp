@@ -22,6 +22,7 @@
 #include <QVector>
 #include <QCryptographicHash>
 #include <QUrl>
+#include <QStandardPaths>
 
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__APPLE__)
 #include <sys/mount.h>
@@ -67,54 +68,60 @@ QString Common::trashDir()
 QStringList Common::iconLocations(QString appPath)
 {
     QStringList result;
-    result << QString("%1/.local/share/icons").arg(QDir::homePath());
+    result << QStandardPaths::locateAll(QStandardPaths::GenericDataLocation,
+                                        "icons",
+                                        QStandardPaths::LocateDirectory);
     result << QString("%1/../share/icons").arg(appPath);
-    result << "/usr/share/icons" << "/usr/local/share/icons";
     return result;
 }
 
 QStringList Common::pixmapLocations(QString appPath)
 {
     QStringList result;
-    result << QString("%1/.local/share/pixmaps").arg(QDir::homePath());
+    result << QStandardPaths::locateAll(QStandardPaths::GenericDataLocation,
+                                        "pixmaps",
+                                        QStandardPaths::LocateDirectory);
     result << QString("%1/../share/pixmaps").arg(appPath);
-    result << "/usr/share/pixmaps" << "/usr/local/share/pixmaps";
     return result;
 }
 
 QStringList Common::applicationLocations(QString appPath)
 {
     QStringList result;
-    result << QString("%1/.local/share/applications").arg(QDir::homePath());
+    result << QStandardPaths::locateAll(QStandardPaths::GenericDataLocation,
+                                        "applications",
+                                        QStandardPaths::LocateDirectory);
     result << QString("%1/../share/applications").arg(appPath);
-    result << "/usr/share/applications" << "/usr/local/share/applications";
     return result;
 }
 
 QStringList Common::mimeGlobLocations(QString appPath)
 {
     QStringList result;
-    result << QString("%1/.local/share/mime/globs").arg(QDir::homePath());
+    result << QStandardPaths::locateAll(QStandardPaths::GenericDataLocation,
+                                        "mime/globs",
+                                        QStandardPaths::LocateFile);
     result << QString("%1/../share/mime/globs").arg(appPath);
-    result << "/usr/share/mime/globs" << "/usr/local/share/mime/globs";
     return result;
 }
 
 QStringList Common::mimeGenericLocations(QString appPath)
 {
     QStringList result;
-    result << QString("%1/.local/share/mime/generic-icons").arg(QDir::homePath());
+    result << QStandardPaths::locateAll(QStandardPaths::GenericDataLocation,
+                                        "mime/generic-icons",
+                                        QStandardPaths::LocateFile);
     result << QString("%1/../share/mime/generic-icons").arg(appPath);
-    result << "/usr/share/mime/generic-icons" << "/usr/local/share/mime/generic-icons";
     return result;
 }
 
 QStringList Common::mimeTypeLocations(QString appPath)
 {
     QStringList result;
-    result << QString("%1/.local/share/mime/types").arg(QDir::homePath());
+    result << QStandardPaths::locateAll(QStandardPaths::GenericDataLocation,
+                                        "mime/types",
+                                        QStandardPaths::LocateFile);
     result << QString("%1/../share/mime/types").arg(appPath);
-    result << "/usr/share/mime/types" << "/usr/local/share/mime/types";
     return result;
 }
 
@@ -151,10 +158,13 @@ QString Common::findIconInDir(QString appPath,
     iconSizes << "128" << "64" << "48" << "32" << "22" << "16";
 
     // theme
-    QDirIterator it(QString("%1/%2").arg(dir).arg(theme), QStringList() << "*.png" << "*.jpg" << "*.xpm", QDir::Files|QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+    QDirIterator it(QString("%1/%2").arg(dir).arg(theme),
+                    QStringList() << "*.png" << "*.jpg" << "*.xpm",
+                    QDir::Files|QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
     while (it.hasNext()) {
         QString found = it.next();
-        if (found.split("/").takeLast().split(".").takeFirst()==icon) {
+        QString iconName = QFileInfo(found).completeBaseName();
+        if (iconName == icon) {
             for (int i=0;i<iconSizes.size();++i) {
                 QString hasFile = found.replace(QRegExp("/[.*]x[.*]/"),QString("/%1x%1/").arg(iconSizes.at(i)));
                 if (QFile::exists(hasFile)) { return hasFile; }
@@ -163,11 +173,14 @@ QString Common::findIconInDir(QString appPath,
         }
     }
     // hicolor
-    if (theme!="hicolor") {
-        QDirIterator hicolor(QString("%1/%2").arg(dir).arg("hicolor"), QStringList() << "*.png" << "*.jpg" << "*.xpm", QDir::Files|QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+    if (theme != "hicolor") {
+        QDirIterator hicolor(QString("%1/%2").arg(dir).arg("hicolor"),
+                             QStringList() << "*.png" << "*.jpg" << "*.xpm",
+                             QDir::Files|QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
         while (hicolor.hasNext()) {
             QString found = hicolor.next();
-            if (found.split("/").takeLast().split(".").takeFirst()==icon) {
+            QString iconName = QFileInfo(found).completeBaseName();
+            if (iconName == icon) {
                 for (int i=0;i<iconSizes.size();++i) {
                     QString hasFile = found.replace(QRegExp("/[.*]x[.*]/"),QString("/%1x%1/").arg(iconSizes.at(i)));
                     if (QFile::exists(hasFile)) { return hasFile; }
@@ -179,10 +192,13 @@ QString Common::findIconInDir(QString appPath,
     // pixmaps
     QStringList pixs = pixmapLocations(appPath);
     for (int i=0;i<pixs.size();++i) {
-        QDirIterator pixmaps(pixs.at(i), QStringList() << "*.png" << "*.jpg" << "*.xpm", QDir::Files|QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        QDirIterator pixmaps(pixs.at(i),
+                             QStringList() << "*.png" << "*.jpg" << "*.xpm",
+                             QDir::Files|QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
         while (pixmaps.hasNext()) {
             QString found = pixmaps.next();
-            if (found.split("/").takeLast().split(".").takeFirst()==icon) { return found; }
+            QString iconName = QFileInfo(found).completeBaseName();
+            if (iconName == icon) { return found; }
         }
     }
     return result;
@@ -573,11 +589,13 @@ QPalette Common::darkTheme()
 QStringList Common::iconPaths(QString appPath)
 {
     QStringList iconsPath = QIcon::themeSearchPaths();
-    QString iconsHomeLocal = QString("%1/.local/share/icons").arg(QDir::homePath());
+    iconsPath << iconLocations(appPath);
+    /*QString iconsHomeLocal = QString("%1/.local/share/icons").arg(QDir::homePath());
     QString iconsHome = QString("%1/.icons").arg(QDir::homePath());
     if (QFile::exists(iconsHomeLocal) && !iconsPath.contains(iconsHomeLocal)) { iconsPath.prepend(iconsHomeLocal); }
     if (QFile::exists(iconsHome) && !iconsPath.contains(iconsHome)) { iconsPath.prepend(iconsHome); }
-    iconsPath << QString("%1/../share/icons").arg(appPath);
+    iconsPath << QString("%1/../share/icons").arg(appPath);*/
+    iconsPath.removeDuplicates();
     return  iconsPath;
 }
 
