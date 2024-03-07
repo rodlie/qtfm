@@ -513,6 +513,13 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
   // path in window title
   showPathInWindowTitle = settings->value("windowTitlePath", true).toBool();
   if (!showPathInWindowTitle) { setWindowTitle(APP_NAME); }
+  else {
+    QFileInfo name = modelList->fileInfo(modelList->index(startPath));
+    if (name.exists() && !name.isFile()) {
+        if (name.fileName().isEmpty()) { setWindowTitle(name.absolutePath()); }
+        else { setWindowTitle(curIndex.fileName()); }
+    }
+  }
 
   // 'copy of' filename
   copyXof = settings->value("copyXof", COPY_X_OF).toString();
