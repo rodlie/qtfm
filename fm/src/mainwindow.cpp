@@ -109,6 +109,8 @@ MainWindow::MainWindow()
         settings->setValue("clearCache", false);
     }
 
+    //qApp.setStyleSheet( settings->value("darkTheme") );
+
     // Dark theme?
     if (settings->value("darkTheme").toBool()) {
         qApp->setPalette(Common::darkTheme());
@@ -490,6 +492,9 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
 
   // Load terminal command
   term = settings->value("term", "xterm").toString();
+
+  QString font_size = "* {font-size:" + settings->value("font_size", "16pt").toString() + ";}";
+  qApp->setStyleSheet(font_size);
 
   // custom actions
 #ifndef Q_OS_MAC
