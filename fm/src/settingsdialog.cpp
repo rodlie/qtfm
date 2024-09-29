@@ -180,6 +180,7 @@ QWidget *SettingsDialog::createAppearanceSettings()
     // Appearance
     QGroupBox* grpAppear = new QGroupBox(tr("Appearance"), widget);
     QFormLayout* layoutAppear = new QFormLayout(grpAppear);
+    editFontSize = new QLineEdit(grpAppear);
 #ifndef Q_OS_MAC
     cmbIconTheme = new QComboBox(grpAppear);
 #endif
@@ -192,6 +193,7 @@ QWidget *SettingsDialog::createAppearanceSettings()
     showNewTabButton = new QCheckBox(grpAppear);
     showTerminalButton = new QCheckBox(grpAppear);
 
+    layoutAppear->addRow(tr("Font size: "), editFontSize);
 #ifndef Q_OS_MAC
     layoutAppear->addRow(tr("Fallback Icon theme:"), cmbIconTheme);
 #endif
@@ -692,6 +694,7 @@ void SettingsDialog::readSettings() {
   showHomeButton->setChecked(settingsPtr->value("home_button", true).toBool());
   showNewTabButton->setChecked(settingsPtr->value("newtab_button", false).toBool());
   showTerminalButton->setChecked(settingsPtr->value("terminal_button", true).toBool());
+  editFontSize->setText(settingsPtr->value("font_size", "16pt").toString());
 #if QT_VERSION >= 0x050000
 #ifdef DEPLOY
   checkDarkTheme->setChecked(settingsPtr->value("darkTheme", true).toBool());
@@ -912,6 +915,8 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("term", editTerm->text());
   settingsPtr->setValue("copyXof", editCopyX->text());
   settingsPtr->setValue("copyXofTS", editCopyTS->text());
+
+  settingsPtr->setValue("font_size", editFontSize->text());
 
   settingsPtr->setValue("dad", comboDAD->currentIndex());
   settingsPtr->setValue("dad_alt", comboDADalt->currentIndex());
