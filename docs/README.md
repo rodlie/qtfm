@@ -30,4 +30,4 @@ Qt File Manager for Linux, FreeBSD, NetBSD, OpenBSD and macOS.
  * [Issues](https://github.com/rodlie/qtfm/issues)
  
 ## Packages
-[![Packaging status](https://repology.org/badge/vertical-allrepos/qtfm.svg)](https://repology.org/metapackage/qtfm)
+[![Packaging status](https://repology.org/badge/vertical-allrepos/qtfm.svg)](https://repology.org/project/qtfm)
