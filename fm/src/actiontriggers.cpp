@@ -421,11 +421,14 @@ void MainWindow::cutFile() {
   modelList->addCutItems(fileList);
 
   // Save a temp file to allow pasting in a different instance
-  QFile tempFile(QDir::tempPath() + QString("/%1.temp").arg(APP));
-  tempFile.open(QIODevice::WriteOnly);
-  QDataStream out(&tempFile);
-  out << fileList;
-  tempFile.close();
+  const QString clipboardFile = Common::getTempClipboardFile();
+  if (!clipboardFile.isEmpty()) {
+      QFile tempFile(clipboardFile);
+      tempFile.open(QIODevice::WriteOnly);
+      QDataStream out(&tempFile);
+      out << fileList;
+      tempFile.close();
+  }
 
   QApplication::clipboard()->setMimeData(modelView->mimeData(selList));
 

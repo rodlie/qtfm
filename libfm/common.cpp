@@ -679,3 +679,21 @@ QString Common::hasThumbnail(const QString &filename)
     }
     return QString();
 }
+
+QString Common::getTempPath()
+{
+    const QString path = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    qDebug() << "Temp folder" << path;
+    QDir dir(path);
+    if (!dir.exists()) {
+        if (!dir.mkpath(path)) { return QString(); }
+    }
+    return path;
+}
+
+QString Common::getTempClipboardFile()
+{
+    const QString path = getTempPath();
+    if (path.isEmpty()) { return QString(); }
+    return QString("%1/clipboard.tmp").arg(path);
+}

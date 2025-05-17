@@ -104,6 +104,8 @@ public:
     static QString getXdgCacheHome();
     static QString getThumbnailHash(const QString &filename);
     static QString hasThumbnail(const QString &filename);
+    static QString getTempPath();
+    static QString getTempClipboardFile();
 };
 
 #endif // COMMON_H

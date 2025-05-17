@@ -1480,6 +1480,7 @@ void myModel::addCutItems(QStringList files)
 void myModel::clearCutItems()
 {
     cutItems.clear();
-    QFile(QDir::tempPath() + QString("/%1.temp").arg(APP)).remove();
+    QFile temp(Common::getTempClipboardFile());
+    if (temp.exists()) { temp.remove(); }
 }
 

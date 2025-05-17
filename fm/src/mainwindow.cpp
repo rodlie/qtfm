@@ -958,7 +958,7 @@ void MainWindow::pasteClipboard() {
   else { newPath = pathEdit->itemText(0); }
 
   // Check list of files that are to be cut
-  QFile tempFile(QDir::tempPath() + "/" + APP + ".temp");
+  QFile tempFile(Common::getTempClipboardFile());
   if (tempFile.exists()) {
     tempFile.open(QIODevice::ReadOnly);
     QDataStream out(&tempFile);
