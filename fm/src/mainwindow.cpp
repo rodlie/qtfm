@@ -786,7 +786,8 @@ void MainWindow::listSelectionChanged(const QItemSelection selected, const QItem
 
         statusName->setText(name + "   ");
         statusSize->setText(QString("%1   ").arg(total));
-        statusDate->setText(QString("%1").arg(file.lastModified().toString(Qt::SystemLocaleShortDate)));
+        statusDate->setText(QString("%1").arg(QLocale::system().toString(file.lastModified(),
+                                                                         QLocale::FormatType::ShortFormat)));
     }
     else {
         statusName->setText(total + "   ");

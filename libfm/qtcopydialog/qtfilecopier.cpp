@@ -511,7 +511,7 @@ struct FollowLinksNode : public ChainNode {
         CopyRequest &r = request();
         QFileInfo fis(r.source);
         if (fis.isSymLink() && !(r.copyFlags & QtFileCopier::FollowLinks)) {
-            QFileInfo fil(fis.readLink());
+            QFileInfo fil(fis.symLinkTarget());
             QString linkName = fil.filePath();
 #if defined(Q_OS_WIN32)
 	    linkName = fil.absoluteFilePath();

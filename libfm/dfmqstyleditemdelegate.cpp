@@ -35,5 +35,5 @@ void DfmQStyledItemDelegate::paint(QPainter* painter,
 int DfmQStyledItemDelegate::nameColumnWidth(const QString& name, const QStyleOptionViewItem& option)
 {
     QFontMetrics fontMetrics(option.font);
-    return option.decorationSize.width() + fontMetrics.width(name) + 16;
+    return option.decorationSize.width() + fontMetrics.horizontalAdvance(name) + 16;
 }

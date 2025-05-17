@@ -54,6 +54,7 @@
 #include <QStyle>
 #include <QEvent>
 #include <QDebug>
+#include <QElapsedTimer>
 
 #include "qtfilecopier.h"
 #include "ui_qtcopydialog.h"
@@ -217,7 +218,7 @@ public:
     QtFileCopier *fileCopier;
     bool autoClose;
     QTimer *showTimer;
-    QTime startTime;
+    QElapsedTimer startTime;
 
     QMap<int, Request> requests;
     int currentFile;
