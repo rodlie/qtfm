@@ -350,7 +350,8 @@ QStringList Common::getPixmaps(QString appPath)
     QStringList result;
     QStringList pixs = pixmapLocations(appPath);
     for (int i=0;i<pixs.size();++i) {
-        QDir pixmaps(pixs.at(i), "",  nullptr, QDir::Files | QDir::NoDotAndDotDot);
+        QDir pixmaps(pixs.at(i), "", QDir::NoSort,
+                     static_cast<QDir::Filters>(QDir::Files | QDir::NoDotAndDotDot));
         for (int i=0;i<pixmaps.entryList().size();++i) {
             result << QString("%1/%2").arg(pixmaps.absolutePath()).arg(pixmaps.entryList().at(i));
         }

@@ -49,7 +49,7 @@ void MainWindow::executeFile(QModelIndex index, bool run) {
         filePath.append("\"");
     }
     qDebug() << "RUN" << filePath;
-    QProcess::startDetached(filePath);
+    QProcess::startDetached(filePath, QStringList());
 #endif
   } else {
     mimeUtils->openInApp(filePath, ""/*term*/);

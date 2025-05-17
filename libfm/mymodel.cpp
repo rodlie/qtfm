@@ -1467,7 +1467,7 @@ QVariant myModel::headerData(int section, Qt::Orientation orientation, int role)
 //---------------------------------------------------------------------------------------
 Qt::ItemFlags myModel::flags(const QModelIndex &index) const
 {
-    if(!index.isValid()) return nullptr;
+    if (!index.isValid()) { return Qt::NoItemFlags; }
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 

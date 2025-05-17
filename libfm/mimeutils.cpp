@@ -149,20 +149,11 @@ void MimeUtils::openInApp(QString exe, const QFileInfo &file,
   qDebug() << "qprocess start detached" << name << args;
 
   // Start application
- /* QProcess *myProcess = new QProcess(processOwner);
-  myProcess->startDetached(name, QStringList() << args);
-  myProcess->waitForFinished(1000);
-  //myProcess->terminate();*/
-  //Q_UNUSED(processOwner)
-  QString cmd = name;
-  if (termCmd.isEmpty()) {
-    cmd.append(" ");
-    cmd.append(args);
-  } else {
-    cmd = QString("%1 -e \"%2 %3\"").arg(termCmd).arg(name).arg(args);
-  }
-  qDebug() << "running:" << cmd;
-  QProcess::startDetached(cmd);
+  const bool terminal = !termCmd.isEmpty();
+  if (terminal) { args = QString("%1 %2").arg(name, args); }
+  QProcess::startDetached(terminal ? termCmd : name,
+                          terminal ? QStringList() << "-e" << args :
+                                     QStringList() << args);
 }
 
 void MimeUtils::openFilesInApp(QString exe, const QStringList &files, QString termCmd)
@@ -182,15 +173,11 @@ void MimeUtils::openFilesInApp(QString exe, const QStringList &files, QString te
     }
 
     // Start application
-    QString cmd = name;
-    if (termCmd.isEmpty()) {
-      cmd.append(" ");
-      cmd.append(args);
-    } else {
-      cmd = QString("%1 -e \"%2 %3\"").arg(termCmd).arg(name).arg(args);
-    }
-    qDebug() << "running:" << cmd;
-    QProcess::startDetached(cmd);
+    const bool terminal = !termCmd.isEmpty();
+    if (terminal) { args = QString("%1 %2").arg(name, args); }
+    QProcess::startDetached(terminal ? termCmd : name,
+                            terminal ? QStringList() << "-e" << args :
+                                       QStringList() << args);
 }
 //---------------------------------------------------------------------------
 

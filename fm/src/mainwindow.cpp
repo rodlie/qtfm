@@ -889,7 +889,7 @@ void MainWindow::newWindow()
         settings->setValue("clearCache", false); // we don't want the new window to clear our existing cache
     }
     writeSettings();
-    QProcess::startDetached(qApp->applicationFilePath());
+    QProcess::startDetached(qApp->applicationFilePath(), QStringList());
 }
 
 
