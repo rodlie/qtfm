@@ -790,7 +790,6 @@ void MainWindow::listSelectionChanged(const QItemSelection selected, const QItem
 
         statusName->setText(name + "   ");
         statusSize->setText(QString("%1   ").arg(total));
-        
         QLocale locale;
         statusDate->setText(locale.toString(file.lastModified(), QLocale::ShortFormat));
     }
