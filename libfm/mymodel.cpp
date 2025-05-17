@@ -851,7 +851,6 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
 
     AVCodecContext  *pCodecCtx;
     AVFormatContext *pFormatCtx = avformat_alloc_context();
-    AVCodec * pCodec;
     AVFrame *pFrame, *pFrameRGB;
 
     qDebug() << "open media file";
@@ -886,7 +885,7 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
     if (videoStream == -1) { return result; }
 
     qDebug() << "find decoder";
-    pCodec =avcodec_find_decoder(pFormatCtx->streams[videoStream]->codecpar->codec_id);
+    const auto pCodec = avcodec_find_decoder(pFormatCtx->streams[videoStream]->codecpar->codec_id);
     pCodecCtx = avcodec_alloc_context3(Q_NULLPTR);
     if (pCodec == Q_NULLPTR || pCodecCtx == Q_NULLPTR) { return result; }
     if (avcodec_parameters_to_context(pCodecCtx,
