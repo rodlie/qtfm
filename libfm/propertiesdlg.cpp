@@ -24,6 +24,8 @@
 #include <QPushButton>
 
 #include <QtConcurrent/QtConcurrent>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 #include "common.h"
 #include "propertiesdlg.h"
@@ -215,8 +217,8 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
 
     permissionsNumeric->setText(permString);
 
-    QRegExp input("^[0-7]*$");
-    QValidator *permNumericValidator = new QRegExpValidator(input, this);
+    QRegularExpression input("^[0-7]*$");
+    QValidator *permNumericValidator = new QRegularExpressionValidator(input, this);
     permissionsNumeric->setValidator(permNumericValidator);
     permissionsNumeric->setMaxLength(3);
 

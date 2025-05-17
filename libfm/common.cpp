@@ -12,7 +12,7 @@
 #include <QDebug>
 #include <QIcon>
 #include <QDirIterator>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QTextStream>
 #include <QMap>
 #include <QMapIterator>
@@ -166,7 +166,8 @@ QString Common::findIconInDir(QString appPath,
         QString iconName = QFileInfo(found).completeBaseName();
         if (iconName == icon) {
             for (int i=0;i<iconSizes.size();++i) {
-                QString hasFile = found.replace(QRegExp("/[.*]x[.*]/"),QString("/%1x%1/").arg(iconSizes.at(i)));
+                QString hasFile = found.replace(QRegularExpression("/\\d+x\\d+/"),
+                                                QString("/%1x%1/").arg(iconSizes.at(i)));
                 if (QFile::exists(hasFile)) { return hasFile; }
             }
             return found;
@@ -182,7 +183,8 @@ QString Common::findIconInDir(QString appPath,
             QString iconName = QFileInfo(found).completeBaseName();
             if (iconName == icon) {
                 for (int i=0;i<iconSizes.size();++i) {
-                    QString hasFile = found.replace(QRegExp("/[.*]x[.*]/"),QString("/%1x%1/").arg(iconSizes.at(i)));
+                    QString hasFile = found.replace(QRegularExpression("/\\d+x\\d+/"),
+                                                    QString("/%1x%1/").arg(iconSizes.at(i)));
                     if (QFile::exists(hasFile)) { return hasFile; }
                 }
                 return found;
