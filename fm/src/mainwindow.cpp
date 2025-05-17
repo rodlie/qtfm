@@ -629,7 +629,7 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
         setWindowTitle(APP_NAME);
     }
 
-    if (tree->hasFocus() && QApplication::mouseButtons() == Qt::MidButton) {
+    if (tree->hasFocus() && QApplication::mouseButtons() == Qt::MiddleButton) {
         listItemPressed(modelView->mapFromSource(modelList->index(name.filePath())));
         tabs->setCurrentIndex(tabs->count() - 1);
         if (currentView == 2) { detailTree->setFocus(Qt::TabFocusReason); }
@@ -816,7 +816,7 @@ void MainWindow::listItemPressed(QModelIndex current)
     //middle-click -> open new tab
     //ctrl+middle-click -> open new instance
 
-    if (QApplication::mouseButtons() == Qt::MidButton) {
+    if (QApplication::mouseButtons() == Qt::MiddleButton) {
         if(modelList->isDir(modelView->mapToSource(current))) {
             if (QApplication::keyboardModifiers() == Qt::ControlModifier) { openFile(); }
             else { addTab(modelList->filePath(modelView->mapToSource(current))); }
@@ -982,7 +982,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
   QList<QUrl> files = data->urls();
 
   // get original path
-  QStringList getOldPath = files.at(0).toLocalFile().split("/", QString::SkipEmptyParts);
+  QStringList getOldPath = files.at(0).toLocalFile().split("/", Qt::SkipEmptyParts);
   QString oldPath;
   for (int i=0;i<getOldPath.size()-1;++i) { oldPath.append(QString("/%1").arg(getOldPath.at(i))); }
   QString oldDevice = Common::getDeviceForDir(oldPath);

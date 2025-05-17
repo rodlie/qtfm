@@ -89,7 +89,7 @@ void MainWindow::bookmarkPressed(QModelIndex current)
         }
     }
 #endif
-    if (QApplication::mouseButtons() == Qt::MidButton) {
+    if (QApplication::mouseButtons() == Qt::MiddleButton) {
         tabs->setCurrentIndex(addTab(current.data(BOOKMARK_PATH).toString()));
     }
 }

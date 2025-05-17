@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.12)
-include(GNUInstallDirs)
 
 project(qtfm VERSION 6.3.0)
 
@@ -55,9 +54,9 @@ endif()
 # qt
 find_package(QT NAMES Qt5 COMPONENTS Core REQUIRED)
 if(ENABLE_DBUS)
-    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
+    find_package(Qt${QT_VERSION_MAJOR} 5.15 COMPONENTS DBus REQUIRED)
 endif()
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Widgets Concurrent REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} 5.15 COMPONENTS Gui Widgets Concurrent REQUIRED)
 
 # inotify
 if(NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
@@ -197,6 +196,8 @@ if(ENABLE_DBUS AND ENABLE_TRAY)
         QtFM
     )
 endif()
+
+include(GNUInstallDirs)
 
 # docs
 install(

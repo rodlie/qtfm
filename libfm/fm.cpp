@@ -91,7 +91,7 @@ void FM::setPath(QString path)
 
     if (path != QString("/")) { addHistory(path); }
     emit newPath(path);
-    emit newWindowTitle(path==QString("/")?path:path.split("/", QString::SkipEmptyParts).takeLast());
+    emit newWindowTitle(path==QString("/")?path:path.split("/", Qt::SkipEmptyParts).takeLast());
     updateGrid();
 
     //dirLoaded();

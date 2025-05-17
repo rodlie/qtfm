@@ -148,7 +148,7 @@ const QString uDisks2::getMountPointOptical(QString path)
     QVector<QStringList> result;
     for (int i=0;i<lines.size();++i) {
         QString line = lines.at(i);
-        QStringList info = line.split(" ", QString::SkipEmptyParts);
+        QStringList info = line.split(" ", Qt::SkipEmptyParts);
         if (info.size()>=2) {
             QString dev = info.at(0);
             QString mnt = info.at(1);

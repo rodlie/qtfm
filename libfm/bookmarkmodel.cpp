@@ -118,7 +118,7 @@ bool bookmarkmodel::dropMimeData(const QMimeData * data,
         QFileInfo file(path.toLocalFile());
         // get original path
         QStringList getOldPath = file.absoluteFilePath().split("/",
-                                                               QString::SkipEmptyParts);
+                                                               Qt::SkipEmptyParts);
         QString oldPath;
         for (int i=0;i<getOldPath.size()-1;++i) {
             oldPath.append(QString("/%1").arg(getOldPath.at(i)));

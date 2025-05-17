@@ -85,7 +85,7 @@ void FileUtils::recurseFolder(const QString &path, const QString &parent,
 qint64 FileUtils::totalSize(const QList<QUrl> &files) {
   qint64 total = 1;
   foreach (QUrl url, files) {
-    QFileInfo file = url.path();
+    QFileInfo file(url.path());
     if (file.isFile()) total += file.size();
     else {
       QDirIterator it(url.path(), QDir::AllEntries | QDir::System

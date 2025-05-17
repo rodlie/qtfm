@@ -73,12 +73,11 @@ void IconViewDelegate::paint(QPainter *painter,
         style->drawControl(QStyle::CE_ItemViewItem,&opt,painter);*/
 
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->setRenderHint(QPainter::HighQualityAntialiasing);
 
     if (isSelected && !isEditing) {
         QPainterPath path;
         QRect frame(item.left(),item.top()+4, item.width(), item.height()-4);
-        path.addRoundRect(frame, 15, 15);
+        path.addRoundedRect(frame, 15, 15);
         //  path.addRect(frame);
         painter->setOpacity(0.7);
         painter->fillPath(path, option.palette.highlight());

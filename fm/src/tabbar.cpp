@@ -34,7 +34,7 @@ tabBar::tabBar(QHash<QString,QIcon> * icons)
 void tabBar::mousePressEvent(QMouseEvent * event)
 {
     //middle-click to close tab
-    if(event->button() == Qt::MidButton)
+    if(event->button() == Qt::MiddleButton)
     {
         int tab = tabAt(event->pos());
         if(tab != -1)
@@ -86,9 +86,9 @@ void tabBar::dropEvent(QDropEvent *event)
             return;
         }
 
-        if(event->proposedAction() == 2)                             //cut, holding ctrl to copy is action 1
-            foreach(QUrl item, paths)
-                cutList.append(item.path());
+        if (event->proposedAction() == 2) { //cut, holding ctrl to copy is action 1
+            foreach (QUrl item, paths) { cutList.append(item.path()); }
+        }
 
         emit dragDropTab(event->mimeData(), tabData(currentIndex()).toString(), cutList);
     }
