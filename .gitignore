@@ -10,3 +10,4 @@ Makefile
 lib*.a
 qtfm.app/
 qtfm-tray.app/
+*.user
