@@ -1161,7 +1161,8 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
         data = item->mMimeType;
         break;
       case 3 :
-        data = item->fileInfo().lastModified().toString(Qt::LocalDate);
+        data = QLocale::system().toString(item->fileInfo().lastModified(),
+                                          QLocale::FormatType::ShortFormat);
         break;
       case 4 : {
         if (item->mPermissions.isNull()) {
