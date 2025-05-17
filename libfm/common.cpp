@@ -166,9 +166,8 @@ QString Common::findIconInDir(QString appPath,
         QString iconName = QFileInfo(found).completeBaseName();
         if (iconName == icon) {
             for (int i=0;i<iconSizes.size();++i) {
-                static QRegularExpression re("/\\d+x\\d+/"); // match e.g. "/16x16/"
-                QString hasFile = found;
-                hasFile.replace(re, QString("/%1x%1/").arg(iconSizes.at(i)));                
+                static QRegularExpression re("/\\d+x\\d+/");
+                QString hasFile = found.replace(re, QString("/%1x%1/").arg(iconSizes.at(i)));                
                 if (QFile::exists(hasFile)) { return hasFile; }
             }
             return found;
@@ -184,8 +183,8 @@ QString Common::findIconInDir(QString appPath,
             QString iconName = QFileInfo(found).completeBaseName();
             if (iconName == icon) {
                 for (int i=0;i<iconSizes.size();++i) {
-                    static QRegularExpression re("/\\d+x\\d+/"); // match e.g. "/16x16/"
-                    QString hasFile = found;
+                    static QRegularExpression re("/\\d+x\\d+/");
+                    QString hasFile = found.replace(re, QString("/%1x%1/").arg(iconSizes.at(i)));
                     if (QFile::exists(hasFile)) { return hasFile; }
                 }
                 return found;
