@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.12)
 include(GNUInstallDirs)
 
 project(qtfm VERSION 6.3.0)
-#set(PROJECT_VERSION_EXTRA _alpha)
 
 add_definitions(-DAPP="${PROJECT_NAME}")
 add_definitions(-DAPP_NAME="QtFM")
@@ -23,7 +22,7 @@ add_compile_options(-Wall -Wextra)
 
 # configure
 set(ENABLE_MAGICK true CACHE BOOL "Enable support for ImageMagick")
-set(ENABLE_FFMPEG true CACHE BOOL "Enable support for FFmpeg v3")
+set(ENABLE_FFMPEG true CACHE BOOL "Enable support for FFmpeg")
 set(ENABLE_DBUS true CACHE BOOL "Enable support for D-Bus")
 set(ENABLE_UDISKS true CACHE BOOL "Enable support for udisks")
 set(ENABLE_TRAY true CACHE BOOL "Enable support for qtfm-tray")
@@ -54,13 +53,11 @@ if(NOT ENABLE_UDISKS AND ENABLE_DBUS)
 endif()
 
 # qt
-find_package(Qt5Core REQUIRED)
+find_package(QT NAMES Qt5 COMPONENTS Core REQUIRED)
 if(ENABLE_DBUS)
-    find_package(Qt5DBus REQUIRED)
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
 endif()
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Concurrent REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Widgets Concurrent REQUIRED)
 
 # inotify
 if(NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
@@ -77,7 +74,7 @@ if(ENABLE_DBUS)
         libfm/service.h
         libfm/udisks2.cpp
     )
-    target_link_libraries(QtFMBus Qt5::DBus)
+    target_link_libraries(QtFMBus Qt${QT_VERSION_MAJOR}::DBus)
     target_include_directories(QtFMBus PRIVATE libfm)
 endif()
 add_library(
@@ -141,13 +138,13 @@ target_include_directories(QtFM PRIVATE libfm libfm/qtcopydialog ${NOTIFY_INCLUD
 
 target_link_libraries(
     QtFM
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Widgets
-    Qt5::Concurrent
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Concurrent
 )
 if(ENABLE_DBUS)
-    target_link_libraries(QtFM Qt5::DBus QtFMBus)
+    target_link_libraries(QtFM Qt${QT_VERSION_MAJOR}::DBus QtFMBus)
 endif()
 if(NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
     target_link_libraries(QtFM ${NOTIFY_LIBRARIES})
@@ -170,15 +167,15 @@ add_executable(
 )
 target_link_libraries(
     ${PROJECT_NAME}
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Widgets
-    Qt5::Concurrent
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Concurrent
     QtFM
 )
 target_include_directories(${PROJECT_NAME} PRIVATE fm/src libfm libfm/qtcopydialog)
 if(ENABLE_DBUS)
-    target_link_libraries(${PROJECT_NAME} Qt5::DBus)
+    target_link_libraries(${PROJECT_NAME} Qt${QT_VERSION_MAJOR}::DBus)
 endif()
 if(NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
     target_link_libraries(${PROJECT_NAME} ${NOTIFY_LIBRARIES})
@@ -191,7 +188,14 @@ endif()
 if(ENABLE_DBUS AND ENABLE_TRAY)
     add_executable(${PROJECT_NAME}-tray tray/main.cpp tray/systray.cpp tray/tray.qrc)
     target_include_directories(${PROJECT_NAME}-tray PRIVATE tray libfm)
-    target_link_libraries(${PROJECT_NAME}-tray Qt5::Core Qt5::Gui Qt5::Widgets Qt5::DBus QtFM)
+    target_link_libraries(
+        ${PROJECT_NAME}-tray
+        Qt${QT_VERSION_MAJOR}::Core
+        Qt${QT_VERSION_MAJOR}::Gui
+        Qt${QT_VERSION_MAJOR}::Widgets
+        Qt${QT_VERSION_MAJOR}::DBus
+        QtFM
+    )
 endif()
 
 # docs
