@@ -87,14 +87,14 @@ void CustomActionsManager::readActions() {
     foreach (QString type, types) {
       QStringList children(temp.at(1).split(" / "));
       if (children.count() > 1) {
-        QMenu* parent = Q_NULLPTR;
+        QMenu* parent = nullptr;
         act->setText(children.at(1));
         foreach (QMenu *subMenu, menus->values(type)) {
           if (subMenu->title() == children.at(0)) {
             parent = subMenu;
           }
         }
-        if (parent == Q_NULLPTR) {
+        if (parent == nullptr) {
           parent = new QMenu(children.at(0));
           menus->insert(type, parent);
         }
@@ -186,7 +186,7 @@ void CustomActionsManager::execAction(const QString &cmd, const QString &path) {
 void CustomActionsManager::onActionError(QProcess::ProcessError error) {
     Q_UNUSED(error)
   QProcess* process = qobject_cast<QProcess*>(sender());
-  QMessageBox::warning(Q_NULLPTR, "Error", process->errorString());
+  QMessageBox::warning(nullptr, "Error", process->errorString());
   onActionFinished(0);
 }
 //---------------------------------------------------------------------------
@@ -202,11 +202,11 @@ void CustomActionsManager::onActionFinished(int ret) {
   if (process->processEnvironment().contains(APP)) {
     QString output = process->readAllStandardError();
     if (!output.isEmpty()) {
-      QMessageBox::warning(Q_NULLPTR, tr("Error - Custom action"), output);
+      QMessageBox::warning(nullptr, tr("Error - Custom action"), output);
     }
     output = process->readAllStandardOutput();
     if (!output.isEmpty()) {
-      QMessageBox::information(Q_NULLPTR, tr("Output - Custom action"), output);
+      QMessageBox::information(nullptr, tr("Output - Custom action"), output);
     }
   }
 

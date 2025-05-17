@@ -175,7 +175,7 @@ bool bookmarkmodel::dropMimeData(const QMimeData * data,
         if (parent.column() == -1) {
             if (file.isDir()) this->addBookmark(file.fileName(),
                                                 file.filePath(),
-                                                Q_NULLPTR,
+                                                nullptr,
                                                 "");
             return false;
         } else {

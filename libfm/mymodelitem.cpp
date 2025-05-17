@@ -53,7 +53,7 @@ myModelItem::~myModelItem()
 //---------------------------------------------------------------------------------------
 myModelItem* myModelItem::childAt(int position)
 {
-    return mChildren.value(position, Q_NULLPTR);
+    return mChildren.value(position, nullptr);
 }
 
 //---------------------------------------------------------------------------------------
@@ -182,7 +182,7 @@ myModelItem* myModelItem::matchPath(const QStringList& path, int startIndex)
         }
     }
 
-    return Q_NULLPTR;
+    return nullptr;
 }
 
 //---------------------------------------------------------------------------------------

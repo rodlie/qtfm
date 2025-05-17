@@ -50,7 +50,7 @@ myModel::myModel(bool realMime, MimeUtils *mimeUtils, QObject *parent)
     : QAbstractItemModel(parent) {
 
 #ifdef WITH_MAGICK
-    Magick::InitializeMagick(Q_NULLPTR);
+    Magick::InitializeMagick(nullptr);
 #endif
 #ifdef WITH_FFMPEG
 #if (LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(58,9,100))
@@ -96,7 +96,7 @@ myModel::myModel(bool realMime, MimeUtils *mimeUtils, QObject *parent)
   }
 
   // Create root item
-  rootItem = new myModelItem(QFileInfo("/"), new myModelItem(QFileInfo(), Q_NULLPTR));
+  rootItem = new myModelItem(QFileInfo("/"), new myModelItem(QFileInfo(), nullptr));
   currentRootPath = "/";
   QDir root("/");
   QFileInfoList drives = root.entryInfoList( QDir::AllEntries | QDir::Files
@@ -392,8 +392,8 @@ bool myModel::setRootPath(const QString& path)
 
     myModelItem *item = rootItem->matchPath(path.split(SEPARATOR));
 
-    if (item == Q_NULLPTR) {
-        QMessageBox::warning(Q_NULLPTR, tr("No such directory"), tr("Directory requested does not exists."));
+    if (item == nullptr) {
+        QMessageBox::warning(nullptr, tr("No such directory"), tr("Directory requested does not exists."));
         return false;
     }
 
@@ -458,7 +458,7 @@ void myModel::fetchMore (const QModelIndex & parent)
 //---------------------------------------------------------------------------------------
 void myModel::populateItem(myModelItem *item)
 {
-    if (item == Q_NULLPTR) { return; }
+    if (item == nullptr) { return; }
     item->walked = 1;
 
     QDir dir(item->absoluteFilePath());
@@ -499,7 +499,7 @@ void myModel::refresh()
 void myModel::update()
 {
     myModelItem *item = rootItem->matchPath(currentRootPath.split(SEPARATOR));
-    if (item == Q_NULLPTR) { return; }
+    if (item == nullptr) { return; }
     foreach(myModelItem *child, item->children()) { child->refreshFileInfo(); }
 }
 
@@ -507,7 +507,7 @@ void myModel::update()
 void myModel::refreshItems()
 {
     myModelItem *item = rootItem->matchPath(currentRootPath.split(SEPARATOR));
-    if (item == Q_NULLPTR) { return; }
+    if (item == nullptr) { return; }
     qDebug() << "refresh items";
     item->clearAll();
     populateItem(item);
@@ -855,10 +855,10 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
 
     qDebug() << "open media file";
     if (avformat_open_input(&pFormatCtx,file.toUtf8().data(),
-                            Q_NULLPTR,
-                            Q_NULLPTR) != 0) { return result; }
+                            nullptr,
+                            nullptr) != 0) { return result; }
     if (avformat_find_stream_info(pFormatCtx,
-                                  Q_NULLPTR) < 0) { return result; }
+                                  nullptr) < 0) { return result; }
 
     av_dump_format(pFormatCtx, 0, file.toUtf8().data(), 0);
     int videoStream = -1;
@@ -886,14 +886,14 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
 
     qDebug() << "find decoder";
     const auto pCodec = avcodec_find_decoder(pFormatCtx->streams[videoStream]->codecpar->codec_id);
-    pCodecCtx = avcodec_alloc_context3(Q_NULLPTR);
-    if (pCodec == Q_NULLPTR || pCodecCtx == Q_NULLPTR) { return result; }
+    pCodecCtx = avcodec_alloc_context3(nullptr);
+    if (pCodec == nullptr || pCodecCtx == nullptr) { return result; }
     if (avcodec_parameters_to_context(pCodecCtx,
                                       pFormatCtx->streams[videoStream]->codecpar)<0)
     { return result; }
     if (avcodec_open2(pCodecCtx,
                      pCodec,
-                     Q_NULLPTR) < 0) { return result; }
+                     nullptr) < 0) { return result; }
 
     qDebug() << "check for embedded?" << getEmbedded;
     if (getEmbedded) {
@@ -1021,7 +1021,7 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
             if (frameFinished) {
                 qDebug() << "extract image from frame" << currentFrame;
                 struct SwsContext * img_convert_ctx;
-                img_convert_ctx = sws_getCachedContext(Q_NULLPTR,
+                img_convert_ctx = sws_getCachedContext(nullptr,
                                                        pCodecCtx->width,
                                                        pCodecCtx->height,
                                                        pCodecCtx->pix_fmt,
@@ -1029,9 +1029,9 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
                                                        pCodecCtx->height,
                                                        AV_PIX_FMT_BGR24,
                                                        SWS_BICUBIC,
-                                                       Q_NULLPTR,
-                                                       Q_NULLPTR,
-                                                       Q_NULLPTR);
+                                                       nullptr,
+                                                       nullptr,
+                                                       nullptr);
                 sws_scale(img_convert_ctx,
                           ((AVFrame*)pFrame)->data,
                           ((AVFrame*)pFrame)->linesize,
@@ -1214,7 +1214,7 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
  */
 QVariant myModel::findIcon(myModelItem *item) const {
 
-  if (item == Q_NULLPTR) { return  QIcon(); }
+  if (item == nullptr) { return  QIcon(); }
 
   //qDebug() << "findicon" << item->absoluteFilePath();
   // If type of file is directory, return icon of directory
@@ -1318,7 +1318,7 @@ QVariant myModel::findIcon(myModelItem *item) const {
  */
 QVariant myModel::findMimeIcon(myModelItem *item) const {
 
-  if (item == Q_NULLPTR) { return QIcon(); }
+  if (item == nullptr) { return QIcon(); }
 
   // Retrieve mime and search cache for it
   QString mime = mimeUtilsPtr->getMimeType(item->absoluteFilePath());
@@ -1466,7 +1466,7 @@ QVariant myModel::headerData(int section, Qt::Orientation orientation, int role)
 //---------------------------------------------------------------------------------------
 Qt::ItemFlags myModel::flags(const QModelIndex &index) const
 {
-    if(!index.isValid()) return Q_NULLPTR;
+    if(!index.isValid()) return nullptr;
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 

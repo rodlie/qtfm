@@ -875,7 +875,7 @@ void SettingsDialog::loadMimes(int section) {
     // Retrieve categories
     QIcon icon = defaultIcon;
     QString categoryName = splitMime.first();
-    QTreeWidgetItem* category = categories.value(categoryName, Q_NULLPTR);
+    QTreeWidgetItem* category = categories.value(categoryName, nullptr);
     if (!category) {
       category = new QTreeWidgetItem(mimesWidget);
       category->setText(0, categoryName);

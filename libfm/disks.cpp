@@ -121,7 +121,7 @@ void Device::handlePropertiesChanged(const QString &interfaceType, const QMap<QS
 
 Disks::Disks(QObject *parent)
     : QObject(parent)
-    , dbus(Q_NULLPTR)
+    , dbus(nullptr)
 {
     setupDBus();
     timer.setInterval(60000);
@@ -135,7 +135,7 @@ void Disks::setupDBus()
     if (system.isConnected()) {
         system.connect(DBUS_SERVICE, DBUS_PATH, DBUS_OBJMANAGER, DBUS_DEVICE_ADDED, this, SLOT(deviceAdded(const QDBusObjectPath&)));
         system.connect(DBUS_SERVICE, DBUS_PATH, DBUS_OBJMANAGER, DBUS_DEVICE_REMOVED, this, SLOT(deviceRemoved(const QDBusObjectPath&)));
-        if (dbus==Q_NULLPTR) { dbus = new QDBusInterface(DBUS_SERVICE, DBUS_PATH, DBUS_OBJMANAGER, system); } // only used to verify the UDisks is running
+        if (dbus==nullptr) { dbus = new QDBusInterface(DBUS_SERVICE, DBUS_PATH, DBUS_OBJMANAGER, system); } // only used to verify the UDisks is running
         scanDevices();
     }
 }

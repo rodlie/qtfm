@@ -13,14 +13,14 @@ FM::FM(MimeUtils *mimeUtils,
        QString startPath,
        QWidget *parent) : QWidget(parent)
   , mimeUtilsPtr(mimeUtils)
-  , modelList(Q_NULLPTR)
-  , list(Q_NULLPTR)
-  , modelView(Q_NULLPTR)
-  , modelViewDelegate(Q_NULLPTR)
-  , listSelectionModel(Q_NULLPTR)
+  , modelList(nullptr)
+  , list(nullptr)
+  , modelView(nullptr)
+  , modelViewDelegate(nullptr)
+  , listSelectionModel(nullptr)
   , zoom(48)
-  , history(Q_NULLPTR)
-  , customComplete(Q_NULLPTR)
+  , history(nullptr)
+  , customComplete(nullptr)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setSpacing(0);
