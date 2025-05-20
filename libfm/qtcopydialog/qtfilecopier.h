@@ -111,18 +111,18 @@ public:
     Q_DECLARE_FLAGS(CopyFlags, CopyFlag)
 
     int copy(const QString &sourceFile, const QString &destinationPath,
-                CopyFlags flags = 0);
+                CopyFlags flags = {});
     QList<int> copyFiles(const QStringList &sourceFiles, const QString &destinationDir,
-                CopyFlags flags = 0);
+                CopyFlags flags = {});
     QList<int> copyDirectory(const QString &sourceDir, const QString &destinationDir,
-                CopyFlags flags = 0);
+                CopyFlags flags = {});
 
     int move(const QString &sourceFile, const QString &destinationPath,
-                CopyFlags flags = 0);
+                CopyFlags flags = {});
     QList<int> moveFiles(const QStringList &sourceFiles, const QString &destinationDir,
-                CopyFlags flags = 0);
+                CopyFlags flags = {});
     QList<int> moveDirectory(const QString &sourceDir, const QString &destinationDir,
-                CopyFlags flags = 0);
+                CopyFlags flags = {});
 
     QList<int> pendingRequests() const;
     QString sourceFilePath(int id) const;

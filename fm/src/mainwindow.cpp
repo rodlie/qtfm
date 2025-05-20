@@ -583,7 +583,7 @@ void MainWindow::firstRunCustomActions(bool isFirstRun)
 
     QVector<QStringList> defActions = Common::getDefaultActions();
     for (int i=0;i<defActions.size();++i) {
-        settings->setValue(QString(i), defActions.at(i));
+        settings->setValue(QString::number(i), defActions.at(i));
     }
 
     settings->endGroup();
@@ -710,7 +710,11 @@ void MainWindow::dirLoaded(bool thumbs)
     statusSize->setText(QString("%1 items").arg(items.count()));
     statusDate->setText(QString("%1").arg(total));
 
-    if (thumbsAct->isChecked() && thumbs) { QtConcurrent::run(modelList,&myModel::loadThumbs,items); }
+    if (thumbsAct->isChecked() && thumbs) {
+        QtConcurrent::run([this, items]() {
+            modelList->loadThumbs(items);
+        });
+    }
     updateGrid();
 }
 
@@ -755,7 +759,7 @@ void MainWindow::listSelectionChanged(const QItemSelection selected, const QItem
     statusName->clear();
 
     if(items.count() == 0) {
-        curIndex = pathEdit->itemText(0);
+        curIndex = QFileInfo(pathEdit->itemText(0));
         return;
     }
 
@@ -786,8 +790,9 @@ void MainWindow::listSelectionChanged(const QItemSelection selected, const QItem
 
         statusName->setText(name + "   ");
         statusSize->setText(QString("%1   ").arg(total));
-        statusDate->setText(QString("%1").arg(QLocale::system().toString(file.lastModified(),
-                                                                         QLocale::FormatType::ShortFormat)));
+        
+        QLocale locale;
+        statusDate->setText(locale.toString(file.lastModified(), QLocale::ShortFormat));
     }
     else {
         statusName->setText(total + "   ");
@@ -1257,14 +1262,14 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
     if (listSelectionModel->hasSelection()) {
 
       // Get index of source model
-      curIndex = modelList->filePath(modelView->mapToSource(listSelectionModel->currentIndex()));
+      curIndex = QFileInfo(modelList->filePath(modelView->mapToSource(listSelectionModel->currentIndex())));
 
       // File
       if (!curIndex.isDir()) {
         QString type = modelList->getMimeType(modelList->index(curIndex.filePath()));
 
         // Add custom actions to the list of actions
-        QHashIterator<QString, QAction*> i(*customActManager->getActions());
+        QMultiHashIterator<QString, QAction*> i(*customActManager->getActions());
         while (i.hasNext()) {
           i.next();
           qDebug() << "custom action" << i.key() << i.key() << i.value();
@@ -1300,14 +1305,23 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
           popup->addSeparator();
         }
 
-        // Add menus
         // TODO: ???
-        QHashIterator<QString, QMenu*> m(*customActManager->getMenus());
-        while (m.hasNext()) {
-          m.next();
-          if (curIndex.completeSuffix().endsWith(m.key())) { popup->addMenu(m.value()); }
+        QMultiHash<QString, QMenu*>* menus = customActManager->getMenus();
+        if (!menus) {
+            return;
         }
-
+        
+        QMultiHashIterator<QString, QMenu*> m(*menus);
+        while (m.hasNext()) {
+            m.next();
+            QString filePath = curIndex.fileName();
+            if (filePath.endsWith(m.key())) {
+                if (m.value() != nullptr) {
+                    popup->addMenu(m.value());
+                }
+            }
+        }
+        
         // Add cut/copy/paste/rename actions
         popup->addSeparator();
         popup->addAction(cutAct);
@@ -1411,7 +1425,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
     if (focusWidget() == bookmarksList) {
       listSelectionModel->clearSelection();
       if (bookmarksList->indexAt(bookmarksList->mapFromGlobal(event->globalPos())).isValid()) {
-        curIndex = bookmarksList->currentIndex().data(BOOKMARK_PATH).toString();
+        curIndex = QFileInfo(bookmarksList->currentIndex().data(BOOKMARK_PATH).toString());
         isMedia = bookmarksList->currentIndex().data(MEDIA_MODEL).toBool();
         if (!isMedia) {
             popup->addAction(delBookmarkAct);
@@ -1439,7 +1453,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       popup->addSeparator();
     } else {
       // tree
-      curIndex = modelList->filePath(modelTree->mapToSource(tree->currentIndex()));
+      curIndex = QFileInfo(modelList->filePath(modelTree->mapToSource(tree->currentIndex())));
       if (curIndex.isFile()) { isTreeFile = true;}
 
       bookmarksList->clearSelection();

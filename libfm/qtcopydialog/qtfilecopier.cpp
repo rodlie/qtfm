@@ -1141,7 +1141,9 @@ QMap<int, CopyRequest> QtFileCopierPrivate::copyDirectoryContents(const QString 
             QFileInfo newfid(destDir.filePath(dirName));
             QMap<int, CopyRequest> childDir = copyDirectoryContents(newfis.filePath(),
                             newfid.filePath(), flags, move);
-            resultList.unite(childDir);
+            for (const auto &key : childDir.keys()) {
+                resultList.insert(key, childDir.value(key));
+            }
             resultList[curId].childrenQueue.enqueue(childDir.constBegin().key());
         }
     }

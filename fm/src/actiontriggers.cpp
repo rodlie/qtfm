@@ -52,7 +52,8 @@ void MainWindow::executeFile(QModelIndex index, bool run) {
     QProcess::startDetached(filePath, QStringList());
 #endif
   } else {
-    mimeUtils->openInApp(filePath, ""/*term*/);
+    QFileInfo fi(filePath);
+    mimeUtils->openInApp(filePath, fi);
   }
 }
 //---------------------------------------------------------------------------
@@ -746,11 +747,11 @@ void MainWindow::toggleHidden() {
     if (curIndex.isHidden()) {
       listSelectionModel->clear();
     }
-    modelView->setFilterRegExp("no");
-    modelTree->setFilterRegExp("no");
+    modelView->setFilterRegularExpression("no");
+    modelTree->setFilterRegularExpression("no");
   } else {
-    modelView->setFilterRegExp("");
-    modelTree->setFilterRegExp("");
+    modelView->setFilterRegularExpression("");
+    modelTree->setFilterRegularExpression("");
   }
 
   modelView->invalidate();

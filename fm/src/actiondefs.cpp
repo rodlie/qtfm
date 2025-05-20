@@ -436,7 +436,7 @@ void MainWindow::readShortcuts() {
         i.next();
         QStringList action;
         action << i.key() << i.value();
-        settings->setValue(QString(count), action);
+        settings->setValue(QString::number(count), action);
         ++count;
     }
     settings->endGroup();

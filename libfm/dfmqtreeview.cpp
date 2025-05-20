@@ -274,12 +274,14 @@ void DfmQTreeView::updateElasticBandSelection()
     }
 
     // Get the index of the item in this row in the name column.
-    // TODO - would this still work if the columns could be re-ordered?
-    QModelIndex startIndex = QTreeView::indexAt(boundingRect.topLeft());
-    if (startIndex.parent().isValid()) {
-        startIndex = startIndex.parent().child(startIndex.row(), COLUMN_NAME);
-    } else {
-        startIndex = model()->index(startIndex.row(), COLUMN_NAME);
+    QModelIndex startIndex = QTreeView::indexAt(boundingRect.topLeft());    
+    int nameColumn = model()->headerData(COLUMN_NAME, Qt::Horizontal, Qt::DisplayRole).toInt();
+    if (nameColumn != -1) {
+        if (startIndex.parent().isValid()) {
+            startIndex = model()->index(startIndex.row(), nameColumn, startIndex.parent());
+        } else {
+            startIndex = model()->index(startIndex.row(), nameColumn);
+        }
     }
     if (!startIndex.isValid()) {
         selectionModel()->select(m_band.originalSelection, QItemSelectionModel::ClearAndSelect);
@@ -437,7 +439,10 @@ QRect DfmQTreeView::nameColumnRect(const QModelIndex& index) const
 
     if (index.isValid()) {
         QString filename = index.data(Qt::DisplayRole).toString();
-        const int itemContentWidth = DfmQStyledItemDelegate::nameColumnWidth(filename, QTreeView::viewOptions());
+        QStyleOptionViewItem option;
+        option.initFrom(this);
+        option.rect = guessedItemContentRect;
+        const int itemContentWidth = DfmQStyledItemDelegate::nameColumnWidth(filename, option);
         guessedItemContentRect.setWidth(itemContentWidth);
     }
 

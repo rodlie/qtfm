@@ -63,7 +63,7 @@ void tabBar::dragEnterEvent(QDragEnterEvent *event)
 //---------------------------------------------------------------------------
 void tabBar::dragMoveEvent(QDragMoveEvent *event)
 {
-    this->setCurrentIndex(tabAt(event->pos()));
+    this->setCurrentIndex(tabAt(event->position().toPoint()));
     event->acceptProposedAction();
 }
 
@@ -73,7 +73,7 @@ void tabBar::dropEvent(QDropEvent *event)
     QList<QUrl> paths = event->mimeData()->urls();
     QFileInfo file = QFileInfo(paths.at(0).path());
 
-    if(tabAt(event->pos()) == -1 && file.isDir())           //new tab
+    if(tabAt(event->position().toPoint()) == -1 && file.isDir())           //new tab
         addNewTab(file.filePath(),0);
     else
     {

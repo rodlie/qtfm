@@ -59,8 +59,8 @@ class QT_QTCOPYDIALOG_EXPORT QtCopyDialog : public QDialog
     Q_PROPERTY(bool autoClose READ autoClose WRITE setAutoClose)
 public:
 
-    QtCopyDialog(QWidget *parent = 0, bool delOnClose = true, Qt::WindowFlags f = 0);
-    QtCopyDialog(QtFileCopier *copier, QWidget *parent = 0, bool delOnClose = true, Qt::WindowFlags f = 0);
+    QtCopyDialog(QWidget *parent = 0, bool delOnClose = true, Qt::WindowFlags f = {});
+    QtCopyDialog(QtFileCopier *copier, QWidget *parent = 0, bool delOnClose = true, Qt::WindowFlags f = {});
     ~QtCopyDialog();
 
     void setFileCopier(QtFileCopier *copier);
