@@ -56,7 +56,7 @@ icondlg::icondlg()
         }
     }
 
-    thread.setFuture(QtConcurrent::run(this,&icondlg::scanTheme));
+    thread.setFuture(QtConcurrent::run(&icondlg::scanTheme, this));
     connect(&thread,SIGNAL(finished()),this,SLOT(loadIcons()));
 }
 

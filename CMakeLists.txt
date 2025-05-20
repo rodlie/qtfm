@@ -52,11 +52,10 @@ if(NOT ENABLE_UDISKS AND ENABLE_DBUS)
 endif()
 
 # qt
-find_package(QT NAMES Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Core Widgets Concurrent REQUIRED)
 if(ENABLE_DBUS)
-    find_package(Qt${QT_VERSION_MAJOR} 5.15 COMPONENTS DBus REQUIRED)
+    find_package(Qt6 COMPONENTS DBus REQUIRED)
 endif()
-find_package(Qt${QT_VERSION_MAJOR} 5.15 COMPONENTS Gui Widgets Concurrent REQUIRED)
 
 # inotify
 if(NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
@@ -137,10 +136,9 @@ target_include_directories(QtFM PRIVATE libfm libfm/qtcopydialog ${NOTIFY_INCLUD
 
 target_link_libraries(
     QtFM
-    Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Gui
-    Qt${QT_VERSION_MAJOR}::Widgets
-    Qt${QT_VERSION_MAJOR}::Concurrent
+    Qt::Core
+    Qt::Widgets
+    Qt::Concurrent
 )
 if(ENABLE_DBUS)
     target_link_libraries(QtFM Qt${QT_VERSION_MAJOR}::DBus QtFMBus)
@@ -166,10 +164,9 @@ add_executable(
 )
 target_link_libraries(
     ${PROJECT_NAME}
-    Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Gui
-    Qt${QT_VERSION_MAJOR}::Widgets
-    Qt${QT_VERSION_MAJOR}::Concurrent
+    Qt::Core
+    Qt::Widgets
+    Qt::Concurrent
     QtFM
 )
 target_include_directories(${PROJECT_NAME} PRIVATE fm/src libfm libfm/qtcopydialog)
@@ -189,10 +186,9 @@ if(ENABLE_DBUS AND ENABLE_TRAY)
     target_include_directories(${PROJECT_NAME}-tray PRIVATE tray libfm)
     target_link_libraries(
         ${PROJECT_NAME}-tray
-        Qt${QT_VERSION_MAJOR}::Core
-        Qt${QT_VERSION_MAJOR}::Gui
-        Qt${QT_VERSION_MAJOR}::Widgets
-        Qt${QT_VERSION_MAJOR}::DBus
+        Qt::Core
+        Qt::Widgets
+        Qt::DBus
         QtFM
     )
 endif()

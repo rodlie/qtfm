@@ -9,7 +9,7 @@ bool mainTreeFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex
     myModel* fileModel = qobject_cast<myModel*>(sourceModel());
     if (fileModel == nullptr) { return false; }
     if (fileModel->isDir(index0)) {
-        if (this->filterRegExp().isEmpty() || fileModel->fileInfo(index0).isHidden() == 0) { return true; }
+        if (this->filterRegularExpression().pattern().isEmpty() || !fileModel->fileInfo(index0).isHidden()) { return true; }
     }
 
     return false;
@@ -18,7 +18,7 @@ bool mainTreeFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex
 //---------------------------------------------------------------------------------
 bool viewsSortProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    if (this->filterRegExp().isEmpty()) { return true; }
+    if (this->filterRegularExpression().pattern().isEmpty()) { return true; }    
 
     QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
     myModel* fileModel = qobject_cast<myModel*>(sourceModel());

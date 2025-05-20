@@ -1134,7 +1134,7 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
   // Alignment of filename
   else if (role == Qt::TextAlignmentRole) {
     if (index.column() == 1) {
-      return Qt::AlignRight + Qt::AlignVCenter;
+      return QVariant::fromValue(Qt::AlignRight | Qt::AlignVCenter);
     }
   }
   // Display information about file

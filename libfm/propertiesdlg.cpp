@@ -252,7 +252,7 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
   layout->addWidget(buttons);
   setLayout(layout);
 
-  layout->setMargin(6);
+  layout->setContentsMargins(6, 6, 6, 6);
   layout->setSpacing(4);
 
   connect(this, SIGNAL(updateSignal()), this, SLOT(update()));
@@ -262,7 +262,9 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
   setMinimumSize(size());
 
   this->setAttribute(Qt::WA_DeleteOnClose,1);
-  thread = QtConcurrent::run(this, &PropertiesDialog::folderProperties, paths);
+  thread = QtConcurrent::run([this, paths]() {
+      this->folderProperties(paths);
+  });
 }
 //---------------------------------------------------------------------------
 
