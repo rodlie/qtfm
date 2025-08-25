@@ -1554,12 +1554,12 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         }
     }
 
-      if (dynamic_cast<QListView*>(o) != Q_NULLPTR ){
+      if (qobject_cast<QListView*>(o) != Q_NULLPTR ){
         if (e->type()==QEvent::KeyPress) {
             QKeyEvent* key = static_cast<QKeyEvent*>(e);
             if ( (key->key()==Qt::Key_Tab) ) {
                 qDebug()<< "Tab pressed: path completion "<< o ;
-                QListView *completionList = dynamic_cast<QListView*>(o);
+                QListView *completionList = qobject_cast<QListView*>(o);
                 // Remove incomplete phrase and replace it with a current index
                 QModelIndex index = completionList->currentIndex();
                 QString itemText = index.data(Qt::DisplayRole).toString();
