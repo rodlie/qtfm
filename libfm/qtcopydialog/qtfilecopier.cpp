@@ -58,6 +58,10 @@
 #include <QtCore/QTimer>
 #include <QtCore/QMetaType>
 #include <QDebug>
+#if !defined(Q_OS_WIN32)
+#include <unistd.h>
+#include <limits.h>
+#endif
 
 struct CopyRequest {
     CopyRequest() {
@@ -511,19 +515,24 @@ struct FollowLinksNode : public ChainNode {
         CopyRequest &r = request();
         QFileInfo fis(r.source);
         if (fis.isSymLink() && !(r.copyFlags & QtFileCopier::FollowLinks)) {
-            QFileInfo fil(fis.symLinkTarget());
-            QString linkName = fil.filePath();
 #if defined(Q_OS_WIN32)
-	    linkName = fil.absoluteFilePath();
-#else
-            if (fil.isAbsolute()) {
-                QDir dir = fis.dir();
-                linkName = dir.relativeFilePath(linkName);
-            }
-#endif
-            QFile linkTarget(linkName);
+            QFileInfo fil(fis.symLinkTarget());
+            QFile linkTarget(fil.absoluteFilePath());
             if (linkTarget.link(r.dest))
                 return true;
+#else
+            // Recreate the link with exactly the same target text as the
+            // original, without resolving or relativizing it.
+            const QByteArray source = QFile::encodeName(r.source);
+            const QByteArray dest = QFile::encodeName(r.dest);
+            char target[PATH_MAX + 1];
+            const ssize_t len = ::readlink(source.constData(), target, PATH_MAX);
+            if (len >= 0) {
+                target[len] = '\0';
+                if (::symlink(target, dest.constData()) == 0)
+                    return true;
+            }
+#endif
             setError(QtFileCopier::CannotCreateSymLink);
             return false;
         }
