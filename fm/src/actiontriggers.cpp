@@ -32,24 +32,19 @@ void MainWindow::executeFile(QModelIndex index, bool run) {
 #ifdef Q_OS_MAC
     QProcess::startDetached(QString("open \"%1\"").arg(filePath));
 #else
+    QStringList args;
     if (filePath.endsWith(".desktop")) {
         DesktopFile df(filePath);
-        if (!df.getExec().isEmpty()) {
-            filePath = df.getExec();
-            if (filePath.toLower().contains("%f")) {
-              filePath.replace("%f", "", Qt::CaseInsensitive);
-            } else if (filePath.toLower().contains("%u")) {
-              filePath.replace("%u", "", Qt::CaseInsensitive);
-            }
-            filePath = filePath.trimmed();
-        } else { return; }
+        args = QProcess::splitCommand(df.getExec());
+        // drop field codes, there are no files to pass
+        static const QStringList codes = {"%f", "%F", "%u", "%U",
+                                          "%i", "%c", "%k"};
+        for (const QString &code : codes) { args.removeAll(code); }
+        if (args.isEmpty()) { return; }
+        filePath = args.takeFirst();
     }
-    if (filePath.contains(" ")) {
-        filePath.prepend("\"");
-        filePath.append("\"");
-    }
-    qDebug() << "RUN" << filePath;
-    QProcess::startDetached(filePath, QStringList());
+    qDebug() << "RUN" << filePath << args;
+    QProcess::startDetached(filePath, args);
 #endif
   } else {
     mimeUtils->openInApp(QFileInfo(filePath), term);
