@@ -31,6 +31,8 @@ public slots:
   void saveDefaults();
   void loadDefaults();
 private:
+  void startApp(const QString &exe, const QStringList &files,
+                const QString &termCmd);
   bool defaultsChanged;
   QString defaultsFileName;
   Properties* defaults;
