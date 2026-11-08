@@ -172,7 +172,7 @@ MainWindow::MainWindow()
 
     setCentralWidget(main);
 
-    modelTree = new viewsSortProxyModel();
+    modelTree = new mainTreeFilterProxyModel();
     modelTree->setSourceModel(modelList);
     modelTree->setSortCaseSensitivity(Qt::CaseInsensitive);
 
