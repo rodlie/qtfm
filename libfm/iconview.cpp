@@ -76,7 +76,7 @@ void IconViewDelegate::paint(QPainter *painter,
 
     if (isSelected && !isEditing) {
         QPainterPath path;
-        QRect frame(item.left(),item.top()+4, item.width(), item.height()-4);
+        QRect frame = contentRect(option, index);
         path.addRoundedRect(frame, 15, 15);
         //  path.addRect(frame);
         painter->setOpacity(0.7);
@@ -93,4 +93,22 @@ void IconViewDelegate::paint(QPainter *painter,
     painter->drawText(txtRect,
                       Qt::AlignTop|Qt::AlignHCenter|Qt::TextWordWrap|Qt::TextWrapAnywhere,
                       index.data().toString());
+}
+
+QRect IconViewDelegate::contentRect(const QStyleOptionViewItem &option,
+                                    const QModelIndex &index)
+{
+    // Same geometry as paint()
+    QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
+    QSize iconsize = icon.actualSize(option.decorationSize);
+    QRect item = option.rect;
+    QRect iconRect(item.left()+(item.width()/2)-(iconsize.width()/2),
+                   item.top()+4+4, iconsize.width(), iconsize.height());
+    QRect txtRect(item.left()+4, item.top()+iconsize.height()+4+4+4,
+                  item.width()-8, item.height()-iconsize.height()-4);
+    QRect txtBounds = option.fontMetrics.boundingRect(txtRect,
+                                                      Qt::AlignTop|Qt::AlignHCenter|Qt::TextWordWrap|Qt::TextWrapAnywhere,
+                                                      index.data().toString());
+    QRect content = iconRect.united(txtBounds).adjusted(-4, -4, 4, 4);
+    return content.intersected(item);
 }

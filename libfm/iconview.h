@@ -5,6 +5,9 @@
 # See the LICENSE file for full details
 */
 
+#ifndef ICONVIEW_H
+#define ICONVIEW_H
+
 #include <QObject>
 #include <QItemDelegate>
 #include <QStyledItemDelegate>
@@ -31,4 +34,13 @@ public:
     void paint(QPainter *painter,
                const QStyleOptionViewItem &option,
                const QModelIndex &index) const;
+
+    /**
+     * Returns the area actually covered by the icon and the text of the
+     * item (plus a small margin), in the same coordinates as option.rect.
+     */
+    static QRect contentRect(const QStyleOptionViewItem &option,
+                             const QModelIndex &index);
 };
+
+#endif // ICONVIEW_H

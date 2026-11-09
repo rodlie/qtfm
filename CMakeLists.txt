@@ -97,6 +97,7 @@ add_library(
     libfm/propertiesdlg.cpp
     libfm/sortmodel.cpp
     libfm/dfmqtreeview.cpp
+    libfm/dfmqlistview.cpp
     libfm/dfmqstyleditemdelegate.cpp
     libfm/qtcopydialog/qtcopydialog.cpp
     libfm/qtcopydialog/qtfilecopier.cpp

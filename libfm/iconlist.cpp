@@ -29,8 +29,12 @@ void IconListDelegate::paint(QPainter *painter,
     QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
 
     if (option.state & QStyle::State_Selected) {
+        // highlight only the text actually drawn, not the whole column
+        QRect selRect = contentRect(option, index);
+        selRect.setLeft(txtRect.left());
+        selRect.setHeight(txtRect.height());
         QPainterPath path;
-        path.addRect(txtRect);
+        path.addRect(selRect);
         painter->setOpacity(0.7);
         painter->fillPath(path, option.palette.highlight());
         painter->setOpacity(1.0);
@@ -42,4 +46,16 @@ void IconListDelegate::paint(QPainter *painter,
 
     painter->drawPixmap(iconRect, icon.pixmap(iconsize.width(),iconsize.height()));
     painter->drawText(txtRect, Qt::AlignLeft|Qt::AlignVCenter, index.data().toString());
+}
+
+QRect IconListDelegate::contentRect(const QStyleOptionViewItem &option,
+                                    const QModelIndex &index)
+{
+    QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
+    QSize iconsize = icon.actualSize(option.decorationSize);
+    QRect item = option.rect;
+    int textWidth = option.fontMetrics.horizontalAdvance(index.data().toString()) + 4;
+    QRect content(item.left(), item.top(),
+                  iconsize.width() + 5 + textWidth, item.height());
+    return content.intersected(item);
 }

@@ -51,6 +51,7 @@
 #include "completer.h"
 #include "sortmodel.h"
 #include "dfmqtreeview.h"
+#include "dfmqlistview.h"
 
 // libdisks
 #ifndef NO_UDISKS
@@ -214,7 +215,7 @@ private:
     QStackedWidget *stackWidget;
     QTreeView *tree;
     DfmQTreeView *detailTree;
-    QListView *list;
+    DfmQListView *list;
     QListView *bookmarksList;
     QComboBox *pathEdit;
 

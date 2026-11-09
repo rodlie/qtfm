@@ -153,7 +153,7 @@ MainWindow::MainWindow()
     QHBoxLayout *hl1 = new QHBoxLayout(page);
     hl1->setSpacing(0);
     hl1->setContentsMargins(0,0,0,0);
-    list = new QListView(page);
+    list = new DfmQListView(page);
     hl1->addWidget(list);
     stackWidget->addWidget(page);
 
