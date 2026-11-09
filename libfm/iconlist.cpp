@@ -29,12 +29,9 @@ void IconListDelegate::paint(QPainter *painter,
     QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
 
     if (option.state & QStyle::State_Selected) {
-        // highlight only the text actually drawn, not the whole column
-        QRect selRect = contentRect(option, index);
-        selRect.setLeft(txtRect.left());
-        selRect.setHeight(txtRect.height());
+        // highlight the icon and the text actually drawn, not the whole column
         QPainterPath path;
-        path.addRect(selRect);
+        path.addRect(contentRect(option, index));
         painter->setOpacity(0.7);
         painter->fillPath(path, option.palette.highlight());
         painter->setOpacity(1.0);

@@ -6,8 +6,33 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
+#include <QProxyStyle>
+#include <QStyleFactory>
 
 #include "dfmqstyleditemdelegate.h"
+
+namespace {
+/**
+ * Style used by the tree so that the selection is not painted over the
+ * whole cell / row (branch area and row panel); the item delegate paints
+ * it only behind the icon and the name.
+ */
+class DfmQTreeViewStyle : public QProxyStyle
+{
+public:
+    explicit DfmQTreeViewStyle(QStyle *baseStyle) : QProxyStyle(baseStyle) {}
+
+    int styleHint(StyleHint hint, const QStyleOption *option = nullptr,
+                  const QWidget *widget = nullptr,
+                  QStyleHintReturn *returnData = nullptr) const override
+    {
+        if (hint == QStyle::SH_ItemView_ShowDecorationSelected) {
+            return 0;
+        }
+        return QProxyStyle::styleHint(hint, option, widget, returnData);
+    }
+};
+}
 
 DfmQTreeView::DfmQTreeView(QWidget *parent) :
     QTreeView(parent),
@@ -19,8 +44,18 @@ DfmQTreeView::DfmQTreeView(QWidget *parent) :
 {
     setUniformRowHeights(true);
     m_fileItemDelegate = new DfmQStyledItemDelegate(this);
-    m_fileItemDelegate->setMinimizedNameColumnSelection(false); // if true long filenames will overflow the column!
+    // Selection is drawn only behind the icon and the name
+    // (limited to the column width, see DfmQStyledItemDelegate::paint)
+    m_fileItemDelegate->setMinimizedNameColumnSelection(true);
     this->setItemDelegate(m_fileItemDelegate);
+
+    // Keep the style from highlighting the whole cell/row behind the delegate
+    QStyle *baseStyle = QStyleFactory::create(QApplication::style()->name());
+    if (baseStyle) {
+        DfmQTreeViewStyle *treeStyle = new DfmQTreeViewStyle(baseStyle);
+        treeStyle->setParent(this);
+        setStyle(treeStyle);
+    }
 }
 
 DfmQTreeView::~DfmQTreeView()
@@ -440,10 +475,10 @@ QRect DfmQTreeView::nameColumnRect(const QModelIndex& index) const
     if (index.isValid()) {
         QString filename = index.data(Qt::DisplayRole).toString();
         QStyleOptionViewItem option;
-        option.initFrom(this);
+        initViewItemOption(&option);
         option.rect = guessedItemContentRect;
         const int itemContentWidth = DfmQStyledItemDelegate::nameColumnWidth(filename, option);
-        guessedItemContentRect.setWidth(itemContentWidth);
+        guessedItemContentRect.setWidth(qMin(itemContentWidth, guessedItemContentRect.width()));
     }
 
     return guessedItemContentRect;
