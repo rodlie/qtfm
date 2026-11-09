@@ -1118,17 +1118,20 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
   // Color of filename (depends on file type)
   if (role == Qt::ForegroundRole) {
     if (!Common::readSetting("fileColor").toBool()) { return colors.windowText(); }
+    // Dark background (e.g. "Dark mode"): use lighter colors with good
+    // contrast; light background: keep the original colors.
+    const bool darkBackground = colors.color(QPalette::Base).lightness() < 128;
     QFileInfo type(item->fileInfo());
     if (cutItems.contains(type.filePath())) {
       return colors.windowText();
     } else if (type.isHidden()) {
-      return colors.dark();
+      return darkBackground ? QBrush(QColor(175,175,175)) : colors.dark();
     } else if (type.isSymLink()) {
-      return colors.link();
+      return darkBackground ? QBrush(QColor(110,190,255)) : colors.link();
     } else if (type.isDir()) {
       return colors.windowText();
     } else if (type.isExecutable()) {
-      return QBrush(QColor(Qt::darkGreen));
+      return QBrush(darkBackground ? QColor(120,220,120) : QColor(Qt::darkGreen));
     }
   }
   // Alignment of filename

@@ -582,7 +582,8 @@ QPalette Common::darkTheme()
     palette.setColor(QPalette::Button, QColor(64,66,68));
     palette.setColor(QPalette::ButtonText, Qt::white);
     palette.setColor(QPalette::BrightText, Qt::red);
-    palette.setColor(QPalette::Highlight, QColor(28,28,29));
+    // Selection must stand out clearly from Base/AlternateBase
+    palette.setColor(QPalette::Highlight, QColor(42,130,218));
     palette.setColor(QPalette::HighlightedText, Qt::white);
     palette.setColor(QPalette::Disabled, QPalette::Text, Qt::darkGray);
     palette.setColor(QPalette::Disabled, QPalette::ButtonText, Qt::darkGray);
