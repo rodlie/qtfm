@@ -328,8 +328,8 @@ void MainWindow::lateStart() {
   connect(customActManager, SIGNAL(actionFinished()), SLOT(clearCutItems()));
 
   // Connect path edit
-  connect(pathEdit, SIGNAL(activated(QString)),
-          this, SLOT(pathEditChanged(QString)));
+  connect(pathEdit, &QComboBox::textActivated,
+          this, &MainWindow::pathEditChanged);
   connect(customComplete, SIGNAL(activated(QString)),
           this, SLOT(pathEditChanged(QString)));
   connect(pathEdit->lineEdit(), SIGNAL(cursorPositionChanged(int,int)),
