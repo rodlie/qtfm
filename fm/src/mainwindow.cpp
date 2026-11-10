@@ -1070,6 +1070,29 @@ void MainWindow::pasteLauncher(const QMimeData *data,
 //---------------------------------------------------------------------------
 
 
+/**
+ * @brief Returns a free path in dir for a copy of info, named after the
+ * "Copy (%1) of %2" pattern (%1 number, %2 file name, %3 timestamp,
+ * %4 suffix, %5 base name)
+ */
+static QString copyOfPath(const QFileInfo &info, const QString &dir,
+                          QString pattern, const QString &timestampFormat)
+{
+    if (!pattern.contains("%")) { pattern = COPY_X_OF; }
+    for (int num = 1; ; ++num) {
+        QString name = pattern;
+        name.replace("%1", QString::number(num));
+        name.replace("%2", info.fileName());
+        name.replace("%3", QDateTime::currentDateTime().toString(timestampFormat));
+        name.replace("%4", info.completeSuffix());
+        name.replace("%5", info.baseName());
+        // a pattern without a number could repeat forever
+        if (num > 1 && !pattern.contains("%1")) { name.append(QString(" (%1)").arg(num)); }
+        const QString path = dir + "/" + name;
+        if (!QFileInfo::exists(path) && !QFileInfo(path).isSymLink()) { return path; }
+    }
+}
+
 void MainWindow::pasteLauncher(const QList<QUrl> &files,
                                 const QString &newPath,
                                 const QStringList &cutList,
@@ -1089,6 +1112,23 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files,
         qDebug() << "is symlink but nothing to copy ...";
         return;
     }
+
+    // Never copy or move a folder into itself or into one of its subfolders
+    const QString destCanonical = QFileInfo(newPath).canonicalFilePath() + "/";
+    QStringList sources = cutList;
+    if (sources.isEmpty()) {
+        foreach (QUrl url, files) { sources << url.toLocalFile(); }
+    }
+    foreach (QString source, sources) {
+        QFileInfo info(source);
+        if (!info.isDir() || info.isSymLink()) { continue; }
+        if (destCanonical.startsWith(info.canonicalFilePath() + "/")) {
+            status->showMessage(tr("Cannot copy or move the folder \"%1\" into itself.")
+                                .arg(info.fileName()));
+            return;
+        }
+    }
+    const QString destDir = QDir::cleanPath(QFileInfo(newPath).absoluteFilePath());
 
     QStringList _files, _dirs;
     if (cutList.size()>0) { // move
@@ -1116,13 +1156,18 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files,
             }
         }
     } else if (files.size()>0) { // copy
+        QStringList _sameFolder;
         for (int i=0; i<files.size(); i++) {
             QFileInfo info(files.at(i).toLocalFile());
             if (!info.isDir() && !info.isFile()) { continue; }
-            if (info.isDir()) { _dirs << info.absoluteFilePath(); }
+            if (QDir::cleanPath(info.absolutePath()) == destDir) {
+                // never copy onto itself, the copy gets a "Copy (x) of" name
+                _sameFolder << info.absoluteFilePath();
+            }
+            else if (info.isDir()) { _dirs << info.absoluteFilePath(); }
             else if (info.isFile()) { _files << info.absoluteFilePath(); }
         }
-        if (_files.size()>0 || _dirs.size()>0) {
+        if (_files.size()>0 || _dirs.size()>0 || _sameFolder.size()>0) {
             QtFileCopier *copyHandler = new QtFileCopier(this);
             QtCopyDialog *copyDialog = new QtCopyDialog(copyHandler, this);
             copyDialog->setMinimumDuration(100);
@@ -1138,6 +1183,16 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files,
                     else { copyHandler->copyDirectory(_dirs.at(i), newPath); }
                     //qDebug() << "COPY DIR" <<_dirs.at(i) << "TO" << newPath << "SYMLINK?" << link;
                 }
+            }
+            const QtFileCopier::CopyFlags flags = link ?
+                        QtFileCopier::CopyFlags(QtFileCopier::MakeLinks) :
+                        QtFileCopier::CopyFlags();
+            for (int i=0;i<_sameFolder.size();++i) {
+                QFileInfo info(_sameFolder.at(i));
+                const QString dest = copyOfPath(info, destDir, copyXof, copyXofTS);
+                // copyDirectory() uses dest as the new folder name when it does not exist
+                if (info.isDir()) { copyHandler->copyDirectory(info.absoluteFilePath(), dest, flags); }
+                else { copyHandler->copy(info.absoluteFilePath(), dest, flags); }
             }
         }
     }
