@@ -1657,8 +1657,7 @@ void MainWindow::refresh(bool modelRefresh, bool loadDir)
 {
     qDebug() << "refresh" << modelRefresh << loadDir;
     if (modelRefresh) {
-        modelList->refreshItems();
-        modelList->forceRefresh();
+        modelList->refreshItems(); // resets the model
     }
 
     QModelIndex baseIndex = modelView->mapFromSource(modelList->index(pathEdit->currentText()));

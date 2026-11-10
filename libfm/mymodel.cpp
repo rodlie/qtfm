@@ -299,7 +299,8 @@ void myModel::notifyChange()
     while (at < end) {
         const inotify_event *event = reinterpret_cast<const inotify_event *>(at);
         int w = event->wd;
-        lastEventFilename = event->name;
+        // events about the watched folder itself (e.g. IN_IGNORED) have no name
+        lastEventFilename = event->len > 0 ? QString::fromLocal8Bit(event->name) : QString();
         if (eventTimer.isActive()) {
             if (w == lastEventID) {
                 eventTimer.start(40);
@@ -509,8 +510,12 @@ void myModel::refreshItems()
     myModelItem *item = rootItem->matchPath(currentRootPath.split(SEPARATOR));
     if (item == nullptr) { return; }
     qDebug() << "refresh items";
+    // The items are destroyed and recreated: views and proxies must be told
+    // before, otherwise they keep indexes pointing to deleted items.
+    beginResetModel();
     item->clearAll();
     populateItem(item);
+    endResetModel();
 }
 
 //---------------------------------------------------------------------------------
