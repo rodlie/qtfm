@@ -988,6 +988,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
 
   // Retrieve urls (paths) of data
   QList<QUrl> files = data->urls();
+  if (files.isEmpty()) { return; }
 
   // get original path
   QStringList getOldPath = files.at(0).toLocalFile().split("/", Qt::SkipEmptyParts);
@@ -1042,7 +1043,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
   QStringList cutList;
   if (currentDragMode == Common::DM_MOVE) {
     foreach (QUrl item, files) {
-      cutList.append(item.path());
+      cutList.append(item.toLocalFile());
     }
   }
 
@@ -1134,10 +1135,12 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files,
     if (cutList.size()>0) { // move
         for (int i=0; i<cutList.size(); i++) {
             QFileInfo info(cutList.at(i));
-            if (!info.isDir() && !info.isFile()) { continue; }
+            // folders, files and symlinks (also broken ones, moved as the
+            // link itself); other special files are skipped
+            if (!info.isDir() && !info.isFile() && !info.isSymLink()) { continue; }
             if (cutList.at(i) == (newPath + "/" + info.fileName())) { continue; }
             if (info.isDir()) { _dirs << info.absoluteFilePath(); }
-            else if (info.isFile()) { _files << info.absoluteFilePath(); }
+            else { _files << info.absoluteFilePath(); }
         }
         if (_files.size()>0 || _dirs.size()>0) {
             QtFileCopier *copyHandler = new QtFileCopier(this);
@@ -1159,13 +1162,15 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files,
         QStringList _sameFolder;
         for (int i=0; i<files.size(); i++) {
             QFileInfo info(files.at(i).toLocalFile());
-            if (!info.isDir() && !info.isFile()) { continue; }
+            // folders, files and symlinks (also broken ones, copied as the
+            // link itself); other special files (FIFOs would block) are skipped
+            if (!info.isDir() && !info.isFile() && !info.isSymLink()) { continue; }
             if (QDir::cleanPath(info.absolutePath()) == destDir) {
                 // never copy onto itself, the copy gets a "Copy (x) of" name
                 _sameFolder << info.absoluteFilePath();
             }
             else if (info.isDir()) { _dirs << info.absoluteFilePath(); }
-            else if (info.isFile()) { _files << info.absoluteFilePath(); }
+            else { _files << info.absoluteFilePath(); }
         }
         if (_files.size()>0 || _dirs.size()>0 || _sameFolder.size()>0) {
             QtFileCopier *copyHandler = new QtFileCopier(this);
