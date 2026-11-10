@@ -58,6 +58,7 @@ public:
   bool setRootPath(const QString& path);
   QString getRootPath();
   void setRealMimeTypes(bool realMimeTypes);
+  void setFileColors(bool enabled);
   bool isRealMimeTypes() const;
   QModelIndex index(int row, int column, const QModelIndex &parent) const;
   QModelIndex index(const QString& path) const;
@@ -105,6 +106,7 @@ protected:
   QVariant findMimeIcon(myModelItem *item) const;
 private:
   bool realMimeTypes;
+  bool fileColors; // "Colors on file names" setting, cached (used in data())
   bool showThumbs;
   int thumbCount;
 

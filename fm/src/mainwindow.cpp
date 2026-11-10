@@ -422,6 +422,7 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
 
   // Load info whether use real mime types
   modelList->setRealMimeTypes(settings->value("realMimeTypes", true).toBool());
+  modelList->setFileColors(settings->value("fileColor", false).toBool());
 
   // Load information whether hidden files can be displayed
   if (hState) {

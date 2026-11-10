@@ -49,6 +49,8 @@ extern "C" {
 myModel::myModel(bool realMime, MimeUtils *mimeUtils, QObject *parent)
     : QAbstractItemModel(parent) {
 
+  fileColors = Common::readSetting("fileColor").toBool();
+
 #ifdef WITH_MAGICK
     Magick::InitializeMagick(nullptr);
 #endif
@@ -168,6 +170,11 @@ void myModel::setRealMimeTypes(bool realMimeTypes) {
  * @brief Returns true if real mime types are used
  * @return true if real mime types are used
  */
+void myModel::setFileColors(bool enabled) {
+  fileColors = enabled;
+}
+//---------------------------------------------------------------------------
+
 bool myModel::isRealMimeTypes() const {
   return realMimeTypes;
 }
@@ -434,13 +441,10 @@ bool myModel::hasChildren(const QModelIndex &parent) const
     if (!parent.isValid()) { return true; }
     myModelItem *item = static_cast<myModelItem*>(parent.internalPointer());
     if (item && item->fileInfo().isDir()) {
-        if (QDir(item->fileInfo()
-                 .absoluteFilePath())
-                .entryInfoList(QDir::NoDotAndDotDot|QDir::AllEntries|QDir::System)
-                .count() > 0)
-        {
-            return true;
-        }
+        // only needs to know if there is at least one entry
+        QDirIterator it(item->fileInfo().absoluteFilePath(),
+                        QDir::NoDotAndDotDot|QDir::AllEntries|QDir::System);
+        return it.hasNext();
     }
     return false;
 }
@@ -1122,7 +1126,7 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
 
   // Color of filename (depends on file type)
   if (role == Qt::ForegroundRole) {
-    if (!Common::readSetting("fileColor").toBool()) { return colors.windowText(); }
+    if (!fileColors) { return colors.windowText(); }
     // Dark background (e.g. "Dark mode"): use lighter colors with good
     // contrast; light background: keep the original colors.
     const bool darkBackground = colors.color(QPalette::Base).lightness() < 128;
