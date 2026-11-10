@@ -579,7 +579,10 @@ void MainWindow::firstRunCustomActions(bool isFirstRun)
     if (!isFirstRun) { return; }
     settings->beginGroup("customActions");
     int childs = settings->childKeys().size();
-    if (childs>0) { return; }
+    if (childs>0) {
+        settings->endGroup();
+        return;
+    }
 
     QVector<QStringList> defActions = Common::getDefaultActions();
     for (int i=0;i<defActions.size();++i) {
