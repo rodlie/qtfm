@@ -23,7 +23,8 @@ CustomActionsManager::CustomActionsManager(QSettings* settings,
   this->actions = new QMultiHash<QString,QAction*>;
   this->menus = new QMultiHash<QString,QMenu*>;
   this->mapper = new QSignalMapper(this);
-  connect(mapper, SIGNAL(mapped(QString)), SIGNAL(actionMapped(QString)));
+  connect(mapper, &QSignalMapper::mappedString,
+          this, &CustomActionsManager::actionMapped);
 }
 //---------------------------------------------------------------------------
 
@@ -165,8 +166,8 @@ void CustomActionsManager::execAction(const QString &cmd, const QString &path) {
 
   // Connect process
   connect(p, SIGNAL(finished(int)), this, SLOT(onActionFinished(int)));
-  connect(p, SIGNAL(error(QProcess::ProcessError)), this,
-          SLOT(onActionError(QProcess::ProcessError)));
+  connect(p, &QProcess::errorOccurred,
+          this, &CustomActionsManager::onActionError);
 
   // Execute process
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
