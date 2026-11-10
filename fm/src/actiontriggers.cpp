@@ -12,6 +12,7 @@
 #include <sys/vfs.h>
 #endif
 #include <fcntl.h>
+#include <cstdio>
 
 /**
  * @brief Executes a file
@@ -289,7 +290,7 @@ void MainWindow::deleteFile() {
     }
   }
 
-  bool ok = false;
+  bool ok = true;
   bool confirm;
 
   // Display confirmation message box
@@ -310,7 +311,12 @@ void MainWindow::deleteFile() {
   // Delete selected file(s)
   for (int i = 0; i < selList.count(); ++i) {
     QFileInfo file(modelList->filePath(selList.at(i)));
-    if (file.isWritable() || file.isSymLink()) {
+    // removing an entry depends on the permission of the folder holding it
+    if (!QFileInfo(file.absolutePath()).isWritable()) {
+        ok = false;
+        continue;
+    }
+    {
         if (yesToAll == false) {
           if (confirm) {
             QString title = tr("Careful");
@@ -323,9 +329,9 @@ void MainWindow::deleteFile() {
           }
         }
         if (file.isSymLink()) {
-            ok = QFile::remove(file.filePath());
+            ok &= QFile::remove(file.filePath());
         } else {
-            ok = modelList->remove(selList.at(i));
+            ok &= modelList->remove(selList.at(i));
         }
     }
   }
@@ -363,22 +369,20 @@ void MainWindow::trashFile()
     bool ok = true;
     for (int i=0;i<fileList.size();++i) {
         QFileInfo file(fileList.at(i));
-        if (!file.isWritable()) {
+        // moving an entry depends on the permission of the folder holding it
+        if (!QFileInfo(file.absolutePath()).isWritable()) {
             ok = false;
             continue;
         }
         QString trashPath = QString("%1/%2").arg(trashDir).arg(file.absoluteFilePath().split("/").takeLast());
-        while (QFile::exists(trashPath)) {
+        while (QFile::exists(trashPath) || QFileInfo(trashPath).isSymLink()) {
             trashPath = QString("%1/%2.%3").arg(trashDir).arg(file.absoluteFilePath().split("/").takeLast()).arg(QDateTime::currentDateTime().toString("yyyyMMddHHmmssz"));
         }
-        if (file.isDir()) {
-            QDir origDir(file.absoluteFilePath());
-            bool movedDir = origDir.rename(file.absoluteFilePath(), trashPath);
-            if (!movedDir) { ok = false; }
-        } else if (file.isFile()) {
-            QFile origFile(file.absoluteFilePath());
-            bool movedFile = origFile.rename(file.absoluteFilePath(), trashPath);
-            if (!movedFile) { ok = false; }
+        // rename(2) moves folders, files, special files and symlinks (also
+        // broken ones, which QFile::rename() refuses) as they are
+        if (::rename(QFile::encodeName(file.absoluteFilePath()).constData(),
+                     QFile::encodeName(trashPath).constData()) != 0) {
+            ok = false;
         }
     }
     if(!ok) {

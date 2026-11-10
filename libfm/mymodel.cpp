@@ -1379,23 +1379,29 @@ bool myModel::remove(const QModelIndex & theIndex)
 
     children.removeDuplicates();
 
-    bool error = false;
+    bool ok = true;
     for (int i = 0; i < children.count(); i++) {
         QFileInfo info(children.at(i));
-        if(info.isDir()) {
-            int wd = watchers.key(info.filePath());
-            inotify_rm_watch(inotifyFD,wd);
-            watchers.remove(wd);
-            error |= QDir().rmdir(info.filePath());
+        // a symlink to a folder is removed as a file (the link itself)
+        if(info.isDir() && !info.isSymLink()) {
+            int wd = watchers.key(info.filePath(), -1);
+            if (wd != -1) {
+                inotify_rm_watch(inotifyFD,wd);
+                watchers.remove(wd);
+            }
+            ok &= QDir().rmdir(info.filePath());
         }
-        else { error |= QFile::remove(info.filePath()); }
+        else { ok &= QFile::remove(info.filePath()); }
     }
 
-    //remove from model
-    beginRemoveRows(index(item->parent()->absoluteFilePath()),item->childNumber(),item->childNumber());
-    item->parent()->removeChild(item);
-    endRemoveRows();
-    return error;
+    //remove from model only if it is really gone from disk
+    QFileInfo top(path);
+    if (!top.exists() && !top.isSymLink()) {
+        beginRemoveRows(index(item->parent()->absoluteFilePath()),item->childNumber(),item->childNumber());
+        item->parent()->removeChild(item);
+        endRemoveRows();
+    }
+    return ok;
 }
 
 //---------------------------------------------------------------------------------
