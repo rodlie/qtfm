@@ -29,6 +29,8 @@
 #include <QTreeView>
 #include <QListView>
 #include <QLabel>
+#include <QLineEdit>
+#include <QCheckBox>
 #include <QStackedWidget>
 #include <QSortFilterProxyModel>
 #include <QComboBox>
@@ -100,6 +102,9 @@ public slots:
     void copyPath();
     void selectAllItems();
     void invertSelection();
+    void showFilterBar();
+    void closeFilterBar();
+    void applyFilter();
     bool linkFiles(const QList<QUrl> &files, const QString &newPath);
     void newDir();
     void newFile();
@@ -254,6 +259,10 @@ private:
     // status bar texts of the current folder, shown when nothing is selected
     QString folderStatusSize;
     QString folderStatusDate;
+    // filter bar (Ctrl+F), above the file views
+    QWidget *filterBar;
+    QLineEdit *filterEdit;
+    QCheckBox *filterDirsCheck;
     QString startPath;
 
     QAction *closeAct;

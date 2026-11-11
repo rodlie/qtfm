@@ -231,12 +231,11 @@ void MainWindow::createActions() {
   hiddenAct->setIcon(actionIcons->at(10));
   actionList->append(hiddenAct);
 
-  // TODO: create filter act that will use grep like filtering
-  /*filterAct = new QAction(tr("Filter..."), this);
-  filterAct->setStatusTip(tr("Filter current directory"));
-  connect(hiddenAct, SIGNAL(triggered()), this, SLOT(toggleFilter()));
-  hiddenAct->setIcon(actionIcons->at(10));
-  actionList->append(filterAct);*/
+  filterAct = new QAction(tr("Filter..."), this);
+  filterAct->setStatusTip(tr("Show only the items whose name matches a text or a pattern"));
+  connect(filterAct, SIGNAL(triggered()), this, SLOT(showFilterBar()));
+  filterAct->setIcon(QIcon::fromTheme("edit-find"));
+  actionList->append(filterAct);
 
   addBookmarkAct = new QAction(tr("Add bookmark"), this);
   addBookmarkAct->setStatusTip(tr("Add this folder to bookmarks"));
@@ -477,6 +476,9 @@ void MainWindow::readShortcuts() {
   if (shortcutDefaults < 2) {
     newDefaults << qMakePair(copyPathAct, QString("ctrl+shift+c"));
   }
+  if (shortcutDefaults < 3) {
+    newDefaults << qMakePair(filterAct, QString("ctrl+f"));
+  }
   for (int i = 0; i < newDefaults.size(); ++i) {
     const QString text = newDefaults.at(i).first->text();
     const QString keys = newDefaults.at(i).second;
@@ -489,8 +491,8 @@ void MainWindow::readShortcuts() {
     settings->setValue(QString("customShortcuts/default_%1").arg(keys),
                        QStringList() << text << keys);
   }
-  if (shortcutDefaults < 2) {
-    settings->setValue("shortcutDefaults", 2);
+  if (shortcutDefaults < 3) {
+    settings->setValue("shortcutDefaults", 3);
     settings->sync();
   }
 
@@ -614,6 +616,7 @@ void MainWindow::createMenus() {
   viewMenu->addAction(iconAct);
   viewMenu->addAction(detailAct);
   viewMenu->addAction(hiddenAct);
+  viewMenu->addAction(filterAct);
   viewMenu->addSeparator();
   viewMenu->addAction(tabsOnTopAct);
   viewMenu->addAction(thumbsAct);

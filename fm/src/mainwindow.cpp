@@ -29,6 +29,8 @@
 #include <QStatusBar>
 #include <QStorageInfo>
 #include <QWheelEvent>
+#include <QShortcut>
+#include <QToolButton>
 #include <QMenu>
 #include <QMenuBar>
 #ifndef NO_DBUS
@@ -145,7 +147,42 @@ MainWindow::MainWindow()
     dockBookmarks->setWidget(bookmarksList);
     addDockWidget(Qt::LeftDockWidgetArea, dockBookmarks);
 
-    QWidget *main = new QWidget(this);
+    // Central area: filter bar on top, then the views and the tabs
+    QWidget *central = new QWidget(this);
+    QVBoxLayout *centralLayout = new QVBoxLayout(central);
+    centralLayout->setSpacing(0);
+    centralLayout->setContentsMargins(0,0,0,0);
+
+    filterBar = new QWidget(central);
+    QHBoxLayout *filterLayout = new QHBoxLayout(filterBar);
+    filterLayout->setContentsMargins(4,2,4,2);
+    filterLayout->setSpacing(6);
+    filterEdit = new QLineEdit(filterBar);
+    filterEdit->setClearButtonEnabled(true);
+    filterEdit->setPlaceholderText(tr("Name or pattern, e.g. *.pdf"));
+    filterDirsCheck = new QCheckBox(tr("Filter folders too"), filterBar);
+    QToolButton *filterClose = new QToolButton(filterBar);
+    filterClose->setIcon(QIcon::fromTheme("window-close", QIcon::fromTheme("dialog-close")));
+    filterClose->setToolTip(tr("Close the filter (Esc)"));
+    filterClose->setAutoRaise(true);
+    filterLayout->addWidget(new QLabel(tr("Filter:"), filterBar));
+    filterLayout->addWidget(filterEdit, 1);
+    filterLayout->addWidget(filterDirsCheck);
+    filterLayout->addWidget(filterClose);
+    filterBar->hide();
+    centralLayout->addWidget(filterBar);
+
+    connect(filterEdit, &QLineEdit::textChanged, this, &MainWindow::applyFilter);
+    connect(filterDirsCheck, &QCheckBox::toggled, this, [this](bool checked) {
+        settings->setValue("filterFolders", checked);
+        applyFilter();
+    });
+    connect(filterClose, &QToolButton::clicked, this, &MainWindow::closeFilterBar);
+    QShortcut *filterEscape = new QShortcut(QKeySequence(Qt::Key_Escape), filterBar);
+    filterEscape->setContext(Qt::WidgetWithChildrenShortcut);
+    connect(filterEscape, &QShortcut::activated, this, &MainWindow::closeFilterBar);
+
+    QWidget *main = new QWidget(central);
     mainLayout = new QVBoxLayout(main);
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(0,0,0,0);
@@ -172,7 +209,8 @@ MainWindow::MainWindow()
     mainLayout->addWidget(stackWidget);
     mainLayout->addWidget(tabs);
 
-    setCentralWidget(main);
+    centralLayout->addWidget(main, 1);
+    setCentralWidget(central);
 
     modelTree = new mainTreeFilterProxyModel();
     modelTree->setSourceModel(modelList);
@@ -519,6 +557,11 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
   // 'copy of' filename
   copyXof = settings->value("copyXof", COPY_X_OF).toString();
   copyXofTS = settings->value("copyXofTS", COPY_X_TS).toString();
+
+  // filter bar: filter folders too?
+  filterDirsCheck->blockSignals(true);
+  filterDirsCheck->setChecked(settings->value("filterFolders", false).toBool());
+  filterDirsCheck->blockSignals(false);
 }
 
 void MainWindow::firstRunBookmarks(bool isFirstRun)
@@ -645,6 +688,8 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
     if (curIndex.filePath() != pathEdit->itemText(0)) {
         // going somewhere else (not Back/Forward) ends the "Forward" path
         if (!navigatingHistory) { forwardHistory.clear(); }
+        // a filter belongs to the folder it was typed in
+        if (!filterEdit->text().isEmpty()) { filterEdit->clear(); }
         if (tabs->count() && pathHistory) { tabs->addHistory(curIndex.filePath()); }
         if (!pathHistory && pathEdit->count()>0) { pathEdit->clear(); }
         pathEdit->insertItem(0,curIndex.filePath());

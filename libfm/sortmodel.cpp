@@ -25,6 +25,25 @@ void viewsSortProxyModel::setShowDotDot(bool show)
 }
 
 //---------------------------------------------------------------------------------
+void viewsSortProxyModel::setNameFilter(const QString &text, bool filterDirs)
+{
+    const bool active = !text.isEmpty();
+    if (!active && !nameFilterActive) { return; } // nothing to change
+
+    nameFilterActive = active;
+    nameFilterDirs = filterDirs;
+    if (active) {
+        const bool wildcard = text.contains('*') || text.contains('?') || text.contains('[');
+        const QString pattern = wildcard ?
+                    QRegularExpression::wildcardToRegularExpression(
+                        text, QRegularExpression::NonPathWildcardConversion) :
+                    QRegularExpression::escape(text);
+        nameFilter = QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption);
+    }
+    invalidateFilter();
+}
+
+//---------------------------------------------------------------------------------
 bool viewsSortProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
@@ -33,6 +52,13 @@ bool viewsSortProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sou
 
     // "..": shown on request, also when hidden files are not shown
     if (fileModel->isDotDot(index0)) { return showDotDot; }
+
+    // name filter (folders only when requested)
+    if (nameFilterActive && nameFilter.isValid()
+        && (nameFilterDirs || !fileModel->isDir(index0))
+        && !nameFilter.match(fileModel->fileName(index0)).hasMatch()) {
+        return false;
+    }
 
     if (this->filterRegularExpression().pattern().isEmpty()) { return true; }
 

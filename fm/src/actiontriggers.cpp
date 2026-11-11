@@ -585,6 +585,49 @@ void MainWindow::invertSelection() {
 //---------------------------------------------------------------------------
 
 /**
+ * @brief Shows the filter bar and puts the focus in it
+ */
+void MainWindow::showFilterBar() {
+  filterBar->show();
+  filterEdit->setFocus();
+  filterEdit->selectAll();
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Clears the filter, hides the filter bar and gives the focus back to
+ * the file view
+ */
+void MainWindow::closeFilterBar() {
+  filterEdit->clear();
+  filterBar->hide();
+  if (currentView == 2) { detailTree->setFocus(); }
+  else { list->setFocus(); }
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Applies the text of the filter bar to the file views
+ */
+void MainWindow::applyFilter() {
+  const QString text = filterEdit->text();
+  modelView->setNameFilter(text, filterDirsCheck->isChecked());
+  if (text.isEmpty()) {
+    status->clearMessage();
+    return;
+  }
+
+  // visible items of the current folder, without ".."
+  const QModelIndex root = (currentView == 2) ? detailTree->rootIndex() : list->rootIndex();
+  int shown = modelView->rowCount(root);
+  for (int i = 0; i < modelView->rowCount(root); ++i) {
+    if (modelList->isDotDot(modelView->mapToSource(modelView->index(i, 0, root)))) { --shown; }
+  }
+  status->showMessage(tr("Filter: %1 items shown").arg(shown));
+}
+//---------------------------------------------------------------------------
+
+/**
  * @brief Renames file
  */
 void MainWindow::renameFile() {
