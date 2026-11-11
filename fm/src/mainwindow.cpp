@@ -1000,7 +1000,29 @@ void MainWindow::pasteClipboard() {
     out >> cutList;
     tempFile.close();
   }
-  pasteLauncher(QApplication::clipboard()->mimeData(), newPath, cutList);
+
+  const QMimeData *data = QApplication::clipboard()->mimeData();
+  if (!data || !data->hasUrls()) { return; }
+
+  // The cut list is only valid while the clipboard still holds the files
+  // that were cut. If something else was copied meanwhile (in another
+  // program, for example) it is stale: paste what the clipboard has.
+  if (!cutList.isEmpty()) {
+    QStringList clipboardFiles;
+    foreach (QUrl url, data->urls()) { clipboardFiles.append(url.toLocalFile()); }
+    QStringList cutSorted = cutList;
+    cutSorted.sort();
+    clipboardFiles.sort();
+    if (cutSorted != clipboardFiles) {
+      cutList.clear();
+      clearCutItems();
+    }
+  }
+
+  pasteLauncher(data, newPath, cutList);
+
+  // The files were moved: they cannot be moved again from the old place
+  if (!cutList.isEmpty()) { clearCutItems(); }
 }
 //---------------------------------------------------------------------------
 
