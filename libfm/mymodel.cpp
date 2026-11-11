@@ -20,6 +20,7 @@
 ****************************************************************************/
 
 #include "mymodel.h"
+#include "emblemicon.h"
 #include <sys/inotify.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
@@ -1206,7 +1207,12 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
     if (index.column() != 0) {
       return QVariant();
     }
-    return findIcon(item);
+    QIcon icon = qvariant_cast<QIcon>(findIcon(item));
+    // Symbolic links get an emblem, a different one when the target is
+    // missing (exists() follows the link)
+    const QFileInfo info = item->fileInfo();
+    if (info.isSymLink()) { return EmblemIconEngine::withEmblem(icon, !info.exists()); }
+    return icon;
   }
   // Display file name
   else if(role == Qt::EditRole) {
