@@ -382,7 +382,12 @@ void MainWindow::trashFile()
         // broken ones, which QFile::rename() refuses) as they are
         if (::rename(QFile::encodeName(file.absoluteFilePath()).constData(),
                      QFile::encodeName(trashPath).constData()) != 0) {
-            ok = false;
+            // rename(2) cannot cross file systems; regular files are then
+            // copied and removed by QFile::rename()
+            if (file.isSymLink() || !file.isFile()
+                || !QFile::rename(file.absoluteFilePath(), trashPath)) {
+                ok = false;
+            }
         }
     }
     if(!ok) {
