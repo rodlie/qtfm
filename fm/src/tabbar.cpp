@@ -28,6 +28,13 @@ tabBar::tabBar(QHash<QString,QIcon> * icons)
     folderIcons = icons;
     setAcceptDrops(1);
     setMovable(1);
+
+    // keep history and view type with their tab when tabs are reordered
+    connect(this, &QTabBar::tabMoved, this, [this](int from, int to) {
+        if (from < 0 || to < 0 || from >= history.size() || to >= history.size()) { return; }
+        history.move(from, to);
+        viewType.move(from, to);
+    });
 }
 
 //---------------------------------------------------------------------------

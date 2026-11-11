@@ -729,13 +729,14 @@ void MainWindow::updateDir()
 
 void MainWindow::handleReloadDir(const QString &path)
 {
+    // changes in other watched folders must not block the reloads
+    if (path != modelList->getRootPath()) { return; }
     if (ignoreReload) {
         qDebug() << "ignore reload";
         return;
     }
     ignoreReload = true;
     qDebug() << "handle reload dir" << path << modelList->getRootPath();
-    if (path != modelList->getRootPath()) { return; }
     dirLoaded();
     QTimer::singleShot(500, this, SLOT(enableReload()));
 }
@@ -1627,7 +1628,9 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         switch (me->button()) {
         case Qt::BackButton:
             goBackDir();
-            break;
+            // handled: otherwise the event is delivered again to each parent
+            // widget and goes back once more for each of them
+            return true;
         default:;
         }
     }
