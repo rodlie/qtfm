@@ -314,6 +314,9 @@ void MainWindow::newFile() {
  */
 void MainWindow::deleteFile() {
 
+  // The bookmarks have their own actions; do not touch the selected files
+  if (focusWidget() == bookmarksList) { return; }
+
   // Temporary selection info
   QModelIndexList selList;
   bool yesToAll = false;
@@ -351,9 +354,18 @@ void MainWindow::deleteFile() {
     confirm = settings->value("confirmDelete").toBool();
   }
 
+  // Keep the paths, not the indexes: the confirmation dialogs below run the
+  // event loop, where a change in the folder can destroy model items
+  QStringList paths;
+  foreach (QModelIndex item, selList) {
+    const QString path = modelList->filePath(item);
+    if (!path.isEmpty() && !paths.contains(path)) { paths.append(path); }
+  }
+
   // Delete selected file(s)
-  for (int i = 0; i < selList.count(); ++i) {
-    QFileInfo file(modelList->filePath(selList.at(i)));
+  for (int i = 0; i < paths.count(); ++i) {
+    QFileInfo file(paths.at(i));
+    if (!file.exists() && !file.isSymLink()) { continue; } // already gone
     // removing an entry depends on the permission of the folder holding it
     if (!QFileInfo(file.absolutePath()).isWritable()) {
         ok = false;
@@ -374,7 +386,9 @@ void MainWindow::deleteFile() {
         if (file.isSymLink()) {
             ok &= QFile::remove(file.filePath());
         } else {
-            ok &= modelList->remove(selList.at(i));
+            const QModelIndex item = modelList->index(file.filePath());
+            if (item.isValid()) { ok &= modelList->remove(item); }
+            else { ok = false; }
         }
     }
   }
@@ -391,6 +405,9 @@ void MainWindow::deleteFile() {
 
 void MainWindow::trashFile()
 {
+    // The bookmarks have their own actions; do not touch the selected files
+    if (focusWidget() == bookmarksList) { return; }
+
     // Temporary selection files
     QModelIndexList selList;
     QStringList fileList;
@@ -445,6 +462,9 @@ void MainWindow::trashFile()
  * @brief Cuts file
  */
 void MainWindow::cutFile() {
+
+  // The bookmarks have their own actions; do not touch the selected files
+  if (focusWidget() == bookmarksList) { return; }
 
   // Temporary selection files
   QModelIndexList selList;
