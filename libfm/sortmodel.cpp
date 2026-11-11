@@ -8,6 +8,7 @@ bool mainTreeFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex
     QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
     myModel* fileModel = qobject_cast<myModel*>(sourceModel());
     if (fileModel == nullptr) { return false; }
+    if (fileModel->isDotDot(index0)) { return false; } // only for the file views
     if (fileModel->isDir(index0)) {
         if (this->filterRegularExpression().pattern().isEmpty() || !fileModel->fileInfo(index0).isHidden()) { return true; }
     }
@@ -16,12 +17,24 @@ bool mainTreeFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex
 }
 
 //---------------------------------------------------------------------------------
+void viewsSortProxyModel::setShowDotDot(bool show)
+{
+    if (show == showDotDot) { return; }
+    showDotDot = show;
+    invalidateFilter();
+}
+
+//---------------------------------------------------------------------------------
 bool viewsSortProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    if (this->filterRegularExpression().pattern().isEmpty()) { return true; }    
-
     QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
     myModel* fileModel = qobject_cast<myModel*>(sourceModel());
+    if (fileModel == nullptr) { return true; }
+
+    // "..": shown on request, also when hidden files are not shown
+    if (fileModel->isDotDot(index0)) { return showDotDot; }
+
+    if (this->filterRegularExpression().pattern().isEmpty()) { return true; }
 
     if (fileModel->fileInfo(index0).isHidden()) { return false; }
     else { return true; }
@@ -31,6 +44,13 @@ bool viewsSortProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sou
 bool viewsSortProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     myModel* fsModel = dynamic_cast<myModel*>(sourceModel());
+
+    // ".." always comes first, whatever the sort order
+    const bool leftDotDot = fsModel->isDotDot(left);
+    const bool rightDotDot = fsModel->isDotDot(right);
+    if (leftDotDot != rightDotDot) {
+        return leftDotDot == (sortOrder() == Qt::AscendingOrder);
+    }
 
     if ((fsModel->isDir(left) && !fsModel->isDir(right))) {
         return sortOrder() == Qt::AscendingOrder;

@@ -349,6 +349,7 @@ void myModel::notifyProcess(int eventID, QString fileName)
             folderChanged = dir.absolutePath();
             QFileInfoList all = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System);
             foreach(myModelItem * child, parent->children()) {
+                if (child->dotDot) { continue; } // not a file of this folder
                 if (all.contains(child->fileInfo())) {
                     //just remove known items
                     all.removeOne(child->fileInfo());
@@ -409,14 +410,70 @@ bool myModel::setRootPath(const QString& path)
     if (!item->watched) { addWatcher(item); }
     if (!item->walked || !item->watched) {
         populateItem(item);
+        setDotDot(item);
         return false;
     } else {
+        setDotDot(item);
         if(item->dirty) { //model is up to date, but view needs to be invalidated
             item->dirty = false;
             return true;
         }
     }
     return false;
+}
+
+//---------------------------------------------------------------------------------
+/**
+ * @brief Moves the ".." entry (go to the parent folder) to the given folder:
+ * only the current folder has one. The views decide whether to show it
+ * (only the detail view does, see viewsSortProxyModel::setShowDotDot()).
+ * @param folder the current folder
+ */
+void myModel::setDotDot(myModelItem *folder)
+{
+    const QString path = folder ? folder->absoluteFilePath() : QString();
+
+    // remove it from the previous folder
+    if (!dotDotFolder.isEmpty() && dotDotFolder != path) {
+        myModelItem *old = rootItem->matchPath(dotDotFolder.split(SEPARATOR));
+        if (old) { removeDotDot(old); }
+        dotDotFolder.clear();
+    }
+
+    // "/" has no parent folder
+    if (!folder || folder == rootItem || path.isEmpty() || path == "/") { return; }
+    dotDotFolder = path;
+
+    foreach (myModelItem *child, folder->children()) {
+        if (child->dotDot) { return; } // already there
+    }
+
+    const int row = folder->children().count();
+    beginInsertRows(index(path), row, row);
+    myModelItem *dotDot = new myModelItem(QFileInfo(QFileInfo(path).absolutePath()), folder);
+    dotDot->dotDot = true;
+    dotDot->walked = true; // no children: it cannot be expanded
+    endInsertRows();
+}
+
+//---------------------------------------------------------------------------------
+void myModel::removeDotDot(myModelItem *folder)
+{
+    foreach (myModelItem *child, folder->children()) {
+        if (!child->dotDot) { continue; }
+        const int row = child->childNumber();
+        beginRemoveRows(index(folder->absoluteFilePath()), row, row);
+        folder->removeChild(child);
+        endRemoveRows();
+    }
+}
+
+//---------------------------------------------------------------------------------
+bool myModel::isDotDot(const QModelIndex &index) const
+{
+    if (!index.isValid()) { return false; }
+    myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
+    return item && item->dotDot;
 }
 
 QString myModel::getRootPath()
@@ -441,6 +498,7 @@ bool myModel::hasChildren(const QModelIndex &parent) const
 {
     if (!parent.isValid()) { return true; }
     myModelItem *item = static_cast<myModelItem*>(parent.internalPointer());
+    if (item && item->dotDot) { return false; }
     if (item && item->fileInfo().isDir()) {
         // only needs to know if there is at least one entry
         QDirIterator it(item->fileInfo().absoluteFilePath(),
@@ -521,6 +579,8 @@ void myModel::refreshItems()
     item->clearAll();
     populateItem(item);
     endResetModel();
+    // clearAll() removed the ".." entry as well
+    setDotDot(item);
 }
 
 //---------------------------------------------------------------------------------
@@ -1124,6 +1184,23 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
 QVariant myModel::data(const QModelIndex & index, int role) const {
   // Retrieve model item
   myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
+  if (!item) { return QVariant(); }
+
+  // ".." entry: only a name and an icon
+  if (item->dotDot) {
+    switch (role) {
+    case Qt::DisplayRole:
+    case Qt::EditRole:
+      return index.column() == 0 ? QVariant(QString("..")) : QVariant(QString());
+    case Qt::DecorationRole:
+      if (index.column() != 0) { return QVariant(); }
+      return QIcon::fromTheme("go-up", iconFactory->icon(QFileIconProvider::Folder));
+    case Qt::ForegroundRole:
+      return colors.windowText();
+    default:
+      return QVariant();
+    }
+  }
 
   // Color of filename (depends on file type)
   if (role == Qt::ForegroundRole) {
@@ -1524,6 +1601,9 @@ QVariant myModel::headerData(int section, Qt::Orientation orientation, int role)
 Qt::ItemFlags myModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid()) { return Qt::NoItemFlags; }
+    // "..": files can be dropped on it (into the parent folder), but it
+    // cannot be selected, dragged or renamed (so it is never deleted, cut...)
+    if (isDotDot(index)) { return Qt::ItemIsEnabled | Qt::ItemIsDropEnabled; }
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 

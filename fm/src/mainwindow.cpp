@@ -699,7 +699,9 @@ void MainWindow::dirLoaded(bool thumbs)
     bool includeHidden = hiddenAct->isChecked();
 
     for (int x = 0; x < modelList->rowCount(modelList->index(pathEdit->currentText())); ++x) {
-        items.append(modelList->index(x,0,modelList->index(pathEdit->currentText())));
+        QModelIndex item = modelList->index(x,0,modelList->index(pathEdit->currentText()));
+        if (modelList->isDotDot(item)) { continue; } // not an item of the folder
+        items.append(item);
     }
 
 
@@ -928,6 +930,11 @@ void MainWindow::newWindow()
 void MainWindow::listDoubleClicked(QModelIndex current) {
   Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
   if (mods == Qt::ControlModifier || mods == Qt::ShiftModifier) {
+    return;
+  }
+  // ".." of the detail view: go to the parent folder
+  if (modelList->isDotDot(modelView->mapToSource(current))) {
+    goUpDir();
     return;
   }
 #ifdef Q_OS_MAC

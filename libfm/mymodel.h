@@ -56,6 +56,7 @@ public:
   bool canFetchMore (const QModelIndex & parent) const;
   bool hasChildren(const QModelIndex &parent = QModelIndex()) const;
   bool setRootPath(const QString& path);
+  bool isDotDot(const QModelIndex &index) const;
   QString getRootPath();
   void setRealMimeTypes(bool realMimeTypes);
   void setFileColors(bool enabled);
@@ -127,6 +128,11 @@ private:
   QTimer eventTimer;
   int lastEventID;
   QString lastEventFilename;
+
+  // folder that holds the ".." entry (the current folder)
+  QString dotDotFolder;
+  void setDotDot(myModelItem *folder);
+  void removeDotDot(myModelItem *folder);
 };
 
 #endif // MYMODEL_H

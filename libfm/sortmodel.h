@@ -18,7 +18,12 @@ protected:
 //---------------------------------------------------------------------------------
 class viewsSortProxyModel : public QSortFilterProxyModel
 {
+public:
+    // show the ".." entry of the current folder (detail view only)
+    void setShowDotDot(bool show);
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
+private:
+    bool showDotDot = false;
 };

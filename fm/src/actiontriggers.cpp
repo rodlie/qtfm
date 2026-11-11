@@ -815,6 +815,9 @@ void MainWindow::toggleLockLayout() {
  */
 void MainWindow::toggleIcons() {
 
+  // ".." is only shown in the detail view
+  modelView->setShowDotDot(false);
+
   // Set root index
   if (list->rootIndex() != modelList->index(pathEdit->currentText())) {
     QModelIndex i = modelList->index(pathEdit->currentText());
@@ -945,6 +948,7 @@ void MainWindow::toggleDetails() {
     detailTree->setMouseTracking(false);
   } else {
     currentView = 2;
+    modelView->setShowDotDot(true); // ".." only in the detail view
     QModelIndex i = modelList->index(pathEdit->currentText());
     if (detailTree->rootIndex() != i) {
       detailTree->setRootIndex(modelView->mapFromSource(i));

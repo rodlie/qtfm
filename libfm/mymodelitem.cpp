@@ -31,6 +31,7 @@ myModelItem::myModelItem(const QFileInfo& fileInfo, myModelItem* parent)
     walked = false;
     dirty = false;
     watched = false;
+    dotDot = false;
 
     if(parent)
     {
@@ -104,6 +105,7 @@ QString myModelItem::absoluteFilePath()const
 //---------------------------------------------------------------------------------------
 QString myModelItem::fileName() const
 {
+    if(dotDot) return "..";
     if(mAbsFilePath == "/") return "/";
     else return mFileInfo.fileName();
 

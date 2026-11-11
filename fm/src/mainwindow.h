@@ -230,7 +230,7 @@ private:
     QModelIndex backIndex;
 
     QSortFilterProxyModel *modelTree;
-    QSortFilterProxyModel *modelView;
+    viewsSortProxyModel *modelView;
 
     bookmarkmodel *modelBookmarks;
     QItemSelectionModel *treeSelectionModel;
