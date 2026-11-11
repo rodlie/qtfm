@@ -91,22 +91,54 @@ bool Properties::load(const QString &fileName, const QString &group) {
  */
 bool Properties::save(const QString &fileName, const QString &group) {
 
+  // Only the given group is rewritten: keep the lines the file holds before
+  // and after it (other groups, e.g. "Added Associations" in mimeapps.list)
+  QStringList before, after;
+  if (!group.isEmpty()) {
+    QFile old(fileName);
+    if (old.open(QIODevice::ReadOnly | QIODevice::Text)) {
+      QTextStream in(&old);
+      bool inGroup = false;
+      bool groupSeen = false;
+      while (!in.atEnd()) {
+        QString line = in.readLine();
+        if (line.trimmed().startsWith("[")) {
+          QString tmp = line.trimmed().replace("[", "").replace("]", "");
+          inGroup = group.trimmed().compare(tmp) == 0;
+          if (inGroup) { groupSeen = true; continue; }
+        }
+        if (inGroup) { continue; }
+        if (groupSeen) { after.append(line); } else { before.append(line); }
+      }
+      old.close();
+    }
+    while (!before.isEmpty() && before.last().trimmed().isEmpty()) { before.removeLast(); }
+    while (!after.isEmpty() && after.last().trimmed().isEmpty()) { after.removeLast(); }
+  }
+
   // Try open file
   QFile file(fileName);
   if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
     return false;
   }
 
-  // Write group
   QTextStream out(&file);
+  foreach (QString line, before) { out << line << "\n"; }
+  if (!before.isEmpty()) { out << "\n"; }
+
+  // Write group
   if (!group.isEmpty()) {
     out << "[" + group + "]\n";
   }
 
   // Write data
   foreach (QString key, data.keys()) {
+    if (key.trimmed().isEmpty()) { continue; } // not a valid entry
     out << key << "=" << data.value(key).toString() << "\n";
   }
+
+  if (!after.isEmpty()) { out << "\n"; }
+  foreach (QString line, after) { out << line << "\n"; }
 
   // Exit
   file.close();
@@ -140,6 +172,11 @@ QVariant Properties::value(const QString &key, const QVariant &defaultValue) {
  * @param key
  * @param value
  */
+void Properties::remove(const QString &key) {
+  data.remove(key);
+}
+//---------------------------------------------------------------------------
+
 void Properties::set(const QString &key, const QVariant &value) {
   if (data.contains(key)) {
     data.take(key);

@@ -19,6 +19,7 @@ public:
   bool load(const QString &fileName, const QString &group = "");
   bool save(const QString &fileName, const QString &group = "");
   void set(const QString &key, const QVariant &value);
+  void remove(const QString &key);
   bool contains(const QString &key) const;
   QStringList getKeys() const;
 protected:

@@ -238,6 +238,7 @@ void MimeUtils::generateDefaults() {
     // For each mime of current application...
     QStringList mimes = a.getMimeType();
     foreach (QString mime, mimes) {
+      if (mime.trimmed().isEmpty()) { continue; }
 
       // Current app name
       QString name = a.getPureFileName() + ".desktop";
@@ -272,7 +273,11 @@ void MimeUtils::generateDefaults() {
         tmpNames2.append(name);
       }
     }
-    if (tmpNames1.size() != tmpNames2.size()) {
+    if (key.trimmed().isEmpty() || tmpNames2.isEmpty()) {
+      // no mime or no application left: an entry like "mime=" is useless
+      defaults->remove(key);
+      defaultsChanged = true;
+    } else if (tmpNames1.size() != tmpNames2.size()) {
       defaults->set(key, tmpNames2.join(";"));
       defaultsChanged = true;
     }
@@ -291,7 +296,9 @@ void MimeUtils::generateDefaults() {
 void MimeUtils::setDefault(const QString &mime, const QStringList &apps) {
   QString value = apps.join(";");
   if (value.compare(defaults->value(mime, "").toString()) != 0) {
-    defaults->set(mime, value);
+    // without applications there is nothing to store
+    if (value.isEmpty() || mime.trimmed().isEmpty()) { defaults->remove(mime); }
+    else { defaults->set(mime, value); }
     defaultsChanged = true;
   }
 }
