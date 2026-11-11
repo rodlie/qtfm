@@ -151,6 +151,12 @@ void MainWindow::createActions() {
   backAct->setIcon(actionIcons->at(6));
   actionList->append(backAct);
 
+  forwardAct = new QAction(tr("Forward"),this);
+  forwardAct->setStatusTip(tr("Go forward one directory"));
+  connect(forwardAct, SIGNAL(triggered()),this,SLOT(goForwardDir()));
+  forwardAct->setIcon(QIcon::fromTheme("go-next"));
+  actionList->append(forwardAct);
+
   homeAct = new QAction(tr("Home"),this);
   homeAct->setStatusTip(tr("Go to home directory"));
   connect(homeAct, SIGNAL(triggered()),this,SLOT(goHomeDir()));
@@ -443,6 +449,31 @@ void MainWindow::readShortcuts() {
     settings->sync();
   }
 
+  // Default shortcuts of actions added in later versions. They are stored
+  // once, so they are listed in the settings dialog and can be changed or
+  // removed there.
+  const int shortcutDefaults = settings->value("shortcutDefaults", 0).toInt();
+  QList<QPair<QAction*, QString> > newDefaults;
+  if (shortcutDefaults < 1) {
+    newDefaults << qMakePair(forwardAct, QString("alt+right"));
+  }
+  for (int i = 0; i < newDefaults.size(); ++i) {
+    const QString text = newDefaults.at(i).first->text();
+    const QString keys = newDefaults.at(i).second;
+    bool taken = shortcuts.contains(text);
+    foreach (QString used, shortcuts.values()) {
+      if (used.compare(keys, Qt::CaseInsensitive) == 0) { taken = true; }
+    }
+    if (taken) { continue; }
+    shortcuts.insert(text, keys);
+    settings->setValue(QString("customShortcuts/default_%1").arg(keys),
+                       QStringList() << text << keys);
+  }
+  if (shortcutDefaults < 1) {
+    settings->setValue("shortcutDefaults", 1);
+    settings->sync();
+  }
+
   // Remove all bookmarks from actions
   foreach (QAction* a, bookmarkActionList) {
     actionList->removeOne(a);
@@ -470,6 +501,19 @@ void MainWindow::readShortcuts() {
       action->setShortcut(QKeySequence::fromString(text));
       addAction(action);
     }
+  }
+
+  // Alt+Left also goes back, as in most file managers, unless it is used
+  bool altLeftUsed = false;
+  foreach (QString used, shortcuts.values()) {
+    if (used.compare("alt+left", Qt::CaseInsensitive) == 0) { altLeftUsed = true; }
+  }
+  if (!altLeftUsed) {
+    QList<QKeySequence> backKeys;
+    if (!backAct->shortcut().isEmpty()) { backKeys << backAct->shortcut(); }
+    backKeys << QKeySequence::fromString("alt+left");
+    backAct->setShortcuts(backKeys);
+    addAction(backAct);
   }
 
   // Restore the old group
@@ -555,6 +599,7 @@ void MainWindow::createMenus() {
   viewMenu->addSeparator();
   viewMenu->addAction(upAct);
   viewMenu->addAction(backAct);
+  viewMenu->addAction(forwardAct);
   viewMenu->addAction(homeAct);
   viewMenu->addAction(refreshAct);
 
@@ -583,6 +628,7 @@ void MainWindow::createToolBars() {
   navToolBar = addToolBar(tr("Navigate"));
   navToolBar->setObjectName("Navigate");
   navToolBar->addAction(backAct);
+  navToolBar->addAction(forwardAct);
   navToolBar->addAction(upAct);
   navToolBar->addAction(homeAct);
 

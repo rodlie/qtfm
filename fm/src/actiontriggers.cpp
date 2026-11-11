@@ -167,25 +167,57 @@ void MainWindow::goUpDir() {
  */
 void MainWindow::goBackDir() {
 
-  // If there is only one item in path edit, we cannot go back
-  if (pathEdit->count() == 1) return;
+  // The history is the list of the path edit, most recent (current) first
+  if (pathEdit->count() < 2) return;
+  const QString current = pathEdit->itemText(0);
 
-  // Retrieve current index
-  QString current = pathEdit->currentText();
-  if (current.contains(pathEdit->itemText(1))) {
+  // Previous folder that still exists (folders can have been removed)
+  int target = -1;
+  for (int i = 1; i < pathEdit->count(); ++i) {
+    const QString path = pathEdit->itemText(i);
+    if (path != current && QFileInfo(path).isDir()) {
+      target = i;
+      break;
+    }
+  }
+  if (target == -1) return; // nowhere to go back to
+
+  // Going back to a parent folder: select the folder we come from
+  if (current.contains(pathEdit->itemText(target))) {
     backIndex = modelList->index(current);
   }
 
-  // Remove history
-  do {
+  // Remove the newer entries from the history
+  for (int i = 0; i < target; ++i) {
     pathEdit->removeItem(0);
     if (tabs->count()) tabs->remHistory();
-  } while (!QFileInfo(pathEdit->itemText(0)).exists()
-           || pathEdit->itemText(0) == current);
+  }
+  pathEdit->setCurrentIndex(0);
+  forwardHistory.prepend(current);
 
   // Sets new dir index
   QModelIndex i = modelList->index(pathEdit->itemText(0));
+  navigatingHistory = true;
   tree->setCurrentIndex(modelTree->mapFromSource(i));
+  navigatingHistory = false;
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Goes forward again, to the folder left with "Back"
+ */
+void MainWindow::goForwardDir() {
+  while (!forwardHistory.isEmpty()) {
+    const QString path = forwardHistory.takeFirst();
+    if (!QFileInfo(path).isDir()) { continue; } // removed meanwhile
+
+    // the folder is added to the history by treeSelectionChanged()
+    QModelIndex i = modelList->index(path);
+    navigatingHistory = true;
+    tree->setCurrentIndex(modelTree->mapFromSource(i));
+    navigatingHistory = false;
+    return;
+  }
 }
 //---------------------------------------------------------------------------
 

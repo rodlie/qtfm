@@ -91,6 +91,7 @@ public slots:
     void lateStart();
     void goUpDir();
     void goBackDir();
+    void goForwardDir();
     void goHomeDir();
     void deleteFile();
     void trashFile();
@@ -253,6 +254,7 @@ private:
     QAction *exitAct;
     QAction *upAct;
     QAction *backAct;
+    QAction *forwardAct;
     QAction *homeAct;
     QAction *newTabAct;
     QAction *hiddenAct;
@@ -327,6 +329,11 @@ private:
     QString copyXofTS;
 
     bool ignoreReload;
+
+    // folders left with "Back", most recent first, for "Forward"
+    QStringList forwardHistory;
+    // true while Back/Forward is changing folder
+    bool navigatingHistory;
 
     QVector<QString> progressQueue;
 

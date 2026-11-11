@@ -245,6 +245,7 @@ MainWindow::MainWindow()
 
     trashDir = Common::trashDir();
     ignoreReload = false;
+    navigatingHistory = false;
 
     qApp->installEventFilter(this);
 
@@ -639,6 +640,8 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
     }
 
     if (curIndex.filePath() != pathEdit->itemText(0)) {
+        // going somewhere else (not Back/Forward) ends the "Forward" path
+        if (!navigatingHistory) { forwardHistory.clear(); }
         if (tabs->count() && pathHistory) { tabs->addHistory(curIndex.filePath()); }
         if (!pathHistory && pathEdit->count()>0) { pathEdit->clear(); }
         pathEdit->insertItem(0,curIndex.filePath());
@@ -873,6 +876,7 @@ void MainWindow::tabChanged(int index)
 {
     if (tabs->count() == 0) { return; }
 
+    forwardHistory.clear(); // belongs to the tab being left
     pathEdit->clear();
     pathEdit->addItems(*tabs->getHistory(index));
 
@@ -1455,6 +1459,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
     // Whitespace
     else {
       popup->addAction(backAct);
+      popup->addAction(forwardAct);
       popup->addAction(upAct);
       popup->addAction(homeAct);
       popup->addSeparator();
@@ -1628,6 +1633,9 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
             goBackDir();
             // handled: otherwise the event is delivered again to each parent
             // widget and goes back once more for each of them
+            return true;
+        case Qt::ForwardButton:
+            goForwardDir();
             return true;
         default:;
         }
