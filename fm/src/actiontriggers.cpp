@@ -611,7 +611,7 @@ void MainWindow::closeFilterBar() {
  */
 void MainWindow::applyFilter() {
   const QString text = filterEdit->text();
-  modelView->setNameFilter(text, filterDirsCheck->isChecked());
+  modelView->setNameFilter(text, filterDirsCheck->isChecked(), pathEdit->itemText(0));
   if (text.isEmpty()) {
     status->clearMessage();
     return;

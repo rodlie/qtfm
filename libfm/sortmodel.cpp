@@ -1,4 +1,5 @@
 #include "sortmodel.h"
+#include <QDir>
 #include "mymodel.h"
 
 //---------------------------------------------------------------------------------
@@ -25,13 +26,15 @@ void viewsSortProxyModel::setShowDotDot(bool show)
 }
 
 //---------------------------------------------------------------------------------
-void viewsSortProxyModel::setNameFilter(const QString &text, bool filterDirs)
+void viewsSortProxyModel::setNameFilter(const QString &text, bool filterDirs,
+                                        const QString &rootPath)
 {
     const bool active = !text.isEmpty();
     if (!active && !nameFilterActive) { return; } // nothing to change
 
     nameFilterActive = active;
     nameFilterDirs = filterDirs;
+    nameFilterRoot = QDir::cleanPath(rootPath);
     if (active) {
         const bool wildcard = text.contains('*') || text.contains('?') || text.contains('[');
         const QString pattern = wildcard ?
@@ -53,11 +56,19 @@ bool viewsSortProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sou
     // "..": shown on request, also when hidden files are not shown
     if (fileModel->isDotDot(index0)) { return showDotDot; }
 
-    // name filter (folders only when requested)
+    // name filter (folders only when requested), only for the items inside
+    // the current folder: the model is a tree from "/" and the views show
+    // the current folder as their root, so filtering out an ancestor folder
+    // would remove the current folder itself from the view
     if (nameFilterActive && nameFilter.isValid()
-        && (nameFilterDirs || !fileModel->isDir(index0))
-        && !nameFilter.match(fileModel->fileName(index0)).hasMatch()) {
-        return false;
+        && (nameFilterDirs || !fileModel->isDir(index0))) {
+        const QString parentPath = QDir::cleanPath(fileModel->filePath(sourceParent));
+        const bool insideRoot = !parentPath.isEmpty() && !nameFilterRoot.isEmpty() &&
+                (parentPath == nameFilterRoot ||
+                 parentPath.startsWith(nameFilterRoot == "/" ? nameFilterRoot : nameFilterRoot + "/"));
+        if (insideRoot && !nameFilter.match(fileModel->fileName(index0)).hasMatch()) {
+            return false;
+        }
     }
 
     if (this->filterRegularExpression().pattern().isEmpty()) { return true; }
