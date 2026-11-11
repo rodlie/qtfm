@@ -1385,7 +1385,9 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         while (i.hasNext()) {
           i.next();
           qDebug() << "custom action" << i.key() << i.key() << i.value();
-          if (curIndex.completeSuffix().endsWith(i.key())) { actions.append(i.value()); }
+          // the type is a file extension ("zip", "tar.gz"): match the whole
+          // extension, "zip" must not match "file.gzip"
+          if (!i.key().isEmpty() && curIndex.fileName().endsWith("." + i.key())) { actions.append(i.value()); }
         }
 
         // Add run action or open with default application action
@@ -1427,7 +1429,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         while (m.hasNext()) {
             m.next();
             QString filePath = curIndex.fileName();
-            if (filePath.endsWith(m.key())) {
+            if (!m.key().isEmpty() && filePath.endsWith("." + m.key())) {
                 if (m.value() != nullptr) {
                     popup->addMenu(m.value());
                 }
@@ -2006,6 +2008,10 @@ void MainWindow::actionMapper(QString cmd)
     QModelIndexList selList;
     QStringList temp;
 
+    // "~" in the command is the home folder. Replace it before the file
+    // names are inserted, they can contain '~' themselves (backup files)
+    cmd.replace("~",QDir::homePath());
+
     if (focusWidget() == list || focusWidget() == detailTree) {
         QFileInfo file = modelList->fileInfo(modelView->mapToSource(listSelectionModel->currentIndex()));
 
@@ -2021,9 +2027,6 @@ void MainWindow::actionMapper(QString cmd)
     else {
         selList << modelView->mapFromSource(modelList->index(curIndex.filePath()));
     }
-
-    cmd.replace("~",QDir::homePath());
-
 
     //process any input tokens
     int pos = 0;

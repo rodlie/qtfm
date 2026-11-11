@@ -543,7 +543,8 @@ QString Common::getDeviceForDir(QString dir)
                 root = dev;
                 continue;
             }
-            if (dir.startsWith(mnt)) { result.append(QStringList() << dev << mnt); }
+            // inside the mount point: "/data2" is not inside "/data"
+            if (dir == mnt || dir.startsWith(mnt + "/")) { result.append(QStringList() << dev << mnt); }
         }
     }
     mtab.close();
