@@ -76,6 +76,7 @@ void CustomActionsManager::readActions() {
     // temp.at(3) - Command
     QStringList temp(settingsPtr->value(keys.at(i)).toStringList());
     //qDebug() << "loaded custom action" << temp;
+    if (temp.size() < 4) { continue; } // incomplete entry
 
     // Create new action and read it
     QAction *act = new QAction(QIcon::fromTheme(temp.at(2)), temp.at(1), this);
@@ -150,6 +151,7 @@ void CustomActionsManager::execAction(const QString &cmd, const QString &path) {
   QStringList temp = cmd.split(" ");
   QString exec = temp.at(0);
   temp.removeAt(0);
+  if (exec.isEmpty() || exec == "|") { return; } // action without command
 
   // Fix rest of command
   temp.replaceInStrings("\\"," ");

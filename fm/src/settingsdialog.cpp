@@ -733,9 +733,10 @@ void SettingsDialog::readSettings() {
   for (int i = 0; i < keys.count(); ++i) {
     QApplication::processEvents();
     QStringList temp = settingsPtr->value(keys.at(i)).toStringList();
+    while (temp.size() < 4) { temp << QString(); } // incomplete entry
     bool setChecked = 0;
     QString cmd = temp.at(3);
-    if (cmd.at(0) == '|') {
+    if (cmd.startsWith('|')) {
       cmd.remove(0, 1);
       setChecked = 1;
     }

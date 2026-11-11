@@ -71,7 +71,8 @@ void tabBar::dragMoveEvent(QDragMoveEvent *event)
 void tabBar::dropEvent(QDropEvent *event)
 {
     QList<QUrl> paths = event->mimeData()->urls();
-    QFileInfo file = QFileInfo(paths.at(0).path());
+    if (paths.isEmpty()) { event->ignore(); return; }
+    QFileInfo file = QFileInfo(paths.at(0).toLocalFile());
 
     if(tabAt(event->position().toPoint()) == -1 && file.isDir())           //new tab
         addNewTab(file.filePath(),0);
@@ -87,7 +88,7 @@ void tabBar::dropEvent(QDropEvent *event)
         }
 
         if (event->proposedAction() == 2) { //cut, holding ctrl to copy is action 1
-            foreach (QUrl item, paths) { cutList.append(item.path()); }
+            foreach (QUrl item, paths) { cutList.append(item.toLocalFile()); }
         }
 
         emit dragDropTab(event->mimeData(), tabData(currentIndex()).toString(), cutList);
@@ -130,7 +131,8 @@ void tabBar::addHistory(QString path)
 //---------------------------------------------------------------------------
 void tabBar::remHistory()
 {
-    history.at(currentIndex())->removeFirst();
+    QStringList *current = history.value(currentIndex());
+    if (current && !current->isEmpty()) { current->removeFirst(); }
 }
 
 //---------------------------------------------------------------------------

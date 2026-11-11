@@ -1353,14 +1353,24 @@ bool myModel::setData(const QModelIndex & index, const QVariant & value, int rol
 
     //can only set the filename
     myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
+    if (!item || !item->parent()) { return false; }
+
+    const QString name = value.toString();
+    if (name.isEmpty() || name.contains(SEPARATOR) || name == "." || name == "..") { return false; }
+    if (name == item->fileName()) { return true; }
 
     //physically change the name on disk
-    bool ok = QFile::rename(item->absoluteFilePath(),item->parent()->absoluteFilePath() + SEPARATOR + value.toString());
+    bool ok = QFile::rename(item->absoluteFilePath(),item->parent()->absoluteFilePath() + SEPARATOR + name);
 
     //change the details in the modelItem
     if(ok) {
         item->mMimeType.clear();                //clear the suffix/mimetype in case the user changes type
-        item->changeName(value.toString());
+        // changeName() destroys the children of a folder (they are read
+        // again on demand), the views must be told
+        const int children = item->children().count();
+        if (children > 0) { beginRemoveRows(index.sibling(index.row(), 0), 0, children - 1); }
+        item->changeName(name);
+        if (children > 0) { endRemoveRows(); }
         emit dataChanged(index,index);
     }
 
@@ -1434,10 +1444,11 @@ bool myModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
 
   // Get urls of files
   QList<QUrl> files = data->urls();
+  if (files.isEmpty()) { return false; }
   //QStringList cutList;
 
   // Don't do anything if drag and drop in same folder
-  if (QFileInfo(files.at(0).path()).canonicalPath() == filePath(parent)) {
+  if (QFileInfo(files.at(0).toLocalFile()).canonicalPath() == filePath(parent)) {
     return false;
   }
 
