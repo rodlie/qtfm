@@ -100,6 +100,15 @@ void icondlg::loadIcons()
 //---------------------------------------------------------------------------
 void icondlg::accept()
 {
+    // nothing chosen yet
+    if (!iconList->currentItem()) { return; }
     result = iconList->currentItem()->text();
     this->done(1);
+}
+
+//---------------------------------------------------------------------------
+icondlg::~icondlg()
+{
+    // scanTheme() runs in another thread and uses this object
+    thread.waitForFinished();
 }

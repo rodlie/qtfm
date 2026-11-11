@@ -36,6 +36,7 @@ Q_OBJECT
 
 public:
     icondlg();
+    ~icondlg();
     QString result;
 
 public slots:

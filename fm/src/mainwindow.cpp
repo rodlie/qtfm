@@ -547,6 +547,7 @@ void MainWindow::loadBookmarks()
     settings->beginGroup("bookmarks");
     foreach (QString key,settings->childKeys()) {
       QStringList temp(settings->value(key).toStringList());
+      if (temp.size() < 3) { continue; } // damaged entry
       modelBookmarks->addBookmark(temp[0], temp[1], temp[2], temp.last(), "", false, false);
     }
     settings->endGroup();
@@ -1550,11 +1551,12 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
             // media actions
 #ifndef NO_UDISKS
             QString mediaPath = bookmarksList->currentIndex().data(MEDIA_PATH).toString();
-            if (!mediaPath.isEmpty()) {
-                if (!disks->devices[mediaPath]->mountpoint.isEmpty()) { // mounted
+            Device *mediaDevice = mediaPath.isEmpty() ? nullptr : disks->devices.value(mediaPath);
+            if (mediaDevice) {
+                if (!mediaDevice->mountpoint.isEmpty()) { // mounted
                     popup->addAction(mediaUnmountAct);
                 } else { // unmounted
-                    if (disks->devices[mediaPath]->isOptical) { popup->addAction(mediaEjectAct); }
+                    if (mediaDevice->isOptical) { popup->addAction(mediaEjectAct); }
                 }
             }
 #endif
@@ -1908,7 +1910,8 @@ void MainWindow::handleMediaMountpointChanged(QString path, QString mountpoint)
     if (path.isEmpty()) { return; }
     for (int i = 0; i < modelBookmarks->rowCount(); i++) {
         if (modelBookmarks->item(i)->data(MEDIA_MODEL).toBool() && modelBookmarks->item(i)->data(MEDIA_PATH).toString() == path) {
-            modelBookmarks->item(i)->setData(disks->devices[path]->mountpoint, BOOKMARK_PATH);
+            Device *device = disks->devices.value(path);
+            if (device) { modelBookmarks->item(i)->setData(device->mountpoint, BOOKMARK_PATH); }
         }
     }
 }
@@ -1939,9 +1942,11 @@ void MainWindow::handleMediaChanged(QString path, bool present)
 {
     //qDebug() << "changed" << path << present;
     if (path.isEmpty()) { return; }
-    if (disks->devices[path]->isOptical && !present && mediaBookmarkExists(path)>-1) {
+    Device *device = disks->devices.value(path);
+    if (!device) { return; }
+    if (device->isOptical && !present && mediaBookmarkExists(path)>-1) {
         handleMediaRemoved(path);
-    } else if (disks->devices[path]->isOptical && present && mediaBookmarkExists(path)==-1) {
+    } else if (device->isOptical && present && mediaBookmarkExists(path)==-1) {
         handleMediaAdded(path);
     }
 }
@@ -1953,7 +1958,8 @@ void MainWindow::handleMediaUnmount()
     if (item == nullptr) { return; }
     QString path = item->data(MEDIA_PATH).toString();
     if (path.isEmpty()) { return; }
-    disks->devices[path]->unmount();
+    Device *device = disks->devices.value(path);
+    if (device) { device->unmount(); }
 }
 
 void MainWindow::handleMediaEject()
@@ -1963,7 +1969,8 @@ void MainWindow::handleMediaEject()
     if (item == nullptr) { return; }
     QString path = item->data(MEDIA_PATH).toString();
     if (path.isEmpty()) { return; }
-    disks->devices[path]->eject();
+    Device *device = disks->devices.value(path);
+    if (device) { device->eject(); }
 }
 
 void MainWindow::handleMediaError(QString path, QString error)
