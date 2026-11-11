@@ -27,6 +27,8 @@ void IconListDelegate::paint(QPainter *painter,
     QRect txtRect(item.left()+iconsize.width()+5,
                   item.top(), item.width()-iconsize.width()-5, item.height()-2);
     QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
+    // no color from the model: use the text color of the palette
+    if (txtBrush.style() == Qt::NoBrush) { txtBrush = option.palette.text(); }
 
     if (option.state & QStyle::State_Selected) {
         // highlight the icon and the text actually drawn, not the whole column

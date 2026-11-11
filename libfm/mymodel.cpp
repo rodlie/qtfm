@@ -1134,6 +1134,9 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
     QFileInfo type(item->fileInfo());
     if (cutItems.contains(type.filePath())) {
       return colors.windowText();
+    } else if (type.isSymLink() && !type.exists()) {
+      // broken link: the target does not exist (exists() follows the link)
+      return QBrush(darkBackground ? QColor(255,110,110) : QColor(200,0,0));
     } else if (type.isHidden()) {
       return darkBackground ? QBrush(QColor(175,175,175)) : colors.dark();
     } else if (type.isSymLink()) {
@@ -1143,6 +1146,9 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
     } else if (type.isExecutable()) {
       return QBrush(darkBackground ? QColor(120,220,120) : QColor(Qt::darkGreen));
     }
+    // any other file: the normal text color (without it the list and icon
+    // delegates painted these names black, unreadable in Dark mode)
+    return colors.windowText();
   }
   // Alignment of filename
   else if (role == Qt::TextAlignmentRole) {

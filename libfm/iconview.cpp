@@ -59,6 +59,8 @@ void IconViewDelegate::paint(QPainter *painter,
     QRect txtRect(item.left()+4, item.top()+iconsize.height()+4+4+4,
                   item.width()-8, item.height()-iconsize.height()-4);
     QBrush txtBrush = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
+    // no color from the model: use the text color of the palette
+    if (txtBrush.style() == Qt::NoBrush) { txtBrush = option.palette.text(); }
     bool isSelected = option.state & QStyle::State_Selected;
     bool isEditing = _isEditing && index==_index;
 
