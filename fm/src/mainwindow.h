@@ -97,6 +97,9 @@ public slots:
     void trashFile();
     void cutFile();
     void copyFile();
+    void copyPath();
+    void selectAllItems();
+    void invertSelection();
     bool linkFiles(const QList<QUrl> &files, const QString &newPath);
     void newDir();
     void newFile();
@@ -248,6 +251,9 @@ private:
     QLabel * statusSize;
     QLabel * statusName;
     QLabel * statusDate;
+    // status bar texts of the current folder, shown when nothing is selected
+    QString folderStatusSize;
+    QString folderStatusDate;
     QString startPath;
 
     QAction *closeAct;
@@ -276,6 +282,9 @@ private:
     QAction *newFileAct;
     QAction *cutAct;
     QAction *copyAct;
+    QAction *copyPathAct;
+    QAction *selectAllAct;
+    QAction *invertSelAct;
     QAction *pasteAct;
     QAction *settingsAct;
     QAction *renameAct;

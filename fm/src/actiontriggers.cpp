@@ -11,6 +11,8 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QClipboard>
+#include <QItemSelection>
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__APPLE__)
 #include <sys/mount.h>
 #else
@@ -515,6 +517,50 @@ void MainWindow::copyFile() {
   QApplication::clipboard()->setMimeData(modelView->mimeData(selList));
 
   cutAct->setData(0);
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Copies the full path of the selected items (or of the current
+ * folder when nothing is selected) to the clipboard, one per line
+ */
+void MainWindow::copyPath() {
+  QStringList paths;
+  if (focusWidget() == list || focusWidget() == detailTree) {
+    QModelIndexList selList = listSelectionModel->selectedRows(0);
+    if (selList.isEmpty()) { selList = listSelectionModel->selectedIndexes(); }
+    foreach (QModelIndex item, selList) {
+      const QString path = modelList->filePath(modelView->mapToSource(item));
+      if (!paths.contains(path)) { paths.append(path); }
+    }
+  }
+  if (paths.isEmpty()) { paths.append(pathEdit->itemText(0)); }
+  QApplication::clipboard()->setText(paths.join("\n"));
+  status->showMessage(tr("Path copied to the clipboard"), 3000);
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Selects all items of the current folder
+ */
+void MainWindow::selectAllItems() {
+  const QModelIndex root = (currentView == 2) ? detailTree->rootIndex() : list->rootIndex();
+  const int rows = modelView->rowCount(root);
+  if (rows < 1) { return; }
+  QItemSelection all(modelView->index(0, 0, root), modelView->index(rows - 1, 0, root));
+  listSelectionModel->select(all, QItemSelectionModel::Select);
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Selects the items that are not selected and deselects the others
+ */
+void MainWindow::invertSelection() {
+  const QModelIndex root = (currentView == 2) ? detailTree->rootIndex() : list->rootIndex();
+  const int rows = modelView->rowCount(root);
+  if (rows < 1) { return; }
+  QItemSelection all(modelView->index(0, 0, root), modelView->index(rows - 1, 0, root));
+  listSelectionModel->select(all, QItemSelectionModel::Toggle);
 }
 //---------------------------------------------------------------------------
 

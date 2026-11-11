@@ -138,6 +138,23 @@ void MainWindow::createActions() {
   pasteAct->setIcon(actionIcons->at(4));
   actionList->append(pasteAct);
 
+  copyPathAct = new QAction(tr("Copy path"), this);
+  copyPathAct->setStatusTip(tr("Copy the full path of the selected items to the clipboard"));
+  connect(copyPathAct, SIGNAL(triggered()), this, SLOT(copyPath()));
+  copyPathAct->setIcon(QIcon::fromTheme("edit-copy"));
+  actionList->append(copyPathAct);
+
+  selectAllAct = new QAction(tr("Select all"), this);
+  selectAllAct->setStatusTip(tr("Select all items of the current folder"));
+  connect(selectAllAct, SIGNAL(triggered()), this, SLOT(selectAllItems()));
+  selectAllAct->setIcon(QIcon::fromTheme("edit-select-all"));
+  actionList->append(selectAllAct);
+
+  invertSelAct = new QAction(tr("Invert selection"), this);
+  invertSelAct->setStatusTip(tr("Select the items that are not selected and deselect the others"));
+  connect(invertSelAct, SIGNAL(triggered()), this, SLOT(invertSelection()));
+  actionList->append(invertSelAct);
+
   upAct = new QAction(tr("Up"),this);
   upAct->setStatusTip(tr("Go up one directory"));
   connect(upAct, SIGNAL(triggered()),this,SLOT(goUpDir()));
@@ -457,6 +474,9 @@ void MainWindow::readShortcuts() {
   if (shortcutDefaults < 1) {
     newDefaults << qMakePair(forwardAct, QString("alt+right"));
   }
+  if (shortcutDefaults < 2) {
+    newDefaults << qMakePair(copyPathAct, QString("ctrl+shift+c"));
+  }
   for (int i = 0; i < newDefaults.size(); ++i) {
     const QString text = newDefaults.at(i).first->text();
     const QString keys = newDefaults.at(i).second;
@@ -469,8 +489,8 @@ void MainWindow::readShortcuts() {
     settings->setValue(QString("customShortcuts/default_%1").arg(keys),
                        QStringList() << text << keys);
   }
-  if (shortcutDefaults < 1) {
-    settings->setValue("shortcutDefaults", 1);
+  if (shortcutDefaults < 2) {
+    settings->setValue("shortcutDefaults", 2);
     settings->sync();
   }
 
@@ -558,6 +578,10 @@ void MainWindow::createMenus() {
   editMenu->addAction(cutAct);
   editMenu->addAction(copyAct);
   editMenu->addAction(pasteAct);
+  editMenu->addAction(copyPathAct);
+  editMenu->addAction(selectAllAct);
+  editMenu->addAction(invertSelAct);
+  editMenu->addSeparator();
   editMenu->addAction(renameAct);
   editMenu->addAction(trashAct);
   editMenu->addAction(deleteAct);

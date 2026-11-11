@@ -1213,6 +1213,21 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
     return item->fileName();
   }
 
+  // Tooltip: name, link target, size, type and date
+  if (role == Qt::ToolTipRole) {
+    if (index.column() != 0) { return QVariant(); }
+    const QFileInfo info = item->fileInfo();
+    QStringList tip;
+    tip << item->fileName();
+    if (info.isSymLink()) { tip << tr("Link to: %1").arg(info.symLinkTarget()); }
+    if (!info.isDir()) { tip << tr("Size: %1").arg(Common::formatSize(info.size())); }
+    const QString type = index.sibling(index.row(), 2).data(Qt::DisplayRole).toString();
+    if (!type.isEmpty()) { tip << tr("Type: %1").arg(type); }
+    tip << tr("Modified: %1").arg(QLocale::system().toString(info.lastModified(),
+                                                              QLocale::FormatType::ShortFormat));
+    return tip.join("\n");
+  }
+
   if (role == Qt::StatusTipRole) {
     return item->fileName();
   }

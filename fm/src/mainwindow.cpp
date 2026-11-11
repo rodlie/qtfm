@@ -27,6 +27,8 @@
 #include <QPushButton>
 #include <QApplication>
 #include <QStatusBar>
+#include <QStorageInfo>
+#include <QWheelEvent>
 #include <QMenu>
 #include <QMenuBar>
 #ifndef NO_DBUS
@@ -711,9 +713,18 @@ void MainWindow::dirLoaded(bool thumbs)
     if (!bytes) { total = ""; }
     else { total = Common::formatSize(bytes); }
 
+    // free space of the file system of this folder
+    QStorageInfo storage(pathEdit->itemText(0));
+    if (storage.isValid() && storage.isReady()) {
+        const QString freeSpace = tr("%1 free").arg(Common::formatSize(storage.bytesAvailable()));
+        total = total.isEmpty() ? freeSpace : QString("%1, %2").arg(total, freeSpace);
+    }
+
+    folderStatusSize = QString("%1 items   ").arg(items.count());
+    folderStatusDate = total;
     statusName->clear();
-    statusSize->setText(QString("%1 items").arg(items.count()));
-    statusDate->setText(QString("%1").arg(total));
+    statusSize->setText(folderStatusSize);
+    statusDate->setText(folderStatusDate);
 
     if (thumbsAct->isChecked() && thumbs) {
         QtConcurrent::run([this, items]() {
@@ -766,6 +777,9 @@ void MainWindow::listSelectionChanged(const QItemSelection selected, const QItem
 
     if(items.count() == 0) {
         curIndex = QFileInfo(pathEdit->itemText(0));
+        // nothing selected: show the information about the folder again
+        statusSize->setText(folderStatusSize);
+        statusDate->setText(folderStatusDate);
         return;
     }
 
@@ -933,10 +947,19 @@ void MainWindow::listDoubleClicked(QModelIndex current) {
  * @param path
  */
 void MainWindow::pathEditChanged(QString path) {
-  QString info = path;
-  if (!QFileInfo(path).exists()) { return; }
-  info.replace("~",QDir::homePath());
-  tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(info)));
+  QString info = path.trimmed();
+  // "~" and "~/..." are the home folder (only at the start: names can have '~')
+  if (info == "~" || info.startsWith("~/")) { info.replace(0, 1, QDir::homePath()); }
+  QFileInfo file(info);
+  if (!file.exists()) { return; }
+  info = QDir::cleanPath(file.absoluteFilePath());
+  if (file.isDir()) {
+    tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(info)));
+    return;
+  }
+  // Path of a file: show its folder and select the file
+  tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(file.absolutePath())));
+  selectListItem(modelList->index(info));
 }
 //---------------------------------------------------------------------------
 
@@ -1393,6 +1416,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         popup->addAction(cutAct);
         popup->addAction(copyAct);
         popup->addAction(pasteAct);
+        popup->addAction(copyPathAct);
         popup->addSeparator();
         popup->addAction(renameAct);
         popup->addSeparator();
@@ -1427,6 +1451,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         popup->addAction(cutAct);
         popup->addAction(copyAct);
         popup->addAction(pasteAct);
+        popup->addAction(copyPathAct);
         popup->addSeparator();
         popup->addAction(renameAct);
         popup->addSeparator();
@@ -1533,6 +1558,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
           popup->addAction(cutAct);
           popup->addAction(copyAct);
           popup->addAction(pasteAct);
+          popup->addAction(copyPathAct);
           popup->addSeparator();
           popup->addAction(renameAct);
           popup->addSeparator();
@@ -1626,6 +1652,19 @@ QMenu* MainWindow::createOpenWithMenu() {
 
 bool MainWindow::eventFilter(QObject *o, QEvent *e)
 {
+    // Ctrl + mouse wheel over the file list: zoom
+    if (e->type() == QEvent::Wheel && (o == list->viewport() || o == detailTree->viewport())) {
+        QWheelEvent *we = static_cast<QWheelEvent*>(e);
+        if (we->modifiers() & Qt::ControlModifier) {
+            // the zoom actions work on the focused view
+            if (currentView == 2) { detailTree->setFocus(); }
+            else { list->setFocus(); }
+            if (we->angleDelta().y() > 0) { zoomInAction(); }
+            else if (we->angleDelta().y() < 0) { zoomOutAction(); }
+            return true;
+        }
+    }
+
     if (e->type() == QEvent::MouseButtonPress) {
         QMouseEvent* me = static_cast<QMouseEvent*>(e);
         switch (me->button()) {
