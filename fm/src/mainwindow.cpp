@@ -270,24 +270,22 @@ void MainWindow::lateStart() {
   tree->setDragDropMode(QAbstractItemView::DragDrop);
   tree->setDefaultDropAction(Qt::MoveAction);
   tree->setDropIndicatorShown(true);
-  tree->setEditTriggers(QAbstractItemView::EditKeyPressed |
-                        QAbstractItemView::SelectedClicked);
+  // files are renamed in a dialog (renameDialog), not in place
+  tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
   // Configure detail view
   detailTree->setSelectionMode(QAbstractItemView::ExtendedSelection);
   detailTree->setDragDropMode(QAbstractItemView::DragDrop);
   detailTree->setDefaultDropAction(Qt::MoveAction);
   detailTree->setDropIndicatorShown(true);
-  detailTree->setEditTriggers(QAbstractItemView::EditKeyPressed |
-                              QAbstractItemView::SelectedClicked);
+  detailTree->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
   // Configure list view
   list->setResizeMode(QListView::Adjust);
   list->setSelectionMode(QAbstractItemView::ExtendedSelection);
   list->setSelectionRectVisible(true);
   list->setFocus();
-  list->setEditTriggers(QAbstractItemView::EditKeyPressed |
-                        QAbstractItemView::SelectedClicked);
+  list->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
   // Clipboard configuration
   clipboardChanged();

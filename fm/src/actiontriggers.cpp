@@ -6,6 +6,11 @@
 #include <QDockWidget>
 #include <QStatusBar>
 #include <QToolBar>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__APPLE__)
 #include <sys/mount.h>
 #else
@@ -232,13 +237,15 @@ void MainWindow::newDir() {
 
   // Create new directory
   QModelIndex i = modelList->index(pathEdit->itemText(0));
-  newDir = modelView->mapFromSource(modelList->insertFolder(i));
+  QPersistentModelIndex created = modelList->insertFolder(i);
+  if (!created.isValid()) { return; }
+  newDir = modelView->mapFromSource(created);
   listSelectionModel->setCurrentIndex(newDir,
                                       QItemSelectionModel::ClearAndSelect);
 
-  // Editation of name of new directory
-  if (stackWidget->currentIndex() == 0) list->edit(newDir);
-  else detailTree->edit(newDir);
+  // Ask the name of the new directory
+  renameDialog(created);
+  selectListItem(created);
 }
 //---------------------------------------------------------------------------
 
@@ -256,13 +263,15 @@ void MainWindow::newFile() {
 
   // Create new file
   QModelIndex i = modelList->index(pathEdit->itemText(0));
-  fileIndex = modelView->mapFromSource(modelList->insertFile(i));
+  QPersistentModelIndex created = modelList->insertFile(i);
+  if (!created.isValid()) { return; }
+  fileIndex = modelView->mapFromSource(created);
   listSelectionModel->setCurrentIndex(fileIndex,
                                       QItemSelectionModel::ClearAndSelect);
 
-   // Editation of name of new file
-  if (stackWidget->currentIndex() == 0) list->edit(fileIndex);
-  else detailTree->edit(fileIndex);
+  // Ask the name of the new file
+  renameDialog(created);
+  selectListItem(created);
 }
 //---------------------------------------------------------------------------
 
@@ -481,15 +490,127 @@ void MainWindow::copyFile() {
  * @brief Renames file
  */
 void MainWindow::renameFile() {
-  if (focusWidget() == tree) {
-    tree->edit(treeSelectionModel->currentIndex());
-  } else if(focusWidget() == bookmarksList) {
+  if (focusWidget() == bookmarksList) {
+    // the label of a bookmark, not a file: edited in place
     bookmarksList->edit(bookmarksList->currentIndex());
-  } else if(focusWidget() == list) {
-    list->edit(listSelectionModel->currentIndex());
-  } else if(focusWidget() == detailTree) {
-    detailTree->edit(listSelectionModel->currentIndex());
+  } else if (focusWidget() == tree) {
+    QPersistentModelIndex source = modelTree->mapToSource(treeSelectionModel->currentIndex());
+    if (renameDialog(source)) {
+      // the renamed folder is the one being shown: load it under its new path
+      treeSelectionChanged(treeSelectionModel->currentIndex(), QModelIndex());
+    }
+  } else if (focusWidget() == list || focusWidget() == detailTree) {
+    // rename the current item only if it is part of the selection
+    if (!listSelectionModel->hasSelection()) { return; }
+    QModelIndex current = listSelectionModel->currentIndex();
+    if (!listSelectionModel->isSelected(current)) {
+      current = listSelectionModel->selectedIndexes().value(0);
+    }
+    QPersistentModelIndex source = modelView->mapToSource(current.sibling(current.row(), 0));
+    if (renameDialog(source)) { selectListItem(source); }
   }
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Selects and shows an item in the current list/detail view
+ * @param sourceIndex index of the item in the file model
+ */
+void MainWindow::selectListItem(const QModelIndex &sourceIndex) {
+  if (!sourceIndex.isValid()) { return; }
+  const QModelIndex index = modelView->mapFromSource(sourceIndex);
+  if (!index.isValid()) { return; }
+  listSelectionModel->setCurrentIndex(index, QItemSelectionModel::ClearAndSelect);
+  if (stackWidget->currentIndex() == 0) { list->scrollTo(index); }
+  else { detailTree->scrollTo(index); }
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Asks for the new name of a file or folder in a modal dialog, showing
+ * the current name, and renames it
+ * @param sourceIndex index of the item in the file model
+ * @return true if the item was renamed
+ */
+bool MainWindow::renameDialog(const QModelIndex &sourceIndex) {
+  // the item can go away while the dialog is open
+  QPersistentModelIndex index(sourceIndex);
+  if (!index.isValid()) { return false; }
+
+  const QFileInfo info = modelList->fileInfo(index);
+  const QString oldName = modelList->fileName(index);
+  if (oldName.isEmpty() || oldName == "/") { return false; }
+
+  QDialog dialog(this);
+  dialog.setWindowTitle(tr("Rename"));
+  dialog.setModal(true);
+  dialog.setMinimumWidth(420);
+
+  QLabel *currentLabel = new QLabel(tr("Current name: <b>%1</b>").arg(oldName.toHtmlEscaped()), &dialog);
+  currentLabel->setTextFormat(Qt::RichText);
+  currentLabel->setWordWrap(true);
+  QLabel *newLabel = new QLabel(tr("New name:"), &dialog);
+  QLineEdit *edit = new QLineEdit(oldName, &dialog);
+  QLabel *message = new QLabel(&dialog);
+  message->setWordWrap(true);
+  QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                                                   Qt::Horizontal, &dialog);
+
+  QVBoxLayout *layout = new QVBoxLayout(&dialog);
+  layout->addWidget(currentLabel);
+  layout->addSpacing(6);
+  layout->addWidget(newLabel);
+  layout->addWidget(edit);
+  layout->addWidget(message);
+  layout->addWidget(buttons);
+
+  // Select the name without the extension, which is usually kept
+  int selection = oldName.length();
+  if (!info.isDir()) {
+    const int dot = oldName.lastIndexOf('.');
+    if (dot > 0) { selection = dot; }
+  }
+  edit->setSelection(0, selection);
+  edit->setFocus();
+
+  connect(edit, &QLineEdit::textChanged, message, &QLabel::clear);
+  connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+  connect(buttons, &QDialogButtonBox::accepted, &dialog, [&]() {
+    const QString name = edit->text();
+    if (name == oldName) { dialog.reject(); return; } // nothing to do
+    QString error;
+    if (name.isEmpty()) {
+      error = tr("The name cannot be empty.");
+    } else if (name.contains('/')) {
+      error = tr("The name cannot contain \"/\".");
+    } else if (name == "." || name == "..") {
+      error = tr("\"%1\" is not a valid name.").arg(name);
+    } else {
+      const QString newPath = info.absolutePath() + "/" + name;
+      if (QFileInfo::exists(newPath) || QFileInfo(newPath).isSymLink()) {
+        error = tr("There is already an item named \"%1\" in this folder.").arg(name);
+      }
+    }
+    if (!error.isEmpty()) {
+      message->setText(error);
+      edit->setFocus();
+      return;
+    }
+    dialog.accept();
+  });
+
+  if (dialog.exec() != QDialog::Accepted) { return false; }
+
+  const QString newName = edit->text();
+  // setData() is protected in myModel, it is public in the base class
+  QAbstractItemModel *model = modelList;
+  if (!index.isValid() || !model->setData(index, newName, Qt::EditRole)) {
+    QMessageBox::warning(this, tr("Rename failed"),
+                         tr("Could not rename \"%1\" to \"%2\". You may not have the proper permissions.")
+                         .arg(oldName, newName));
+    return false;
+  }
+  return true;
 }
 //---------------------------------------------------------------------------
 

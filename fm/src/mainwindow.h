@@ -120,6 +120,8 @@ public slots:
     void toggleWrapBookmarks();
     void showEditDialog();
     void renameFile();
+    bool renameDialog(const QModelIndex &sourceIndex);
+    void selectListItem(const QModelIndex &sourceIndex);
     void actionMapper(QString);
     void folderPropertiesLauncher();
     void bookmarkClicked(QModelIndex);
