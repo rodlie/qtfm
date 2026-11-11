@@ -930,10 +930,13 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("autoPlayAudioCD", checkAudioCD->isChecked());
   settingsPtr->setValue("trayAutoMount", checkAutoMount->isChecked());
   settingsPtr->setValue("autoPlayDVD", checkDVD->isChecked());
+  // compare with the stored theme before replacing it
+  const bool iconThemeChanged = !cmbIconTheme->currentText().isEmpty() &&
+      cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString();
   settingsPtr->setValue("fallbackTheme", cmbIconTheme->currentText());
   settingsPtr->setValue("defMimeAppsFile", cmbDefaultMimeApps->currentText());
 
-  if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
+  if (iconThemeChanged) {
       settingsPtr->setValue("clearCache", true);
       QMessageBox::warning(this, tr("Restart to apply settings"), tr("You must restart application to apply theme settings"));
   }
@@ -1002,6 +1005,9 @@ bool SettingsDialog::saveSettings() {
           temps[i] = temps[i] + ".desktop";
         }
         mimeUtilsPtr->setDefault(mime, temps);
+      } else {
+        // all applications were removed from this mime type
+        mimeUtilsPtr->setDefault(mime, QStringList());
       }
     }
   }

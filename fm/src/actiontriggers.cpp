@@ -1022,7 +1022,7 @@ void MainWindow::showEditDialog() {
   customActManager->freeActions();
 
   // Loads current icon theme
-  QString oldTheme = settings->value("forceTheme").toString();
+  QString oldTheme = settings->value("fallbackTheme").toString();
 
   // save settings
   writeSettings();
@@ -1038,7 +1038,7 @@ void MainWindow::showEditDialog() {
                  false /* don't reload thumb state */);
 
     // If icon theme has changed, use new theme and clear cache
-    QString newTheme = settings->value("forceTheme").toString();
+    QString newTheme = settings->value("fallbackTheme").toString();
     if (oldTheme.compare(newTheme) != 0) {
       modelList->clearIconCache();
       QIcon::setThemeName(newTheme);
