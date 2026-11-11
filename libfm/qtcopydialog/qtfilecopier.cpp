@@ -525,12 +525,31 @@ struct FollowLinksNode : public ChainNode {
             // original, without resolving or relativizing it.
             const QByteArray source = QFile::encodeName(r.source);
             const QByteArray dest = QFile::encodeName(r.dest);
+
+            // This node ends the chain for links, so a move has to be
+            // completed here: RenameNode and MoveNode are not reached.
+            // On the same file system rename(2) moves the link itself.
+            if (r.move && ::rename(source.constData(), dest.constData()) == 0)
+                return true;
+
+            // An existing destination means that overwriting was accepted
+            // (OverwriteNode). symlink(2) does not replace it: remove it,
+            // unless it is a real folder.
+            QFileInfo fid(r.dest);
+            if ((fid.exists() || fid.isSymLink()) && (fid.isSymLink() || !fid.isDir()))
+                ::unlink(dest.constData());
+
             char target[PATH_MAX + 1];
             const ssize_t len = ::readlink(source.constData(), target, PATH_MAX);
             if (len >= 0) {
                 target[len] = '\0';
-                if (::symlink(target, dest.constData()) == 0)
+                if (::symlink(target, dest.constData()) == 0) {
+                    if (r.move && ::unlink(source.constData()) != 0) {
+                        setError(QtFileCopier::CannotRemoveSource);
+                        return false;
+                    }
                     return true;
+                }
             }
 #endif
             setError(QtFileCopier::CannotCreateSymLink);
