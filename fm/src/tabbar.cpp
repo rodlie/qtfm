@@ -34,7 +34,58 @@ tabBar::tabBar(QHash<QString,QIcon> * icons)
         if (from < 0 || to < 0 || from >= history.size() || to >= history.size()) { return; }
         history.move(from, to);
         viewType.move(from, to);
+        updateTabColors();
     });
+    connect(this, &QTabBar::currentChanged, this, &tabBar::updateTabColors);
+}
+
+//---------------------------------------------------------------------------
+/**
+ * @brief True when the tab bar uses a dark palette (e.g. "Dark mode"), where
+ * the style does not make the current tab stand out
+ */
+static bool isDarkPalette(const QPalette &palette)
+{
+    return palette.color(QPalette::Window).lightness() < 128;
+}
+
+//---------------------------------------------------------------------------
+/**
+ * @brief With a dark palette, the current tab keeps the normal text color
+ * and the other tabs are dimmed; with a light palette, default colors
+ */
+void tabBar::updateTabColors()
+{
+    const bool dark = isDarkPalette(palette());
+    for (int i = 0; i < count(); ++i) {
+        QColor color; // invalid: default color of the style
+        if (dark) {
+            color = (i == currentIndex()) ? palette().color(QPalette::WindowText)
+                                          : QColor(150, 150, 150);
+        }
+        setTabTextColor(i, color);
+    }
+}
+
+//---------------------------------------------------------------------------
+/**
+ * @brief Paints the tabs, and with a dark palette a highlight bar on the
+ * outer edge of the current tab
+ */
+void tabBar::paintEvent(QPaintEvent *event)
+{
+    QTabBar::paintEvent(event);
+    if (!isDarkPalette(palette()) || currentIndex() < 0) { return; }
+
+    const QRect tab = tabRect(currentIndex());
+    if (tab.isEmpty()) { return; }
+    const int thickness = 3;
+    QRect bar(tab.left() + 1, tab.top(), tab.width() - 2, thickness);
+    if (shape() == QTabBar::RoundedSouth || shape() == QTabBar::TriangularSouth) {
+        bar.moveBottom(tab.bottom());
+    }
+    QPainter painter(this);
+    painter.fillRect(bar, palette().color(QPalette::Highlight));
 }
 
 //---------------------------------------------------------------------------
@@ -118,6 +169,7 @@ int tabBar::addNewTab(QString path, int type)
     int newtab = addTab(filename);
     setTabData(newtab,file.filePath());
     setIcon(newtab);
+    updateTabColors();
     if (this->count()>1 && this->isHidden()) { this->show(); }
     return newtab;
 }
