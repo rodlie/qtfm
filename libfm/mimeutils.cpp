@@ -265,6 +265,13 @@ void MimeUtils::generateDefaults() {
 
   // Delete dead defaults (non existing apps)
   // ------------------------------------------------------------------------
+  // Every existing .desktop file counts, not only the applications that
+  // declare mime types: an application can be associated by hand (settings,
+  // "Open with" > "Select...") with a type it does not declare, or have
+  // NoDisplay set, and such associations must not be dropped.
+  foreach (QString existing, FileUtils::getApplicationNames()) {
+    if (!names.contains(existing)) { names.append(existing); }
+  }
   foreach (QString key, defaults->getKeys()) {
     QStringList tmpNames1 = defaults->value(key).toString().split(";");
     QStringList tmpNames2 = QStringList();
