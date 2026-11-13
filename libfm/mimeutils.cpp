@@ -127,57 +127,71 @@ void MimeUtils::openInApp(QString exe, const QFileInfo &file,
     exe = "qpdfview";
   }
 
-  // Separate application name from its arguments
-  QStringList split = exe.split(" ");
-  QString name = split.takeAt(0);
-  QString args = split.join(" ");
-
-  // Get relative path
-  //args = args.split(QDir::separator()).last();
-
-  // Replace parameters with file name. If there are no parameters simply append
-  // file name to the end of argument list
-  if (args.toLower().contains("%f")) {
-    args.replace("%f", "\"" + file.filePath() + "\"", Qt::CaseInsensitive);
-  } else if (args.toLower().contains("%u")) {
-    args.replace("%u", "\"" + file.filePath() + "\"", Qt::CaseInsensitive);
-  } else {
-    args.append(args.isEmpty() ? "" : " ");
-    args.append("\"" + file.filePath() + "\"");
-  }
-
-  qDebug() << "qprocess start detached" << name << args;
-
-  // Start application
-  const bool terminal = !termCmd.isEmpty();
-  if (terminal) { args = QString("%1 %2").arg(name, args); }
-  QProcess::startDetached(terminal ? termCmd : name,
-                          terminal ? QStringList() << "-e" << args :
-                                     QStringList() << args);
+  startApp(exe, QStringList() << file.filePath(), termCmd);
 }
 
 void MimeUtils::openFilesInApp(QString exe, const QStringList &files, QString termCmd)
 {
-    // Separate application name from its arguments
-    QStringList split = exe.split(" ");
-    QString name = split.takeAt(0);
-    QString args = split.join(" ");
+  startApp(exe, files, termCmd);
+}
 
-    if (args.toLower().contains("%f")) {
-        args.replace("%f", "", Qt::CaseInsensitive);
-    } else if (args.toLower().contains("%u")) {
-        args.replace("%u", "", Qt::CaseInsensitive);
-    }
-    for (int i=0;i<files.size();++i) {
-        args.append("\"" + files.at(i) + "\" ");
-    }
+/**
+ * @brief Starts an application (desktop entry Exec line) with given files
+ *
+ * The Exec line is split into a program and its arguments, the field codes
+ * (%f %F %u %U) are replaced by the files and %i %c %k are dropped. If the
+ * Exec line has no file field code, the files are appended. Every file is
+ * passed as its own argument, so no quoting is needed.
+ *
+ * @param exe Exec line of the application
+ * @param files files to be opened
+ * @param termCmd terminal command (may contain arguments); empty to run
+ * the application directly
+ */
+void MimeUtils::startApp(const QString &exe, const QStringList &files,
+                         const QString &termCmd) {
+  QStringList appArgs = QProcess::splitCommand(exe);
+  if (appArgs.isEmpty()) { return; }
+  const QString name = appArgs.takeFirst();
+  const QString first = files.isEmpty() ? QString() : files.first();
 
-    // Start application
-    const bool terminal = !termCmd.isEmpty();
-    if (terminal) { args = QString("%1 %2").arg(name, args); }
-    QProcess::startDetached(terminal ? termCmd : name,
-                            terminal ? QStringList() << "-e" << args :
-                                       QStringList() << args);
+  QStringList args;
+  bool hasFileCode = false;
+  for (const QString &token : appArgs) {
+    if (token == "%f" || token == "%u") {
+      if (!first.isEmpty()) { args << first; }
+      hasFileCode = true;
+    } else if (token == "%F" || token == "%U") {
+      args << files;
+      hasFileCode = true;
+    } else if (token == "%i" || token == "%c" || token == "%k") {
+      continue;
+    } else {
+      QString arg = token;
+      if (arg.contains("%f") || arg.contains("%u")) {
+        arg.replace("%f", first).replace("%u", first);
+        hasFileCode = true;
+      }
+      if (arg.contains("%F") || arg.contains("%U")) {
+        arg.replace("%F", files.join(" ")).replace("%U", files.join(" "));
+        hasFileCode = true;
+      }
+      arg.replace("%%", "%");
+      args << arg;
+    }
+  }
+  if (!hasFileCode) { args << files; }
+
+  QString program = name;
+  if (!termCmd.isEmpty()) {
+    QStringList term = QProcess::splitCommand(termCmd);
+    if (term.isEmpty()) { term << "xterm"; }
+    program = term.takeFirst();
+    args = term << "-e" << name << args;
+  }
+
+  qDebug() << "qprocess start detached" << program << args;
+  QProcess::startDetached(program, args);
 }
 //---------------------------------------------------------------------------
 
@@ -224,6 +238,7 @@ void MimeUtils::generateDefaults() {
     // For each mime of current application...
     QStringList mimes = a.getMimeType();
     foreach (QString mime, mimes) {
+      if (mime.trimmed().isEmpty()) { continue; }
 
       // Current app name
       QString name = a.getPureFileName() + ".desktop";
@@ -250,6 +265,13 @@ void MimeUtils::generateDefaults() {
 
   // Delete dead defaults (non existing apps)
   // ------------------------------------------------------------------------
+  // Every existing .desktop file counts, not only the applications that
+  // declare mime types: an application can be associated by hand (settings,
+  // "Open with" > "Select...") with a type it does not declare, or have
+  // NoDisplay set, and such associations must not be dropped.
+  foreach (QString existing, FileUtils::getApplicationNames()) {
+    if (!names.contains(existing)) { names.append(existing); }
+  }
   foreach (QString key, defaults->getKeys()) {
     QStringList tmpNames1 = defaults->value(key).toString().split(";");
     QStringList tmpNames2 = QStringList();
@@ -258,7 +280,11 @@ void MimeUtils::generateDefaults() {
         tmpNames2.append(name);
       }
     }
-    if (tmpNames1.size() != tmpNames2.size()) {
+    if (key.trimmed().isEmpty() || tmpNames2.isEmpty()) {
+      // no mime or no application left: an entry like "mime=" is useless
+      defaults->remove(key);
+      defaultsChanged = true;
+    } else if (tmpNames1.size() != tmpNames2.size()) {
       defaults->set(key, tmpNames2.join(";"));
       defaultsChanged = true;
     }
@@ -277,7 +303,9 @@ void MimeUtils::generateDefaults() {
 void MimeUtils::setDefault(const QString &mime, const QStringList &apps) {
   QString value = apps.join(";");
   if (value.compare(defaults->value(mime, "").toString()) != 0) {
-    defaults->set(mime, value);
+    // without applications there is nothing to store
+    if (value.isEmpty() || mime.trimmed().isEmpty()) { defaults->remove(mime); }
+    else { defaults->set(mime, value); }
     defaultsChanged = true;
   }
 }

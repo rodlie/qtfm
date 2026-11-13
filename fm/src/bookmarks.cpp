@@ -85,7 +85,8 @@ void MainWindow::bookmarkPressed(QModelIndex current)
     if (current.data(MEDIA_MODEL).toBool() &&
         !current.data(MEDIA_PATH).toString().isEmpty()) {
         if (current.data(BOOKMARK_PATH).toString().isEmpty()) {
-            disks->devices[current.data(MEDIA_PATH).toString()]->mount();
+            Device *device = disks->devices.value(current.data(MEDIA_PATH).toString());
+            if (device) { device->mount(); }
         }
     }
 #endif
@@ -102,7 +103,8 @@ void MainWindow::bookmarkClicked(QModelIndex item)
     if (item.data(MEDIA_MODEL).toBool() &&
         !item.data(MEDIA_PATH).toString().isEmpty()) {
         if (item.data(BOOKMARK_PATH).toString().isEmpty()) {
-            disks->devices[item.data(MEDIA_PATH).toString()]->mount();
+            Device *device = disks->devices.value(item.data(MEDIA_PATH).toString());
+            if (device) { device->mount(); }
         }
     }
 #endif

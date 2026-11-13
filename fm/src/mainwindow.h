@@ -29,6 +29,8 @@
 #include <QTreeView>
 #include <QListView>
 #include <QLabel>
+#include <QLineEdit>
+#include <QCheckBox>
 #include <QStackedWidget>
 #include <QSortFilterProxyModel>
 #include <QComboBox>
@@ -51,6 +53,7 @@
 #include "completer.h"
 #include "sortmodel.h"
 #include "dfmqtreeview.h"
+#include "dfmqlistview.h"
 
 // libdisks
 #ifndef NO_UDISKS
@@ -90,11 +93,18 @@ public slots:
     void lateStart();
     void goUpDir();
     void goBackDir();
+    void goForwardDir();
     void goHomeDir();
     void deleteFile();
     void trashFile();
     void cutFile();
     void copyFile();
+    void copyPath();
+    void selectAllItems();
+    void invertSelection();
+    void showFilterBar();
+    void closeFilterBar();
+    void applyFilter();
     bool linkFiles(const QList<QUrl> &files, const QString &newPath);
     void newDir();
     void newFile();
@@ -119,6 +129,8 @@ public slots:
     void toggleWrapBookmarks();
     void showEditDialog();
     void renameFile();
+    bool renameDialog(const QModelIndex &sourceIndex);
+    void selectListItem(const QModelIndex &sourceIndex);
     void actionMapper(QString);
     void folderPropertiesLauncher();
     void bookmarkClicked(QModelIndex);
@@ -214,7 +226,7 @@ private:
     QStackedWidget *stackWidget;
     QTreeView *tree;
     DfmQTreeView *detailTree;
-    QListView *list;
+    DfmQListView *list;
     QListView *bookmarksList;
     QComboBox *pathEdit;
 
@@ -223,7 +235,7 @@ private:
     QModelIndex backIndex;
 
     QSortFilterProxyModel *modelTree;
-    QSortFilterProxyModel *modelView;
+    viewsSortProxyModel *modelView;
 
     bookmarkmodel *modelBookmarks;
     QItemSelectionModel *treeSelectionModel;
@@ -244,12 +256,20 @@ private:
     QLabel * statusSize;
     QLabel * statusName;
     QLabel * statusDate;
+    // status bar texts of the current folder, shown when nothing is selected
+    QString folderStatusSize;
+    QString folderStatusDate;
+    // filter bar (Ctrl+F), above the file views
+    QWidget *filterBar;
+    QLineEdit *filterEdit;
+    QCheckBox *filterDirsCheck;
     QString startPath;
 
     QAction *closeAct;
     QAction *exitAct;
     QAction *upAct;
     QAction *backAct;
+    QAction *forwardAct;
     QAction *homeAct;
     QAction *newTabAct;
     QAction *hiddenAct;
@@ -271,6 +291,9 @@ private:
     QAction *newFileAct;
     QAction *cutAct;
     QAction *copyAct;
+    QAction *copyPathAct;
+    QAction *selectAllAct;
+    QAction *invertSelAct;
     QAction *pasteAct;
     QAction *settingsAct;
     QAction *renameAct;
@@ -324,6 +347,11 @@ private:
     QString copyXofTS;
 
     bool ignoreReload;
+
+    // folders left with "Back", most recent first, for "Forward"
+    QStringList forwardHistory;
+    // true while Back/Forward is changing folder
+    bool navigatingHistory;
 
     QVector<QString> progressQueue;
 

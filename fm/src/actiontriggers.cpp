@@ -6,12 +6,20 @@
 #include <QDockWidget>
 #include <QStatusBar>
 #include <QToolBar>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QClipboard>
+#include <QItemSelection>
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__APPLE__)
 #include <sys/mount.h>
 #else
 #include <sys/vfs.h>
 #endif
 #include <fcntl.h>
+#include <cstdio>
 
 /**
  * @brief Executes a file
@@ -32,27 +40,22 @@ void MainWindow::executeFile(QModelIndex index, bool run) {
 #ifdef Q_OS_MAC
     QProcess::startDetached(QString("open \"%1\"").arg(filePath));
 #else
+    QStringList args;
     if (filePath.endsWith(".desktop")) {
         DesktopFile df(filePath);
-        if (!df.getExec().isEmpty()) {
-            filePath = df.getExec();
-            if (filePath.toLower().contains("%f")) {
-              filePath.replace("%f", "", Qt::CaseInsensitive);
-            } else if (filePath.toLower().contains("%u")) {
-              filePath.replace("%u", "", Qt::CaseInsensitive);
-            }
-            filePath = filePath.trimmed();
-        } else { return; }
+        args = QProcess::splitCommand(df.getExec());
+        // drop field codes, there are no files to pass
+        static const QStringList codes = {"%f", "%F", "%u", "%U",
+                                          "%i", "%c", "%k"};
+        for (const QString &code : codes) { args.removeAll(code); }
+        if (args.isEmpty()) { return; }
+        filePath = args.takeFirst();
     }
-    if (filePath.contains(" ")) {
-        filePath.prepend("\"");
-        filePath.append("\"");
-    }
-    qDebug() << "RUN" << filePath;
-    QProcess::startDetached(filePath, QStringList());
+    qDebug() << "RUN" << filePath << args;
+    QProcess::startDetached(filePath, args);
 #endif
   } else {
-    mimeUtils->openInApp(filePath, ""/*term*/);
+    mimeUtils->openInApp(QFileInfo(filePath), term);
   }
 }
 //---------------------------------------------------------------------------
@@ -166,25 +169,57 @@ void MainWindow::goUpDir() {
  */
 void MainWindow::goBackDir() {
 
-  // If there is only one item in path edit, we cannot go back
-  if (pathEdit->count() == 1) return;
+  // The history is the list of the path edit, most recent (current) first
+  if (pathEdit->count() < 2) return;
+  const QString current = pathEdit->itemText(0);
 
-  // Retrieve current index
-  QString current = pathEdit->currentText();
-  if (current.contains(pathEdit->itemText(1))) {
+  // Previous folder that still exists (folders can have been removed)
+  int target = -1;
+  for (int i = 1; i < pathEdit->count(); ++i) {
+    const QString path = pathEdit->itemText(i);
+    if (path != current && QFileInfo(path).isDir()) {
+      target = i;
+      break;
+    }
+  }
+  if (target == -1) return; // nowhere to go back to
+
+  // Going back to a parent folder: select the folder we come from
+  if (current.contains(pathEdit->itemText(target))) {
     backIndex = modelList->index(current);
   }
 
-  // Remove history
-  do {
+  // Remove the newer entries from the history
+  for (int i = 0; i < target; ++i) {
     pathEdit->removeItem(0);
     if (tabs->count()) tabs->remHistory();
-  } while (!QFileInfo(pathEdit->itemText(0)).exists()
-           || pathEdit->itemText(0) == current);
+  }
+  pathEdit->setCurrentIndex(0);
+  forwardHistory.prepend(current);
 
   // Sets new dir index
   QModelIndex i = modelList->index(pathEdit->itemText(0));
+  navigatingHistory = true;
   tree->setCurrentIndex(modelTree->mapFromSource(i));
+  navigatingHistory = false;
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Goes forward again, to the folder left with "Back"
+ */
+void MainWindow::goForwardDir() {
+  while (!forwardHistory.isEmpty()) {
+    const QString path = forwardHistory.takeFirst();
+    if (!QFileInfo(path).isDir()) { continue; } // removed meanwhile
+
+    // the folder is added to the history by treeSelectionChanged()
+    QModelIndex i = modelList->index(path);
+    navigatingHistory = true;
+    tree->setCurrentIndex(modelTree->mapFromSource(i));
+    navigatingHistory = false;
+    return;
+  }
 }
 //---------------------------------------------------------------------------
 
@@ -236,13 +271,15 @@ void MainWindow::newDir() {
 
   // Create new directory
   QModelIndex i = modelList->index(pathEdit->itemText(0));
-  newDir = modelView->mapFromSource(modelList->insertFolder(i));
+  QPersistentModelIndex created = modelList->insertFolder(i);
+  if (!created.isValid()) { return; }
+  newDir = modelView->mapFromSource(created);
   listSelectionModel->setCurrentIndex(newDir,
                                       QItemSelectionModel::ClearAndSelect);
 
-  // Editation of name of new directory
-  if (stackWidget->currentIndex() == 0) list->edit(newDir);
-  else detailTree->edit(newDir);
+  // Ask the name of the new directory
+  renameDialog(created);
+  selectListItem(created);
 }
 //---------------------------------------------------------------------------
 
@@ -260,13 +297,15 @@ void MainWindow::newFile() {
 
   // Create new file
   QModelIndex i = modelList->index(pathEdit->itemText(0));
-  fileIndex = modelView->mapFromSource(modelList->insertFile(i));
+  QPersistentModelIndex created = modelList->insertFile(i);
+  if (!created.isValid()) { return; }
+  fileIndex = modelView->mapFromSource(created);
   listSelectionModel->setCurrentIndex(fileIndex,
                                       QItemSelectionModel::ClearAndSelect);
 
-   // Editation of name of new file
-  if (stackWidget->currentIndex() == 0) list->edit(fileIndex);
-  else detailTree->edit(fileIndex);
+  // Ask the name of the new file
+  renameDialog(created);
+  selectListItem(created);
 }
 //---------------------------------------------------------------------------
 
@@ -274,6 +313,9 @@ void MainWindow::newFile() {
  * @brief Deletes file
  */
 void MainWindow::deleteFile() {
+
+  // The bookmarks have their own actions; do not touch the selected files
+  if (focusWidget() == bookmarksList) { return; }
 
   // Temporary selection info
   QModelIndexList selList;
@@ -294,7 +336,7 @@ void MainWindow::deleteFile() {
     }
   }
 
-  bool ok = false;
+  bool ok = true;
   bool confirm;
 
   // Display confirmation message box
@@ -312,10 +354,24 @@ void MainWindow::deleteFile() {
     confirm = settings->value("confirmDelete").toBool();
   }
 
+  // Keep the paths, not the indexes: the confirmation dialogs below run the
+  // event loop, where a change in the folder can destroy model items
+  QStringList paths;
+  foreach (QModelIndex item, selList) {
+    const QString path = modelList->filePath(item);
+    if (!path.isEmpty() && !paths.contains(path)) { paths.append(path); }
+  }
+
   // Delete selected file(s)
-  for (int i = 0; i < selList.count(); ++i) {
-    QFileInfo file(modelList->filePath(selList.at(i)));
-    if (file.isWritable() || file.isSymLink()) {
+  for (int i = 0; i < paths.count(); ++i) {
+    QFileInfo file(paths.at(i));
+    if (!file.exists() && !file.isSymLink()) { continue; } // already gone
+    // removing an entry depends on the permission of the folder holding it
+    if (!QFileInfo(file.absolutePath()).isWritable()) {
+        ok = false;
+        continue;
+    }
+    {
         if (yesToAll == false) {
           if (confirm) {
             QString title = tr("Careful");
@@ -328,9 +384,11 @@ void MainWindow::deleteFile() {
           }
         }
         if (file.isSymLink()) {
-            ok = QFile::remove(file.filePath());
+            ok &= QFile::remove(file.filePath());
         } else {
-            ok = modelList->remove(selList.at(i));
+            const QModelIndex item = modelList->index(file.filePath());
+            if (item.isValid()) { ok &= modelList->remove(item); }
+            else { ok = false; }
         }
     }
   }
@@ -347,6 +405,9 @@ void MainWindow::deleteFile() {
 
 void MainWindow::trashFile()
 {
+    // The bookmarks have their own actions; do not touch the selected files
+    if (focusWidget() == bookmarksList) { return; }
+
     // Temporary selection files
     QModelIndexList selList;
     QStringList fileList;
@@ -368,22 +429,25 @@ void MainWindow::trashFile()
     bool ok = true;
     for (int i=0;i<fileList.size();++i) {
         QFileInfo file(fileList.at(i));
-        if (!file.isWritable()) {
+        // moving an entry depends on the permission of the folder holding it
+        if (!QFileInfo(file.absolutePath()).isWritable()) {
             ok = false;
             continue;
         }
         QString trashPath = QString("%1/%2").arg(trashDir).arg(file.absoluteFilePath().split("/").takeLast());
-        while (QFile::exists(trashPath)) {
+        while (QFile::exists(trashPath) || QFileInfo(trashPath).isSymLink()) {
             trashPath = QString("%1/%2.%3").arg(trashDir).arg(file.absoluteFilePath().split("/").takeLast()).arg(QDateTime::currentDateTime().toString("yyyyMMddHHmmssz"));
         }
-        if (file.isDir()) {
-            QDir origDir(file.absoluteFilePath());
-            bool movedDir = origDir.rename(file.absoluteFilePath(), trashPath);
-            if (!movedDir) { ok = false; }
-        } else if (file.isFile()) {
-            QFile origFile(file.absoluteFilePath());
-            bool movedFile = origFile.rename(file.absoluteFilePath(), trashPath);
-            if (!movedFile) { ok = false; }
+        // rename(2) moves folders, files, special files and symlinks (also
+        // broken ones, which QFile::rename() refuses) as they are
+        if (::rename(QFile::encodeName(file.absoluteFilePath()).constData(),
+                     QFile::encodeName(trashPath).constData()) != 0) {
+            // rename(2) cannot cross file systems; regular files are then
+            // copied and removed by QFile::rename()
+            if (file.isSymLink() || !file.isFile()
+                || !QFile::rename(file.absoluteFilePath(), trashPath)) {
+                ok = false;
+            }
         }
     }
     if(!ok) {
@@ -398,6 +462,9 @@ void MainWindow::trashFile()
  * @brief Cuts file
  */
 void MainWindow::cutFile() {
+
+  // The bookmarks have their own actions; do not touch the selected files
+  if (focusWidget() == bookmarksList) { return; }
 
   // Temporary selection files
   QModelIndexList selList;
@@ -474,18 +541,217 @@ void MainWindow::copyFile() {
 //---------------------------------------------------------------------------
 
 /**
+ * @brief Copies the full path of the selected items (or of the current
+ * folder when nothing is selected) to the clipboard, one per line
+ */
+void MainWindow::copyPath() {
+  QStringList paths;
+  if (focusWidget() == list || focusWidget() == detailTree) {
+    QModelIndexList selList = listSelectionModel->selectedRows(0);
+    if (selList.isEmpty()) { selList = listSelectionModel->selectedIndexes(); }
+    foreach (QModelIndex item, selList) {
+      const QString path = modelList->filePath(modelView->mapToSource(item));
+      if (!paths.contains(path)) { paths.append(path); }
+    }
+  }
+  if (paths.isEmpty()) { paths.append(pathEdit->itemText(0)); }
+  QApplication::clipboard()->setText(paths.join("\n"));
+  status->showMessage(tr("Path copied to the clipboard"), 3000);
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Selects all items of the current folder
+ */
+void MainWindow::selectAllItems() {
+  const QModelIndex root = (currentView == 2) ? detailTree->rootIndex() : list->rootIndex();
+  const int rows = modelView->rowCount(root);
+  if (rows < 1) { return; }
+  QItemSelection all(modelView->index(0, 0, root), modelView->index(rows - 1, 0, root));
+  listSelectionModel->select(all, QItemSelectionModel::Select);
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Selects the items that are not selected and deselects the others
+ */
+void MainWindow::invertSelection() {
+  const QModelIndex root = (currentView == 2) ? detailTree->rootIndex() : list->rootIndex();
+  const int rows = modelView->rowCount(root);
+  if (rows < 1) { return; }
+  QItemSelection all(modelView->index(0, 0, root), modelView->index(rows - 1, 0, root));
+  listSelectionModel->select(all, QItemSelectionModel::Toggle);
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Shows the filter bar and puts the focus in it
+ */
+void MainWindow::showFilterBar() {
+  filterBar->show();
+  filterEdit->setFocus();
+  filterEdit->selectAll();
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Clears the filter, hides the filter bar and gives the focus back to
+ * the file view
+ */
+void MainWindow::closeFilterBar() {
+  filterEdit->clear();
+  filterBar->hide();
+  if (currentView == 2) { detailTree->setFocus(); }
+  else { list->setFocus(); }
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Applies the text of the filter bar to the file views
+ */
+void MainWindow::applyFilter() {
+  const QString text = filterEdit->text();
+  modelView->setNameFilter(text, filterDirsCheck->isChecked(), pathEdit->itemText(0));
+  if (text.isEmpty()) {
+    status->clearMessage();
+    return;
+  }
+
+  // visible items of the current folder, without ".."
+  const QModelIndex root = (currentView == 2) ? detailTree->rootIndex() : list->rootIndex();
+  int shown = modelView->rowCount(root);
+  for (int i = 0; i < modelView->rowCount(root); ++i) {
+    if (modelList->isDotDot(modelView->mapToSource(modelView->index(i, 0, root)))) { --shown; }
+  }
+  status->showMessage(tr("Filter: %1 items shown").arg(shown));
+}
+//---------------------------------------------------------------------------
+
+/**
  * @brief Renames file
  */
 void MainWindow::renameFile() {
-  if (focusWidget() == tree) {
-    tree->edit(treeSelectionModel->currentIndex());
-  } else if(focusWidget() == bookmarksList) {
+  if (focusWidget() == bookmarksList) {
+    // the label of a bookmark, not a file: edited in place
     bookmarksList->edit(bookmarksList->currentIndex());
-  } else if(focusWidget() == list) {
-    list->edit(listSelectionModel->currentIndex());
-  } else if(focusWidget() == detailTree) {
-    detailTree->edit(listSelectionModel->currentIndex());
+  } else if (focusWidget() == tree) {
+    QPersistentModelIndex source = modelTree->mapToSource(treeSelectionModel->currentIndex());
+    if (renameDialog(source)) {
+      // the renamed folder is the one being shown: load it under its new path
+      treeSelectionChanged(treeSelectionModel->currentIndex(), QModelIndex());
+    }
+  } else if (focusWidget() == list || focusWidget() == detailTree) {
+    // rename the current item only if it is part of the selection
+    if (!listSelectionModel->hasSelection()) { return; }
+    QModelIndex current = listSelectionModel->currentIndex();
+    if (!listSelectionModel->isSelected(current)) {
+      current = listSelectionModel->selectedIndexes().value(0);
+    }
+    QPersistentModelIndex source = modelView->mapToSource(current.sibling(current.row(), 0));
+    if (renameDialog(source)) { selectListItem(source); }
   }
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Selects and shows an item in the current list/detail view
+ * @param sourceIndex index of the item in the file model
+ */
+void MainWindow::selectListItem(const QModelIndex &sourceIndex) {
+  if (!sourceIndex.isValid()) { return; }
+  const QModelIndex index = modelView->mapFromSource(sourceIndex);
+  if (!index.isValid()) { return; }
+  listSelectionModel->setCurrentIndex(index, QItemSelectionModel::ClearAndSelect);
+  if (stackWidget->currentIndex() == 0) { list->scrollTo(index); }
+  else { detailTree->scrollTo(index); }
+}
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Asks for the new name of a file or folder in a modal dialog, showing
+ * the current name, and renames it
+ * @param sourceIndex index of the item in the file model
+ * @return true if the item was renamed
+ */
+bool MainWindow::renameDialog(const QModelIndex &sourceIndex) {
+  // the item can go away while the dialog is open
+  QPersistentModelIndex index(sourceIndex);
+  if (!index.isValid()) { return false; }
+
+  const QFileInfo info = modelList->fileInfo(index);
+  const QString oldName = modelList->fileName(index);
+  if (oldName.isEmpty() || oldName == "/") { return false; }
+
+  QDialog dialog(this);
+  dialog.setWindowTitle(tr("Rename"));
+  dialog.setModal(true);
+  dialog.setMinimumWidth(420);
+
+  QLabel *currentLabel = new QLabel(tr("Current name: <b>%1</b>").arg(oldName.toHtmlEscaped()), &dialog);
+  currentLabel->setTextFormat(Qt::RichText);
+  currentLabel->setWordWrap(true);
+  QLabel *newLabel = new QLabel(tr("New name:"), &dialog);
+  QLineEdit *edit = new QLineEdit(oldName, &dialog);
+  QLabel *message = new QLabel(&dialog);
+  message->setWordWrap(true);
+  QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                                                   Qt::Horizontal, &dialog);
+
+  QVBoxLayout *layout = new QVBoxLayout(&dialog);
+  layout->addWidget(currentLabel);
+  layout->addSpacing(6);
+  layout->addWidget(newLabel);
+  layout->addWidget(edit);
+  layout->addWidget(message);
+  layout->addWidget(buttons);
+
+  // Select the name without the extension, which is usually kept
+  int selection = oldName.length();
+  if (!info.isDir()) {
+    const int dot = oldName.lastIndexOf('.');
+    if (dot > 0) { selection = dot; }
+  }
+  edit->setSelection(0, selection);
+  edit->setFocus();
+
+  connect(edit, &QLineEdit::textChanged, message, &QLabel::clear);
+  connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+  connect(buttons, &QDialogButtonBox::accepted, &dialog, [&]() {
+    const QString name = edit->text();
+    if (name == oldName) { dialog.reject(); return; } // nothing to do
+    QString error;
+    if (name.isEmpty()) {
+      error = tr("The name cannot be empty.");
+    } else if (name.contains('/')) {
+      error = tr("The name cannot contain \"/\".");
+    } else if (name == "." || name == "..") {
+      error = tr("\"%1\" is not a valid name.").arg(name);
+    } else {
+      const QString newPath = info.absolutePath() + "/" + name;
+      if (QFileInfo::exists(newPath) || QFileInfo(newPath).isSymLink()) {
+        error = tr("There is already an item named \"%1\" in this folder.").arg(name);
+      }
+    }
+    if (!error.isEmpty()) {
+      message->setText(error);
+      edit->setFocus();
+      return;
+    }
+    dialog.accept();
+  });
+
+  if (dialog.exec() != QDialog::Accepted) { return false; }
+
+  const QString newName = edit->text();
+  // setData() is protected in myModel, it is public in the base class
+  QAbstractItemModel *model = modelList;
+  if (!index.isValid() || !model->setData(index, newName, Qt::EditRole)) {
+    QMessageBox::warning(this, tr("Rename failed"),
+                         tr("Could not rename \"%1\" to \"%2\". You may not have the proper permissions.")
+                         .arg(oldName, newName));
+    return false;
+  }
+  return true;
 }
 //---------------------------------------------------------------------------
 
@@ -591,6 +857,9 @@ void MainWindow::toggleLockLayout() {
  * @brief Toggles icon view (thumbs and sizes)
  */
 void MainWindow::toggleIcons() {
+
+  // ".." is only shown in the detail view
+  modelView->setShowDotDot(false);
 
   // Set root index
   if (list->rootIndex() != modelList->index(pathEdit->currentText())) {
@@ -722,6 +991,7 @@ void MainWindow::toggleDetails() {
     detailTree->setMouseTracking(false);
   } else {
     currentView = 2;
+    modelView->setShowDotDot(true); // ".." only in the detail view
     QModelIndex i = modelList->index(pathEdit->currentText());
     if (detailTree->rootIndex() != i) {
       detailTree->setRootIndex(modelView->mapFromSource(i));
@@ -746,11 +1016,11 @@ void MainWindow::toggleHidden() {
     if (curIndex.isHidden()) {
       listSelectionModel->clear();
     }
-    modelView->setFilterRegExp("no");
-    modelTree->setFilterRegExp("no");
+    modelView->setFilterRegularExpression("no");
+    modelTree->setFilterRegularExpression("no");
   } else {
-    modelView->setFilterRegExp("");
-    modelTree->setFilterRegExp("");
+    modelView->setFilterRegularExpression("");
+    modelTree->setFilterRegularExpression("");
   }
 
   modelView->invalidate();
@@ -799,7 +1069,7 @@ void MainWindow::showEditDialog() {
   customActManager->freeActions();
 
   // Loads current icon theme
-  QString oldTheme = settings->value("forceTheme").toString();
+  QString oldTheme = settings->value("fallbackTheme").toString();
 
   // save settings
   writeSettings();
@@ -815,7 +1085,7 @@ void MainWindow::showEditDialog() {
                  false /* don't reload thumb state */);
 
     // If icon theme has changed, use new theme and clear cache
-    QString newTheme = settings->value("forceTheme").toString();
+    QString newTheme = settings->value("fallbackTheme").toString();
     if (oldTheme.compare(newTheme) != 0) {
       modelList->clearIconCache();
       QIcon::setThemeName(newTheme);

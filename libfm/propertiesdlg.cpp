@@ -252,7 +252,7 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
   layout->addWidget(buttons);
   setLayout(layout);
 
-  layout->setMargin(6);
+  layout->setContentsMargins(6, 6, 6, 6);
   layout->setSpacing(4);
 
   connect(this, SIGNAL(updateSignal()), this, SLOT(update()));
@@ -262,7 +262,9 @@ PropertiesDialog::PropertiesDialog(QStringList paths, myModel *modelList) {
   setMinimumSize(size());
 
   this->setAttribute(Qt::WA_DeleteOnClose,1);
-  thread = QtConcurrent::run(this, &PropertiesDialog::folderProperties, paths);
+  thread = QtConcurrent::run([this, paths]() {
+      this->folderProperties(paths);
+  });
 }
 //---------------------------------------------------------------------------
 
@@ -320,15 +322,17 @@ void PropertiesDialog::accept()
     this->setResult(1);
     thread.waitForFinished();
 
-    if(permissionsNumeric->text() != permString)
+    // only apply complete permissions (three octal digits)
+    bool validPerms = false;
+    const int perms = permissionsNumeric->text().toInt(&validPerms, 8);    //convert to octal
+    if(permissionsNumeric->text() != permString && validPerms && permissionsNumeric->text().size() == 3)
     {
         foreach(QString file, fileList)
         {
-            chmod(file.toLocal8Bit(),permissionsNumeric->text().toInt(nullptr,
-                                                                      8));    //convert to octal
+            chmod(file.toLocal8Bit(), perms);
 
             myModelItem *item = static_cast<myModelItem*>(model->index(file).internalPointer());
-            item->mPermissions.clear();
+            if (item) { item->mPermissions.clear(); }
         }
     }
 

@@ -56,8 +56,10 @@ public:
   bool canFetchMore (const QModelIndex & parent) const;
   bool hasChildren(const QModelIndex &parent = QModelIndex()) const;
   bool setRootPath(const QString& path);
+  bool isDotDot(const QModelIndex &index) const;
   QString getRootPath();
   void setRealMimeTypes(bool realMimeTypes);
+  void setFileColors(bool enabled);
   bool isRealMimeTypes() const;
   QModelIndex index(int row, int column, const QModelIndex &parent) const;
   QModelIndex index(const QString& path) const;
@@ -105,6 +107,7 @@ protected:
   QVariant findMimeIcon(myModelItem *item) const;
 private:
   bool realMimeTypes;
+  bool fileColors; // "Colors on file names" setting, cached (used in data())
   bool showThumbs;
   int thumbCount;
 
@@ -125,6 +128,11 @@ private:
   QTimer eventTimer;
   int lastEventID;
   QString lastEventFilename;
+
+  // folder that holds the ".." entry (the current folder)
+  QString dotDotFolder;
+  void setDotDot(myModelItem *folder);
+  void removeDotDot(myModelItem *folder);
 };
 
 #endif // MYMODEL_H

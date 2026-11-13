@@ -166,8 +166,8 @@ QString Common::findIconInDir(QString appPath,
         QString iconName = QFileInfo(found).completeBaseName();
         if (iconName == icon) {
             for (int i=0;i<iconSizes.size();++i) {
-                QString hasFile = found.replace(QRegularExpression("/\\d+x\\d+/"),
-                                                QString("/%1x%1/").arg(iconSizes.at(i)));
+                static QRegularExpression re("/\\d+x\\d+/");
+                QString hasFile = found.replace(re, QString("/%1x%1/").arg(iconSizes.at(i)));                
                 if (QFile::exists(hasFile)) { return hasFile; }
             }
             return found;
@@ -183,8 +183,8 @@ QString Common::findIconInDir(QString appPath,
             QString iconName = QFileInfo(found).completeBaseName();
             if (iconName == icon) {
                 for (int i=0;i<iconSizes.size();++i) {
-                    QString hasFile = found.replace(QRegularExpression("/\\d+x\\d+/"),
-                                                    QString("/%1x%1/").arg(iconSizes.at(i)));
+                    static QRegularExpression re("/\\d+x\\d+/");
+                    QString hasFile = found.replace(re, QString("/%1x%1/").arg(iconSizes.at(i)));
                     if (QFile::exists(hasFile)) { return hasFile; }
                 }
                 return found;
@@ -543,7 +543,8 @@ QString Common::getDeviceForDir(QString dir)
                 root = dev;
                 continue;
             }
-            if (dir.startsWith(mnt)) { result.append(QStringList() << dev << mnt); }
+            // inside the mount point: "/data2" is not inside "/data"
+            if (dir == mnt || dir.startsWith(mnt + "/")) { result.append(QStringList() << dev << mnt); }
         }
     }
     mtab.close();
@@ -582,7 +583,8 @@ QPalette Common::darkTheme()
     palette.setColor(QPalette::Button, QColor(64,66,68));
     palette.setColor(QPalette::ButtonText, Qt::white);
     palette.setColor(QPalette::BrightText, Qt::red);
-    palette.setColor(QPalette::Highlight, QColor(28,28,29));
+    // Selection must stand out clearly from Base/AlternateBase
+    palette.setColor(QPalette::Highlight, QColor(42,130,218));
     palette.setColor(QPalette::HighlightedText, Qt::white);
     palette.setColor(QPalette::Disabled, QPalette::Text, Qt::darkGray);
     palette.setColor(QPalette::Disabled, QPalette::ButtonText, Qt::darkGray);

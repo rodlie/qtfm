@@ -241,14 +241,13 @@ void SysTray::handleDeviceMediaChanged(QString path,
         if (Common::readSetting("autoPlayAudioCD").toBool() && isAudio) {
             openMedia = false;
             QStringList apps = mimeUtilsPtr->getDefault("x-content/audio-cdda");
-            QString desktop = Common::findApplication(qApp->applicationFilePath(), apps.at(0));
+            QString desktop = Common::findApplication(qApp->applicationFilePath(), apps.value(0) /* empty if no default app */);
             if (desktop.isEmpty()) { return; }
             DesktopFile df(desktop);
             QString app = df.getExec().split(" ").takeFirst();
             if (app.isEmpty()) { return; }
-            QProcess::startDetached(QString("%1 cdda://%2")
-                                    .arg(app)
-                                    .arg(man->devices[path]->mountpoint));
+            QProcess::startDetached(app, QStringList()
+                                    << QString("cdda://%1").arg(man->devices[path]->mountpoint));
         }
         // auto play DVD if enabled
         if (Common::readSetting("autoPlayDVD").toBool() && isData) {
@@ -273,12 +272,12 @@ void SysTray::handleDeviceMediaChanged(QString path,
                 QStringList apps = mimeUtilsPtr->getDefault("x-content/video-dvd");
                 qDebug() << "video dvd apps" << apps;
                 desktop = Common::findApplication(qApp->applicationFilePath(),
-                                                  apps.at(0));
+                                                  apps.value(0) /* empty if no default app */);
             } else if (!tsVideo.exists() && tsAudio.exists()) {
                 QStringList apps = mimeUtilsPtr->getDefault("x-content/audio-dvd");
                 qDebug() << "audio dvd apps" << apps;
                 desktop = Common::findApplication(qApp->applicationFilePath(),
-                                                  apps.at(0));
+                                                  apps.value(0) /* empty if no default app */);
             }
             if (desktop.isEmpty()) { return; }
             DesktopFile df(desktop);
@@ -286,12 +285,12 @@ void SysTray::handleDeviceMediaChanged(QString path,
             if (app.isEmpty()) { return; }
             if (app.endsWith("mplayer")) {
                 // workaround for mplayer
-                QProcess::startDetached(QString("%1 dvd:// -dvd-device /dev/%2")
-                                        .arg(app)
-                                        .arg(path.split("/").takeLast()));
+                QProcess::startDetached(app, QStringList()
+                                        << "dvd://" << "-dvd-device"
+                                        << QString("/dev/%1").arg(path.split("/").takeLast()));
             } else {
-                QProcess::startDetached(QString("%1 dvd://%2")
-                                        .arg(app).arg(man->devices[path]->mountpoint));
+                QProcess::startDetached(app, QStringList()
+                                        << QString("dvd://%1").arg(man->devices[path]->mountpoint));
             }
         }
         if (openMedia) {
@@ -328,7 +327,7 @@ void SysTray::openMountpoint(QString mountpoint)
     if (fmSession.isValid()) {
         fmSession.call("openPath", mountpoint);
     } else {
-        QProcess::startDetached(QString("qtfm \"%1\"").arg(mountpoint));
+        QProcess::startDetached("qtfm", QStringList() << mountpoint);
     }
 }
 

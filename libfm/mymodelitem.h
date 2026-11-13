@@ -62,6 +62,9 @@ public:
     bool walked;
     bool dirty;
     bool watched;
+    // the ".." entry of the current folder (its file info is the parent
+    // folder), see myModel::setDotDot()
+    bool dotDot;
     QString mMimeType;
     QString mPermissions;
 

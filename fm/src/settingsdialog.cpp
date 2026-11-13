@@ -569,8 +569,13 @@ void SettingsDialog::updateMimeAssoc(QTreeWidgetItem* item) {
  */
 void SettingsDialog::showAppDialog() {
 
-  // Choose application
+  // Choose application (also a command that is not listed, created for
+  // the selected mime type)
   ApplicationDialog *dialog = new ApplicationDialog(false, this);
+  QTreeWidgetItem *mimeItem = mimesWidget->currentItem();
+  if (mimeItem && mimeItem->parent()) {
+    dialog->setMimeType(mimeItem->parent()->text(0) + "/" + mimeItem->text(0), false);
+  }
   if (dialog->exec()) {
 
     // If application name is empty, exit
@@ -733,9 +738,10 @@ void SettingsDialog::readSettings() {
   for (int i = 0; i < keys.count(); ++i) {
     QApplication::processEvents();
     QStringList temp = settingsPtr->value(keys.at(i)).toStringList();
+    while (temp.size() < 4) { temp << QString(); } // incomplete entry
     bool setChecked = 0;
     QString cmd = temp.at(3);
-    if (cmd.at(0) == '|') {
+    if (cmd.startsWith('|')) {
       cmd.remove(0, 1);
       setChecked = 1;
     }
@@ -929,10 +935,13 @@ bool SettingsDialog::saveSettings() {
   settingsPtr->setValue("autoPlayAudioCD", checkAudioCD->isChecked());
   settingsPtr->setValue("trayAutoMount", checkAutoMount->isChecked());
   settingsPtr->setValue("autoPlayDVD", checkDVD->isChecked());
+  // compare with the stored theme before replacing it
+  const bool iconThemeChanged = !cmbIconTheme->currentText().isEmpty() &&
+      cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString();
   settingsPtr->setValue("fallbackTheme", cmbIconTheme->currentText());
   settingsPtr->setValue("defMimeAppsFile", cmbDefaultMimeApps->currentText());
 
-  if (cmbIconTheme->currentText() != settingsPtr->value("fallbackTheme").toString()) {
+  if (iconThemeChanged) {
       settingsPtr->setValue("clearCache", true);
       QMessageBox::warning(this, tr("Restart to apply settings"), tr("You must restart application to apply theme settings"));
   }
@@ -1001,6 +1010,9 @@ bool SettingsDialog::saveSettings() {
           temps[i] = temps[i] + ".desktop";
         }
         mimeUtilsPtr->setDefault(mime, temps);
+      } else {
+        // all applications were removed from this mime type
+        mimeUtilsPtr->setDefault(mime, QStringList());
       }
     }
   }

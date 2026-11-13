@@ -28,6 +28,64 @@ tabBar::tabBar(QHash<QString,QIcon> * icons)
     folderIcons = icons;
     setAcceptDrops(1);
     setMovable(1);
+
+    // keep history and view type with their tab when tabs are reordered
+    connect(this, &QTabBar::tabMoved, this, [this](int from, int to) {
+        if (from < 0 || to < 0 || from >= history.size() || to >= history.size()) { return; }
+        history.move(from, to);
+        viewType.move(from, to);
+        updateTabColors();
+    });
+    connect(this, &QTabBar::currentChanged, this, &tabBar::updateTabColors);
+}
+
+//---------------------------------------------------------------------------
+/**
+ * @brief True when the tab bar uses a dark palette (e.g. "Dark mode"), where
+ * the style does not make the current tab stand out
+ */
+static bool isDarkPalette(const QPalette &palette)
+{
+    return palette.color(QPalette::Window).lightness() < 128;
+}
+
+//---------------------------------------------------------------------------
+/**
+ * @brief With a dark palette, the current tab keeps the normal text color
+ * and the other tabs are dimmed; with a light palette, default colors
+ */
+void tabBar::updateTabColors()
+{
+    const bool dark = isDarkPalette(palette());
+    for (int i = 0; i < count(); ++i) {
+        QColor color; // invalid: default color of the style
+        if (dark) {
+            color = (i == currentIndex()) ? palette().color(QPalette::WindowText)
+                                          : QColor(150, 150, 150);
+        }
+        setTabTextColor(i, color);
+    }
+}
+
+//---------------------------------------------------------------------------
+/**
+ * @brief Paints the tabs, and with a dark palette a highlight bar on the
+ * outer edge of the current tab
+ */
+void tabBar::paintEvent(QPaintEvent *event)
+{
+    QTabBar::paintEvent(event);
+    if (!isDarkPalette(palette()) || currentIndex() < 0) { return; }
+
+    const QRect tab = tabRect(currentIndex());
+    if (tab.isEmpty()) { return; }
+    const int thickness = 3;
+    QRect bar(tab.left() + 1, tab.top(), tab.width() - 2, thickness);
+    if (shape() == QTabBar::RoundedSouth || shape() == QTabBar::TriangularSouth) {
+        bar.moveBottom(tab.bottom());
+    }
+    QPainter painter(this);
+    painter.fillRect(bar, palette().color(QPalette::Highlight));
 }
 
 //---------------------------------------------------------------------------
@@ -63,7 +121,7 @@ void tabBar::dragEnterEvent(QDragEnterEvent *event)
 //---------------------------------------------------------------------------
 void tabBar::dragMoveEvent(QDragMoveEvent *event)
 {
-    this->setCurrentIndex(tabAt(event->pos()));
+    this->setCurrentIndex(tabAt(event->position().toPoint()));
     event->acceptProposedAction();
 }
 
@@ -71,9 +129,10 @@ void tabBar::dragMoveEvent(QDragMoveEvent *event)
 void tabBar::dropEvent(QDropEvent *event)
 {
     QList<QUrl> paths = event->mimeData()->urls();
-    QFileInfo file = QFileInfo(paths.at(0).path());
+    if (paths.isEmpty()) { event->ignore(); return; }
+    QFileInfo file = QFileInfo(paths.at(0).toLocalFile());
 
-    if(tabAt(event->pos()) == -1 && file.isDir())           //new tab
+    if(tabAt(event->position().toPoint()) == -1 && file.isDir())           //new tab
         addNewTab(file.filePath(),0);
     else
     {
@@ -87,7 +146,7 @@ void tabBar::dropEvent(QDropEvent *event)
         }
 
         if (event->proposedAction() == 2) { //cut, holding ctrl to copy is action 1
-            foreach (QUrl item, paths) { cutList.append(item.path()); }
+            foreach (QUrl item, paths) { cutList.append(item.toLocalFile()); }
         }
 
         emit dragDropTab(event->mimeData(), tabData(currentIndex()).toString(), cutList);
@@ -110,6 +169,7 @@ int tabBar::addNewTab(QString path, int type)
     int newtab = addTab(filename);
     setTabData(newtab,file.filePath());
     setIcon(newtab);
+    updateTabColors();
     if (this->count()>1 && this->isHidden()) { this->show(); }
     return newtab;
 }
@@ -130,7 +190,8 @@ void tabBar::addHistory(QString path)
 //---------------------------------------------------------------------------
 void tabBar::remHistory()
 {
-    history.at(currentIndex())->removeFirst();
+    QStringList *current = history.value(currentIndex());
+    if (current && !current->isEmpty()) { current->removeFirst(); }
 }
 
 //---------------------------------------------------------------------------

@@ -8,6 +8,14 @@
 #include <QApplication>
 #include <QStringListModel>
 #include <QTimer>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QProcess>
+#include <QStandardPaths>
 
 /**
  * @brief Constructor
@@ -19,6 +27,9 @@ ApplicationDialog::ApplicationDialog(bool enable_launcher,
     QDialog(parent)
   , appList(nullptr)
   , edtCommand(nullptr)
+  , edtCustom(nullptr)
+  , chkTerminal(nullptr)
+  , chkDefault(nullptr)
 {
     // Title and size
     setWindowTitle(tr("Select application"));
@@ -44,10 +55,32 @@ ApplicationDialog::ApplicationDialog(bool enable_launcher,
         layoutCommand->addRow(tr("Launcher: "), edtCommand);
     }
 
+    // Custom command: an application that is not in the list
+    QGroupBox *customGroup = new QGroupBox(tr("Custom command"), this);
+    edtCustom = new QLineEdit(customGroup);
+    edtCustom->setPlaceholderText(tr("Program or command line, e.g. /opt/app/bin/app %f"));
+    edtCustom->setClearButtonEnabled(true);
+    QPushButton *btnBrowse = new QPushButton(tr("Browse..."), customGroup);
+    chkTerminal = new QCheckBox(tr("Run in terminal"), customGroup);
+    QHBoxLayout *customLine = new QHBoxLayout();
+    customLine->addWidget(edtCustom, 1);
+    customLine->addWidget(btnBrowse);
+    QVBoxLayout *customLayout = new QVBoxLayout(customGroup);
+    customLayout->addLayout(customLine);
+    customLayout->addWidget(chkTerminal);
+    connect(btnBrowse, SIGNAL(clicked()), this, SLOT(browseCommand()));
+    connect(edtCustom, SIGNAL(textEdited(QString)), this, SLOT(customCommandEdited(QString)));
+
+    // Use as default (shown by setMimeType())
+    chkDefault = new QCheckBox(this);
+    chkDefault->hide();
+
     // Layout
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(appList);
     layout->addLayout(layoutCommand);
+    layout->addWidget(customGroup);
+    layout->addWidget(chkDefault);
     layout->addWidget(buttons);
 
     // Synonyms for category names
@@ -89,7 +122,61 @@ ApplicationDialog::ApplicationDialog(bool enable_launcher,
 
 QString ApplicationDialog::getCurrentLauncher() const
 {
+    if (!chosenLauncher.isEmpty()) { return chosenLauncher; }
     return edtCommand->text();
+}
+
+void ApplicationDialog::setMimeType(const QString &mime, bool offerDefault)
+{
+    mimeType = mime;
+    chkDefault->setText(tr("Use as default for %1 files").arg(mime));
+    chkDefault->setVisible(offerDefault && !mime.isEmpty());
+}
+
+bool ApplicationDialog::useAsDefault() const
+{
+    return !chkDefault->isHidden() && chkDefault->isChecked();
+}
+
+void ApplicationDialog::browseCommand()
+{
+    QString start = QFileInfo(QProcess::splitCommand(edtCustom->text()).value(0)).absolutePath();
+    if (edtCustom->text().isEmpty() || !QFileInfo(start).isDir()) { start = "/usr/bin"; }
+    const QString file = QFileDialog::getOpenFileName(this, tr("Select program"), start);
+    if (file.isEmpty()) { return; }
+    // quote paths with spaces, they are split like a command line
+    edtCustom->setText(file.contains(' ') ? QString("\"%1\"").arg(file) : file);
+    customCommandEdited(edtCustom->text());
+}
+
+void ApplicationDialog::customCommandEdited(const QString &text)
+{
+    // a custom command replaces the application chosen in the list
+    if (!text.isEmpty()) {
+        appList->clearSelection();
+        appList->setCurrentItem(nullptr);
+        edtCommand->clear();
+    }
+}
+
+void ApplicationDialog::accept()
+{
+    const QString command = edtCustom->text().trimmed();
+    if (command.isEmpty()) {
+        chosenLauncher.clear();
+        QDialog::accept();
+        return;
+    }
+    const QString name = FileUtils::createUserApplication(command, chkTerminal->isChecked(), mimeType);
+    if (name.isEmpty()) {
+        QMessageBox::warning(this, tr("Custom command"),
+                             tr("Could not create an application for \"%1\" in %2.")
+                             .arg(command, QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
+                                  + "/applications"));
+        return;
+    }
+    chosenLauncher = name;
+    QDialog::accept();
 }
 
 void ApplicationDialog::populate()
@@ -196,4 +283,6 @@ void ApplicationDialog::updateCommand(QTreeWidgetItem *current,
 {
     Q_UNUSED(previous)
     edtCommand->setText(applications.key(current));
+    // choosing an application in the list replaces a custom command
+    if (current && !applications.key(current).isEmpty()) { edtCustom->clear(); }
 }

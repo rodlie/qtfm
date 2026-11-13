@@ -58,6 +58,10 @@
 #include <QtCore/QTimer>
 #include <QtCore/QMetaType>
 #include <QDebug>
+#if !defined(Q_OS_WIN32)
+#include <unistd.h>
+#include <limits.h>
+#endif
 
 struct CopyRequest {
     CopyRequest() {
@@ -511,19 +515,43 @@ struct FollowLinksNode : public ChainNode {
         CopyRequest &r = request();
         QFileInfo fis(r.source);
         if (fis.isSymLink() && !(r.copyFlags & QtFileCopier::FollowLinks)) {
-            QFileInfo fil(fis.symLinkTarget());
-            QString linkName = fil.filePath();
 #if defined(Q_OS_WIN32)
-	    linkName = fil.absoluteFilePath();
-#else
-            if (fil.isAbsolute()) {
-                QDir dir = fis.dir();
-                linkName = dir.relativeFilePath(linkName);
-            }
-#endif
-            QFile linkTarget(linkName);
+            QFileInfo fil(fis.symLinkTarget());
+            QFile linkTarget(fil.absoluteFilePath());
             if (linkTarget.link(r.dest))
                 return true;
+#else
+            // Recreate the link with exactly the same target text as the
+            // original, without resolving or relativizing it.
+            const QByteArray source = QFile::encodeName(r.source);
+            const QByteArray dest = QFile::encodeName(r.dest);
+
+            // This node ends the chain for links, so a move has to be
+            // completed here: RenameNode and MoveNode are not reached.
+            // On the same file system rename(2) moves the link itself.
+            if (r.move && ::rename(source.constData(), dest.constData()) == 0)
+                return true;
+
+            // An existing destination means that overwriting was accepted
+            // (OverwriteNode). symlink(2) does not replace it: remove it,
+            // unless it is a real folder.
+            QFileInfo fid(r.dest);
+            if ((fid.exists() || fid.isSymLink()) && (fid.isSymLink() || !fid.isDir()))
+                ::unlink(dest.constData());
+
+            char target[PATH_MAX + 1];
+            const ssize_t len = ::readlink(source.constData(), target, PATH_MAX);
+            if (len >= 0) {
+                target[len] = '\0';
+                if (::symlink(target, dest.constData()) == 0) {
+                    if (r.move && ::unlink(source.constData()) != 0) {
+                        setError(QtFileCopier::CannotRemoveSource);
+                        return false;
+                    }
+                    return true;
+                }
+            }
+#endif
             setError(QtFileCopier::CannotCreateSymLink);
             return false;
         }
@@ -1141,7 +1169,9 @@ QMap<int, CopyRequest> QtFileCopierPrivate::copyDirectoryContents(const QString 
             QFileInfo newfid(destDir.filePath(dirName));
             QMap<int, CopyRequest> childDir = copyDirectoryContents(newfis.filePath(),
                             newfid.filePath(), flags, move);
-            resultList.unite(childDir);
+            for (const auto &key : childDir.keys()) {
+                resultList.insert(key, childDir.value(key));
+            }
             resultList[curId].childrenQueue.enqueue(childDir.constBegin().key());
         }
     }

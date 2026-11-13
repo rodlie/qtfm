@@ -26,6 +26,8 @@ SOURCES += \
     fm.cpp \
     bookmarkmodel.cpp \
     dfmqtreeview.cpp \
+    dfmqlistview.cpp \
+    emblemicon.cpp \
     dfmqstyleditemdelegate.cpp
 
 HEADERS += \
@@ -48,6 +50,8 @@ HEADERS += \
     fm.h \
     bookmarkmodel.h \
     dfmqtreeview.h \
+    dfmqlistview.h \
+    emblemicon.h \
     dfmqstyleditemdelegate.h
 
 # qtcopydialog

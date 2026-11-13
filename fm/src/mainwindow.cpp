@@ -27,6 +27,10 @@
 #include <QPushButton>
 #include <QApplication>
 #include <QStatusBar>
+#include <QStorageInfo>
+#include <QWheelEvent>
+#include <QShortcut>
+#include <QToolButton>
 #include <QMenu>
 #include <QMenuBar>
 #ifndef NO_DBUS
@@ -143,7 +147,42 @@ MainWindow::MainWindow()
     dockBookmarks->setWidget(bookmarksList);
     addDockWidget(Qt::LeftDockWidgetArea, dockBookmarks);
 
-    QWidget *main = new QWidget(this);
+    // Central area: filter bar on top, then the views and the tabs
+    QWidget *central = new QWidget(this);
+    QVBoxLayout *centralLayout = new QVBoxLayout(central);
+    centralLayout->setSpacing(0);
+    centralLayout->setContentsMargins(0,0,0,0);
+
+    filterBar = new QWidget(central);
+    QHBoxLayout *filterLayout = new QHBoxLayout(filterBar);
+    filterLayout->setContentsMargins(4,2,4,2);
+    filterLayout->setSpacing(6);
+    filterEdit = new QLineEdit(filterBar);
+    filterEdit->setClearButtonEnabled(true);
+    filterEdit->setPlaceholderText(tr("Name or pattern, e.g. *.pdf"));
+    filterDirsCheck = new QCheckBox(tr("Filter folders too"), filterBar);
+    QToolButton *filterClose = new QToolButton(filterBar);
+    filterClose->setIcon(QIcon::fromTheme("window-close", QIcon::fromTheme("dialog-close")));
+    filterClose->setToolTip(tr("Close the filter (Esc)"));
+    filterClose->setAutoRaise(true);
+    filterLayout->addWidget(new QLabel(tr("Filter:"), filterBar));
+    filterLayout->addWidget(filterEdit, 1);
+    filterLayout->addWidget(filterDirsCheck);
+    filterLayout->addWidget(filterClose);
+    filterBar->hide();
+    centralLayout->addWidget(filterBar);
+
+    connect(filterEdit, &QLineEdit::textChanged, this, &MainWindow::applyFilter);
+    connect(filterDirsCheck, &QCheckBox::toggled, this, [this](bool checked) {
+        settings->setValue("filterFolders", checked);
+        applyFilter();
+    });
+    connect(filterClose, &QToolButton::clicked, this, &MainWindow::closeFilterBar);
+    QShortcut *filterEscape = new QShortcut(QKeySequence(Qt::Key_Escape), filterBar);
+    filterEscape->setContext(Qt::WidgetWithChildrenShortcut);
+    connect(filterEscape, &QShortcut::activated, this, &MainWindow::closeFilterBar);
+
+    QWidget *main = new QWidget(central);
     mainLayout = new QVBoxLayout(main);
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(0,0,0,0);
@@ -153,7 +192,7 @@ MainWindow::MainWindow()
     QHBoxLayout *hl1 = new QHBoxLayout(page);
     hl1->setSpacing(0);
     hl1->setContentsMargins(0,0,0,0);
-    list = new QListView(page);
+    list = new DfmQListView(page);
     hl1->addWidget(list);
     stackWidget->addWidget(page);
 
@@ -170,9 +209,10 @@ MainWindow::MainWindow()
     mainLayout->addWidget(stackWidget);
     mainLayout->addWidget(tabs);
 
-    setCentralWidget(main);
+    centralLayout->addWidget(main, 1);
+    setCentralWidget(central);
 
-    modelTree = new viewsSortProxyModel();
+    modelTree = new mainTreeFilterProxyModel();
     modelTree->setSourceModel(modelList);
     modelTree->setSortCaseSensitivity(Qt::CaseInsensitive);
 
@@ -245,6 +285,7 @@ MainWindow::MainWindow()
 
     trashDir = Common::trashDir();
     ignoreReload = false;
+    navigatingHistory = false;
 
     qApp->installEventFilter(this);
 
@@ -270,24 +311,22 @@ void MainWindow::lateStart() {
   tree->setDragDropMode(QAbstractItemView::DragDrop);
   tree->setDefaultDropAction(Qt::MoveAction);
   tree->setDropIndicatorShown(true);
-  tree->setEditTriggers(QAbstractItemView::EditKeyPressed |
-                        QAbstractItemView::SelectedClicked);
+  // files are renamed in a dialog (renameDialog), not in place
+  tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
   // Configure detail view
   detailTree->setSelectionMode(QAbstractItemView::ExtendedSelection);
   detailTree->setDragDropMode(QAbstractItemView::DragDrop);
   detailTree->setDefaultDropAction(Qt::MoveAction);
   detailTree->setDropIndicatorShown(true);
-  detailTree->setEditTriggers(QAbstractItemView::EditKeyPressed |
-                              QAbstractItemView::SelectedClicked);
+  detailTree->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
   // Configure list view
   list->setResizeMode(QListView::Adjust);
   list->setSelectionMode(QAbstractItemView::ExtendedSelection);
   list->setSelectionRectVisible(true);
   list->setFocus();
-  list->setEditTriggers(QAbstractItemView::EditKeyPressed |
-                        QAbstractItemView::SelectedClicked);
+  list->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
   // Clipboard configuration
   clipboardChanged();
@@ -328,8 +367,8 @@ void MainWindow::lateStart() {
   connect(customActManager, SIGNAL(actionFinished()), SLOT(clearCutItems()));
 
   // Connect path edit
-  connect(pathEdit, SIGNAL(activated(QString)),
-          this, SLOT(pathEditChanged(QString)));
+  connect(pathEdit, &QComboBox::textActivated,
+          this, &MainWindow::pathEditChanged);
   connect(customComplete, SIGNAL(activated(QString)),
           this, SLOT(pathEditChanged(QString)));
   connect(pathEdit->lineEdit(), SIGNAL(cursorPositionChanged(int,int)),
@@ -422,6 +461,7 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
 
   // Load info whether use real mime types
   modelList->setRealMimeTypes(settings->value("realMimeTypes", true).toBool());
+  modelList->setFileColors(settings->value("fileColor", false).toBool());
 
   // Load information whether hidden files can be displayed
   if (hState) {
@@ -517,6 +557,11 @@ void MainWindow::loadSettings(bool wState, bool hState, bool tabState, bool thum
   // 'copy of' filename
   copyXof = settings->value("copyXof", COPY_X_OF).toString();
   copyXofTS = settings->value("copyXofTS", COPY_X_TS).toString();
+
+  // filter bar: filter folders too?
+  filterDirsCheck->blockSignals(true);
+  filterDirsCheck->setChecked(settings->value("filterFolders", false).toBool());
+  filterDirsCheck->blockSignals(false);
 }
 
 void MainWindow::firstRunBookmarks(bool isFirstRun)
@@ -545,6 +590,7 @@ void MainWindow::loadBookmarks()
     settings->beginGroup("bookmarks");
     foreach (QString key,settings->childKeys()) {
       QStringList temp(settings->value(key).toStringList());
+      if (temp.size() < 3) { continue; } // damaged entry
       modelBookmarks->addBookmark(temp[0], temp[1], temp[2], temp.last(), "", false, false);
     }
     settings->endGroup();
@@ -579,11 +625,14 @@ void MainWindow::firstRunCustomActions(bool isFirstRun)
     if (!isFirstRun) { return; }
     settings->beginGroup("customActions");
     int childs = settings->childKeys().size();
-    if (childs>0) { return; }
+    if (childs>0) {
+        settings->endGroup();
+        return;
+    }
 
     QVector<QStringList> defActions = Common::getDefaultActions();
     for (int i=0;i<defActions.size();++i) {
-        settings->setValue(QString(i), defActions.at(i));
+        settings->setValue(QString::number(i), defActions.at(i));
     }
 
     settings->endGroup();
@@ -637,6 +686,10 @@ void MainWindow::treeSelectionChanged(QModelIndex current, QModelIndex previous)
     }
 
     if (curIndex.filePath() != pathEdit->itemText(0)) {
+        // going somewhere else (not Back/Forward) ends the "Forward" path
+        if (!navigatingHistory) { forwardHistory.clear(); }
+        // a filter belongs to the folder it was typed in
+        if (!filterEdit->text().isEmpty()) { filterEdit->clear(); }
         if (tabs->count() && pathHistory) { tabs->addHistory(curIndex.filePath()); }
         if (!pathHistory && pathEdit->count()>0) { pathEdit->clear(); }
         pathEdit->insertItem(0,curIndex.filePath());
@@ -691,7 +744,9 @@ void MainWindow::dirLoaded(bool thumbs)
     bool includeHidden = hiddenAct->isChecked();
 
     for (int x = 0; x < modelList->rowCount(modelList->index(pathEdit->currentText())); ++x) {
-        items.append(modelList->index(x,0,modelList->index(pathEdit->currentText())));
+        QModelIndex item = modelList->index(x,0,modelList->index(pathEdit->currentText()));
+        if (modelList->isDotDot(item)) { continue; } // not an item of the folder
+        items.append(item);
     }
 
 
@@ -706,11 +761,24 @@ void MainWindow::dirLoaded(bool thumbs)
     if (!bytes) { total = ""; }
     else { total = Common::formatSize(bytes); }
 
-    statusName->clear();
-    statusSize->setText(QString("%1 items").arg(items.count()));
-    statusDate->setText(QString("%1").arg(total));
+    // free space of the file system of this folder
+    QStorageInfo storage(pathEdit->itemText(0));
+    if (storage.isValid() && storage.isReady()) {
+        const QString freeSpace = tr("%1 free").arg(Common::formatSize(storage.bytesAvailable()));
+        total = total.isEmpty() ? freeSpace : QString("%1, %2").arg(total, freeSpace);
+    }
 
-    if (thumbsAct->isChecked() && thumbs) { QtConcurrent::run(modelList,&myModel::loadThumbs,items); }
+    folderStatusSize = QString("%1 items   ").arg(items.count());
+    folderStatusDate = total;
+    statusName->clear();
+    statusSize->setText(folderStatusSize);
+    statusDate->setText(folderStatusDate);
+
+    if (thumbsAct->isChecked() && thumbs) {
+        QtConcurrent::run([this, items]() {
+            modelList->loadThumbs(items);
+        });
+    }
     updateGrid();
 }
 
@@ -721,13 +789,14 @@ void MainWindow::updateDir()
 
 void MainWindow::handleReloadDir(const QString &path)
 {
+    // changes in other watched folders must not block the reloads
+    if (path != modelList->getRootPath()) { return; }
     if (ignoreReload) {
         qDebug() << "ignore reload";
         return;
     }
     ignoreReload = true;
     qDebug() << "handle reload dir" << path << modelList->getRootPath();
-    if (path != modelList->getRootPath()) { return; }
     dirLoaded();
     QTimer::singleShot(500, this, SLOT(enableReload()));
 }
@@ -755,7 +824,10 @@ void MainWindow::listSelectionChanged(const QItemSelection selected, const QItem
     statusName->clear();
 
     if(items.count() == 0) {
-        curIndex = pathEdit->itemText(0);
+        curIndex = QFileInfo(pathEdit->itemText(0));
+        // nothing selected: show the information about the folder again
+        statusSize->setText(folderStatusSize);
+        statusDate->setText(folderStatusDate);
         return;
     }
 
@@ -786,8 +858,8 @@ void MainWindow::listSelectionChanged(const QItemSelection selected, const QItem
 
         statusName->setText(name + "   ");
         statusSize->setText(QString("%1   ").arg(total));
-        statusDate->setText(QString("%1").arg(QLocale::system().toString(file.lastModified(),
-                                                                         QLocale::FormatType::ShortFormat)));
+        QLocale locale;
+        statusDate->setText(locale.toString(file.lastModified(), QLocale::ShortFormat));
     }
     else {
         statusName->setText(total + "   ");
@@ -866,6 +938,7 @@ void MainWindow::tabChanged(int index)
 {
     if (tabs->count() == 0) { return; }
 
+    forwardHistory.clear(); // belongs to the tab being left
     pathEdit->clear();
     pathEdit->addItems(*tabs->getHistory(index));
 
@@ -904,6 +977,11 @@ void MainWindow::listDoubleClicked(QModelIndex current) {
   if (mods == Qt::ControlModifier || mods == Qt::ShiftModifier) {
     return;
   }
+  // ".." of the detail view: go to the parent folder
+  if (modelList->isDotDot(modelView->mapToSource(current))) {
+    goUpDir();
+    return;
+  }
 #ifdef Q_OS_MAC
   if (modelList->isDir(modelView->mapToSource(current)) && !modelList->fileName(modelView->mapToSource(current)).endsWith(".app")) {
 #else
@@ -922,10 +1000,19 @@ void MainWindow::listDoubleClicked(QModelIndex current) {
  * @param path
  */
 void MainWindow::pathEditChanged(QString path) {
-  QString info = path;
-  if (!QFileInfo(path).exists()) { return; }
-  info.replace("~",QDir::homePath());
-  tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(info)));
+  QString info = path.trimmed();
+  // "~" and "~/..." are the home folder (only at the start: names can have '~')
+  if (info == "~" || info.startsWith("~/")) { info.replace(0, 1, QDir::homePath()); }
+  QFileInfo file(info);
+  if (!file.exists()) { return; }
+  info = QDir::cleanPath(file.absoluteFilePath());
+  if (file.isDir()) {
+    tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(info)));
+    return;
+  }
+  // Path of a file: show its folder and select the file
+  tree->setCurrentIndex(modelTree->mapFromSource(modelList->index(file.absolutePath())));
+  selectListItem(modelList->index(info));
 }
 //---------------------------------------------------------------------------
 
@@ -966,7 +1053,29 @@ void MainWindow::pasteClipboard() {
     out >> cutList;
     tempFile.close();
   }
-  pasteLauncher(QApplication::clipboard()->mimeData(), newPath, cutList);
+
+  const QMimeData *data = QApplication::clipboard()->mimeData();
+  if (!data || !data->hasUrls()) { return; }
+
+  // The cut list is only valid while the clipboard still holds the files
+  // that were cut. If something else was copied meanwhile (in another
+  // program, for example) it is stale: paste what the clipboard has.
+  if (!cutList.isEmpty()) {
+    QStringList clipboardFiles;
+    foreach (QUrl url, data->urls()) { clipboardFiles.append(url.toLocalFile()); }
+    QStringList cutSorted = cutList;
+    cutSorted.sort();
+    clipboardFiles.sort();
+    if (cutSorted != clipboardFiles) {
+      cutList.clear();
+      clearCutItems();
+    }
+  }
+
+  pasteLauncher(data, newPath, cutList);
+
+  // The files were moved: they cannot be moved again from the old place
+  if (!cutList.isEmpty()) { clearCutItems(); }
 }
 //---------------------------------------------------------------------------
 
@@ -981,6 +1090,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
 
   // Retrieve urls (paths) of data
   QList<QUrl> files = data->urls();
+  if (files.isEmpty()) { return; }
 
   // get original path
   QStringList getOldPath = files.at(0).toLocalFile().split("/", Qt::SkipEmptyParts);
@@ -1035,7 +1145,7 @@ void MainWindow::dragLauncher(const QMimeData *data, const QString &newPath,
   QStringList cutList;
   if (currentDragMode == Common::DM_MOVE) {
     foreach (QUrl item, files) {
-      cutList.append(item.path());
+      cutList.append(item.toLocalFile());
     }
   }
 
@@ -1063,6 +1173,29 @@ void MainWindow::pasteLauncher(const QMimeData *data,
 //---------------------------------------------------------------------------
 
 
+/**
+ * @brief Returns a free path in dir for a copy of info, named after the
+ * "Copy (%1) of %2" pattern (%1 number, %2 file name, %3 timestamp,
+ * %4 suffix, %5 base name)
+ */
+static QString copyOfPath(const QFileInfo &info, const QString &dir,
+                          QString pattern, const QString &timestampFormat)
+{
+    if (!pattern.contains("%")) { pattern = COPY_X_OF; }
+    for (int num = 1; ; ++num) {
+        QString name = pattern;
+        name.replace("%1", QString::number(num));
+        name.replace("%2", info.fileName());
+        name.replace("%3", QDateTime::currentDateTime().toString(timestampFormat));
+        name.replace("%4", info.completeSuffix());
+        name.replace("%5", info.baseName());
+        // a pattern without a number could repeat forever
+        if (num > 1 && !pattern.contains("%1")) { name.append(QString(" (%1)").arg(num)); }
+        const QString path = dir + "/" + name;
+        if (!QFileInfo::exists(path) && !QFileInfo(path).isSymLink()) { return path; }
+    }
+}
+
 void MainWindow::pasteLauncher(const QList<QUrl> &files,
                                 const QString &newPath,
                                 const QStringList &cutList,
@@ -1083,14 +1216,33 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files,
         return;
     }
 
+    // Never copy or move a folder into itself or into one of its subfolders
+    const QString destCanonical = QFileInfo(newPath).canonicalFilePath() + "/";
+    QStringList sources = cutList;
+    if (sources.isEmpty()) {
+        foreach (QUrl url, files) { sources << url.toLocalFile(); }
+    }
+    foreach (QString source, sources) {
+        QFileInfo info(source);
+        if (!info.isDir() || info.isSymLink()) { continue; }
+        if (destCanonical.startsWith(info.canonicalFilePath() + "/")) {
+            status->showMessage(tr("Cannot copy or move the folder \"%1\" into itself.")
+                                .arg(info.fileName()));
+            return;
+        }
+    }
+    const QString destDir = QDir::cleanPath(QFileInfo(newPath).absoluteFilePath());
+
     QStringList _files, _dirs;
     if (cutList.size()>0) { // move
         for (int i=0; i<cutList.size(); i++) {
             QFileInfo info(cutList.at(i));
-            if (!info.isDir() && !info.isFile()) { continue; }
+            // folders, files and symlinks (also broken ones, moved as the
+            // link itself); other special files are skipped
+            if (!info.isDir() && !info.isFile() && !info.isSymLink()) { continue; }
             if (cutList.at(i) == (newPath + "/" + info.fileName())) { continue; }
             if (info.isDir()) { _dirs << info.absoluteFilePath(); }
-            else if (info.isFile()) { _files << info.absoluteFilePath(); }
+            else { _files << info.absoluteFilePath(); }
         }
         if (_files.size()>0 || _dirs.size()>0) {
             QtFileCopier *copyHandler = new QtFileCopier(this);
@@ -1109,13 +1261,20 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files,
             }
         }
     } else if (files.size()>0) { // copy
+        QStringList _sameFolder;
         for (int i=0; i<files.size(); i++) {
             QFileInfo info(files.at(i).toLocalFile());
-            if (!info.isDir() && !info.isFile()) { continue; }
-            if (info.isDir()) { _dirs << info.absoluteFilePath(); }
-            else if (info.isFile()) { _files << info.absoluteFilePath(); }
+            // folders, files and symlinks (also broken ones, copied as the
+            // link itself); other special files (FIFOs would block) are skipped
+            if (!info.isDir() && !info.isFile() && !info.isSymLink()) { continue; }
+            if (QDir::cleanPath(info.absolutePath()) == destDir) {
+                // never copy onto itself, the copy gets a "Copy (x) of" name
+                _sameFolder << info.absoluteFilePath();
+            }
+            else if (info.isDir()) { _dirs << info.absoluteFilePath(); }
+            else { _files << info.absoluteFilePath(); }
         }
-        if (_files.size()>0 || _dirs.size()>0) {
+        if (_files.size()>0 || _dirs.size()>0 || _sameFolder.size()>0) {
             QtFileCopier *copyHandler = new QtFileCopier(this);
             QtCopyDialog *copyDialog = new QtCopyDialog(copyHandler, this);
             copyDialog->setMinimumDuration(100);
@@ -1131,6 +1290,16 @@ void MainWindow::pasteLauncher(const QList<QUrl> &files,
                     else { copyHandler->copyDirectory(_dirs.at(i), newPath); }
                     //qDebug() << "COPY DIR" <<_dirs.at(i) << "TO" << newPath << "SYMLINK?" << link;
                 }
+            }
+            const QtFileCopier::CopyFlags flags = link ?
+                        QtFileCopier::CopyFlags(QtFileCopier::MakeLinks) :
+                        QtFileCopier::CopyFlags();
+            for (int i=0;i<_sameFolder.size();++i) {
+                QFileInfo info(_sameFolder.at(i));
+                const QString dest = copyOfPath(info, destDir, copyXof, copyXofTS);
+                // copyDirectory() uses dest as the new folder name when it does not exist
+                if (info.isDir()) { copyHandler->copyDirectory(info.absoluteFilePath(), dest, flags); }
+                else { copyHandler->copy(info.absoluteFilePath(), dest, flags); }
             }
         }
     }
@@ -1257,18 +1426,20 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
     if (listSelectionModel->hasSelection()) {
 
       // Get index of source model
-      curIndex = modelList->filePath(modelView->mapToSource(listSelectionModel->currentIndex()));
+      curIndex = QFileInfo(modelList->filePath(modelView->mapToSource(listSelectionModel->currentIndex())));
 
       // File
       if (!curIndex.isDir()) {
         QString type = modelList->getMimeType(modelList->index(curIndex.filePath()));
 
         // Add custom actions to the list of actions
-        QHashIterator<QString, QAction*> i(*customActManager->getActions());
+        QMultiHashIterator<QString, QAction*> i(*customActManager->getActions());
         while (i.hasNext()) {
           i.next();
           qDebug() << "custom action" << i.key() << i.key() << i.value();
-          if (curIndex.completeSuffix().endsWith(i.key())) { actions.append(i.value()); }
+          // the type is a file extension ("zip", "tar.gz"): match the whole
+          // extension, "zip" must not match "file.gzip"
+          if (!i.key().isEmpty() && curIndex.fileName().endsWith("." + i.key())) { actions.append(i.value()); }
         }
 
         // Add run action or open with default application action
@@ -1300,19 +1471,29 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
           popup->addSeparator();
         }
 
-        // Add menus
         // TODO: ???
-        QHashIterator<QString, QMenu*> m(*customActManager->getMenus());
-        while (m.hasNext()) {
-          m.next();
-          if (curIndex.completeSuffix().endsWith(m.key())) { popup->addMenu(m.value()); }
+        QMultiHash<QString, QMenu*>* menus = customActManager->getMenus();
+        if (!menus) {
+            return;
         }
-
+        
+        QMultiHashIterator<QString, QMenu*> m(*menus);
+        while (m.hasNext()) {
+            m.next();
+            QString filePath = curIndex.fileName();
+            if (!m.key().isEmpty() && filePath.endsWith("." + m.key())) {
+                if (m.value() != nullptr) {
+                    popup->addMenu(m.value());
+                }
+            }
+        }
+        
         // Add cut/copy/paste/rename actions
         popup->addSeparator();
         popup->addAction(cutAct);
         popup->addAction(copyAct);
         popup->addAction(pasteAct);
+        popup->addAction(copyPathAct);
         popup->addSeparator();
         popup->addAction(renameAct);
         popup->addSeparator();
@@ -1347,6 +1528,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
         popup->addAction(cutAct);
         popup->addAction(copyAct);
         popup->addAction(pasteAct);
+        popup->addAction(copyPathAct);
         popup->addSeparator();
         popup->addAction(renameAct);
         popup->addSeparator();
@@ -1379,6 +1561,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
     // Whitespace
     else {
       popup->addAction(backAct);
+      popup->addAction(forwardAct);
       popup->addAction(upAct);
       popup->addAction(homeAct);
       popup->addSeparator();
@@ -1411,7 +1594,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
     if (focusWidget() == bookmarksList) {
       listSelectionModel->clearSelection();
       if (bookmarksList->indexAt(bookmarksList->mapFromGlobal(event->globalPos())).isValid()) {
-        curIndex = bookmarksList->currentIndex().data(BOOKMARK_PATH).toString();
+        curIndex = QFileInfo(bookmarksList->currentIndex().data(BOOKMARK_PATH).toString());
         isMedia = bookmarksList->currentIndex().data(MEDIA_MODEL).toBool();
         if (!isMedia) {
             popup->addAction(delBookmarkAct);
@@ -1422,11 +1605,12 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
             // media actions
 #ifndef NO_UDISKS
             QString mediaPath = bookmarksList->currentIndex().data(MEDIA_PATH).toString();
-            if (!mediaPath.isEmpty()) {
-                if (!disks->devices[mediaPath]->mountpoint.isEmpty()) { // mounted
+            Device *mediaDevice = mediaPath.isEmpty() ? nullptr : disks->devices.value(mediaPath);
+            if (mediaDevice) {
+                if (!mediaDevice->mountpoint.isEmpty()) { // mounted
                     popup->addAction(mediaUnmountAct);
                 } else { // unmounted
-                    if (disks->devices[mediaPath]->isOptical) { popup->addAction(mediaEjectAct); }
+                    if (mediaDevice->isOptical) { popup->addAction(mediaEjectAct); }
                 }
             }
 #endif
@@ -1439,7 +1623,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
       popup->addSeparator();
     } else {
       // tree
-      curIndex = modelList->filePath(modelTree->mapToSource(tree->currentIndex()));
+      curIndex = QFileInfo(modelList->filePath(modelTree->mapToSource(tree->currentIndex())));
       if (curIndex.isFile()) { isTreeFile = true;}
 
       bookmarksList->clearSelection();
@@ -1452,6 +1636,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent * event) {
           popup->addAction(cutAct);
           popup->addAction(copyAct);
           popup->addAction(pasteAct);
+          popup->addAction(copyPathAct);
           popup->addSeparator();
           popup->addAction(renameAct);
           popup->addSeparator();
@@ -1545,12 +1730,30 @@ QMenu* MainWindow::createOpenWithMenu() {
 
 bool MainWindow::eventFilter(QObject *o, QEvent *e)
 {
+    // Ctrl + mouse wheel over the file list: zoom
+    if (e->type() == QEvent::Wheel && (o == list->viewport() || o == detailTree->viewport())) {
+        QWheelEvent *we = static_cast<QWheelEvent*>(e);
+        if (we->modifiers() & Qt::ControlModifier) {
+            // the zoom actions work on the focused view
+            if (currentView == 2) { detailTree->setFocus(); }
+            else { list->setFocus(); }
+            if (we->angleDelta().y() > 0) { zoomInAction(); }
+            else if (we->angleDelta().y() < 0) { zoomOutAction(); }
+            return true;
+        }
+    }
+
     if (e->type() == QEvent::MouseButtonPress) {
         QMouseEvent* me = static_cast<QMouseEvent*>(e);
         switch (me->button()) {
         case Qt::BackButton:
             goBackDir();
-            break;
+            // handled: otherwise the event is delivered again to each parent
+            // widget and goes back once more for each of them
+            return true;
+        case Qt::ForwardButton:
+            goForwardDir();
+            return true;
         default:;
         }
     }
@@ -1586,8 +1789,7 @@ void MainWindow::refresh(bool modelRefresh, bool loadDir)
 {
     qDebug() << "refresh" << modelRefresh << loadDir;
     if (modelRefresh) {
-        modelList->refreshItems();
-        modelList->forceRefresh();
+        modelList->refreshItems(); // resets the model
     }
 
     QModelIndex baseIndex = modelView->mapFromSource(modelList->index(pathEdit->currentText()));
@@ -1644,13 +1846,17 @@ void MainWindow::selectAppForFiles()
       files << modelList->filePath(srcIndex);
     }
 
-    // Select application in the dialog
+    // Type of the file the menu was opened for
+    const QString mime = files.isEmpty() ? QString() : mimeUtils->getMimeType(curIndex.filePath());
+
+    // Select application in the dialog (also a command that is not listed)
     ApplicationDialog *dialog = new ApplicationDialog(true, this);
+    dialog->setMimeType(mime, true);
     if (dialog->exec()) {
       if (dialog->getCurrentLauncher().compare("") != 0) {
         QString appName = dialog->getCurrentLauncher() + ".desktop";
         QString desktop = Common::findApplication(qApp->applicationFilePath(), appName);
-        if (desktop.isEmpty()) { return; }
+        if (desktop.isEmpty()) { delete dialog; return; }
         DesktopFile df = DesktopFile(desktop);
         if (df.getExec().contains("%F") || df.getExec().contains("%U")) { // app supports multiple files
             mimeUtils->openFilesInApp(df.getExec(), files, df.isTerminal()?term:"");
@@ -1660,8 +1866,24 @@ void MainWindow::selectAppForFiles()
                 mimeUtils->openInApp(df.getExec(), fileInfo, df.isTerminal()?term:"");
             }
         }
+
+        // Remember the application for this type: as default when asked,
+        // otherwise at the end of the list (shown in "Open with")
+        if (!mime.isEmpty()) {
+          QStringList apps = mimeUtils->getDefault(mime);
+          apps.removeAll(QString());
+          if (dialog->useAsDefault()) {
+            apps.removeAll(appName);
+            apps.prepend(appName);
+          } else if (!apps.contains(appName)) {
+            apps.append(appName);
+          }
+          mimeUtils->setDefault(mime, apps);
+          mimeUtils->saveDefaults();
+        }
       }
     }
+    delete dialog;
 }
 //---------------------------------------------------------------------------
 
@@ -1762,7 +1984,8 @@ void MainWindow::handleMediaMountpointChanged(QString path, QString mountpoint)
     if (path.isEmpty()) { return; }
     for (int i = 0; i < modelBookmarks->rowCount(); i++) {
         if (modelBookmarks->item(i)->data(MEDIA_MODEL).toBool() && modelBookmarks->item(i)->data(MEDIA_PATH).toString() == path) {
-            modelBookmarks->item(i)->setData(disks->devices[path]->mountpoint, BOOKMARK_PATH);
+            Device *device = disks->devices.value(path);
+            if (device) { modelBookmarks->item(i)->setData(device->mountpoint, BOOKMARK_PATH); }
         }
     }
 }
@@ -1793,9 +2016,11 @@ void MainWindow::handleMediaChanged(QString path, bool present)
 {
     //qDebug() << "changed" << path << present;
     if (path.isEmpty()) { return; }
-    if (disks->devices[path]->isOptical && !present && mediaBookmarkExists(path)>-1) {
+    Device *device = disks->devices.value(path);
+    if (!device) { return; }
+    if (device->isOptical && !present && mediaBookmarkExists(path)>-1) {
         handleMediaRemoved(path);
-    } else if (disks->devices[path]->isOptical && present && mediaBookmarkExists(path)==-1) {
+    } else if (device->isOptical && present && mediaBookmarkExists(path)==-1) {
         handleMediaAdded(path);
     }
 }
@@ -1807,7 +2032,8 @@ void MainWindow::handleMediaUnmount()
     if (item == nullptr) { return; }
     QString path = item->data(MEDIA_PATH).toString();
     if (path.isEmpty()) { return; }
-    disks->devices[path]->unmount();
+    Device *device = disks->devices.value(path);
+    if (device) { device->unmount(); }
 }
 
 void MainWindow::handleMediaEject()
@@ -1817,7 +2043,8 @@ void MainWindow::handleMediaEject()
     if (item == nullptr) { return; }
     QString path = item->data(MEDIA_PATH).toString();
     if (path.isEmpty()) { return; }
-    disks->devices[path]->eject();
+    Device *device = disks->devices.value(path);
+    if (device) { device->eject(); }
 }
 
 void MainWindow::handleMediaError(QString path, QString error)
@@ -1853,6 +2080,10 @@ void MainWindow::actionMapper(QString cmd)
     QModelIndexList selList;
     QStringList temp;
 
+    // "~" in the command is the home folder. Replace it before the file
+    // names are inserted, they can contain '~' themselves (backup files)
+    cmd.replace("~",QDir::homePath());
+
     if (focusWidget() == list || focusWidget() == detailTree) {
         QFileInfo file = modelList->fileInfo(modelView->mapToSource(listSelectionModel->currentIndex()));
 
@@ -1868,9 +2099,6 @@ void MainWindow::actionMapper(QString cmd)
     else {
         selList << modelView->mapFromSource(modelList->index(curIndex.filePath()));
     }
-
-    cmd.replace("~",QDir::homePath());
-
 
     //process any input tokens
     int pos = 0;

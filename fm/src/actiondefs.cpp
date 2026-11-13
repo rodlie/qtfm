@@ -138,6 +138,23 @@ void MainWindow::createActions() {
   pasteAct->setIcon(actionIcons->at(4));
   actionList->append(pasteAct);
 
+  copyPathAct = new QAction(tr("Copy path"), this);
+  copyPathAct->setStatusTip(tr("Copy the full path of the selected items to the clipboard"));
+  connect(copyPathAct, SIGNAL(triggered()), this, SLOT(copyPath()));
+  copyPathAct->setIcon(QIcon::fromTheme("edit-copy"));
+  actionList->append(copyPathAct);
+
+  selectAllAct = new QAction(tr("Select all"), this);
+  selectAllAct->setStatusTip(tr("Select all items of the current folder"));
+  connect(selectAllAct, SIGNAL(triggered()), this, SLOT(selectAllItems()));
+  selectAllAct->setIcon(QIcon::fromTheme("edit-select-all"));
+  actionList->append(selectAllAct);
+
+  invertSelAct = new QAction(tr("Invert selection"), this);
+  invertSelAct->setStatusTip(tr("Select the items that are not selected and deselect the others"));
+  connect(invertSelAct, SIGNAL(triggered()), this, SLOT(invertSelection()));
+  actionList->append(invertSelAct);
+
   upAct = new QAction(tr("Up"),this);
   upAct->setStatusTip(tr("Go up one directory"));
   connect(upAct, SIGNAL(triggered()),this,SLOT(goUpDir()));
@@ -150,6 +167,12 @@ void MainWindow::createActions() {
   actionIcons->append(newDirAct->icon());
   backAct->setIcon(actionIcons->at(6));
   actionList->append(backAct);
+
+  forwardAct = new QAction(tr("Forward"),this);
+  forwardAct->setStatusTip(tr("Go forward one directory"));
+  connect(forwardAct, SIGNAL(triggered()),this,SLOT(goForwardDir()));
+  forwardAct->setIcon(QIcon::fromTheme("go-next"));
+  actionList->append(forwardAct);
 
   homeAct = new QAction(tr("Home"),this);
   homeAct->setStatusTip(tr("Go to home directory"));
@@ -208,12 +231,11 @@ void MainWindow::createActions() {
   hiddenAct->setIcon(actionIcons->at(10));
   actionList->append(hiddenAct);
 
-  // TODO: create filter act that will use grep like filtering
-  /*filterAct = new QAction(tr("Filter..."), this);
-  filterAct->setStatusTip(tr("Filter current directory"));
-  connect(hiddenAct, SIGNAL(triggered()), this, SLOT(toggleFilter()));
-  hiddenAct->setIcon(actionIcons->at(10));
-  actionList->append(filterAct);*/
+  filterAct = new QAction(tr("Filter..."), this);
+  filterAct->setStatusTip(tr("Show only the items whose name matches a text or a pattern"));
+  connect(filterAct, SIGNAL(triggered()), this, SLOT(showFilterBar()));
+  filterAct->setIcon(QIcon::fromTheme("edit-find"));
+  actionList->append(filterAct);
 
   addBookmarkAct = new QAction(tr("Add bookmark"), this);
   addBookmarkAct->setStatusTip(tr("Add this folder to bookmarks"));
@@ -436,10 +458,41 @@ void MainWindow::readShortcuts() {
         i.next();
         QStringList action;
         action << i.key() << i.value();
-        settings->setValue(QString(count), action);
+        settings->setValue(QString::number(count), action);
         ++count;
     }
     settings->endGroup();
+    settings->sync();
+  }
+
+  // Default shortcuts of actions added in later versions. They are stored
+  // once, so they are listed in the settings dialog and can be changed or
+  // removed there.
+  const int shortcutDefaults = settings->value("shortcutDefaults", 0).toInt();
+  QList<QPair<QAction*, QString> > newDefaults;
+  if (shortcutDefaults < 1) {
+    newDefaults << qMakePair(forwardAct, QString("alt+right"));
+  }
+  if (shortcutDefaults < 2) {
+    newDefaults << qMakePair(copyPathAct, QString("ctrl+shift+c"));
+  }
+  if (shortcutDefaults < 3) {
+    newDefaults << qMakePair(filterAct, QString("ctrl+f"));
+  }
+  for (int i = 0; i < newDefaults.size(); ++i) {
+    const QString text = newDefaults.at(i).first->text();
+    const QString keys = newDefaults.at(i).second;
+    bool taken = shortcuts.contains(text);
+    foreach (QString used, shortcuts.values()) {
+      if (used.compare(keys, Qt::CaseInsensitive) == 0) { taken = true; }
+    }
+    if (taken) { continue; }
+    shortcuts.insert(text, keys);
+    settings->setValue(QString("customShortcuts/default_%1").arg(keys),
+                       QStringList() << text << keys);
+  }
+  if (shortcutDefaults < 3) {
+    settings->setValue("shortcutDefaults", 3);
     settings->sync();
   }
 
@@ -470,6 +523,19 @@ void MainWindow::readShortcuts() {
       action->setShortcut(QKeySequence::fromString(text));
       addAction(action);
     }
+  }
+
+  // Alt+Left also goes back, as in most file managers, unless it is used
+  bool altLeftUsed = false;
+  foreach (QString used, shortcuts.values()) {
+    if (used.compare("alt+left", Qt::CaseInsensitive) == 0) { altLeftUsed = true; }
+  }
+  if (!altLeftUsed) {
+    QList<QKeySequence> backKeys;
+    if (!backAct->shortcut().isEmpty()) { backKeys << backAct->shortcut(); }
+    backKeys << QKeySequence::fromString("alt+left");
+    backAct->setShortcuts(backKeys);
+    addAction(backAct);
   }
 
   // Restore the old group
@@ -514,6 +580,10 @@ void MainWindow::createMenus() {
   editMenu->addAction(cutAct);
   editMenu->addAction(copyAct);
   editMenu->addAction(pasteAct);
+  editMenu->addAction(copyPathAct);
+  editMenu->addAction(selectAllAct);
+  editMenu->addAction(invertSelAct);
+  editMenu->addSeparator();
   editMenu->addAction(renameAct);
   editMenu->addAction(trashAct);
   editMenu->addAction(deleteAct);
@@ -546,6 +616,7 @@ void MainWindow::createMenus() {
   viewMenu->addAction(iconAct);
   viewMenu->addAction(detailAct);
   viewMenu->addAction(hiddenAct);
+  viewMenu->addAction(filterAct);
   viewMenu->addSeparator();
   viewMenu->addAction(tabsOnTopAct);
   viewMenu->addAction(thumbsAct);
@@ -555,6 +626,7 @@ void MainWindow::createMenus() {
   viewMenu->addSeparator();
   viewMenu->addAction(upAct);
   viewMenu->addAction(backAct);
+  viewMenu->addAction(forwardAct);
   viewMenu->addAction(homeAct);
   viewMenu->addAction(refreshAct);
 
@@ -583,6 +655,7 @@ void MainWindow::createToolBars() {
   navToolBar = addToolBar(tr("Navigate"));
   navToolBar->setObjectName("Navigate");
   navToolBar->addAction(backAct);
+  navToolBar->addAction(forwardAct);
   navToolBar->addAction(upAct);
   navToolBar->addAction(homeAct);
 

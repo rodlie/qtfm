@@ -44,12 +44,14 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
+    void paintEvent(QPaintEvent *event);
 
 signals:
         void dragDropTab(const QMimeData * data, QString newPath, QStringList cutList);
 
 public slots:
         void closeTab();
+        void updateTabColors();
 
 private:
         QHash<QString,QIcon> *folderIcons;

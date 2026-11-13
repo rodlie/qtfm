@@ -20,6 +20,7 @@
 ****************************************************************************/
 
 #include "mymodel.h"
+#include "emblemicon.h"
 #include <sys/inotify.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
@@ -48,6 +49,8 @@ extern "C" {
  */
 myModel::myModel(bool realMime, MimeUtils *mimeUtils, QObject *parent)
     : QAbstractItemModel(parent) {
+
+  fileColors = Common::readSetting("fileColor").toBool();
 
 #ifdef WITH_MAGICK
     Magick::InitializeMagick(nullptr);
@@ -168,6 +171,11 @@ void myModel::setRealMimeTypes(bool realMimeTypes) {
  * @brief Returns true if real mime types are used
  * @return true if real mime types are used
  */
+void myModel::setFileColors(bool enabled) {
+  fileColors = enabled;
+}
+//---------------------------------------------------------------------------
+
 bool myModel::isRealMimeTypes() const {
   return realMimeTypes;
 }
@@ -299,7 +307,8 @@ void myModel::notifyChange()
     while (at < end) {
         const inotify_event *event = reinterpret_cast<const inotify_event *>(at);
         int w = event->wd;
-        lastEventFilename = event->name;
+        // events about the watched folder itself (e.g. IN_IGNORED) have no name
+        lastEventFilename = event->len > 0 ? QString::fromLocal8Bit(event->name) : QString();
         if (eventTimer.isActive()) {
             if (w == lastEventID) {
                 eventTimer.start(40);
@@ -340,6 +349,7 @@ void myModel::notifyProcess(int eventID, QString fileName)
             folderChanged = dir.absolutePath();
             QFileInfoList all = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System);
             foreach(myModelItem * child, parent->children()) {
+                if (child->dotDot) { continue; } // not a file of this folder
                 if (all.contains(child->fileInfo())) {
                     //just remove known items
                     all.removeOne(child->fileInfo());
@@ -400,14 +410,70 @@ bool myModel::setRootPath(const QString& path)
     if (!item->watched) { addWatcher(item); }
     if (!item->walked || !item->watched) {
         populateItem(item);
+        setDotDot(item);
         return false;
     } else {
+        setDotDot(item);
         if(item->dirty) { //model is up to date, but view needs to be invalidated
             item->dirty = false;
             return true;
         }
     }
     return false;
+}
+
+//---------------------------------------------------------------------------------
+/**
+ * @brief Moves the ".." entry (go to the parent folder) to the given folder:
+ * only the current folder has one. The views decide whether to show it
+ * (only the detail view does, see viewsSortProxyModel::setShowDotDot()).
+ * @param folder the current folder
+ */
+void myModel::setDotDot(myModelItem *folder)
+{
+    const QString path = folder ? folder->absoluteFilePath() : QString();
+
+    // remove it from the previous folder
+    if (!dotDotFolder.isEmpty() && dotDotFolder != path) {
+        myModelItem *old = rootItem->matchPath(dotDotFolder.split(SEPARATOR));
+        if (old) { removeDotDot(old); }
+        dotDotFolder.clear();
+    }
+
+    // "/" has no parent folder
+    if (!folder || folder == rootItem || path.isEmpty() || path == "/") { return; }
+    dotDotFolder = path;
+
+    foreach (myModelItem *child, folder->children()) {
+        if (child->dotDot) { return; } // already there
+    }
+
+    const int row = folder->children().count();
+    beginInsertRows(index(path), row, row);
+    myModelItem *dotDot = new myModelItem(QFileInfo(QFileInfo(path).absolutePath()), folder);
+    dotDot->dotDot = true;
+    dotDot->walked = true; // no children: it cannot be expanded
+    endInsertRows();
+}
+
+//---------------------------------------------------------------------------------
+void myModel::removeDotDot(myModelItem *folder)
+{
+    foreach (myModelItem *child, folder->children()) {
+        if (!child->dotDot) { continue; }
+        const int row = child->childNumber();
+        beginRemoveRows(index(folder->absoluteFilePath()), row, row);
+        folder->removeChild(child);
+        endRemoveRows();
+    }
+}
+
+//---------------------------------------------------------------------------------
+bool myModel::isDotDot(const QModelIndex &index) const
+{
+    if (!index.isValid()) { return false; }
+    myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
+    return item && item->dotDot;
 }
 
 QString myModel::getRootPath()
@@ -432,14 +498,12 @@ bool myModel::hasChildren(const QModelIndex &parent) const
 {
     if (!parent.isValid()) { return true; }
     myModelItem *item = static_cast<myModelItem*>(parent.internalPointer());
+    if (item && item->dotDot) { return false; }
     if (item && item->fileInfo().isDir()) {
-        if (QDir(item->fileInfo()
-                 .absoluteFilePath())
-                .entryInfoList(QDir::NoDotAndDotDot|QDir::AllEntries|QDir::System)
-                .count() > 0)
-        {
-            return true;
-        }
+        // only needs to know if there is at least one entry
+        QDirIterator it(item->fileInfo().absoluteFilePath(),
+                        QDir::NoDotAndDotDot|QDir::AllEntries|QDir::System);
+        return it.hasNext();
     }
     return false;
 }
@@ -509,8 +573,14 @@ void myModel::refreshItems()
     myModelItem *item = rootItem->matchPath(currentRootPath.split(SEPARATOR));
     if (item == nullptr) { return; }
     qDebug() << "refresh items";
+    // The items are destroyed and recreated: views and proxies must be told
+    // before, otherwise they keep indexes pointing to deleted items.
+    beginResetModel();
     item->clearAll();
     populateItem(item);
+    endResetModel();
+    // clearAll() removed the ".." entry as well
+    setDotDot(item);
 }
 
 //---------------------------------------------------------------------------------
@@ -1114,27 +1184,53 @@ QByteArray myModel::getVideoFrame(QString file, bool getEmbedded, int videoFrame
 QVariant myModel::data(const QModelIndex & index, int role) const {
   // Retrieve model item
   myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
+  if (!item) { return QVariant(); }
+
+  // ".." entry: only a name and an icon
+  if (item->dotDot) {
+    switch (role) {
+    case Qt::DisplayRole:
+    case Qt::EditRole:
+      return index.column() == 0 ? QVariant(QString("..")) : QVariant(QString());
+    case Qt::DecorationRole:
+      if (index.column() != 0) { return QVariant(); }
+      return QIcon::fromTheme("go-up", iconFactory->icon(QFileIconProvider::Folder));
+    case Qt::ForegroundRole:
+      return colors.windowText();
+    default:
+      return QVariant();
+    }
+  }
 
   // Color of filename (depends on file type)
   if (role == Qt::ForegroundRole) {
-    if (!Common::readSetting("fileColor").toBool()) { return colors.windowText(); }
+    if (!fileColors) { return colors.windowText(); }
+    // Dark background (e.g. "Dark mode"): use lighter colors with good
+    // contrast; light background: keep the original colors.
+    const bool darkBackground = colors.color(QPalette::Base).lightness() < 128;
     QFileInfo type(item->fileInfo());
     if (cutItems.contains(type.filePath())) {
       return colors.windowText();
+    } else if (type.isSymLink() && !type.exists()) {
+      // broken link: the target does not exist (exists() follows the link)
+      return QBrush(darkBackground ? QColor(255,110,110) : QColor(200,0,0));
     } else if (type.isHidden()) {
-      return colors.dark();
+      return darkBackground ? QBrush(QColor(175,175,175)) : colors.dark();
     } else if (type.isSymLink()) {
-      return colors.link();
+      return darkBackground ? QBrush(QColor(110,190,255)) : colors.link();
     } else if (type.isDir()) {
       return colors.windowText();
     } else if (type.isExecutable()) {
-      return QBrush(QColor(Qt::darkGreen));
+      return QBrush(darkBackground ? QColor(120,220,120) : QColor(Qt::darkGreen));
     }
+    // any other file: the normal text color (without it the list and icon
+    // delegates painted these names black, unreadable in Dark mode)
+    return colors.windowText();
   }
   // Alignment of filename
   else if (role == Qt::TextAlignmentRole) {
     if (index.column() == 1) {
-      return Qt::AlignRight + Qt::AlignVCenter;
+      return QVariant::fromValue(Qt::AlignRight | Qt::AlignVCenter);
     }
   }
   // Display information about file
@@ -1194,11 +1290,31 @@ QVariant myModel::data(const QModelIndex & index, int role) const {
     if (index.column() != 0) {
       return QVariant();
     }
-    return findIcon(item);
+    QIcon icon = qvariant_cast<QIcon>(findIcon(item));
+    // Symbolic links get an emblem, a different one when the target is
+    // missing (exists() follows the link)
+    const QFileInfo info = item->fileInfo();
+    if (info.isSymLink()) { return EmblemIconEngine::withEmblem(icon, !info.exists()); }
+    return icon;
   }
   // Display file name
   else if(role == Qt::EditRole) {
     return item->fileName();
+  }
+
+  // Tooltip: name, link target, size, type and date
+  if (role == Qt::ToolTipRole) {
+    if (index.column() != 0) { return QVariant(); }
+    const QFileInfo info = item->fileInfo();
+    QStringList tip;
+    tip << item->fileName();
+    if (info.isSymLink()) { tip << tr("Link to: %1").arg(info.symLinkTarget()); }
+    if (!info.isDir()) { tip << tr("Size: %1").arg(Common::formatSize(info.size())); }
+    const QString type = index.sibling(index.row(), 2).data(Qt::DisplayRole).toString();
+    if (!type.isEmpty()) { tip << tr("Type: %1").arg(type); }
+    tip << tr("Modified: %1").arg(QLocale::system().toString(info.lastModified(),
+                                                              QLocale::FormatType::ShortFormat));
+    return tip.join("\n");
   }
 
   if (role == Qt::StatusTipRole) {
@@ -1341,14 +1457,24 @@ bool myModel::setData(const QModelIndex & index, const QVariant & value, int rol
 
     //can only set the filename
     myModelItem *item = static_cast<myModelItem*>(index.internalPointer());
+    if (!item || !item->parent()) { return false; }
+
+    const QString name = value.toString();
+    if (name.isEmpty() || name.contains(SEPARATOR) || name == "." || name == "..") { return false; }
+    if (name == item->fileName()) { return true; }
 
     //physically change the name on disk
-    bool ok = QFile::rename(item->absoluteFilePath(),item->parent()->absoluteFilePath() + SEPARATOR + value.toString());
+    bool ok = QFile::rename(item->absoluteFilePath(),item->parent()->absoluteFilePath() + SEPARATOR + name);
 
     //change the details in the modelItem
     if(ok) {
         item->mMimeType.clear();                //clear the suffix/mimetype in case the user changes type
-        item->changeName(value.toString());
+        // changeName() destroys the children of a folder (they are read
+        // again on demand), the views must be told
+        const int children = item->children().count();
+        if (children > 0) { beginRemoveRows(index.sibling(index.row(), 0), 0, children - 1); }
+        item->changeName(name);
+        if (children > 0) { endRemoveRows(); }
         emit dataChanged(index,index);
     }
 
@@ -1371,23 +1497,29 @@ bool myModel::remove(const QModelIndex & theIndex)
 
     children.removeDuplicates();
 
-    bool error = false;
+    bool ok = true;
     for (int i = 0; i < children.count(); i++) {
         QFileInfo info(children.at(i));
-        if(info.isDir()) {
-            int wd = watchers.key(info.filePath());
-            inotify_rm_watch(inotifyFD,wd);
-            watchers.remove(wd);
-            error |= QDir().rmdir(info.filePath());
+        // a symlink to a folder is removed as a file (the link itself)
+        if(info.isDir() && !info.isSymLink()) {
+            int wd = watchers.key(info.filePath(), -1);
+            if (wd != -1) {
+                inotify_rm_watch(inotifyFD,wd);
+                watchers.remove(wd);
+            }
+            ok &= QDir().rmdir(info.filePath());
         }
-        else { error |= QFile::remove(info.filePath()); }
+        else { ok &= QFile::remove(info.filePath()); }
     }
 
-    //remove from model
-    beginRemoveRows(index(item->parent()->absoluteFilePath()),item->childNumber(),item->childNumber());
-    item->parent()->removeChild(item);
-    endRemoveRows();
-    return error;
+    //remove from model only if it is really gone from disk
+    QFileInfo top(path);
+    if (!top.exists() && !top.isSymLink()) {
+        beginRemoveRows(index(item->parent()->absoluteFilePath()),item->childNumber(),item->childNumber());
+        item->parent()->removeChild(item);
+        endRemoveRows();
+    }
+    return ok;
 }
 
 //---------------------------------------------------------------------------------
@@ -1416,10 +1548,11 @@ bool myModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
 
   // Get urls of files
   QList<QUrl> files = data->urls();
+  if (files.isEmpty()) { return false; }
   //QStringList cutList;
 
   // Don't do anything if drag and drop in same folder
-  if (QFileInfo(files.at(0).path()).canonicalPath() == filePath(parent)) {
+  if (QFileInfo(files.at(0).toLocalFile()).canonicalPath() == filePath(parent)) {
     return false;
   }
 
@@ -1468,6 +1601,9 @@ QVariant myModel::headerData(int section, Qt::Orientation orientation, int role)
 Qt::ItemFlags myModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid()) { return Qt::NoItemFlags; }
+    // "..": files can be dropped on it (into the parent folder), but it
+    // cannot be selected, dragged or renamed (so it is never deleted, cut...)
+    if (isDotDot(index)) { return Qt::ItemIsEnabled | Qt::ItemIsDropEnabled; }
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 
