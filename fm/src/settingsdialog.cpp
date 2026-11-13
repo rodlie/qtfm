@@ -569,8 +569,13 @@ void SettingsDialog::updateMimeAssoc(QTreeWidgetItem* item) {
  */
 void SettingsDialog::showAppDialog() {
 
-  // Choose application
+  // Choose application (also a command that is not listed, created for
+  // the selected mime type)
   ApplicationDialog *dialog = new ApplicationDialog(false, this);
+  QTreeWidgetItem *mimeItem = mimesWidget->currentItem();
+  if (mimeItem && mimeItem->parent()) {
+    dialog->setMimeType(mimeItem->parent()->text(0) + "/" + mimeItem->text(0), false);
+  }
   if (dialog->exec()) {
 
     // If application name is empty, exit

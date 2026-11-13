@@ -2,6 +2,13 @@
 #include <QDirIterator>
 #include <QUrl>
 #include <QApplication>
+#include <QDir>
+#include <QFile>
+#include <QProcess>
+#include <QRandomGenerator>
+#include <QRegularExpression>
+#include <QStandardPaths>
+#include <QTextStream>
 
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__APPLE__)
 #include <sys/mount.h>
@@ -260,5 +267,64 @@ QIcon FileUtils::searchAppIcon(const DesktopFile &app, const QIcon &defaultIcon)
   QIcon icon(Common::findIcon(qApp->applicationFilePath(), QIcon::themeName(), app.getIcon()));
   if (!icon.isNull()) { return icon; }
   return defaultIcon;
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+
+/**
+ * @brief Creates a .desktop file in the user's applications folder for a
+ * command that has none, so it can be associated with file types and is
+ * listed with the other applications (same idea as pcmanfm's userapp-*)
+ * @param command command line; " %f" is appended when it has no file code
+ * @param terminal run the command in a terminal
+ * @param mime mime type the application is created for (may be empty)
+ * @return name of the .desktop file without the extension, empty on error
+ */
+QString FileUtils::createUserApplication(const QString &command, bool terminal,
+                                         const QString &mime) {
+  const QString program = QProcess::splitCommand(command).value(0);
+  if (program.isEmpty()) { return QString(); }
+
+  const QString dirPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
+                          + "/applications";
+  if (!QDir().mkpath(dirPath)) { return QString(); }
+
+  // userapp-<program>-<random>.desktop, a name that is not used yet
+  QString base = QFileInfo(program).fileName();
+  base.replace(QRegularExpression("[^A-Za-z0-9._-]"), "_");
+  if (base.isEmpty()) { base = "app"; }
+  const QString chars("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+  QString name;
+  do {
+    QString suffix;
+    for (int i = 0; i < 6; ++i) {
+      suffix.append(chars.at(QRandomGenerator::global()->bounded(int(chars.size()))));
+    }
+    name = QString("userapp-%1-%2").arg(base, suffix);
+  } while (QFile::exists(dirPath + "/" + name + ".desktop"));
+
+  QString exec = command.trimmed();
+  if (!exec.contains("%f") && !exec.contains("%F")
+      && !exec.contains("%u") && !exec.contains("%U")) {
+    exec.append(" %f");
+  }
+
+  QFile file(dirPath + "/" + name + ".desktop");
+  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { return QString(); }
+  QTextStream out(&file);
+  out << "[Desktop Entry]\n";
+  out << "Type=Application\n";
+  out << "Name=" << QFileInfo(program).fileName() << "\n";
+  out << "Comment=Created by qtfm\n";
+  out << "Exec=" << exec << "\n";
+  out << "Terminal=" << (terminal ? "true" : "false") << "\n";
+  if (!mime.isEmpty()) { out << "MimeType=" << mime << ";\n"; }
+  out.flush();
+  file.close();
+  if (file.error() != QFileDevice::NoError) {
+    file.remove();
+    return QString();
+  }
+  return name;
 }
 //---------------------------------------------------------------------------

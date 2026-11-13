@@ -30,6 +30,8 @@ public:
       const QIcon &defaultIcon = QIcon::fromTheme("unknown"));
   static QIcon searchAppIcon(const DesktopFile &app,
       const QIcon &defaultIcon = QIcon::fromTheme("application-x-executable"));
+  static QString createUserApplication(const QString &command, bool terminal,
+                                       const QString &mime = QString());
 };
 
 #endif // FILEUTILS_H

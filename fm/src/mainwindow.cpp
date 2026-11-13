@@ -1846,13 +1846,17 @@ void MainWindow::selectAppForFiles()
       files << modelList->filePath(srcIndex);
     }
 
-    // Select application in the dialog
+    // Type of the file the menu was opened for
+    const QString mime = files.isEmpty() ? QString() : mimeUtils->getMimeType(curIndex.filePath());
+
+    // Select application in the dialog (also a command that is not listed)
     ApplicationDialog *dialog = new ApplicationDialog(true, this);
+    dialog->setMimeType(mime, true);
     if (dialog->exec()) {
       if (dialog->getCurrentLauncher().compare("") != 0) {
         QString appName = dialog->getCurrentLauncher() + ".desktop";
         QString desktop = Common::findApplication(qApp->applicationFilePath(), appName);
-        if (desktop.isEmpty()) { return; }
+        if (desktop.isEmpty()) { delete dialog; return; }
         DesktopFile df = DesktopFile(desktop);
         if (df.getExec().contains("%F") || df.getExec().contains("%U")) { // app supports multiple files
             mimeUtils->openFilesInApp(df.getExec(), files, df.isTerminal()?term:"");
@@ -1862,8 +1866,24 @@ void MainWindow::selectAppForFiles()
                 mimeUtils->openInApp(df.getExec(), fileInfo, df.isTerminal()?term:"");
             }
         }
+
+        // Remember the application for this type: as default when asked,
+        // otherwise at the end of the list (shown in "Open with")
+        if (!mime.isEmpty()) {
+          QStringList apps = mimeUtils->getDefault(mime);
+          apps.removeAll(QString());
+          if (dialog->useAsDefault()) {
+            apps.removeAll(appName);
+            apps.prepend(appName);
+          } else if (!apps.contains(appName)) {
+            apps.append(appName);
+          }
+          mimeUtils->setDefault(mime, apps);
+          mimeUtils->saveDefaults();
+        }
       }
     }
+    delete dialog;
 }
 //---------------------------------------------------------------------------
 
